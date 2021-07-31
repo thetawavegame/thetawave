@@ -1,0 +1,10 @@
+[package]
+name = "theta-wave"
+version = "0.1.7"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bevy = {version = "0.5", features = ["bevy_winit", "bevy_wgpu"]}
+bevy_rapier2d = {version = "0.10.2", features = ["simd-stable", "render"] }
