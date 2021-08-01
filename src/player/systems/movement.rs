@@ -9,6 +9,7 @@ pub fn player_movement_system(
 ) {
     for (player, mut rb_vels) in player_info.iter_mut() {
         // threshold to set velocity to exactly zero
+        // TODO: move to game parameters file/resource
         const STOP_THRESHOLD: f32 = 0.1;
 
         // get key presses

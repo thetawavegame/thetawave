@@ -1,6 +1,5 @@
-use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use bevy_rapier2d::{na::Vector2, prelude::*};
 
 mod player;
 
@@ -14,30 +13,29 @@ fn main() {
         })
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
+        //.add_plugin(RapierRenderPlugin)
         .add_startup_system(setup_game.system())
         .add_startup_system(player::spawn_player_system.system())
         .add_system(player::player_movement_system.system())
+        .add_system(print_player_position.system())
         .run();
 }
 
-fn setup_game(mut commands: Commands) {
+fn setup_game(mut commands: Commands, mut rapier_config: ResMut<RapierConfiguration>) {
+    // spawn camera
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+
+    // setup rapier
+    rapier_config.gravity = Vector2::zeros();
+    rapier_config.scale = 10.0;
 }
 
-fn print_keyboard_input(mut keyboard_input_events: EventReader<KeyboardInput>) {
-    for event in keyboard_input_events.iter() {
-        info!("{:?}", event);
-    }
-}
-
-fn print_player_position(player_info: Query<(&player::PlayerComponent, &RigidBodyPosition)>) {
-    for (player, rb_pos) in player_info.iter() {
-        println!("{:?}", rb_pos.position.translation.vector.data);
-    }
-}
-
-fn print_player_velocity(player_info: Query<(&player::PlayerComponent, &RigidBodyVelocity)>) {
-    for (player, rb_vel) in player_info.iter() {
-        println!("{:?}", rb_vel.linvel.data);
+// print position of the player
+fn print_player_position(query: Query<&RigidBodyPosition, With<player::PlayerComponent>>) {
+    for player_pos in query.iter() {
+        info!(
+            "Player position: {:?}",
+            player_pos.position.translation.vector.data
+        );
     }
 }
