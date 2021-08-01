@@ -12,9 +12,14 @@ pub fn spawn_barrier_system(mut commands: Commands) {
         })
         .insert_bundle(ColliderBundle {
             shape: ColliderShape::cuboid(48.0, 2.0),
+            material: ColliderMaterial {
+                friction: 0.0,
+                restitution: 1.0,
+                ..Default::default()
+            },
             ..Default::default()
         })
-        .insert(ColliderPositionSync::Discrete)
+        .insert(RigidBodyPositionSync::Discrete)
         .insert(ColliderDebugRender::with_id(0));
 
     commands
@@ -26,9 +31,14 @@ pub fn spawn_barrier_system(mut commands: Commands) {
         })
         .insert_bundle(ColliderBundle {
             shape: ColliderShape::cuboid(48.0, 2.0),
+            material: ColliderMaterial {
+                friction: 0.0,
+                restitution: 1.0,
+                ..Default::default()
+            },
             ..Default::default()
         })
-        .insert(ColliderPositionSync::Discrete)
+        .insert(RigidBodyPositionSync::Discrete)
         .insert(ColliderDebugRender::with_id(0));
 
     commands
@@ -40,9 +50,14 @@ pub fn spawn_barrier_system(mut commands: Commands) {
         })
         .insert_bundle(ColliderBundle {
             shape: ColliderShape::cuboid(2.0, 36.0),
+            material: ColliderMaterial {
+                friction: 0.0,
+                restitution: 1.0,
+                ..Default::default()
+            },
             ..Default::default()
         })
-        .insert(ColliderPositionSync::Discrete)
+        .insert(RigidBodyPositionSync::Discrete)
         .insert(ColliderDebugRender::with_id(0));
 
     commands
@@ -54,8 +69,13 @@ pub fn spawn_barrier_system(mut commands: Commands) {
         })
         .insert_bundle(ColliderBundle {
             shape: ColliderShape::cuboid(2.0, 36.0),
+            material: ColliderMaterial {
+                friction: 0.0,
+                restitution: 1.0,
+                ..Default::default()
+            },
             ..Default::default()
         })
-        .insert(ColliderPositionSync::Discrete)
+        .insert(RigidBodyPositionSync::Discrete)
         .insert(ColliderDebugRender::with_id(0));
 }

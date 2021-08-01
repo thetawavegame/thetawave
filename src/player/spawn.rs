@@ -7,7 +7,7 @@ pub fn spawn_player_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    mut rapier_config: ResMut<RapierConfiguration>,
+    rapier_config: Res<RapierConfiguration>,
 ) {
     const SPRITE_SCALE: f32 = 3.0; // TODO: move to game parameters resource
 
@@ -33,11 +33,15 @@ pub fn spawn_player_system(
             ..Default::default()
         })
         .insert_bundle(ColliderBundle {
-            //position: [collider_size_x / 2.0, collider_size_y / 2.0].into(), // may need to adjust position when detecting collisions
             shape: ColliderShape::cuboid(collider_size_x / 2.0, collider_size_y / 2.0),
+            material: ColliderMaterial {
+                friction: 0.0,
+                restitution: 1.0,
+                ..Default::default()
+            },
             ..Default::default()
         })
-        .insert(ColliderPositionSync::Discrete)
+        .insert(RigidBodyPositionSync::Discrete)
         .insert(ColliderDebugRender::with_id(1))
         .insert(PlayerComponent {
             // TODO: move values into game data file/resource for player
