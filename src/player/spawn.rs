@@ -7,7 +7,7 @@ pub fn spawn_player_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    rapier_config: Res<RapierConfiguration>,
+    mut rapier_config: ResMut<RapierConfiguration>,
 ) {
     const SPRITE_SCALE: f32 = 3.0; // TODO: move to game parameters resource
 
@@ -27,6 +27,9 @@ pub fn spawn_player_system(
             ..Default::default()
         })
         .insert_bundle(RigidBodyBundle {
+            body_type: RigidBodyType::Dynamic,
+            mass_properties: RigidBodyMassPropsFlags::ROTATION_LOCKED.into(),
+            position: Vec2::new(0.0, 0.0).into(),
             ..Default::default()
         })
         .insert_bundle(ColliderBundle {
