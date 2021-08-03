@@ -3,19 +3,19 @@ use bevy_rapier2d::prelude::*;
 
 /// Spawns arena barriers
 pub fn spawn_barrier_system(mut commands: Commands) {
-    spawn_barrier(&mut commands, 0.0, 38.0, 96.0, 4.0);
-    spawn_barrier(&mut commands, 0.0, -38.0, 96.0, 4.0);
-    spawn_barrier(&mut commands, 50.0, 0.0, 4.0, 72.0);
-    spawn_barrier(&mut commands, -50.0, 0.0, 4.0, 72.0);
+    spawn_barrier(&mut commands, Vec2::new(0.0, 38.0), 96.0, 4.0);
+    spawn_barrier(&mut commands, Vec2::new(0.0, -38.0), 96.0, 4.0);
+    spawn_barrier(&mut commands, Vec2::new(50.0, 0.0), 4.0, 72.0);
+    spawn_barrier(&mut commands, Vec2::new(-50.0, 0.0), 4.0, 72.0);
 }
 
 /// Spawns an arena barrier
-fn spawn_barrier(commands: &mut Commands, x: f32, y: f32, width: f32, height: f32) {
+fn spawn_barrier(commands: &mut Commands, position: Vec2, width: f32, height: f32) {
     commands
         .spawn()
         .insert_bundle(RigidBodyBundle {
             body_type: RigidBodyType::Static,
-            position: Vec2::new(x, y).into(),
+            position: position.into(),
             ..Default::default()
         })
         .insert_bundle(ColliderBundle {
