@@ -1,22 +1,25 @@
-use crate::player::PlayerComponent;
+use crate::player::{CharactersResource, PlayerComponent};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 /// Spawns player into the game
 pub fn spawn_player_system(
     mut commands: Commands,
+    characters: Res<CharactersResource>,
     asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     rapier_config: Res<RapierConfiguration>,
 ) {
     const SPRITE_SCALE: f32 = 3.0; // TODO: move to game parameters resource
 
+    let character = &characters.characters["juggernaut"];
+
     // scale collider to align with the sprite
-    let collider_size_x = 6.0 * SPRITE_SCALE / rapier_config.scale; // TODO: move values game data file/resource for player
-    let collider_size_y = 13.0 * SPRITE_SCALE / rapier_config.scale;
+    let collider_size_x = 6.0 * SPRITE_SCALE / rapier_config.scale; // TODO: move to character data file
+    let collider_size_y = 13.0 * SPRITE_SCALE / rapier_config.scale; // TODO: move to character data file
 
     // get player texture
-    let texture_handle = asset_server.load("texture/player.png");
+    let texture_handle = asset_server.load(format!("texture/{}", character.sprite_path).as_str());
 
     // spawn the player
     commands
@@ -36,10 +39,5 @@ pub fn spawn_player_system(
         })
         .insert(ColliderPositionSync::Discrete)
         .insert(ColliderDebugRender::with_id(1))
-        .insert(PlayerComponent {
-            // TODO: move values into game data file/resource for player
-            acceleration: [0.10, 0.14].into(),
-            deceleration: [0.008, 0.012].into(),
-            speed: [1.5, 2.5].into(),
-        });
+        .insert(PlayerComponent::from(character));
 }
