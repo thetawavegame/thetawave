@@ -14,6 +14,8 @@ pub struct Character {
     pub deceleration: Vec2,
     /// Base speed
     pub speed: Vec2,
+    /// Collider size (relative to the sprite size)
+    pub collider_dimensions: Vec2,
     /// Sprite sheet path
     pub sprite_path: String,
 }

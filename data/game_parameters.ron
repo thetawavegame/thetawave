@@ -1,0 +1,5 @@
+(
+	physics_scale: 10.0,
+	sprite_scale: 3.0,
+	stop_threshold: 0.1,
+)

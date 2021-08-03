@@ -1,9 +1,9 @@
 //! `thetawave_lib` player module
 
-pub mod components;
+mod components;
 mod resources;
 mod spawn;
-pub mod systems;
+mod systems;
 
 pub use self::{
     components::PlayerComponent,

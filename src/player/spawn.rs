@@ -1,4 +1,7 @@
-use crate::player::{CharactersResource, PlayerComponent};
+use crate::{
+    game::GameParametersResource,
+    player::{CharactersResource, PlayerComponent},
+};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
@@ -9,14 +12,16 @@ pub fn spawn_player_system(
     asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     rapier_config: Res<RapierConfiguration>,
+    game_parameters: Res<GameParametersResource>,
 ) {
-    const SPRITE_SCALE: f32 = 3.0; // TODO: move to game parameters resource
-
+    // choose a character
     let character = &characters.characters["juggernaut"];
 
     // scale collider to align with the sprite
-    let collider_size_x = 6.0 * SPRITE_SCALE / rapier_config.scale; // TODO: move to character data file
-    let collider_size_y = 13.0 * SPRITE_SCALE / rapier_config.scale; // TODO: move to character data file
+    let collider_size_hx =
+        character.collider_dimensions.x * game_parameters.sprite_scale / rapier_config.scale / 2.0;
+    let collider_size_hy =
+        character.collider_dimensions.y * game_parameters.sprite_scale / rapier_config.scale / 2.0;
 
     // get player texture
     let texture_handle = asset_server.load(format!("texture/{}", character.sprite_path).as_str());
@@ -26,7 +31,11 @@ pub fn spawn_player_system(
         .spawn()
         .insert_bundle(SpriteBundle {
             material: materials.add(texture_handle.into()),
-            transform: Transform::from_scale(Vec3::new(SPRITE_SCALE, SPRITE_SCALE, 1.0)),
+            transform: Transform::from_scale(Vec3::new(
+                game_parameters.sprite_scale,
+                game_parameters.sprite_scale,
+                1.0,
+            )),
             ..Default::default()
         })
         .insert_bundle(RigidBodyBundle {
@@ -34,7 +43,7 @@ pub fn spawn_player_system(
         })
         .insert_bundle(ColliderBundle {
             //position: [collider_size_x / 2.0, collider_size_y / 2.0].into(), // may need to adjust position when detecting collisions
-            shape: ColliderShape::cuboid(collider_size_x / 2.0, collider_size_y / 2.0),
+            shape: ColliderShape::cuboid(collider_size_hx, collider_size_hy),
             ..Default::default()
         })
         .insert(ColliderPositionSync::Discrete)

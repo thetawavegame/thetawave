@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_rapier2d::{na::Vector2, prelude::*};
 use ron::de::from_bytes;
 
+mod game;
 mod player;
 
 fn main() {
@@ -16,6 +17,12 @@ fn main() {
             from_bytes::<player::CharactersResource>(include_bytes!("../data/characters.ron"))
                 .unwrap(),
         )
+        .insert_resource(
+            from_bytes::<game::GameParametersResource>(include_bytes!(
+                "../data/game_parameters.ron"
+            ))
+            .unwrap(),
+        )
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         //.add_plugin(RapierRenderPlugin)
@@ -26,13 +33,17 @@ fn main() {
         .run();
 }
 
-fn setup_game(mut commands: Commands, mut rapier_config: ResMut<RapierConfiguration>) {
+fn setup_game(
+    mut commands: Commands,
+    mut rapier_config: ResMut<RapierConfiguration>,
+    game_parameters: Res<game::GameParametersResource>,
+) {
     // spawn camera
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
 
     // setup rapier
     rapier_config.gravity = Vector2::zeros();
-    rapier_config.scale = 10.0; // TODO: move to data file
+    rapier_config.scale = game_parameters.physics_scale;
 }
 
 // print position of the player
