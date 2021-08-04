@@ -5,14 +5,12 @@ use serde::Deserialize;
 /// Component for managing core attributes of the player
 #[derive(Deserialize, Debug)]
 pub struct PlayerComponent {
+    /// Acceleration of the player
     pub acceleration: Vec2,
+    /// Deceleration of the player
     pub deceleration: Vec2,
-    pub speed: Vec2, // Amount of money the player has
-                     //pub money: i32,
-                     // Amount of collision damage the player deals
-                     //pub collision_damage: f32,
-                     // All the items the player has collected
-                     //pub items: Vec<ItemType>
+    /// Maximum speed of the player
+    pub speed: Vec2,
 }
 
 impl From<&Character> for PlayerComponent {

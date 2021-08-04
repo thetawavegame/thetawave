@@ -39,14 +39,21 @@ pub fn spawn_player_system(
             ..Default::default()
         })
         .insert_bundle(RigidBodyBundle {
+            body_type: RigidBodyType::Dynamic,
+            mass_properties: RigidBodyMassPropsFlags::ROTATION_LOCKED.into(),
+            position: Vec2::new(0.0, 0.0).into(),
             ..Default::default()
         })
         .insert_bundle(ColliderBundle {
-            //position: [collider_size_x / 2.0, collider_size_y / 2.0].into(), // may need to adjust position when detecting collisions
             shape: ColliderShape::cuboid(collider_size_hx, collider_size_hy),
+            material: ColliderMaterial {
+                friction: 0.0,
+                restitution: 1.0,
+                ..Default::default()
+            },
             ..Default::default()
         })
-        .insert(ColliderPositionSync::Discrete)
+        .insert(RigidBodyPositionSync::Discrete)
         .insert(ColliderDebugRender::with_id(1))
         .insert(PlayerComponent::from(character));
 }
