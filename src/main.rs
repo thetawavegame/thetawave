@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier2d::{na::Vector2, prelude::*};
 
+mod misc;
 mod player;
 
 fn main() {
@@ -14,8 +15,9 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         //.add_plugin(RapierRenderPlugin)
-        .add_startup_system(setup_game.system())
-        .add_startup_system(player::spawn_player_system.system())
+        .add_startup_system(setup_game.system().label("init"))
+        .add_startup_system(misc::spawn_barrier_system.system().after("init"))
+        .add_startup_system(player::spawn_player_system.system().after("init"))
         .add_system(player::player_movement_system.system())
         .add_system(print_player_position.system())
         .run();
