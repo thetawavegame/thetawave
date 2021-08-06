@@ -3,15 +3,13 @@ use bevy::prelude::*;
 use bevy_prototype_debug_lines::*;
 use bevy_rapier2d::prelude::*;
 
-use crate::player::PlayerComponent;
-
 pub fn collider_debug_lines_system(
     mut lines: ResMut<DebugLines>,
-    player_colliders: Query<(&ColliderPosition, &ColliderShape), With<PlayerComponent>>,
+    player_colliders: Query<(&ColliderPosition, &ColliderShape)>,
 ) {
     const RAPIER_CONFIG_SCALE: f32 = 10.0;
 
-    // draw colliders for players
+    // draw colliders
     for (collider_position, collider_shape) in player_colliders.iter() {
         let collider_cuboid = collider_shape.as_cuboid().unwrap();
         let collider_translation = collider_position.translation;
