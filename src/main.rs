@@ -21,12 +21,8 @@ fn main() {
         .add_startup_system(setup_game.system().label("init"))
         .add_startup_system(misc::spawn_barrier_system.system().after("init"))
         .add_startup_system(player::spawn_player_system.system().after("init"))
-        .add_system(player::player_movement_system.system().label("movement"))
-        .add_system(
-            debug::collider_debug_lines_system
-                .system()
-                .after("movement"),
-        )
+        .add_system(player::player_movement_system.system())
+        .add_system(debug::collider_debug_lines_system.system())
         //.add_system(print_player_position.system())
         .run();
 }

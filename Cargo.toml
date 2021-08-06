@@ -7,5 +7,6 @@ edition = "2018"
 
 [dependencies]
 bevy = {version = "0.5", features = ["bevy_winit", "bevy_wgpu"]}
-bevy_rapier2d = {version = "0.10.2", features = ["simd-stable", "render"] }
-bevy_prototype_debug_lines = "0.3.2"
+# bevy_rapier2d = {version = "0.10.2", features = ["simd-stable", "render"] }
+bevy_rapier2d = { git = "https://github.com/dimforge/bevy_rapier", features = ["simd-stable", "render"] }
+bevy_prototype_debug_lines = { git = "https://github.com/Toqozz/bevy_debug_lines"}

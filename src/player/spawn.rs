@@ -41,7 +41,7 @@ pub fn spawn_player_system(
             },
             ..Default::default()
         })
-        .insert(RigidBodyPositionSync::Discrete)
+        .insert(ColliderPositionSync::Discrete)
         .insert(ColliderDebugRender::with_id(1))
         .insert(PlayerComponent {
             // TODO: move values into game data file/resource for player
