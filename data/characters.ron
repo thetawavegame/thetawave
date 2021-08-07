@@ -1,0 +1,11 @@
+(
+	characters: {
+		"juggernaut": (
+			acceleration: (0.10, 0.14),
+			deceleration: (0.008, 0.012),
+			speed: (1.5, 2.5),
+			collider_dimensions: (6.0 , 13.0),
+			sprite_path: "player.png"
+		)
+	}
+)
