@@ -6,9 +6,8 @@ use bevy_rapier2d::prelude::*;
 pub fn collider_debug_lines_system(
     mut lines: ResMut<DebugLines>,
     player_colliders: Query<(&ColliderPosition, &ColliderShape)>,
+    rapier_config: Res<RapierConfiguration>,
 ) {
-    const RAPIER_CONFIG_SCALE: f32 = 10.0;
-
     // draw colliders
     for (collider_position, collider_shape) in player_colliders.iter() {
         let collider_cuboid = collider_shape.as_cuboid().unwrap();
@@ -18,7 +17,7 @@ pub fn collider_debug_lines_system(
             &mut lines,
             collider_cuboid,
             collider_translation,
-            RAPIER_CONFIG_SCALE,
+            rapier_config.scale,
         );
     }
 }
