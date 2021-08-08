@@ -1,8 +1,10 @@
 use bevy::prelude::*;
+use bevy_prototype_debug_lines::*;
 use bevy_rapier2d::{na::Vector2, prelude::*};
 use ron::de::{from_bytes, from_str};
 use std::{env::current_dir, fs::read_to_string};
 
+mod debug;
 mod game;
 mod misc;
 mod options;
@@ -18,8 +20,9 @@ fn main() {
     )
     .unwrap();
 
-    App::build()
-        .insert_resource(WindowDescriptor::from(display_config))
+    let mut app = App::build();
+
+    app.insert_resource(WindowDescriptor::from(display_config))
         .insert_resource(
             from_bytes::<player::CharactersResource>(include_bytes!("../data/characters.ron"))
                 .unwrap(),
@@ -32,12 +35,18 @@ fn main() {
         )
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
+        .add_plugin(DebugLinesPlugin)
         .add_startup_system(setup_game.system().label("init"))
         .add_startup_system(misc::spawn_barrier_system.system().after("init"))
         .add_startup_system(player::spawn_player_system.system().after("init"))
         .add_system(player::player_movement_system.system())
-        .add_system(options::toggle_fullscreen_system.system())
-        .run();
+        .add_system(options::toggle_fullscreen_system.system());
+
+    if cfg!(debug_assertions) {
+        app.add_system(debug::collider_debug_lines_system.system());
+    }
+
+    app.run();
 }
 
 fn setup_game(
