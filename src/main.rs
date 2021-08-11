@@ -1,4 +1,4 @@
-use bevy::{prelude::*, render::camera::PerspectiveProjection};
+use bevy::{pbr::AmbientLight, prelude::*, render::camera::PerspectiveProjection};
 use bevy_prototype_debug_lines::*;
 use bevy_rapier2d::{na::Vector2, prelude::*};
 use ron::de::{from_bytes, from_str};
@@ -24,6 +24,11 @@ fn main() {
     let mut app = App::build();
 
     app.insert_resource(WindowDescriptor::from(display_config))
+        .insert_resource(ClearColor(Color::BLACK))
+        .insert_resource(AmbientLight {
+            color: Color::WHITE,
+            brightness: 0.1,
+        })
         .insert_resource(
             from_bytes::<player::CharactersResource>(include_bytes!("../data/characters.ron"))
                 .unwrap(),
@@ -66,6 +71,7 @@ fn setup_game(
         },
         ..Default::default()
     });
+
     // setup rapier
     rapier_config.gravity = Vector2::zeros();
     rapier_config.scale = game_parameters.physics_scale;

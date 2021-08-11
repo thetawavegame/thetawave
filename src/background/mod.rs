@@ -19,7 +19,7 @@ pub fn create_background_system(mut commands: Commands, asset_server: Res<AssetS
     };
 
     let sun_transform = Transform {
-        translation: Vec3::new(-1150.0, 300.0, -2000.0),
+        translation: Vec3::new(-1150.0, -300.0, -2000.0),
         scale: Vec3::new(70.0, 70.0, 70.0),
         ..Default::default()
     };
@@ -34,7 +34,7 @@ pub fn create_background_system(mut commands: Commands, asset_server: Res<AssetS
             });
         })
         .insert(PlanetComponent {
-            rotation_speed: 0.0001,
+            rotation_speed: 0.0002,
         });
 
     commands
@@ -49,4 +49,15 @@ pub fn create_background_system(mut commands: Commands, asset_server: Res<AssetS
         .insert(PlanetComponent {
             rotation_speed: 0.00005,
         });
+
+    commands.spawn_bundle(LightBundle {
+        light: Light {
+            color: Color::ORANGE_RED,
+            intensity: 20000000.0,
+            range: 10000000.0,
+            ..Default::default()
+        },
+        transform: sun_transform,
+        ..Default::default()
+    });
 }
