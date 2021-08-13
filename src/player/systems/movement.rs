@@ -2,6 +2,7 @@ use crate::{game::GameParametersResource, player::PlayerComponent};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
+/// Move player by modifying velocity with input
 pub fn player_movement_system(
     keyboard_input: Res<Input<KeyCode>>,
     rapier_config: Res<RapierConfiguration>,

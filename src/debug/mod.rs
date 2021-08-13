@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use bevy_prototype_debug_lines::*;
 use bevy_rapier2d::prelude::*;
 
+/// Draw lines over colliders
 pub fn collider_debug_lines_system(
     mut lines: ResMut<DebugLines>,
     player_colliders: Query<(&ColliderPosition, &ColliderShape)>,
@@ -22,6 +23,7 @@ pub fn collider_debug_lines_system(
     }
 }
 
+/// Draw colliders over cuboids
 fn draw_debug_collider_cuboid(
     debug_lines: &mut ResMut<DebugLines>,
     cuboid: &Cuboid,
