@@ -1,14 +1,15 @@
-use bevy::prelude::*;
+use bevy::{asset::HandleId, prelude::*};
 use bevy_prototype_debug_lines::*;
 use bevy_rapier2d::{na::Vector2, prelude::*};
 use ron::de::{from_bytes, from_str};
-use std::{env::current_dir, fs::read_to_string};
+use std::{collections::HashMap, env::current_dir, fs::read_to_string};
 
 mod debug;
 mod game;
 mod misc;
 mod options;
 mod player;
+mod spawnable;
 
 fn main() {
     options::generate_config_files();
@@ -33,14 +34,18 @@ fn main() {
             ))
             .unwrap(),
         )
+        .insert_resource(TextureAtlasHandleIds::new())
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(DebugLinesPlugin)
         .add_startup_system(setup_game.system().label("init"))
         .add_startup_system(misc::spawn_barrier_system.system().after("init"))
         .add_startup_system(player::spawn_player_system.system().after("init"))
+        .add_startup_system(spawnable::spawn_mob_system.system().after("init"))
         .add_system(player::player_movement_system.system())
-        .add_system(options::toggle_fullscreen_system.system());
+        .add_system(spawnable::mob_movement_system.system())
+        .add_system(options::toggle_fullscreen_system.system())
+        .add_system(animate_sprite_system.system());
 
     if cfg!(debug_assertions) {
         app.add_system(debug::collider_debug_lines_system.system());
@@ -49,8 +54,13 @@ fn main() {
     app.run();
 }
 
+pub type TextureAtlasHandleIds = HashMap<String, HandleId>;
+
 fn setup_game(
     mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut texture_atlas_handle_ids: ResMut<TextureAtlasHandleIds>,
     mut rapier_config: ResMut<RapierConfiguration>,
     game_parameters: Res<game::GameParametersResource>,
 ) {
@@ -60,4 +70,23 @@ fn setup_game(
     // setup rapier
     rapier_config.gravity = Vector2::zeros();
     rapier_config.scale = game_parameters.physics_scale;
+
+    // load assets
+    let texture_handle = asset_server.load("texture/drone_spritesheet_test.png");
+    let texture_atlas = TextureAtlas::from_grid(texture_handle, Vec2::new(18.0, 18.0), 3, 1);
+    texture_atlas_handle_ids.insert("drone".to_string(), texture_atlases.add(texture_atlas).id);
+}
+
+fn animate_sprite_system(
+    time: Res<Time>,
+    texture_atlases: Res<Assets<TextureAtlas>>,
+    mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &Handle<TextureAtlas>)>,
+) {
+    for (mut timer, mut sprite, texture_atlas_handle) in query.iter_mut() {
+        timer.tick(time.delta());
+        if timer.finished() {
+            let texture_atlas = texture_atlases.get(texture_atlas_handle).unwrap();
+            sprite.index = ((sprite.index as usize + 1) % texture_atlas.textures.len()) as u32;
+        }
+    }
 }
