@@ -1,7 +1,10 @@
+use serde::Deserialize;
+use std::collections::HashMap;
+
 use crate::{
     game::GameParametersResource,
-    spawnable::{EnemyType, MobType, SpawnableType},
-    TextureAtlasHandleIds,
+    spawnable::{AllyType, EnemyType, MobType, SpawnableType},
+    SpawnableTextureAtlasHandleIds,
 };
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
@@ -17,26 +20,48 @@ pub struct MobComponent {
     pub speed: Vec2,
 }
 
+#[derive(Deserialize)]
+pub struct MobData {
+    pub mob_type: MobType,
+    pub acceleration: Vec2,
+    pub deceleration: Vec2,
+    pub speed: Vec2,
+    pub collider_dimensions: Vec2,
+    pub sprite_dimensions: Vec2,
+    pub texture_path: String,
+    pub texture_atlas_cols: usize,
+    pub texture_atlas_rows: usize,
+}
+
+#[derive(Deserialize)]
+pub struct MobsResource {
+    pub mobs: HashMap<MobType, MobData>,
+}
+
 pub fn spawn_mob_system(
     mut commands: Commands,
+    mobs: Res<MobsResource>,
     texture_atlases: Res<Assets<TextureAtlas>>,
-    texture_handle_atlas_ids: Res<TextureAtlasHandleIds>,
+    texture_handle_atlas_ids: Res<SpawnableTextureAtlasHandleIds>,
     rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<GameParametersResource>,
 ) {
-    // scale collider to align with the sprite
-    let collider_size_hx = 14.0 * game_parameters.sprite_scale / rapier_config.scale / 2.0;
-    let collider_size_hy = 14.0 * game_parameters.sprite_scale / rapier_config.scale / 2.0;
+    let mob_data = &mobs.mobs[&MobType::Enemy(EnemyType::MissileLauncher)];
 
-    let texture_atlas_handle = texture_atlases.get_handle(texture_handle_atlas_ids["drone"]);
+    // scale collider to align with the sprite
+    let collider_size_hx =
+        mob_data.collider_dimensions.x * game_parameters.sprite_scale / rapier_config.scale / 2.0;
+    let collider_size_hy =
+        mob_data.collider_dimensions.y * game_parameters.sprite_scale / rapier_config.scale / 2.0;
+
+    let texture_atlas_handle = texture_atlases
+        .get_handle(texture_handle_atlas_ids[&SpawnableType::Mob(mob_data.mob_type.clone())]);
 
     let transform = Transform::from_scale(Vec3::new(
         game_parameters.sprite_scale,
         game_parameters.sprite_scale,
         1.0,
     ));
-
-    println!("{:?}", texture_atlas_handle);
 
     commands
         .spawn()
@@ -55,8 +80,9 @@ pub fn spawn_mob_system(
         .insert_bundle(ColliderBundle {
             shape: ColliderShape::cuboid(collider_size_hx, collider_size_hy),
             material: ColliderMaterial {
-                friction: 0.0,
+                friction: 1.0,
                 restitution: 1.0,
+                restitution_combine_rule: CoefficientCombineRule::Max,
                 ..Default::default()
             },
             ..Default::default()
@@ -64,9 +90,9 @@ pub fn spawn_mob_system(
         .insert(ColliderPositionSync::Discrete)
         .insert(MobComponent {
             mob_type: MobType::Enemy(EnemyType::Drone),
-            acceleration: Vec2::new(0.0, 0.02),
-            deceleration: Vec2::new(0.05, 0.005),
-            speed: Vec2::new(0.0, 1.0),
+            acceleration: mob_data.acceleration,
+            deceleration: mob_data.deceleration,
+            speed: mob_data.speed,
         });
 }
 

@@ -2,6 +2,7 @@ use bevy::{asset::HandleId, prelude::*};
 use bevy_prototype_debug_lines::*;
 use bevy_rapier2d::{na::Vector2, prelude::*};
 use ron::de::{from_bytes, from_str};
+use spawnable::{EnemyType, MobType, SpawnableType};
 use std::{collections::HashMap, env::current_dir, fs::read_to_string};
 
 mod debug;
@@ -34,7 +35,10 @@ fn main() {
             ))
             .unwrap(),
         )
-        .insert_resource(TextureAtlasHandleIds::new())
+        .insert_resource(
+            from_bytes::<spawnable::MobsResource>(include_bytes!("../data/mobs.ron")).unwrap(),
+        )
+        .insert_resource(SpawnableTextureAtlasHandleIds::new())
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(DebugLinesPlugin)
@@ -54,15 +58,16 @@ fn main() {
     app.run();
 }
 
-pub type TextureAtlasHandleIds = HashMap<String, HandleId>;
+pub type SpawnableTextureAtlasHandleIds = HashMap<spawnable::SpawnableType, HandleId>;
 
 fn setup_game(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
-    mut texture_atlas_handle_ids: ResMut<TextureAtlasHandleIds>,
+    mut texture_atlas_handle_ids: ResMut<SpawnableTextureAtlasHandleIds>,
     mut rapier_config: ResMut<RapierConfiguration>,
     game_parameters: Res<game::GameParametersResource>,
+    mobs: Res<spawnable::MobsResource>,
 ) {
     // spawn camera
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
@@ -72,9 +77,20 @@ fn setup_game(
     rapier_config.scale = game_parameters.physics_scale;
 
     // load assets
-    let texture_handle = asset_server.load("texture/drone_spritesheet_test.png");
-    let texture_atlas = TextureAtlas::from_grid(texture_handle, Vec2::new(18.0, 18.0), 3, 1);
-    texture_atlas_handle_ids.insert("drone".to_string(), texture_atlases.add(texture_atlas).id);
+    for (_, mob_data) in mobs.mobs.iter() {
+        let texture_handle = asset_server.load(&mob_data.texture_path[..]);
+        let texture_atlas = TextureAtlas::from_grid(
+            texture_handle,
+            mob_data.sprite_dimensions,
+            mob_data.texture_atlas_cols,
+            mob_data.texture_atlas_rows,
+        );
+
+        texture_atlas_handle_ids.insert(
+            SpawnableType::Mob(mob_data.mob_type.clone()),
+            texture_atlases.add(texture_atlas).id,
+        );
+    }
 }
 
 fn animate_sprite_system(

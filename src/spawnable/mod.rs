@@ -3,11 +3,11 @@ use serde::Deserialize;
 
 mod mob;
 
-pub use self::mob::{mob_movement_system, spawn_mob_system};
+pub use self::mob::{mob_movement_system, spawn_mob_system, MobsResource};
 
 /// Type that encompasses all spawnable entities
 // TODO: add projectiles (blast)
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum SpawnableType {
     Consumable(ConsumableType),
     Item(ItemType),
@@ -28,7 +28,7 @@ impl SpawnableType {
 }
 
 /// Type that encompasses all spawnable mobs
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum MobType {
     Enemy(EnemyType),
     Ally(AllyType),
@@ -36,7 +36,7 @@ pub enum MobType {
 }
 
 /// Type that encompasses all spawnable enemy mobs
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum EnemyType {
     Pawn,
     Drone,
@@ -53,19 +53,19 @@ pub enum EnemyType {
 }
 
 /// Type that encompasses all spawnable ally mobs
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum AllyType {
     Hauler,
 }
 
 /// Type that encompasses all spawnable neutral mobs
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum NeutralType {
     MoneyAsteroid,
 }
 
 /// Type that encompasses all spawnable consumables
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum ConsumableType {
     DefenseWrench,
     Money1,
@@ -75,7 +75,7 @@ pub enum ConsumableType {
 }
 
 /// Type that encompasses all spawnable items
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum ItemType {
     SteelBarrel,
     PlasmaBlasts,
@@ -95,7 +95,7 @@ pub enum ItemType {
 }
 
 /// Type that encompasses all spawnable effects
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum EffectType {
     AllyBlastExplosion,
     EnemyBlastExplosion,
