@@ -51,6 +51,7 @@ pub fn spawn_player_system(
                 restitution: 1.0,
                 ..Default::default()
             },
+            mass_properties: ColliderMassProps::Density(character.collider_density),
             ..Default::default()
         })
         .insert(ColliderPositionSync::Discrete)

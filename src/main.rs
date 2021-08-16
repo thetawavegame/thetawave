@@ -2,7 +2,7 @@ use bevy::{asset::HandleId, prelude::*};
 use bevy_prototype_debug_lines::*;
 use bevy_rapier2d::{na::Vector2, prelude::*};
 use ron::de::{from_bytes, from_str};
-use spawnable::{EnemyType, MobType, SpawnableType};
+use spawnable::{EnemyType, MobType, SpawnableType, SpawnerResource};
 use std::{collections::HashMap, env::current_dir, fs::read_to_string};
 
 mod debug;
@@ -38,6 +38,10 @@ fn main() {
         .insert_resource(
             from_bytes::<spawnable::MobsResource>(include_bytes!("../data/mobs.ron")).unwrap(),
         )
+        .insert_resource(
+            from_bytes::<spawnable::SpawnerResource>(include_bytes!("../data/spawner.ron"))
+                .unwrap(),
+        )
         .insert_resource(SpawnableTextureAtlasHandleIds::new())
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
@@ -45,7 +49,8 @@ fn main() {
         .add_startup_system(setup_game.system().label("init"))
         .add_startup_system(misc::spawn_barrier_system.system().after("init"))
         .add_startup_system(player::spawn_player_system.system().after("init"))
-        .add_startup_system(spawnable::spawn_mob_system.system().after("init"))
+        .add_startup_system(spawnable::spawn_formation_system.system().after("init"))
+        //.add_startup_system(spawnable::spawn_mob_system.system().after("init"))
         .add_system(player::player_movement_system.system())
         .add_system(spawnable::mob_movement_system.system())
         .add_system(options::toggle_fullscreen_system.system())

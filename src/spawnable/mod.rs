@@ -1,9 +1,11 @@
 use bevy::prelude::*;
 use serde::Deserialize;
 
+mod formation;
 mod mob;
 
-pub use self::mob::{mob_movement_system, spawn_mob_system, MobsResource};
+pub use self::formation::{spawn_formation_system, SpawnerResource};
+pub use self::mob::{mob_movement_system, spawn_mob, spawn_mob_system, MobsResource};
 
 /// Type that encompasses all spawnable entities
 // TODO: add projectiles (blast)
@@ -13,18 +15,6 @@ pub enum SpawnableType {
     Item(ItemType),
     Effect(EffectType),
     Mob(MobType),
-}
-
-impl SpawnableType {
-    /// Get name of corresponding spritesheet
-    pub fn get_spritesheet_name(&self) -> String {
-        match self {
-            Self::Consumable(_) => String::from("consumables"),
-            Self::Effect(_) => String::from("effects"),
-            Self::Item(_) => String::from("items"),
-            Self::Mob(_) => String::from("mobs"),
-        }
-    }
 }
 
 /// Type that encompasses all spawnable mobs

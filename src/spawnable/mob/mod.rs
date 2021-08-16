@@ -42,12 +42,32 @@ pub fn spawn_mob_system(
     mut commands: Commands,
     mobs: Res<MobsResource>,
     texture_atlases: Res<Assets<TextureAtlas>>,
-    texture_handle_atlas_ids: Res<SpawnableTextureAtlasHandleIds>,
+    texture_atlas_handle_ids: Res<SpawnableTextureAtlasHandleIds>,
     rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<GameParametersResource>,
 ) {
     let mob_data = &mobs.mobs[&MobType::Enemy(EnemyType::MissileLauncher)];
 
+    spawn_mob(
+        mob_data,
+        Vec2::new(0.0, 20.0),
+        &mut commands,
+        &texture_atlases,
+        &texture_atlas_handle_ids,
+        &rapier_config,
+        &game_parameters,
+    );
+}
+
+pub fn spawn_mob(
+    mob_data: &MobData,
+    position: Vec2,
+    commands: &mut Commands,
+    texture_atlases: &Res<Assets<TextureAtlas>>,
+    texture_atlas_handle_ids: &Res<SpawnableTextureAtlasHandleIds>,
+    rapier_config: &Res<RapierConfiguration>,
+    game_parameters: &Res<GameParametersResource>,
+) {
     // scale collider to align with the sprite
     let collider_size_hx =
         mob_data.collider_dimensions.x * game_parameters.sprite_scale / rapier_config.scale / 2.0;
@@ -55,7 +75,7 @@ pub fn spawn_mob_system(
         mob_data.collider_dimensions.y * game_parameters.sprite_scale / rapier_config.scale / 2.0;
 
     let texture_atlas_handle = texture_atlases
-        .get_handle(texture_handle_atlas_ids[&SpawnableType::Mob(mob_data.mob_type.clone())]);
+        .get_handle(texture_atlas_handle_ids[&SpawnableType::Mob(mob_data.mob_type.clone())]);
 
     let transform = Transform::from_scale(Vec3::new(
         game_parameters.sprite_scale,
@@ -74,7 +94,7 @@ pub fn spawn_mob_system(
         .insert_bundle(RigidBodyBundle {
             body_type: RigidBodyType::Dynamic,
             mass_properties: RigidBodyMassPropsFlags::ROTATION_LOCKED.into(),
-            position: Vec2::new(0.0, 20.0).into(),
+            position: position.into(),
             ..Default::default()
         })
         .insert_bundle(ColliderBundle {
