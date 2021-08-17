@@ -4,7 +4,8 @@ use std::collections::HashMap;
 use crate::{
     game::GameParametersResource,
     spawnable::{AllyType, EnemyType, MobType, SpawnableType},
-    SpawnableTextureAtlasHandleIds,
+    SpawnableTextureAtlasHandleIds, HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
+    SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
@@ -103,6 +104,13 @@ pub fn spawn_mob(
                 friction: 1.0,
                 restitution: 1.0,
                 restitution_combine_rule: CoefficientCombineRule::Max,
+                ..Default::default()
+            },
+            flags: ColliderFlags {
+                collision_groups: InteractionGroups::new(
+                    SPAWNABLE_COL_GROUP_MEMBERSHIP,
+                    u32::MAX ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
+                ),
                 ..Default::default()
             },
             ..Default::default()

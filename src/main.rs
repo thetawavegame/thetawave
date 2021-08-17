@@ -5,6 +5,10 @@ use ron::de::{from_bytes, from_str};
 use spawnable::{EnemyType, MobType, SpawnableType, SpawnerResource};
 use std::{collections::HashMap, env::current_dir, fs::read_to_string};
 
+pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: u32 = 0b0010;
+pub const HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP: u32 = 0b0100;
+pub const VERTICAL_BARRIER_COL_GROUP_MEMBERSHIP: u32 = 0b1000;
+
 mod debug;
 mod game;
 mod misc;

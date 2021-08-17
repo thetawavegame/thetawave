@@ -1,10 +1,12 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
+use crate::{HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP};
+
 /// Spawns arena barriers
 pub fn spawn_barrier_system(mut commands: Commands) {
-    spawn_barrier(&mut commands, Vec2::new(0.0, 38.0), 96.0, 4.0);
-    spawn_barrier(&mut commands, Vec2::new(0.0, -38.0), 96.0, 4.0);
+    spawn_enemy_barrier(&mut commands, Vec2::new(0.0, 38.0), 96.0, 4.0);
+    spawn_enemy_barrier(&mut commands, Vec2::new(0.0, -38.0), 96.0, 4.0);
     spawn_barrier(&mut commands, Vec2::new(50.0, 0.0), 4.0, 72.0);
     spawn_barrier(&mut commands, Vec2::new(-50.0, 0.0), 4.0, 72.0);
 }
@@ -23,6 +25,43 @@ fn spawn_barrier(commands: &mut Commands, position: Vec2, width: f32, height: f3
             material: ColliderMaterial {
                 friction: 0.0,
                 restitution: 1.0,
+                ..Default::default()
+            },
+            /*
+            flags: ColliderFlags {
+                collision_groups: InteractionGroups::new(
+                    HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
+                    u32::MAX ^ SPAWNABLE_COL_GROUP_MEMBERSHIP,
+                ),
+                ..Default::default()
+            },
+            */
+            ..Default::default()
+        })
+        .insert(RigidBodyPositionSync::Discrete)
+        .insert(ColliderDebugRender::with_id(0));
+}
+
+fn spawn_enemy_barrier(commands: &mut Commands, position: Vec2, width: f32, height: f32) {
+    commands
+        .spawn()
+        .insert_bundle(RigidBodyBundle {
+            body_type: RigidBodyType::Static,
+            position: position.into(),
+            ..Default::default()
+        })
+        .insert_bundle(ColliderBundle {
+            shape: ColliderShape::cuboid(width / 2.0, height / 2.0),
+            material: ColliderMaterial {
+                friction: 0.0,
+                restitution: 1.0,
+                ..Default::default()
+            },
+            flags: ColliderFlags {
+                collision_groups: InteractionGroups::new(
+                    HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
+                    u32::MAX ^ SPAWNABLE_COL_GROUP_MEMBERSHIP,
+                ),
                 ..Default::default()
             },
             ..Default::default()
