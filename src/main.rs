@@ -2,7 +2,9 @@ use bevy::prelude::*;
 use bevy_prototype_debug_lines::*;
 use bevy_rapier2d::{na::Vector2, prelude::*};
 use ron::de::{from_bytes, from_str};
-use std::{env::current_dir, fs::read_to_string};
+use std::{collections::HashMap, env::current_dir, fs::read_to_string};
+
+use crate::spawnable::{MobData, MobType, MobsResource};
 
 pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: u32 = 0b0010;
 pub const HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP: u32 = 0b0100;
@@ -38,9 +40,11 @@ fn main() {
             ))
             .unwrap(),
         )
-        .insert_resource(
-            from_bytes::<spawnable::MobsResource>(include_bytes!("../data/mobs.ron")).unwrap(),
-        )
+        .insert_resource(MobsResource {
+            mobs: from_bytes::<HashMap<MobType, MobData>>(include_bytes!("../data/mobs.ron"))
+                .unwrap(),
+            texture_atlas_handle: HashMap::new(),
+        })
         .insert_resource(
             from_bytes::<spawnable::SpawnerResource>(include_bytes!("../data/spawner.ron"))
                 .unwrap(),
@@ -70,6 +74,9 @@ fn main() {
 
 fn setup_game(
     mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut mobs: ResMut<MobsResource>,
     mut rapier_config: ResMut<RapierConfiguration>,
     game_parameters: Res<game::GameParametersResource>,
 ) {
@@ -79,6 +86,21 @@ fn setup_game(
     // setup rapier
     rapier_config.gravity = Vector2::zeros();
     rapier_config.scale = game_parameters.physics_scale;
+
+    // load assets
+    let mut mob_texture_atlas_dict = HashMap::new();
+    for (mob_type, mob_data) in mobs.mobs.iter() {
+        let texture_handle = asset_server.load(&mob_data.texture_path[..]);
+        let atlas = TextureAtlas::from_grid(
+            texture_handle,
+            mob_data.sprite_dimensions,
+            mob_data.texture_atlas_cols,
+            mob_data.texture_atlas_rows,
+        );
+        mob_texture_atlas_dict.insert(mob_type.clone(), texture_atlases.add(atlas));
+    }
+
+    mobs.texture_atlas_handle = mob_texture_atlas_dict;
 }
 
 fn animate_sprite_system(

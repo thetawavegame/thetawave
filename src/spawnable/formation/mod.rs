@@ -36,28 +36,20 @@ impl Formation {
         &self,
         mobs: &Res<MobsResource>,
         commands: &mut Commands,
-        asset_server: &Res<AssetServer>,
-        texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
-        //texture_atlas_handle_ids: &Res<SpawnableTextureAtlasHandleIds>,
         rapier_config: &Res<RapierConfiguration>,
         game_parameters: &Res<GameParametersResource>,
     ) {
         for formation_spawnable in self.formation_spawnables.iter() {
             // spawn enemy
             match &formation_spawnable.spawnable_type {
-                SpawnableType::Mob(mob_type) => {
-                    let mob_data = &mobs.mobs[mob_type];
-
-                    spawn_mob(
-                        mob_data,
-                        formation_spawnable.position,
-                        commands,
-                        asset_server,
-                        texture_atlases,
-                        rapier_config,
-                        game_parameters,
-                    )
-                }
+                SpawnableType::Mob(mob_type) => spawn_mob(
+                    mob_type,
+                    mobs,
+                    formation_spawnable.position,
+                    commands,
+                    rapier_config,
+                    game_parameters,
+                ),
                 _ => {}
             }
         }
@@ -66,12 +58,10 @@ impl Formation {
 
 pub fn spawn_formation_system(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
     spawner_resource: Res<SpawnerResource>,
     mobs: Res<MobsResource>,
     time: Res<Time>,
     mut timer: ResMut<SpawnerTimer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<GameParametersResource>,
 ) {
@@ -79,8 +69,6 @@ pub fn spawn_formation_system(
         spawner_resource.formation_pool[0].spawn_formation(
             &mobs,
             &mut commands,
-            &asset_server,
-            &mut texture_atlases,
             &rapier_config,
             &game_parameters,
         );
