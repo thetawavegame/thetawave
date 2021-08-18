@@ -1,9 +1,8 @@
-use bevy::{asset::HandleId, prelude::*};
+use bevy::prelude::*;
 use bevy_prototype_debug_lines::*;
 use bevy_rapier2d::{na::Vector2, prelude::*};
 use ron::de::{from_bytes, from_str};
-use spawnable::{EnemyType, MobType, SpawnableType, SpawnerResource};
-use std::{collections::HashMap, env::current_dir, fs::read_to_string};
+use std::{env::current_dir, fs::read_to_string};
 
 pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: u32 = 0b0010;
 pub const HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP: u32 = 0b0100;
@@ -46,14 +45,16 @@ fn main() {
             from_bytes::<spawnable::SpawnerResource>(include_bytes!("../data/spawner.ron"))
                 .unwrap(),
         )
-        .insert_resource(SpawnableTextureAtlasHandleIds::new())
+        //.insert_resource(SpawnableTextureAtlasHandleIds::new())
+        .insert_resource(spawnable::SpawnerTimer(Timer::from_seconds(5.0, true)))
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(DebugLinesPlugin)
         .add_startup_system(setup_game.system().label("init"))
+        //.add_startup_system(spawnable::init_spawner_system.system())
         .add_startup_system(misc::spawn_barrier_system.system().after("init"))
         .add_startup_system(player::spawn_player_system.system().after("init"))
-        .add_startup_system(spawnable::spawn_formation_system.system().after("init"))
+        .add_system(spawnable::spawn_formation_system.system())
         //.add_startup_system(spawnable::spawn_mob_system.system().after("init"))
         .add_system(player::player_movement_system.system())
         .add_system(spawnable::mob_movement_system.system())
@@ -67,16 +68,10 @@ fn main() {
     app.run();
 }
 
-pub type SpawnableTextureAtlasHandleIds = HashMap<spawnable::SpawnableType, HandleId>;
-
 fn setup_game(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
-    mut texture_atlas_handle_ids: ResMut<SpawnableTextureAtlasHandleIds>,
     mut rapier_config: ResMut<RapierConfiguration>,
     game_parameters: Res<game::GameParametersResource>,
-    mobs: Res<spawnable::MobsResource>,
 ) {
     // spawn camera
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
@@ -84,22 +79,6 @@ fn setup_game(
     // setup rapier
     rapier_config.gravity = Vector2::zeros();
     rapier_config.scale = game_parameters.physics_scale;
-
-    // load assets
-    for (_, mob_data) in mobs.mobs.iter() {
-        let texture_handle = asset_server.load(&mob_data.texture_path[..]);
-        let texture_atlas = TextureAtlas::from_grid(
-            texture_handle,
-            mob_data.sprite_dimensions,
-            mob_data.texture_atlas_cols,
-            mob_data.texture_atlas_rows,
-        );
-
-        texture_atlas_handle_ids.insert(
-            SpawnableType::Mob(mob_data.mob_type.clone()),
-            texture_atlases.add(texture_atlas).id,
-        );
-    }
 }
 
 fn animate_sprite_system(

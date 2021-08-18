@@ -1,10 +1,9 @@
-use bevy::prelude::*;
 use serde::Deserialize;
 
 mod formation;
 mod mob;
 
-pub use self::formation::{spawn_formation_system, SpawnerResource};
+pub use self::formation::{spawn_formation_system, SpawnerResource, SpawnerTimer};
 pub use self::mob::{mob_movement_system, spawn_mob, spawn_mob_system, MobsResource};
 
 /// Type that encompasses all spawnable entities

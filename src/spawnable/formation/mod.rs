@@ -1,13 +1,14 @@
 use crate::{
     game::GameParametersResource,
     spawnable::{spawn_mob, SpawnableType},
-    SpawnableTextureAtlasHandleIds,
 };
 use bevy::prelude::*;
 use bevy_rapier2d::physics::RapierConfiguration;
 use serde::Deserialize;
 
 use super::MobsResource;
+
+pub struct SpawnerTimer(pub Timer);
 
 #[derive(Deserialize)]
 pub struct SpawnerResource {
@@ -35,8 +36,9 @@ impl Formation {
         &self,
         mobs: &Res<MobsResource>,
         commands: &mut Commands,
-        texture_atlases: &Res<Assets<TextureAtlas>>,
-        texture_atlas_handle_ids: &Res<SpawnableTextureAtlasHandleIds>,
+        asset_server: &Res<AssetServer>,
+        texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
+        //texture_atlas_handle_ids: &Res<SpawnableTextureAtlasHandleIds>,
         rapier_config: &Res<RapierConfiguration>,
         game_parameters: &Res<GameParametersResource>,
     ) {
@@ -50,8 +52,8 @@ impl Formation {
                         mob_data,
                         formation_spawnable.position,
                         commands,
+                        asset_server,
                         texture_atlases,
-                        texture_atlas_handle_ids,
                         rapier_config,
                         game_parameters,
                     )
@@ -64,19 +66,23 @@ impl Formation {
 
 pub fn spawn_formation_system(
     mut commands: Commands,
+    asset_server: Res<AssetServer>,
     spawner_resource: Res<SpawnerResource>,
     mobs: Res<MobsResource>,
-    texture_atlases: Res<Assets<TextureAtlas>>,
-    texture_atlas_handle_ids: Res<SpawnableTextureAtlasHandleIds>,
+    time: Res<Time>,
+    mut timer: ResMut<SpawnerTimer>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<GameParametersResource>,
 ) {
-    spawner_resource.formation_pool[0].spawn_formation(
-        &mobs,
-        &mut commands,
-        &texture_atlases,
-        &texture_atlas_handle_ids,
-        &rapier_config,
-        &game_parameters,
-    )
+    if timer.0.tick(time.delta()).just_finished() {
+        spawner_resource.formation_pool[0].spawn_formation(
+            &mobs,
+            &mut commands,
+            &asset_server,
+            &mut texture_atlases,
+            &rapier_config,
+            &game_parameters,
+        );
+    }
 }

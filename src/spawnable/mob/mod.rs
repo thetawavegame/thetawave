@@ -3,9 +3,8 @@ use std::collections::HashMap;
 
 use crate::{
     game::GameParametersResource,
-    spawnable::{AllyType, EnemyType, MobType, SpawnableType},
-    SpawnableTextureAtlasHandleIds, HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
-    SPAWNABLE_COL_GROUP_MEMBERSHIP,
+    spawnable::{EnemyType, MobType},
+    HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
@@ -42,8 +41,8 @@ pub struct MobsResource {
 pub fn spawn_mob_system(
     mut commands: Commands,
     mobs: Res<MobsResource>,
-    texture_atlases: Res<Assets<TextureAtlas>>,
-    texture_atlas_handle_ids: Res<SpawnableTextureAtlasHandleIds>,
+    asset_server: Res<AssetServer>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<GameParametersResource>,
 ) {
@@ -53,8 +52,8 @@ pub fn spawn_mob_system(
         mob_data,
         Vec2::new(0.0, 20.0),
         &mut commands,
-        &texture_atlases,
-        &texture_atlas_handle_ids,
+        &asset_server,
+        &mut texture_atlases,
         &rapier_config,
         &game_parameters,
     );
@@ -64,8 +63,8 @@ pub fn spawn_mob(
     mob_data: &MobData,
     position: Vec2,
     commands: &mut Commands,
-    texture_atlases: &Res<Assets<TextureAtlas>>,
-    texture_atlas_handle_ids: &Res<SpawnableTextureAtlasHandleIds>,
+    asset_server: &Res<AssetServer>,
+    texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
     rapier_config: &Res<RapierConfiguration>,
     game_parameters: &Res<GameParametersResource>,
 ) {
@@ -75,8 +74,16 @@ pub fn spawn_mob(
     let collider_size_hy =
         mob_data.collider_dimensions.y * game_parameters.sprite_scale / rapier_config.scale / 2.0;
 
-    let texture_atlas_handle = texture_atlases
-        .get_handle(texture_atlas_handle_ids[&SpawnableType::Mob(mob_data.mob_type.clone())]);
+    let texture_atlas = {
+        let texture_handle = asset_server.load(&mob_data.texture_path[..]);
+        let atlas = TextureAtlas::from_grid(
+            texture_handle,
+            mob_data.sprite_dimensions,
+            mob_data.texture_atlas_cols,
+            mob_data.texture_atlas_rows,
+        );
+        texture_atlases.add(atlas)
+    };
 
     let transform = Transform::from_scale(Vec3::new(
         game_parameters.sprite_scale,
@@ -87,7 +94,7 @@ pub fn spawn_mob(
     commands
         .spawn()
         .insert_bundle(SpriteSheetBundle {
-            texture_atlas: texture_atlas_handle,
+            texture_atlas,
             transform,
             ..Default::default()
         })

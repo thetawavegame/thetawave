@@ -4,15 +4,15 @@
 			formation_spawnables: [
 				(
 					spawnable_type: Mob(Enemy(MissileLauncher)),
-					position: (0.0, 20.0),
+					position: (0.0, 70.0),
 				),
 				(
 					spawnable_type: Mob(Enemy(Pawn)),
-					position: (20.0, 30.0),
+					position: (20.0, 80.0),
 				),
 				(
 					spawnable_type: Mob(Enemy(Pawn)),
-					position: (-20.0, 30.0),
+					position: (-20.0, 80.0),
 				),
 			],
 			weight: 1.0,
