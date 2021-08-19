@@ -9,3 +9,4 @@ bevy_rapier2d = {version = "0.10.2", features = ["simd-stable", "render"] }
 bevy_prototype_debug_lines = { git = "https://github.com/Toqozz/bevy_debug_lines"}
 serde = "1.0.127"
 ron = "0.6.4"
+rand = "0.8.4"

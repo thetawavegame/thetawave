@@ -4,7 +4,9 @@ mod formation;
 mod mob;
 
 pub use self::formation::{spawn_formation_system, SpawnerResource, SpawnerTimer};
-pub use self::mob::{mob_movement_system, spawn_mob, spawn_mob_system, MobData, MobsResource};
+pub use self::mob::{
+    mob_movement_system, spawn_mob, spawn_mob_system, MobComponent, MobData, MobsResource,
+};
 
 /// Type that encompasses all spawnable entities
 // TODO: add projectiles (blast)

@@ -16,7 +16,25 @@
 				),
 			],
 			weight: 1.0,
-			period: 5.0,
-		)
+			period: 7.0,
+		),
+		(
+			formation_spawnables: [
+				(
+					spawnable_type: Mob(Enemy(Drone)),
+					position: (0.0, 70.0),
+				),
+				(
+					spawnable_type: Mob(Ally(Hauler)),
+					position: (20.0, 80.0),
+				),
+				(
+					spawnable_type: Mob(Ally(Hauler)),
+					position: (-20.0, 80.0),
+				),
+			],
+			weight: 1.0,
+			period: 7.0,
+		),
 	]
 )

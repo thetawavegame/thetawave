@@ -57,13 +57,12 @@ pub fn spawn_mob_system(
 }
 
 pub fn spawn_mob(
-    //mob_data: &MobData,
     mob_type: &MobType,
-    mob_resource: &Res<MobsResource>,
+    mob_resource: &MobsResource,
     position: Vec2,
     commands: &mut Commands,
-    rapier_config: &Res<RapierConfiguration>,
-    game_parameters: &Res<GameParametersResource>,
+    rapier_config: &RapierConfiguration,
+    game_parameters: &GameParametersResource,
 ) {
     let mob_data = &mob_resource.mobs[mob_type];
     let texture_atlas_handle = mob_resource.texture_atlas_handle[mob_type].clone_weak();

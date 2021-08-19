@@ -58,11 +58,12 @@ fn main() {
         //.add_startup_system(spawnable::init_spawner_system.system())
         .add_startup_system(misc::spawn_barrier_system.system().after("init"))
         .add_startup_system(player::spawn_player_system.system().after("init"))
-        .add_system(spawnable::spawn_formation_system.system())
+        .add_system_to_stage(CoreStage::First, spawnable::spawn_formation_system.system())
         //.add_startup_system(spawnable::spawn_mob_system.system().after("init"))
         .add_system(player::player_movement_system.system())
         .add_system(spawnable::mob_movement_system.system())
         .add_system(options::toggle_fullscreen_system.system())
+        .add_system(misc::despawn_spawnables_system.system())
         .add_system(animate_sprite_system.system());
 
     if cfg!(debug_assertions) {

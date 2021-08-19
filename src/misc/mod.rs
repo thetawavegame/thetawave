@@ -2,4 +2,4 @@
 
 mod spawn;
 
-pub use self::spawn::spawn_barrier_system;
+pub use self::spawn::{despawn_spawnables_system, spawn_barrier_system};
