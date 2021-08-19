@@ -10,9 +10,9 @@ pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: u32 = 0b0010;
 pub const HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP: u32 = 0b0100;
 pub const VERTICAL_BARRIER_COL_GROUP_MEMBERSHIP: u32 = 0b1000;
 
+mod arena;
 mod debug;
 mod game;
-mod misc;
 mod options;
 mod player;
 mod spawnable;
@@ -56,14 +56,15 @@ fn main() {
         .add_plugin(DebugLinesPlugin)
         .add_startup_system(setup_game.system().label("init"))
         //.add_startup_system(spawnable::init_spawner_system.system())
-        .add_startup_system(misc::spawn_barrier_system.system().after("init"))
+        .add_startup_system(arena::spawn_barriers_system.system().after("init"))
+        .add_startup_system(arena::spawn_despawn_gates_system.system().after("init"))
         .add_startup_system(player::spawn_player_system.system().after("init"))
         .add_system_to_stage(CoreStage::First, spawnable::spawn_formation_system.system())
         //.add_startup_system(spawnable::spawn_mob_system.system().after("init"))
         .add_system(player::player_movement_system.system())
         .add_system(spawnable::mob_movement_system.system())
         .add_system(options::toggle_fullscreen_system.system())
-        .add_system(misc::despawn_spawnables_system.system())
+        .add_system(arena::despawn_gates_system.system())
         .add_system(animate_sprite_system.system());
 
     if cfg!(debug_assertions) {
