@@ -1,9 +1,10 @@
-use bevy::prelude::*;
+use bevy::{pbr::AmbientLight, prelude::*, render::camera::PerspectiveProjection};
 use bevy_prototype_debug_lines::*;
 use bevy_rapier2d::{na::Vector2, prelude::*};
 use ron::de::{from_bytes, from_str};
 use std::{env::current_dir, fs::read_to_string};
 
+mod background;
 mod debug;
 mod game;
 mod misc;
@@ -23,6 +24,11 @@ fn main() {
     let mut app = App::build();
 
     app.insert_resource(WindowDescriptor::from(display_config))
+        .insert_resource(ClearColor(Color::BLACK))
+        .insert_resource(AmbientLight {
+            color: Color::WHITE,
+            brightness: 0.1,
+        })
         .insert_resource(
             from_bytes::<player::CharactersResource>(include_bytes!("../data/characters.ron"))
                 .unwrap(),
@@ -33,14 +39,22 @@ fn main() {
             ))
             .unwrap(),
         )
+        .insert_resource(
+            from_bytes::<background::BackgroundsResource>(include_bytes!(
+                "../data/backgrounds.ron"
+            ))
+            .unwrap(),
+        )
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(DebugLinesPlugin)
         .add_startup_system(setup_game.system().label("init"))
+        .add_startup_system(background::create_background_system.system().after("init"))
         .add_startup_system(misc::spawn_barrier_system.system().after("init"))
         .add_startup_system(player::spawn_player_system.system().after("init"))
         .add_system(player::player_movement_system.system())
-        .add_system(options::toggle_fullscreen_system.system());
+        .add_system(options::toggle_fullscreen_system.system())
+        .add_system(background::rotate_planet_system.system());
 
     if cfg!(debug_assertions) {
         app.add_system(debug::collider_debug_lines_system.system());
@@ -54,8 +68,15 @@ fn setup_game(
     mut rapier_config: ResMut<RapierConfiguration>,
     game_parameters: Res<game::GameParametersResource>,
 ) {
-    // spawn camera
-    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+    // setup camera
+    commands.spawn_bundle(PerspectiveCameraBundle {
+        transform: Transform::from_xyz(0.0, 0.0, 950.0).looking_at(Vec3::ZERO, Vec3::Y),
+        perspective_projection: PerspectiveProjection {
+            far: 10000.0,
+            ..Default::default()
+        },
+        ..Default::default()
+    });
 
     // setup rapier
     rapier_config.gravity = Vector2::zeros();

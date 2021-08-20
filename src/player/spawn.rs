@@ -34,7 +34,7 @@ pub fn spawn_player_system(
             transform: Transform::from_scale(Vec3::new(
                 game_parameters.sprite_scale,
                 game_parameters.sprite_scale,
-                1.0,
+                0.0,
             )),
             ..Default::default()
         })
