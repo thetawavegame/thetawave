@@ -55,7 +55,6 @@ fn main() {
             from_bytes::<spawnable::SpawnerResource>(include_bytes!("../data/spawner.ron"))
                 .unwrap(),
         )
-        //.insert_resource(SpawnableTextureAtlasHandleIds::new())
         .insert_resource(spawnable::SpawnerTimer(Timer::from_seconds(5.0, true)))
         .insert_resource(
             from_bytes::<background::BackgroundsResource>(include_bytes!(
@@ -67,7 +66,6 @@ fn main() {
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(DebugLinesPlugin)
         .add_startup_system(setup_game.system().label("init"))
-        //.add_startup_system(spawnable::init_spawner_system.system())
         .add_startup_system(arena::spawn_barriers_system.system().after("init"))
         .add_startup_system(arena::spawn_despawn_gates_system.system().after("init"))
         .add_startup_system(background::create_background_system.system().after("init"))
@@ -78,7 +76,6 @@ fn main() {
         .add_system(options::toggle_fullscreen_system.system())
         .add_system(arena::despawn_gates_system.system())
         .add_system(animate_sprite_system.system())
-        .add_system(options::toggle_fullscreen_system.system())
         .add_system(background::rotate_planet_system.system());
 
     if cfg!(debug_assertions) {

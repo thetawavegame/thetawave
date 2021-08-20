@@ -31,7 +31,7 @@ impl From<DisplayConfig> for WindowDescriptor {
 /// Toggles the window between full screen and windowed on key press
 pub fn toggle_fullscreen_system(keyboard_input: Res<Input<KeyCode>>, mut windows: ResMut<Windows>) {
     let window = windows.get_primary_mut().unwrap();
-    let fullscreen_input = keyboard_input.pressed(KeyCode::F);
+    let fullscreen_input = keyboard_input.just_released(KeyCode::F);
 
     if fullscreen_input {
         window.set_mode(match window.mode() {
