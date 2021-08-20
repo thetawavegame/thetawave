@@ -4,6 +4,7 @@ use crate::{
 };
 use bevy::prelude::*;
 use bevy_rapier2d::physics::RapierConfiguration;
+use core::time::Duration;
 use rand::{thread_rng, Rng};
 use serde::Deserialize;
 
@@ -81,6 +82,10 @@ pub fn spawn_formation_system(
             &rapier_config,
             &game_parameters,
         );
+
+        timer.0.set_duration(Duration::from_secs_f32(
+            spawner_resource.formation_pool[random_idx].period,
+        ));
     }
 }
 

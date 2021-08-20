@@ -1,12 +1,23 @@
+use crate::game::GameParametersResource;
+use bevy::prelude::*;
+use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 
 mod formation;
 mod mob;
 
 pub use self::formation::{spawn_formation_system, SpawnerResource, SpawnerTimer};
-pub use self::mob::{
-    mob_movement_system, spawn_mob, spawn_mob_system, MobComponent, MobData, MobsResource,
-};
+pub use self::mob::{spawn_mob, MobComponent, MobData, MobsResource};
+
+pub struct SpawnableComponent {
+    pub spawnable_type: SpawnableType,
+    /// Acceleration of the player
+    pub acceleration: Vec2,
+    /// Deceleration of the player
+    pub deceleration: Vec2,
+    /// Maximum speed of the player
+    pub speed: Vec2,
+}
 
 /// Type that encompasses all spawnable entities
 // TODO: add projectiles (blast)
@@ -94,4 +105,49 @@ pub enum EffectType {
     CriticalBlastExplosion,
     MobExplosion,
     Giblets(MobType),
+}
+pub fn spawnable_movement_system(
+    rapier_config: Res<RapierConfiguration>,
+    game_parameters: Res<GameParametersResource>,
+    mut spawnable_query: Query<(&SpawnableComponent, &mut RigidBodyVelocity)>,
+) {
+    for (spawnable_component, mut rb_vel) in spawnable_query.iter_mut() {
+        match spawnable_component.spawnable_type {
+            SpawnableType::Mob(MobType::Ally(AllyType::Hauler))
+            | SpawnableType::Mob(MobType::Enemy(EnemyType::Drone))
+            | SpawnableType::Mob(MobType::Enemy(EnemyType::Pawn))
+            | SpawnableType::Mob(MobType::Enemy(EnemyType::MissileLauncher)) => {
+                move_down(
+                    &rapier_config,
+                    &game_parameters,
+                    &spawnable_component,
+                    &mut rb_vel,
+                );
+            }
+            _ => {}
+        }
+    }
+}
+
+fn move_down(
+    rapier_config: &RapierConfiguration,
+    game_parameters: &GameParametersResource,
+    spawnable_component: &SpawnableComponent,
+    rb_vel: &mut RigidBodyVelocity,
+) {
+    //move down
+    if rb_vel.linvel.y > spawnable_component.speed.y * rapier_config.scale * -1.0 {
+        rb_vel.linvel.y -= spawnable_component.acceleration.y * rapier_config.scale;
+    } else {
+        rb_vel.linvel.y += spawnable_component.deceleration.y * rapier_config.scale;
+    }
+
+    // decelerate in x direction
+    if rb_vel.linvel.x > game_parameters.stop_threshold {
+        rb_vel.linvel.x -= spawnable_component.deceleration.x;
+    } else if rb_vel.linvel.x < game_parameters.stop_threshold * -1.0 {
+        rb_vel.linvel.x += spawnable_component.deceleration.x;
+    } else {
+        rb_vel.linvel.x = 0.0;
+    }
 }

@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use crate::{
     game::GameParametersResource,
-    spawnable::{EnemyType, MobType},
+    spawnable::{MobType, SpawnableComponent, SpawnableType},
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 use bevy::prelude::*;
@@ -12,12 +12,6 @@ use bevy_rapier2d::prelude::*;
 pub struct MobComponent {
     /// Type of mob
     pub mob_type: MobType,
-    /// Acceleration of the player
-    pub acceleration: Vec2,
-    /// Deceleration of the player
-    pub deceleration: Vec2,
-    /// Maximum speed of the player
-    pub speed: Vec2,
 }
 
 #[derive(Deserialize)]
@@ -36,24 +30,6 @@ pub struct MobData {
 pub struct MobsResource {
     pub mobs: HashMap<MobType, MobData>,
     pub texture_atlas_handle: HashMap<MobType, Handle<TextureAtlas>>,
-}
-
-pub fn spawn_mob_system(
-    mut commands: Commands,
-    mobs: Res<MobsResource>,
-    rapier_config: Res<RapierConfiguration>,
-    game_parameters: Res<GameParametersResource>,
-) {
-    //let mob_data = &mobs.mobs[&MobType::Enemy(EnemyType::MissileLauncher)];
-
-    spawn_mob(
-        &MobType::Enemy(EnemyType::MissileLauncher),
-        &mobs,
-        Vec2::new(0.0, 20.0),
-        &mut commands,
-        &rapier_config,
-        &game_parameters,
-    );
 }
 
 pub fn spawn_mob(
@@ -112,33 +88,12 @@ pub fn spawn_mob(
         })
         .insert(ColliderPositionSync::Discrete)
         .insert(MobComponent {
-            mob_type: MobType::Enemy(EnemyType::Drone),
+            mob_type: mob_data.mob_type.clone(),
+        })
+        .insert(SpawnableComponent {
+            spawnable_type: SpawnableType::Mob(mob_data.mob_type.clone()),
             acceleration: mob_data.acceleration,
             deceleration: mob_data.deceleration,
             speed: mob_data.speed,
         });
-}
-
-pub fn mob_movement_system(
-    rapier_config: Res<RapierConfiguration>,
-    game_parameters: Res<GameParametersResource>,
-    mut mob_query: Query<(&MobComponent, &mut RigidBodyVelocity)>,
-) {
-    for (enemy, mut rb_vels) in mob_query.iter_mut() {
-        //move down
-        if rb_vels.linvel.y > enemy.speed.y * rapier_config.scale * -1.0 {
-            rb_vels.linvel.y -= enemy.acceleration.y * rapier_config.scale;
-        } else {
-            rb_vels.linvel.y += enemy.deceleration.y * rapier_config.scale;
-        }
-
-        // decelerate in x direction
-        if rb_vels.linvel.x > game_parameters.stop_threshold {
-            rb_vels.linvel.x -= enemy.deceleration.x;
-        } else if rb_vels.linvel.x < game_parameters.stop_threshold * -1.0 {
-            rb_vels.linvel.x += enemy.deceleration.x;
-        } else {
-            rb_vels.linvel.x = 0.0;
-        }
-    }
 }
