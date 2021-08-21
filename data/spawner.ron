@@ -36,5 +36,55 @@
 			weight: 1.0,
 			period: 6.0,
 		),
+		(
+			formation_spawnables: [
+				(
+					spawnable_type: Mob(Enemy(Missile)),
+					position: (0.0, 50.0),
+				),
+				(
+					spawnable_type: Mob(Enemy(Missile)),
+					position: (20.0, 60.0),
+				),
+				(
+					spawnable_type: Mob(Enemy(Missile)),
+					position: (-20.0, 60.0),
+				),
+			],
+			weight: 1.0,
+			period: 3.0,
+		),
+		(
+			formation_spawnables: [
+				(
+					spawnable_type: Mob(Enemy(StraferRight)),
+					position: (0.0, 50.0),
+				),
+				(
+					spawnable_type: Mob(Enemy(StraferLeft)),
+					position: (-20.0, 60.0),
+				),
+			],
+			weight: 1.0,
+			period: 8.0,
+		),
+		(
+			formation_spawnables: [
+				(
+					spawnable_type: Mob(Neutral(MoneyAsteroid)),
+					position: (0.0, 50.0),
+				),
+				(
+					spawnable_type: Mob(Neutral(MoneyAsteroid)),
+					position: (20.0, 60.0),
+				),
+				(
+					spawnable_type: Mob(Neutral(MoneyAsteroid)),
+					position: (-20.0, 60.0),
+				),
+			],
+			weight: 1.0,
+			period: 4.0,
+		),
 	]
 )

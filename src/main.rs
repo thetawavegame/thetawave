@@ -72,8 +72,18 @@ fn main() {
         .add_startup_system(player::spawn_player_system.system().after("init"))
         .add_system_to_stage(CoreStage::First, spawnable::spawn_formation_system.system())
         .add_system(player::player_movement_system.system())
-        .add_system(spawnable::spawnable_movement_system.system())
+        .add_system(
+            spawnable::spawnable_set_behavior_system
+                .system()
+                .label("set_behavior"),
+        )
+        .add_system(
+            spawnable::spawnable_execute_behavior_system
+                .system()
+                .after("set_behavior"),
+        )
         .add_system(options::toggle_fullscreen_system.system())
+        .add_system(options::toggle_zoom_system.system())
         .add_system(arena::despawn_gates_system.system())
         .add_system(animate_sprite_system.system())
         .add_system(background::rotate_planet_system.system());
@@ -95,7 +105,8 @@ fn setup_game(
 ) {
     // setup camera
     commands.spawn_bundle(PerspectiveCameraBundle {
-        transform: Transform::from_xyz(0.0, 0.0, 950.0).looking_at(Vec3::ZERO, Vec3::Y),
+        transform: Transform::from_xyz(0.0, 0.0, game_parameters.camera_z)
+            .looking_at(Vec3::ZERO, Vec3::Y),
         perspective_projection: PerspectiveProjection {
             far: 10000.0,
             ..Default::default()

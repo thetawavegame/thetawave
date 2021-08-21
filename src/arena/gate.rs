@@ -1,4 +1,4 @@
-use crate::spawnable::MobComponent;
+use crate::spawnable::SpawnableComponent;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
@@ -30,7 +30,7 @@ pub fn despawn_gates_system(
     mut commands: Commands,
     mut intersection_events: EventReader<IntersectionEvent>,
     despawn_gate_query: Query<Entity, With<DespawnGateComponent>>,
-    mob_query: Query<Entity, With<MobComponent>>,
+    mob_query: Query<Entity, With<SpawnableComponent>>,
 ) {
     for despawn_gate_entity in despawn_gate_query.iter() {
         for intersection_event in intersection_events.iter() {

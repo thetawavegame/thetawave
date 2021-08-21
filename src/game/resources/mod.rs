@@ -10,4 +10,6 @@ pub struct GameParametersResource {
     pub sprite_scale: f32,
     /// Threshold to set velocity to zero
     pub stop_threshold: f32,
+    pub camera_z: f32,
+    pub camera_zoom_out_z: f32,
 }

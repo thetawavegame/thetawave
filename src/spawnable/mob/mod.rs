@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use crate::{
     game::GameParametersResource,
-    spawnable::{MobType, SpawnableComponent, SpawnableType},
+    spawnable::{BehaviorType, MobType, SpawnableComponent, SpawnableType},
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 use bevy::prelude::*;
@@ -17,6 +17,7 @@ pub struct MobComponent {
 #[derive(Deserialize)]
 pub struct MobData {
     pub mob_type: MobType,
+    pub behaviors: Vec<BehaviorType>,
     pub acceleration: Vec2,
     pub deceleration: Vec2,
     pub speed: Vec2,
@@ -82,6 +83,7 @@ pub fn spawn_mob(
                     SPAWNABLE_COL_GROUP_MEMBERSHIP,
                     u32::MAX ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
                 ),
+                active_events: ActiveEvents::CONTACT_EVENTS,
                 ..Default::default()
             },
             ..Default::default()
@@ -95,5 +97,6 @@ pub fn spawn_mob(
             acceleration: mob_data.acceleration,
             deceleration: mob_data.deceleration,
             speed: mob_data.speed,
+            behaviors: mob_data.behaviors.clone(),
         });
 }
