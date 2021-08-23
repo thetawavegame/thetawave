@@ -1,4 +1,5 @@
 use bevy::{pbr::AmbientLight, prelude::*, render::camera::PerspectiveProjection};
+use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_prototype_debug_lines::*;
 use bevy_rapier2d::{na::Vector2, prelude::*};
 use ron::de::{from_bytes, from_str};
@@ -73,14 +74,20 @@ fn main() {
         .add_system_to_stage(CoreStage::First, spawnable::spawn_formation_system.system())
         .add_system(player::player_movement_system.system())
         .add_system(
-            spawnable::spawnable_set_behavior_system
+            spawnable::spawnable_set_target_behavior_system
                 .system()
-                .label("set_behavior"),
+                .label("set_target_behavior"),
+        )
+        .add_system(
+            spawnable::spawnable_set_contact_behavior_system
+                .system()
+                .label("set_contact_behavior"),
         )
         .add_system(
             spawnable::spawnable_execute_behavior_system
                 .system()
-                .after("set_behavior"),
+                .after("set_contact_behavior")
+                .after("set_target_behavior"),
         )
         .add_system(options::toggle_fullscreen_system.system())
         .add_system(options::toggle_zoom_system.system())
@@ -89,7 +96,8 @@ fn main() {
         .add_system(background::rotate_planet_system.system());
 
     if cfg!(debug_assertions) {
-        app.add_system(debug::collider_debug_lines_system.system());
+        app.add_plugin(WorldInspectorPlugin::new())
+            .add_system(debug::collider_debug_lines_system.system());
     }
 
     app.run();

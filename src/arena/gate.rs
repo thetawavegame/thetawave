@@ -23,7 +23,7 @@ fn spawn_despawn_gate(commands: &mut Commands, position: Vec2, width: f32, heigh
         })
         .insert(ColliderPositionSync::Discrete)
         .insert(DespawnGateComponent)
-        .insert(ColliderDebugRender::with_id(0));
+        .insert(Name::new("Despawn Gate"));
 }
 
 pub fn despawn_gates_system(

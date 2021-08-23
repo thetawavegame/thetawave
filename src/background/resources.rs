@@ -56,20 +56,23 @@ impl PlanetData {
             })
             .insert(PlanetComponent {
                 rotation_speed: self.rotation_speed,
-            });
+            })
+            .insert(Name::new("Planet"));
 
         // spawn light entity
         if let Some(light_data) = &self.light {
-            commands.spawn_bundle(LightBundle {
-                light: Light {
-                    color: light_data.color,
-                    intensity: light_data.intensity,
-                    range: light_data.range,
+            commands
+                .spawn_bundle(LightBundle {
+                    light: Light {
+                        color: light_data.color,
+                        intensity: light_data.intensity,
+                        range: light_data.range,
+                        ..Default::default()
+                    },
+                    transform,
                     ..Default::default()
-                },
-                transform,
-                ..Default::default()
-            });
+                })
+                .insert(Name::new("Planet Light"));
         }
     }
 }

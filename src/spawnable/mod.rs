@@ -1,7 +1,9 @@
 use crate::game::GameParametersResource;
+use crate::player::PlayerComponent;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
+use strum_macros::Display;
 
 mod formation;
 mod mob;
@@ -17,6 +19,9 @@ pub struct SpawnableComponent {
     pub deceleration: Vec2,
     /// Maximum speed of the player
     pub speed: Vec2,
+    pub angular_acceleration: f32,
+    pub angular_deceleration: f32,
+    pub angular_speed: f32,
     pub behaviors: Vec<BehaviorType>,
 }
 
@@ -34,11 +39,12 @@ pub enum BehaviorDirection {
     Left,
     Horizontal,
     Vertical,
+    RotateToTarget(Option<Vec2>),
 }
 
 /// Type that encompasses all spawnable entities
 // TODO: add projectiles (blast)
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum SpawnableType {
     Consumable(ConsumableType),
     Item(ItemType),
@@ -47,7 +53,7 @@ pub enum SpawnableType {
 }
 
 /// Type that encompasses all spawnable mobs
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum MobType {
     Enemy(EnemyType),
     Ally(AllyType),
@@ -55,7 +61,7 @@ pub enum MobType {
 }
 
 /// Type that encompasses all spawnable enemy mobs
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum EnemyType {
     Pawn,
     Drone,
@@ -72,19 +78,19 @@ pub enum EnemyType {
 }
 
 /// Type that encompasses all spawnable ally mobs
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum AllyType {
     Hauler,
 }
 
 /// Type that encompasses all spawnable neutral mobs
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum NeutralType {
     MoneyAsteroid,
 }
 
 /// Type that encompasses all spawnable consumables
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum ConsumableType {
     DefenseWrench,
     Money1,
@@ -94,7 +100,7 @@ pub enum ConsumableType {
 }
 
 /// Type that encompasses all spawnable items
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum ItemType {
     SteelBarrel,
     PlasmaBlasts,
@@ -114,7 +120,7 @@ pub enum ItemType {
 }
 
 /// Type that encompasses all spawnable effects
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum EffectType {
     AllyBlastExplosion,
     EnemyBlastExplosion,
@@ -126,9 +132,9 @@ pub enum EffectType {
 pub fn spawnable_execute_behavior_system(
     rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<GameParametersResource>,
-    mut spawnable_query: Query<(&SpawnableComponent, &mut RigidBodyVelocity)>,
+    mut spawnable_query: Query<(&SpawnableComponent, &mut RigidBodyVelocity, &Transform)>,
 ) {
-    for (spawnable_component, mut rb_vel) in spawnable_query.iter_mut() {
+    for (spawnable_component, mut rb_vel, spawnable_transform) in spawnable_query.iter_mut() {
         for behavior in spawnable_component.behaviors.iter() {
             match behavior {
                 BehaviorType::Move(behavior_direction) => match behavior_direction {
@@ -140,6 +146,14 @@ pub fn spawnable_execute_behavior_system(
                     }
                     BehaviorDirection::Left => {
                         move_left(&rapier_config, &spawnable_component, &mut rb_vel);
+                    }
+                    BehaviorDirection::RotateToTarget(target_position) => {
+                        rotate_to_target(
+                            &spawnable_transform,
+                            target_position.unwrap(),
+                            &spawnable_component,
+                            &mut rb_vel,
+                        );
                     }
                     _ => {}
                 },
@@ -159,15 +173,70 @@ pub fn spawnable_execute_behavior_system(
     }
 }
 
-pub fn spawnable_set_behavior_system(
-    mut contact_events: EventReader<ContactEvent>,
-    mut mob_query: Query<(Entity, &mut SpawnableComponent)>,
+pub fn spawnable_set_target_behavior_system(
+    player_query: Query<&Transform, With<PlayerComponent>>,
+    mut spawnable_query: Query<(&mut SpawnableComponent, &Transform)>,
 ) {
+    for (mut spawnable_component, _) in spawnable_query.iter_mut() {
+        for behavior in spawnable_component.behaviors.iter_mut() {
+            if let BehaviorType::Move(BehaviorDirection::RotateToTarget(_)) = behavior {
+                *behavior = BehaviorType::Move(BehaviorDirection::RotateToTarget(None));
+            }
+        }
+    }
+
+    for player_transform in player_query.iter() {
+        for (mut spawnable_component, spawnable_transform) in spawnable_query.iter_mut() {
+            match &spawnable_component.spawnable_type {
+                SpawnableType::Mob(mob_type) => match mob_type {
+                    MobType::Enemy(enemy_type) => match enemy_type {
+                        EnemyType::Missile => {
+                            // set target to closest player
+                            for behavior in spawnable_component.behaviors.iter_mut() {
+                                *behavior = match behavior {
+                                    BehaviorType::Move(BehaviorDirection::RotateToTarget(
+                                        target,
+                                    )) => {
+                                        let spawnable_position_vec2: Vec2 =
+                                            spawnable_transform.translation.into();
+                                        let player_position_vec2: Vec2 =
+                                            player_transform.translation.into();
+                                        if target.is_none()
+                                            || spawnable_position_vec2
+                                                .distance(player_position_vec2)
+                                                < spawnable_position_vec2.distance(target.unwrap())
+                                        {
+                                            BehaviorType::Move(BehaviorDirection::RotateToTarget(
+                                                Some(player_position_vec2),
+                                            ))
+                                        } else {
+                                            behavior.clone()
+                                        }
+                                    }
+                                    _ => behavior.clone(),
+                                }
+                            }
+                        }
+                        _ => {}
+                    },
+                    _ => {}
+                },
+                _ => {}
+            }
+        }
+    }
+}
+
+pub fn spawnable_set_contact_behavior_system(
+    mut contact_events: EventReader<ContactEvent>,
+    mut spawnable_query: Query<(Entity, &mut SpawnableComponent)>,
+) {
+    // set behaviors based on contact events
     for contact_event in contact_events.iter() {
         if let ContactEvent::Started(h1, h2) = contact_event {
             let collider1_entity = h1.entity();
             let collider2_entity = h2.entity();
-            for (spawnable_entity, mut spawnable_component) in mob_query.iter_mut() {
+            for (spawnable_entity, mut spawnable_component) in spawnable_query.iter_mut() {
                 let spawnable_entity = if spawnable_entity == collider1_entity {
                     Some(collider1_entity)
                 } else if spawnable_entity == collider2_entity {
@@ -198,55 +267,46 @@ pub fn spawnable_set_behavior_system(
                         },
                         _ => {}
                     }
-                    /*
-                    match mob_component.mob_type {
-                        MobType::Enemy(EnemyType::StraferRight)
-                        | MobType::Enemy(EnemyType::StraferLeft) => {
-                            for behavior in spawnable_component.behaviors.iter_mut() {
-                                *behavior = match behavior {
-                                    BehaviorType::Move(BehaviorDirection::Right) => {
-                                        BehaviorType::Move(BehaviorDirection::Left)
-                                    }
-                                    BehaviorType::Move(BehaviorDirection::Left) => {
-                                        BehaviorType::Move(BehaviorDirection::Right)
-                                    }
-                                    _ => behavior.clone(),
-                                }
-                            }
-                        }
-                        _ => {}
-                    }
-                    */
                 }
-
-                /*
-                        match &spawnable_component.spawnable_type {
-                            SpawnableType::Mob(mob_type) => match mob_type {
-                                MobType::Enemy(enemy_type) => match enemy_type {
-                                    EnemyType::StraferRight | EnemyType::StraferLeft => {
-                                        println!("strafer behavior");
-                                        for behavior in spawnable_component.behaviors.iter_mut() {
-                                            *behavior = match behavior {
-                                                BehaviorType::Move(BehaviorDirection::Right) => {
-                                                    BehaviorType::Move(BehaviorDirection::Left)
-                                                }
-                                                BehaviorType::Move(BehaviorDirection::Left) => {
-                                                    BehaviorType::Move(BehaviorDirection::Right)
-                                                }
-                                                _ => behavior.clone(),
-                                            }
-                                        }
-                                    }
-                                    _ => {}
-                                },
-                                _ => {}
-                            },
-                            _ => {}
-                        }
-                */
             }
         }
-        //println!("{:?}", contact_event);
+    }
+}
+
+pub fn signed_modulo(a: f32, n: f32) -> f32 {
+    a - (a / n).floor() * n
+}
+
+fn rotate_to_target(
+    transform: &Transform,
+    target_position: Vec2,
+    spawnable_component: &SpawnableComponent,
+    rb_vel: &mut RigidBodyVelocity,
+) {
+    let mut target_angle = ((transform.translation.y - target_position.y)
+        .atan2(transform.translation.x - target_position.x))
+    .to_degrees()
+        + 90.0;
+
+    if target_angle < 0.0 {
+        target_angle += 360.0;
+    }
+
+    let current_angle = (transform.rotation.to_axis_angle().1.to_degrees()
+        * transform.rotation.to_axis_angle().0.z)
+        + 180.0;
+
+    let mut smallest_angle = signed_modulo(target_angle - current_angle, 360.0);
+    if smallest_angle > 180.0 {
+        smallest_angle = -(360.0 - smallest_angle);
+    }
+
+    if smallest_angle < 0.0 {
+        if rb_vel.angvel > -spawnable_component.angular_speed {
+            rb_vel.angvel -= spawnable_component.angular_acceleration;
+        }
+    } else if rb_vel.angvel < spawnable_component.angular_speed {
+        rb_vel.angvel += spawnable_component.angular_acceleration;
     }
 }
 

@@ -1,14 +1,11 @@
-use crate::{
-    spawnable::MobComponent, HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
-    SPAWNABLE_COL_GROUP_MEMBERSHIP,
-};
+use crate::{HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 /// Spawns arena barriers
 pub fn spawn_barriers_system(mut commands: Commands) {
-    spawn_enemy_barrier(&mut commands, Vec2::new(0.0, 38.0), 96.0, 4.0);
-    spawn_enemy_barrier(&mut commands, Vec2::new(0.0, -38.0), 96.0, 4.0);
+    spawn_mobs_pass_barrier(&mut commands, Vec2::new(0.0, 38.0), 96.0, 4.0);
+    spawn_mobs_pass_barrier(&mut commands, Vec2::new(0.0, -38.0), 96.0, 4.0);
     spawn_barrier(&mut commands, Vec2::new(50.0, 0.0), 4.0, 72.0);
     spawn_barrier(&mut commands, Vec2::new(-50.0, 0.0), 4.0, 72.0);
 }
@@ -32,10 +29,11 @@ fn spawn_barrier(commands: &mut Commands, position: Vec2, width: f32, height: f3
             ..Default::default()
         })
         .insert(RigidBodyPositionSync::Discrete)
-        .insert(ColliderDebugRender::with_id(0));
+        .insert(ColliderDebugRender::with_id(0))
+        .insert(Name::new("Barrier"));
 }
 
-fn spawn_enemy_barrier(commands: &mut Commands, position: Vec2, width: f32, height: f32) {
+fn spawn_mobs_pass_barrier(commands: &mut Commands, position: Vec2, width: f32, height: f32) {
     commands
         .spawn()
         .insert_bundle(RigidBodyBundle {
@@ -60,5 +58,5 @@ fn spawn_enemy_barrier(commands: &mut Commands, position: Vec2, width: f32, heig
             ..Default::default()
         })
         .insert(RigidBodyPositionSync::Discrete)
-        .insert(ColliderDebugRender::with_id(0));
+        .insert(Name::new("Mobs-Pass Barrier"));
 }

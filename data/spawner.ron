@@ -1,5 +1,6 @@
 (
 	formation_pool: [
+		/*
 		(
 			formation_spawnables: [
 				(
@@ -36,24 +37,18 @@
 			weight: 1.0,
 			period: 6.0,
 		),
+		*/
 		(
 			formation_spawnables: [
 				(
 					spawnable_type: Mob(Enemy(Missile)),
-					position: (0.0, 50.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Missile)),
-					position: (20.0, 60.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Missile)),
-					position: (-20.0, 60.0),
+					position: (0.0, 10.0),
 				),
 			],
 			weight: 1.0,
-			period: 3.0,
+			period: 120.0,
 		),
+		/*
 		(
 			formation_spawnables: [
 				(
@@ -86,5 +81,6 @@
 			weight: 1.0,
 			period: 4.0,
 		),
+		*/
 	]
 )

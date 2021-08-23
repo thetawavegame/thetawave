@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use std::collections::HashMap;
+use std::{collections::HashMap, string::ToString};
 
 use crate::{
     game::GameParametersResource,
@@ -21,6 +21,9 @@ pub struct MobData {
     pub acceleration: Vec2,
     pub deceleration: Vec2,
     pub speed: Vec2,
+    pub angular_acceleration: f32,
+    pub angular_deceleration: f32,
+    pub angular_speed: f32,
     pub collider_dimensions: Vec2,
     pub sprite_dimensions: Vec2,
     pub texture_path: String,
@@ -97,6 +100,10 @@ pub fn spawn_mob(
             acceleration: mob_data.acceleration,
             deceleration: mob_data.deceleration,
             speed: mob_data.speed,
+            angular_acceleration: mob_data.angular_acceleration,
+            angular_deceleration: mob_data.angular_deceleration,
+            angular_speed: mob_data.angular_speed,
             behaviors: mob_data.behaviors.clone(),
-        });
+        })
+        .insert(Name::new(mob_data.mob_type.to_string()));
 }
