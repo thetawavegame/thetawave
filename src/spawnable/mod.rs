@@ -40,6 +40,7 @@ pub enum BehaviorDirection {
     Horizontal,
     Vertical,
     RotateToTarget(Option<Vec2>),
+    Forward,
 }
 
 /// Type that encompasses all spawnable entities
@@ -151,6 +152,14 @@ pub fn spawnable_execute_behavior_system(
                         rotate_to_target(
                             &spawnable_transform,
                             target_position.unwrap(),
+                            &spawnable_component,
+                            &mut rb_vel,
+                        );
+                    }
+                    BehaviorDirection::Forward => {
+                        move_forward(
+                            &rapier_config,
+                            &spawnable_transform,
                             &spawnable_component,
                             &mut rb_vel,
                         );
@@ -307,6 +316,35 @@ fn rotate_to_target(
         }
     } else if rb_vel.angvel < spawnable_component.angular_speed {
         rb_vel.angvel += spawnable_component.angular_acceleration;
+    }
+}
+
+fn move_forward(
+    rapier_config: &RapierConfiguration,
+    transform: &Transform,
+    spawnable_component: &SpawnableComponent,
+    rb_vel: &mut RigidBodyVelocity,
+) {
+    let angle = (transform.rotation.to_axis_angle().1 * transform.rotation.to_axis_angle().0.z)
+        - (std::f32::consts::FRAC_PI_2);
+
+    let max_speed_x = (spawnable_component.speed.x * angle.cos() * rapier_config.scale).abs();
+    let max_speed_y = (spawnable_component.speed.y * angle.sin() * rapier_config.scale).abs();
+
+    if rb_vel.linvel.x > max_speed_x {
+        rb_vel.linvel.x -= spawnable_component.deceleration.x * rapier_config.scale;
+    } else if rb_vel.linvel.x < -max_speed_x {
+        rb_vel.linvel.x += spawnable_component.deceleration.x * rapier_config.scale;
+    } else {
+        rb_vel.linvel.x += spawnable_component.acceleration.x * angle.cos() * rapier_config.scale;
+    }
+
+    if rb_vel.linvel.y > max_speed_y {
+        rb_vel.linvel.y -= spawnable_component.deceleration.y * rapier_config.scale;
+    } else if rb_vel.linvel.y < -max_speed_y {
+        rb_vel.linvel.y += spawnable_component.deceleration.y * rapier_config.scale;
+    } else {
+        rb_vel.linvel.y += spawnable_component.acceleration.x * angle.sin() * rapier_config.scale;
     }
 }
 
