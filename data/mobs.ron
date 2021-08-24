@@ -1,7 +1,7 @@
 {
 	Enemy(Drone): (
 		mob_type: Enemy(Drone),
-		behaviors: [Move(Down), Brake(Horizontal)],
+		behaviors: [MoveDown, BrakeHorizontal],
 		acceleration: (0.0, 0.02),
 		deceleration: (0.02, 0.01),
 		speed: (0.0, 1.0),
@@ -16,7 +16,7 @@
 	),
 	Enemy(Pawn): (
 		mob_type: Enemy(Pawn),
-		behaviors: [Move(Down), Brake(Horizontal)],
+		behaviors: [MoveDown, BrakeHorizontal],
 		acceleration: (0.0, 0.02),
 		deceleration: (0.02, 0.01),
 		speed: (0.0, 0.85),
@@ -31,7 +31,7 @@
 	),
 	Ally(Hauler): (
 		mob_type: Ally(Hauler),
-		behaviors: [Move(Down), Brake(Horizontal)],
+		behaviors: [MoveDown, BrakeHorizontal],
 		acceleration: (0.0, 0.02),
 		deceleration: (0.02, 0.01),
 		speed: (0.0, 0.7),
@@ -46,7 +46,7 @@
 	),
 	Enemy(MissileLauncher): (
 		mob_type: Enemy(MissileLauncher),
-		behaviors: [Move(Down), Brake(Horizontal)],
+		behaviors: [MoveDown, BrakeHorizontal],
 		acceleration: (0.0, 0.02),
 		deceleration: (0.02, 0.01),
 		speed: (0.0, 0.75),
@@ -61,14 +61,14 @@
 	),
 	Enemy(Missile): (
 		mob_type: Enemy(Missile),
-		behaviors: [Move(RotateToTarget(None)), Move(Forward)],
+		behaviors: [RotateToTarget(None), MoveForward],
 		acceleration: (0.12, 0.2),
 		deceleration: (0.05, 0.05),
 		speed: (1.5, 1.5),
 		angular_acceleration: 0.5,
 		angular_deceleration: 0.0,
 		angular_speed: 1.8,
-		collider_dimensions: (8.0, 16.0),
+		collider_dimensions: (6.0, 14.0),
 		sprite_dimensions: (11.0, 17.0),
 		texture_path: "texture/missile_spritesheet.png",
 		texture_atlas_cols: 4,
@@ -76,7 +76,7 @@
 	),
 	Enemy(StraferRight): (
 		mob_type: Enemy(StraferRight),
-		behaviors: [Move(Down), Move(Right)],
+		behaviors: [MoveDown, MoveRight],
 		acceleration: (0.02, 0.02),
 		deceleration: (0.02, 0.02),
 		speed: (0.75, 0.75),
@@ -91,7 +91,7 @@
 	),
 	Enemy(StraferLeft): (
 		mob_type: Enemy(StraferLeft),
-		behaviors: [Move(Down), Move(Left)],
+		behaviors: [MoveDown, MoveLeft],
 		acceleration: (0.02, 0.02),
 		deceleration: (0.02, 0.02),
 		speed: (0.75, 0.75),
@@ -106,7 +106,7 @@
 	),
 	Neutral(MoneyAsteroid): (
 		mob_type: Neutral(MoneyAsteroid),
-		behaviors: [Move(Down)],
+		behaviors: [MoveDown],
 		acceleration: (0.0, 0.02),
 		deceleration: (0.02, 0.01),
 		speed: (0.0, 0.75),

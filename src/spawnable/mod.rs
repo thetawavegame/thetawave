@@ -27,20 +27,12 @@ pub struct SpawnableComponent {
 
 #[derive(Deserialize, Clone)]
 pub enum BehaviorType {
-    Move(BehaviorDirection),
-    Brake(BehaviorDirection),
-}
-
-#[derive(Deserialize, Clone)]
-pub enum BehaviorDirection {
-    Up,
-    Down,
-    Right,
-    Left,
-    Horizontal,
-    Vertical,
     RotateToTarget(Option<Vec2>),
-    Forward,
+    MoveForward,
+    MoveDown,
+    MoveRight,
+    MoveLeft,
+    BrakeHorizontal,
 }
 
 /// Type that encompasses all spawnable entities
@@ -138,45 +130,39 @@ pub fn spawnable_execute_behavior_system(
     for (spawnable_component, mut rb_vel, spawnable_transform) in spawnable_query.iter_mut() {
         for behavior in spawnable_component.behaviors.iter() {
             match behavior {
-                BehaviorType::Move(behavior_direction) => match behavior_direction {
-                    BehaviorDirection::Down => {
-                        move_down(&rapier_config, &spawnable_component, &mut rb_vel);
-                    }
-                    BehaviorDirection::Right => {
-                        move_right(&rapier_config, &spawnable_component, &mut rb_vel);
-                    }
-                    BehaviorDirection::Left => {
-                        move_left(&rapier_config, &spawnable_component, &mut rb_vel);
-                    }
-                    BehaviorDirection::RotateToTarget(target_position) => {
-                        rotate_to_target(
-                            &spawnable_transform,
-                            target_position.unwrap(),
-                            &spawnable_component,
-                            &mut rb_vel,
-                        );
-                    }
-                    BehaviorDirection::Forward => {
-                        move_forward(
-                            &rapier_config,
-                            &spawnable_transform,
-                            &spawnable_component,
-                            &mut rb_vel,
-                        );
-                    }
-                    _ => {}
-                },
-                BehaviorType::Brake(behavior_direction) => match behavior_direction {
-                    BehaviorDirection::Horizontal => {
-                        brake_horizontal(
-                            &rapier_config,
-                            &game_parameters,
-                            &spawnable_component,
-                            &mut rb_vel,
-                        );
-                    }
-                    _ => {}
-                },
+                BehaviorType::MoveDown => {
+                    move_down(&rapier_config, spawnable_component, &mut rb_vel);
+                }
+                BehaviorType::MoveRight => {
+                    move_right(&rapier_config, spawnable_component, &mut rb_vel);
+                }
+                BehaviorType::MoveLeft => {
+                    move_left(&rapier_config, spawnable_component, &mut rb_vel);
+                }
+                BehaviorType::RotateToTarget(target_position) => {
+                    rotate_to_target(
+                        spawnable_transform,
+                        target_position.unwrap(),
+                        spawnable_component,
+                        &mut rb_vel,
+                    );
+                }
+                BehaviorType::MoveForward => {
+                    move_forward(
+                        &rapier_config,
+                        spawnable_transform,
+                        spawnable_component,
+                        &mut rb_vel,
+                    );
+                }
+                BehaviorType::BrakeHorizontal => {
+                    brake_horizontal(
+                        &rapier_config,
+                        &game_parameters,
+                        spawnable_component,
+                        &mut rb_vel,
+                    );
+                }
             }
         }
     }
@@ -188,8 +174,8 @@ pub fn spawnable_set_target_behavior_system(
 ) {
     for (mut spawnable_component, _) in spawnable_query.iter_mut() {
         for behavior in spawnable_component.behaviors.iter_mut() {
-            if let BehaviorType::Move(BehaviorDirection::RotateToTarget(_)) = behavior {
-                *behavior = BehaviorType::Move(BehaviorDirection::RotateToTarget(None));
+            if let BehaviorType::RotateToTarget(_) = behavior {
+                *behavior = BehaviorType::RotateToTarget(None);
             }
         }
     }
@@ -203,9 +189,7 @@ pub fn spawnable_set_target_behavior_system(
                             // set target to closest player
                             for behavior in spawnable_component.behaviors.iter_mut() {
                                 *behavior = match behavior {
-                                    BehaviorType::Move(BehaviorDirection::RotateToTarget(
-                                        target,
-                                    )) => {
+                                    BehaviorType::RotateToTarget(target) => {
                                         let spawnable_position_vec2: Vec2 =
                                             spawnable_transform.translation.into();
                                         let player_position_vec2: Vec2 =
@@ -215,9 +199,7 @@ pub fn spawnable_set_target_behavior_system(
                                                 .distance(player_position_vec2)
                                                 < spawnable_position_vec2.distance(target.unwrap())
                                         {
-                                            BehaviorType::Move(BehaviorDirection::RotateToTarget(
-                                                Some(player_position_vec2),
-                                            ))
+                                            BehaviorType::RotateToTarget(Some(player_position_vec2))
                                         } else {
                                             behavior.clone()
                                         }
@@ -260,12 +242,8 @@ pub fn spawnable_set_contact_behavior_system(
                                 EnemyType::StraferRight | EnemyType::StraferLeft => {
                                     for behavior in spawnable_component.behaviors.iter_mut() {
                                         *behavior = match behavior {
-                                            BehaviorType::Move(BehaviorDirection::Right) => {
-                                                BehaviorType::Move(BehaviorDirection::Left)
-                                            }
-                                            BehaviorType::Move(BehaviorDirection::Left) => {
-                                                BehaviorType::Move(BehaviorDirection::Right)
-                                            }
+                                            BehaviorType::MoveRight => BehaviorType::MoveLeft,
+                                            BehaviorType::MoveLeft => BehaviorType::MoveRight,
                                             _ => behavior.clone(),
                                         }
                                     }
