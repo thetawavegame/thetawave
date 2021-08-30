@@ -23,6 +23,7 @@ pub struct SpawnableComponent {
     pub angular_deceleration: f32,
     pub angular_speed: f32,
     pub behaviors: Vec<BehaviorType>,
+    pub should_despawn: bool,
 }
 
 #[derive(Deserialize, Clone)]
@@ -33,6 +34,7 @@ pub enum BehaviorType {
     MoveRight,
     MoveLeft,
     BrakeHorizontal,
+    ExplodeOnImpact,
 }
 
 /// Type that encompasses all spawnable entities
@@ -123,27 +125,40 @@ pub enum EffectType {
     Giblets(MobType),
 }
 pub fn spawnable_execute_behavior_system(
+    mut contact_events: EventReader<ContactEvent>,
     rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<GameParametersResource>,
-    mut spawnable_query: Query<(&SpawnableComponent, &mut RigidBodyVelocity, &Transform)>,
+    mut spawnable_query: Query<(
+        Entity,
+        &mut SpawnableComponent,
+        &mut RigidBodyVelocity,
+        &Transform,
+    )>,
 ) {
-    for (spawnable_component, mut rb_vel, spawnable_transform) in spawnable_query.iter_mut() {
-        for behavior in spawnable_component.behaviors.iter() {
+    let mut contact_events_vec = vec![];
+    for contact_event in contact_events.iter() {
+        contact_events_vec.push(*contact_event);
+    }
+    for (entity, mut spawnable_component, mut rb_vel, spawnable_transform) in
+        spawnable_query.iter_mut()
+    {
+        let behaviors = spawnable_component.behaviors.clone();
+        for behavior in behaviors {
             match behavior {
                 BehaviorType::MoveDown => {
-                    move_down(&rapier_config, spawnable_component, &mut rb_vel);
+                    move_down(&rapier_config, &spawnable_component, &mut rb_vel);
                 }
                 BehaviorType::MoveRight => {
-                    move_right(&rapier_config, spawnable_component, &mut rb_vel);
+                    move_right(&rapier_config, &spawnable_component, &mut rb_vel);
                 }
                 BehaviorType::MoveLeft => {
-                    move_left(&rapier_config, spawnable_component, &mut rb_vel);
+                    move_left(&rapier_config, &spawnable_component, &mut rb_vel);
                 }
                 BehaviorType::RotateToTarget(target_position) => {
                     rotate_to_target(
                         spawnable_transform,
                         target_position.unwrap(),
-                        spawnable_component,
+                        &spawnable_component,
                         &mut rb_vel,
                     );
                 }
@@ -151,7 +166,7 @@ pub fn spawnable_execute_behavior_system(
                     move_forward(
                         &rapier_config,
                         spawnable_transform,
-                        spawnable_component,
+                        &spawnable_component,
                         &mut rb_vel,
                     );
                 }
@@ -159,11 +174,40 @@ pub fn spawnable_execute_behavior_system(
                     brake_horizontal(
                         &rapier_config,
                         &game_parameters,
-                        spawnable_component,
+                        &spawnable_component,
                         &mut rb_vel,
                     );
                 }
+                BehaviorType::ExplodeOnImpact => {
+                    explode_on_impact(entity, &mut spawnable_component, &contact_events_vec);
+                }
             }
+        }
+    }
+}
+
+fn explode_on_impact(
+    entity: Entity,
+    spawnable_component: &mut SpawnableComponent,
+    contact_events: &[ContactEvent],
+) {
+    for contact_event in contact_events {
+        //checks for collision between spawnable and other
+        if let ContactEvent::Stopped(h1, h2) = contact_event {
+            if h1.entity() == entity || h2.entity() == entity {
+                spawnable_component.should_despawn = true;
+            }
+        }
+    }
+}
+
+pub fn despawn_spawnable_system(
+    mut commands: Commands,
+    spawnable_query: Query<(Entity, &SpawnableComponent)>,
+) {
+    for (entity, spawnable_component) in spawnable_query.iter() {
+        if spawnable_component.should_despawn {
+            commands.entity(entity).despawn();
         }
     }
 }

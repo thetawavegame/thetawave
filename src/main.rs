@@ -73,22 +73,27 @@ fn main() {
         .add_startup_system(player::spawn_player_system.system().after("init"))
         .add_system_to_stage(CoreStage::First, spawnable::spawn_formation_system.system())
         .add_system(player::player_movement_system.system())
-        .add_system(
+        .add_system_to_stage(
+            CoreStage::PostUpdate,
             spawnable::spawnable_set_target_behavior_system
                 .system()
                 .label("set_target_behavior"),
         )
-        .add_system(
+        .add_system_to_stage(
+            CoreStage::PostUpdate,
             spawnable::spawnable_set_contact_behavior_system
                 .system()
                 .label("set_contact_behavior"),
         )
-        .add_system(
+        .add_system_to_stage(
+            CoreStage::PostUpdate,
             spawnable::spawnable_execute_behavior_system
                 .system()
+                .label("execute_behavior")
                 .after("set_contact_behavior")
                 .after("set_target_behavior"),
         )
+        .add_system(spawnable::despawn_spawnable_system.system())
         .add_system(options::toggle_fullscreen_system.system())
         .add_system(options::toggle_zoom_system.system())
         .add_system(arena::despawn_gates_system.system())

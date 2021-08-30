@@ -104,6 +104,7 @@ pub fn spawn_mob(
             angular_deceleration: mob_data.angular_deceleration,
             angular_speed: mob_data.angular_speed,
             behaviors: mob_data.behaviors.clone(),
+            should_despawn: false,
         })
         .insert(Name::new(mob_data.mob_type.to_string()));
 }
