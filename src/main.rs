@@ -134,16 +134,36 @@ fn setup_game(
     // load assets
     let mut mob_texture_atlas_dict = HashMap::new();
     for (mob_type, mob_data) in mobs.mobs.iter() {
-        let texture_handle = asset_server.load(&mob_data.texture_path[..]);
-        let atlas = TextureAtlas::from_grid(
+        // mob texture
+        let texture_handle = asset_server.load(&mob_data.texture.path[..]);
+        let mob_atlas = TextureAtlas::from_grid(
             texture_handle,
-            mob_data.sprite_dimensions,
-            mob_data.texture_atlas_cols,
-            mob_data.texture_atlas_rows,
+            mob_data.texture.dimensions,
+            mob_data.texture.cols,
+            mob_data.texture.rows,
         );
-        mob_texture_atlas_dict.insert(mob_type.clone(), texture_atlases.add(atlas));
+
+        // thruster texture
+        let thruster_atlas_handle = if let Some(thruster_data) = &mob_data.thruster {
+            let thruster_texture_handle = asset_server.load(&thruster_data.texture.path[..]);
+            Some(texture_atlases.add(TextureAtlas::from_grid(
+                thruster_texture_handle,
+                thruster_data.texture.dimensions,
+                thruster_data.texture.cols,
+                thruster_data.texture.rows,
+            )))
+        } else {
+            None
+        };
+
+        // add mob and thruster texture handles to the dictionary
+        mob_texture_atlas_dict.insert(
+            mob_type.clone(),
+            (texture_atlases.add(mob_atlas), thruster_atlas_handle),
+        );
     }
 
+    // add texture atlas dict to the mobs resource
     mobs.texture_atlas_handle = mob_texture_atlas_dict;
 }
 

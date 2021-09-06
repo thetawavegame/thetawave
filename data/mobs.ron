@@ -9,10 +9,21 @@
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
 		collider_dimensions: (14.0, 14.0),
-		sprite_dimensions: (18.0, 18.0),
-		texture_path: "texture/drone_spritesheet.png",
-		texture_atlas_cols: 3,
-		texture_atlas_rows: 1,
+		texture: (
+			path: "texture/drone_spritesheet.png",
+			dimensions: (18.0, 18.0),
+			cols: 3,
+			rows: 1,
+		),
+		thrusters: Some((
+			y_offset: 10.0,
+			texture: (
+				path: "texture/drone_thrusters_spritesheet.png",
+				dimensions: (12.0, 8.0),
+				cols: 3,
+				rows: 1,
+			)
+		)),
 	),
 	Enemy(Pawn): (
 		mob_type: Enemy(Pawn),
@@ -25,9 +36,21 @@
 		angular_speed: 0.0,
 		collider_dimensions: (14.0, 14.0),
 		sprite_dimensions: (18.0, 18.0),
-		texture_path: "texture/pawn_spritesheet.png",
-		texture_atlas_cols: 3,
-		texture_atlas_rows: 1,
+		texture: (
+			path: "texture/pawn_spritesheet.png",
+			dimensions: (18.0, 18.0),
+			cols: 3,
+			rows: 1,
+		),
+		thrusters: Some((
+			y_offset: 10.0,
+			texture: (
+				path: "texture/pawn_thrusters_spritesheet.png",
+				dimensions: (12.0, 8.0),
+				cols: 3,
+				rows: 1,
+			)
+		)),
 	),
 	Ally(Hauler): (
 		mob_type: Ally(Hauler),
@@ -39,10 +62,21 @@
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
 		collider_dimensions: (14.0, 30.0),
-		sprite_dimensions: (22.0, 36.0),
-		texture_path: "texture/hauler_spritesheet.png",
-		texture_atlas_cols: 3,
-		texture_atlas_rows: 1,
+		texture: (
+			path: "texture/hauler_spritesheet.png",
+			dimensions: (22.0, 36.0),
+			cols: 3,
+			rows: 1,
+		),
+		thrusters: Some((
+			y_offset: 10.0,
+			texture: (
+				path: "texture/hauler_thrusters_spritesheet.png",
+				dimensions: (22.0, 9.0),
+				cols: 3,
+				rows: 1,
+			)
+		)),
 	),
 	Enemy(MissileLauncher): (
 		mob_type: Enemy(MissileLauncher),
@@ -54,10 +88,21 @@
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
 		collider_dimensions: (17.0, 22.0),
-		sprite_dimensions: (21.0, 26.0),
-		texture_path: "texture/missile_launcher_spritesheet.png",
-		texture_atlas_cols: 3,
-		texture_atlas_rows: 1,
+		texture: (
+			path: "texture/missile_launcher_spritesheet.png",
+			dimensions: (21.0, 26.0),
+			cols: 3,
+			rows: 1,
+		),
+		thrusters: Some((
+			y_offset: 10.0,
+			texture: (
+				path: "texture/missile_launcher_thrusters_spritesheet.png",
+				dimensions: (22.0, 9.0),
+				cols: 3,
+				rows: 1,
+			)
+		)),
 	),
 	Enemy(Missile): (
 		mob_type: Enemy(Missile),
@@ -69,10 +114,21 @@
 		angular_deceleration: 0.0,
 		angular_speed: 1.8,
 		collider_dimensions: (6.0, 14.0),
-		sprite_dimensions: (11.0, 17.0),
-		texture_path: "texture/missile_spritesheet.png",
-		texture_atlas_cols: 4,
-		texture_atlas_rows: 1,
+		texture: (
+			path: "texture/missile_spritesheet.png",
+			dimensions: (11.0, 17.0),
+			cols: 4,
+			rows: 1,
+		),
+		thrusters: Some((
+			y_offset: 10.0,
+			texture: (
+				path: "texture/missile_thrusters_spritesheet.png",
+				dimensions: (11.0, 7.0),
+				cols: 4,
+				rows: 1,
+			)
+		)),
 	),
 	Enemy(StraferRight): (
 		mob_type: Enemy(StraferRight),
@@ -84,10 +140,21 @@
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
 		collider_dimensions: (20.0, 8.0),
-		sprite_dimensions: (24.0, 12.0),
-		texture_path: "texture/strafer_spritesheet.png",
-		texture_atlas_cols: 3,
-		texture_atlas_rows: 1,
+		texture: (
+			path: "texture/strafer_spritesheet.png",
+			dimensions: (24.0, 12.0),
+			cols: 3,
+			rows: 1,
+		),
+		thrusters: Some((
+			y_offset: 10.0,
+			texture: (
+				path: "texture/strafer_thrusters_spritesheet.png",
+				dimensions: (15.0, 5.0),
+				cols: 3,
+				rows: 1,
+			)
+		)),
 	),
 	Enemy(StraferLeft): (
 		mob_type: Enemy(StraferLeft),
@@ -99,10 +166,21 @@
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
 		collider_dimensions: (20.0, 8.0),
-		sprite_dimensions: (24.0, 12.0),
-		texture_path: "texture/strafer_spritesheet.png",
-		texture_atlas_cols: 3,
-		texture_atlas_rows: 1,
+		texture: (
+			path: "texture/strafer_spritesheet.png",
+			dimensions: (24.0, 12.0),
+			cols: 3,
+			rows: 1,
+		),
+		thrusters: Some((
+			y_offset: 10.0,
+			texture: (
+				path: "texture/strafer_thrusters_spritesheet.png",
+				dimensions: (15.0, 5.0),
+				cols: 3,
+				rows: 1,
+			)
+		)),
 	),
 	Neutral(MoneyAsteroid): (
 		mob_type: Neutral(MoneyAsteroid),
@@ -114,9 +192,12 @@
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
 		collider_dimensions: (18.0, 18.0),
-		sprite_dimensions: (21.0, 21.0),
-		texture_path: "texture/money_asteroid_spritesheet.png",
-		texture_atlas_cols: 1,
-		texture_atlas_rows: 1,
+		texture: (
+			path: "texture/money_asteroid_spritesheet.png",
+			dimensions: (21.0, 21.0),
+			cols: 1,
+			rows: 1,
+		),
+		thrusters: None,
 	),
 }

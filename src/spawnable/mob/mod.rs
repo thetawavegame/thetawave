@@ -25,15 +25,28 @@ pub struct MobData {
     pub angular_deceleration: f32,
     pub angular_speed: f32,
     pub collider_dimensions: Vec2,
-    pub sprite_dimensions: Vec2,
-    pub texture_path: String,
-    pub texture_atlas_cols: usize,
-    pub texture_atlas_rows: usize,
+    pub texture: TextureData,
+    pub thruster: Option<ThrusterData>,
+}
+
+#[derive(Deserialize)]
+pub struct ThrusterData {
+    pub y_offset: f32,
+    pub texture: TextureData,
+}
+
+#[derive(Deserialize)]
+pub struct TextureData {
+    pub path: String,
+    pub dimensions: Vec2,
+    pub cols: usize,
+    pub rows: usize,
 }
 
 pub struct MobsResource {
     pub mobs: HashMap<MobType, MobData>,
-    pub texture_atlas_handle: HashMap<MobType, Handle<TextureAtlas>>,
+    pub texture_atlas_handle:
+        HashMap<MobType, (Handle<TextureAtlas>, Option<Handle<TextureAtlas>>)>,
 }
 
 pub fn spawn_mob(
@@ -45,7 +58,7 @@ pub fn spawn_mob(
     game_parameters: &GameParametersResource,
 ) {
     let mob_data = &mob_resource.mobs[mob_type];
-    let texture_atlas_handle = mob_resource.texture_atlas_handle[mob_type].clone_weak();
+    let texture_atlas_handle = mob_resource.texture_atlas_handle[mob_type].0.clone_weak();
 
     // scale collider to align with the sprite
     let collider_size_hx =
