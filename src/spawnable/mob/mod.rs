@@ -29,13 +29,13 @@ pub struct MobData {
     pub thruster: Option<ThrusterData>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct ThrusterData {
     pub y_offset: f32,
     pub texture: TextureData,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct TextureData {
     pub path: String,
     pub dimensions: Vec2,
@@ -72,52 +72,80 @@ pub fn spawn_mob(
         1.0,
     ));
 
-    commands
-        .spawn()
-        .insert_bundle(SpriteSheetBundle {
-            texture_atlas: texture_atlas_handle,
-            transform,
+    let mut mob = commands.spawn();
+
+    mob.insert_bundle(SpriteSheetBundle {
+        texture_atlas: texture_atlas_handle,
+        transform,
+        ..Default::default()
+    })
+    .insert(Timer::from_seconds(0.1, true))
+    .insert_bundle(RigidBodyBundle {
+        body_type: RigidBodyType::Dynamic,
+        mass_properties: RigidBodyMassPropsFlags::ROTATION_LOCKED.into(),
+        position: position.into(),
+        ..Default::default()
+    })
+    .insert_bundle(ColliderBundle {
+        shape: ColliderShape::cuboid(collider_size_hx, collider_size_hy),
+        material: ColliderMaterial {
+            friction: 1.0,
+            restitution: 1.0,
+            restitution_combine_rule: CoefficientCombineRule::Max,
             ..Default::default()
-        })
-        .insert(Timer::from_seconds(0.1, true))
-        .insert_bundle(RigidBodyBundle {
-            body_type: RigidBodyType::Dynamic,
-            mass_properties: RigidBodyMassPropsFlags::ROTATION_LOCKED.into(),
-            position: position.into(),
+        },
+        flags: ColliderFlags {
+            collision_groups: InteractionGroups::new(
+                SPAWNABLE_COL_GROUP_MEMBERSHIP,
+                u32::MAX ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
+            ),
+            active_events: ActiveEvents::CONTACT_EVENTS,
             ..Default::default()
-        })
-        .insert_bundle(ColliderBundle {
-            shape: ColliderShape::cuboid(collider_size_hx, collider_size_hy),
-            material: ColliderMaterial {
-                friction: 1.0,
-                restitution: 1.0,
-                restitution_combine_rule: CoefficientCombineRule::Max,
-                ..Default::default()
-            },
-            flags: ColliderFlags {
-                collision_groups: InteractionGroups::new(
-                    SPAWNABLE_COL_GROUP_MEMBERSHIP,
-                    u32::MAX ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
-                ),
-                active_events: ActiveEvents::CONTACT_EVENTS,
-                ..Default::default()
-            },
-            ..Default::default()
-        })
-        .insert(ColliderPositionSync::Discrete)
-        .insert(MobComponent {
-            mob_type: mob_data.mob_type.clone(),
-        })
-        .insert(SpawnableComponent {
-            spawnable_type: SpawnableType::Mob(mob_data.mob_type.clone()),
-            acceleration: mob_data.acceleration,
-            deceleration: mob_data.deceleration,
-            speed: mob_data.speed,
-            angular_acceleration: mob_data.angular_acceleration,
-            angular_deceleration: mob_data.angular_deceleration,
-            angular_speed: mob_data.angular_speed,
-            behaviors: mob_data.behaviors.clone(),
-            should_despawn: false,
-        })
-        .insert(Name::new(mob_data.mob_type.to_string()));
+        },
+        ..Default::default()
+    })
+    .insert(ColliderPositionSync::Discrete)
+    .insert(MobComponent {
+        mob_type: mob_data.mob_type.clone(),
+    })
+    .insert(SpawnableComponent {
+        spawnable_type: SpawnableType::Mob(mob_data.mob_type.clone()),
+        acceleration: mob_data.acceleration,
+        deceleration: mob_data.deceleration,
+        speed: mob_data.speed,
+        angular_acceleration: mob_data.angular_acceleration,
+        angular_deceleration: mob_data.angular_deceleration,
+        angular_speed: mob_data.angular_speed,
+        behaviors: mob_data.behaviors.clone(),
+        should_despawn: false,
+    })
+    .insert(Name::new(mob_data.mob_type.to_string()));
+
+    if let Some(thruster) = &mob_data.thruster {
+        let thruster_transform = Transform::from_xyz(0.0, thruster.y_offset, 0.0);
+
+        let texture_atlas_handle = mob_resource.texture_atlas_handle[mob_type]
+            .1
+            .as_ref()
+            .unwrap()
+            .clone_weak();
+
+        mob.with_children(|parent| {
+            parent
+                .spawn_bundle(SpriteSheetBundle {
+                    texture_atlas: texture_atlas_handle,
+                    transform: thruster_transform,
+                    ..Default::default()
+                })
+                /*
+                .insert_bundle(RigidBodyBundle {
+                    body_type: RigidBodyType::Dynamic,
+                    mass_properties: RigidBodyMassPropsFlags::ROTATION_LOCKED.into(),
+                    position: position.into(),
+                    ..Default::default()
+                })
+                */
+                .insert(Name::new("Thruster"));
+        });
+    }
 }

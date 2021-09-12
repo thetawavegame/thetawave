@@ -15,8 +15,8 @@
 			cols: 3,
 			rows: 1,
 		),
-		thrusters: Some((
-			y_offset: 10.0,
+		thruster: Some((
+			y_offset: 11.0,
 			texture: (
 				path: "texture/drone_thrusters_spritesheet.png",
 				dimensions: (12.0, 8.0),
@@ -42,8 +42,8 @@
 			cols: 3,
 			rows: 1,
 		),
-		thrusters: Some((
-			y_offset: 10.0,
+		thruster: Some((
+			y_offset: 11.0,
 			texture: (
 				path: "texture/pawn_thrusters_spritesheet.png",
 				dimensions: (12.0, 8.0),
@@ -68,8 +68,8 @@
 			cols: 3,
 			rows: 1,
 		),
-		thrusters: Some((
-			y_offset: 10.0,
+		thruster: Some((
+			y_offset: 18.0,
 			texture: (
 				path: "texture/hauler_thrusters_spritesheet.png",
 				dimensions: (22.0, 9.0),
@@ -94,11 +94,11 @@
 			cols: 3,
 			rows: 1,
 		),
-		thrusters: Some((
-			y_offset: 10.0,
+		thruster: Some((
+			y_offset: 13.0,
 			texture: (
 				path: "texture/missile_launcher_thrusters_spritesheet.png",
-				dimensions: (22.0, 9.0),
+				dimensions: (15.0, 5.0),
 				cols: 3,
 				rows: 1,
 			)
@@ -120,8 +120,8 @@
 			cols: 4,
 			rows: 1,
 		),
-		thrusters: Some((
-			y_offset: 10.0,
+		thruster: Some((
+			y_offset: 9.0,
 			texture: (
 				path: "texture/missile_thrusters_spritesheet.png",
 				dimensions: (11.0, 7.0),
@@ -146,11 +146,11 @@
 			cols: 3,
 			rows: 1,
 		),
-		thrusters: Some((
-			y_offset: 10.0,
+		thruster: Some((
+			y_offset: 7.0,
 			texture: (
 				path: "texture/strafer_thrusters_spritesheet.png",
-				dimensions: (15.0, 5.0),
+				dimensions: (22.0, 9.0),
 				cols: 3,
 				rows: 1,
 			)
@@ -172,11 +172,11 @@
 			cols: 3,
 			rows: 1,
 		),
-		thrusters: Some((
-			y_offset: 10.0,
+		thruster: Some((
+			y_offset: 7.0,
 			texture: (
 				path: "texture/strafer_thrusters_spritesheet.png",
-				dimensions: (15.0, 5.0),
+				dimensions: (22.0, 9.0),
 				cols: 3,
 				rows: 1,
 			)
@@ -198,6 +198,6 @@
 			cols: 1,
 			rows: 1,
 		),
-		thrusters: None,
+		thruster: None,
 	),
 }

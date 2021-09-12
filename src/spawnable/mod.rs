@@ -207,7 +207,7 @@ pub fn despawn_spawnable_system(
 ) {
     for (entity, spawnable_component) in spawnable_query.iter() {
         if spawnable_component.should_despawn {
-            commands.entity(entity).despawn();
+            commands.entity(entity).despawn_recursive();
         }
     }
 }

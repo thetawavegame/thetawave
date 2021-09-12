@@ -42,7 +42,7 @@ pub fn despawn_gates_system(
                     .iter()
                     .any(|mob_entity| mob_entity == collider2_entity)
             {
-                commands.entity(collider2_entity).despawn();
+                commands.entity(collider2_entity).despawn_recursive();
             }
         }
     }
