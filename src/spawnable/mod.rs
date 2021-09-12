@@ -26,6 +26,11 @@ pub struct SpawnableComponent {
     pub should_despawn: bool,
 }
 
+#[derive(Deserialize)]
+pub struct InitialMotion {
+    pub random_angvel: Option<(f32, f32)>,
+}
+
 #[derive(Deserialize, Clone)]
 pub enum BehaviorType {
     RotateToTarget(Option<Vec2>),

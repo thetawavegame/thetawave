@@ -8,6 +8,9 @@
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		initial_motion: (
+			random_angvel: None,
+		),
 		collider_dimensions: (14.0, 14.0),
 		texture: (
 			path: "texture/drone_spritesheet.png",
@@ -38,6 +41,9 @@
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		initial_motion: (
+			random_angvel: None,
+		),
 		collider_dimensions: (14.0, 14.0),
 		sprite_dimensions: (18.0, 18.0),
 		texture: (
@@ -69,6 +75,9 @@
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		initial_motion: (
+			random_angvel: None,
+		),
 		collider_dimensions: (14.0, 30.0),
 		texture: (
 			path: "texture/hauler_spritesheet.png",
@@ -99,6 +108,9 @@
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		initial_motion: (
+			random_angvel: None,
+		),
 		collider_dimensions: (17.0, 22.0),
 		texture: (
 			path: "texture/missile_launcher_spritesheet.png",
@@ -129,6 +141,9 @@
 		angular_acceleration: 0.5,
 		angular_deceleration: 0.0,
 		angular_speed: 1.8,
+		initial_motion: (
+			random_angvel: None,
+		),
 		collider_dimensions: (6.0, 14.0),
 		texture: (
 			path: "texture/missile_spritesheet.png",
@@ -136,7 +151,7 @@
 			cols: 4,
 			rows: 1,
 			frame_duration: 0.1,
-			animation_direction: PingPong(Forward),
+			animation_direction: Forward,
 		),
 		thruster: Some((
 			y_offset: 9.0,
@@ -159,6 +174,9 @@
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		initial_motion: (
+			random_angvel: None,
+		),
 		collider_dimensions: (20.0, 8.0),
 		texture: (
 			path: "texture/strafer_spritesheet.png",
@@ -189,6 +207,9 @@
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		initial_motion: (
+			random_angvel: None,
+		),
 		collider_dimensions: (20.0, 8.0),
 		texture: (
 			path: "texture/strafer_spritesheet.png",
@@ -219,6 +240,9 @@
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		initial_motion: (
+			random_angvel: Some((-1.0, 1.0)),
+		),
 		collider_dimensions: (18.0, 18.0),
 		texture: (
 			path: "texture/money_asteroid_spritesheet.png",

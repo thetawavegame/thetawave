@@ -3,12 +3,14 @@ use std::{collections::HashMap, string::ToString};
 
 use crate::{
     game::GameParametersResource,
+    spawnable::InitialMotion,
     spawnable::{BehaviorType, MobType, SpawnableComponent, SpawnableType},
     visual::{AnimationComponent, AnimationDirection},
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
+use rand::{thread_rng, Rng};
 
 pub struct MobComponent {
     /// Type of mob
@@ -25,6 +27,7 @@ pub struct MobData {
     pub angular_acceleration: f32,
     pub angular_deceleration: f32,
     pub angular_speed: f32,
+    pub initial_motion: InitialMotion,
     pub collider_dimensions: Vec2,
     pub texture: TextureData,
     pub thruster: Option<ThrusterData>,
@@ -89,6 +92,14 @@ pub fn spawn_mob(
     .insert_bundle(RigidBodyBundle {
         body_type: RigidBodyType::Dynamic,
         mass_properties: RigidBodyMassPropsFlags::ROTATION_LOCKED.into(),
+        velocity: RigidBodyVelocity {
+            angvel: if let Some(random_angvel) = mob_data.initial_motion.random_angvel {
+                thread_rng().gen_range(random_angvel.0..=random_angvel.1)
+            } else {
+                0.0
+            },
+            ..Default::default()
+        },
         position: position.into(),
         ..Default::default()
     })
