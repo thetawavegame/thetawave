@@ -4,6 +4,7 @@ use std::{collections::HashMap, string::ToString};
 use crate::{
     game::GameParametersResource,
     spawnable::{BehaviorType, MobType, SpawnableComponent, SpawnableType},
+    visual::{AnimationComponent, AnimationDirection},
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 use bevy::prelude::*;
@@ -29,18 +30,20 @@ pub struct MobData {
     pub thruster: Option<ThrusterData>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize)]
 pub struct ThrusterData {
     pub y_offset: f32,
     pub texture: TextureData,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize)]
 pub struct TextureData {
     pub path: String,
     pub dimensions: Vec2,
     pub cols: usize,
     pub rows: usize,
+    pub frame_duration: f32,
+    pub animation_direction: AnimationDirection,
 }
 
 pub struct MobsResource {
@@ -79,7 +82,10 @@ pub fn spawn_mob(
         transform,
         ..Default::default()
     })
-    .insert(Timer::from_seconds(0.1, true))
+    .insert(AnimationComponent {
+        timer: Timer::from_seconds(mob_data.texture.frame_duration, true),
+        direction: mob_data.texture.animation_direction.clone(),
+    })
     .insert_bundle(RigidBodyBundle {
         body_type: RigidBodyType::Dynamic,
         mass_properties: RigidBodyMassPropsFlags::ROTATION_LOCKED.into(),
@@ -137,14 +143,10 @@ pub fn spawn_mob(
                     transform: thruster_transform,
                     ..Default::default()
                 })
-                /*
-                .insert_bundle(RigidBodyBundle {
-                    body_type: RigidBodyType::Dynamic,
-                    mass_properties: RigidBodyMassPropsFlags::ROTATION_LOCKED.into(),
-                    position: position.into(),
-                    ..Default::default()
+                .insert(AnimationComponent {
+                    timer: Timer::from_seconds(thruster.texture.frame_duration, true),
+                    direction: thruster.texture.animation_direction.clone(),
                 })
-                */
                 .insert(Name::new("Thruster"));
         });
     }

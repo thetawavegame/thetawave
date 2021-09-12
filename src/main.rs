@@ -18,6 +18,7 @@ mod game;
 mod options;
 mod player;
 mod spawnable;
+mod visual;
 
 fn main() {
     options::generate_config_files();
@@ -97,7 +98,7 @@ fn main() {
         .add_system(options::toggle_fullscreen_system.system())
         .add_system(options::toggle_zoom_system.system())
         .add_system(arena::despawn_gates_system.system())
-        .add_system(animate_sprite_system.system())
+        .add_system(visual::animate_sprite_system.system())
         .add_system(background::rotate_planet_system.system());
 
     if cfg!(debug_assertions) {
@@ -165,18 +166,4 @@ fn setup_game(
 
     // add texture atlas dict to the mobs resource
     mobs.texture_atlas_handle = mob_texture_atlas_dict;
-}
-
-fn animate_sprite_system(
-    time: Res<Time>,
-    texture_atlases: Res<Assets<TextureAtlas>>,
-    mut query: Query<(&mut Timer, &mut TextureAtlasSprite, &Handle<TextureAtlas>)>,
-) {
-    for (mut timer, mut sprite, texture_atlas_handle) in query.iter_mut() {
-        timer.tick(time.delta());
-        if timer.finished() {
-            let texture_atlas = texture_atlases.get(texture_atlas_handle).unwrap();
-            sprite.index = ((sprite.index as usize + 1) % texture_atlas.textures.len()) as u32;
-        }
-    }
 }
