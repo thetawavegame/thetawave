@@ -1,4 +1,4 @@
-use crate::spawnable::SpawnableComponent;
+use crate::spawnable::{SpawnMobTimersResource, SpawnableComponent};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
@@ -29,6 +29,7 @@ fn spawn_despawn_gate(commands: &mut Commands, position: Vec2, width: f32, heigh
 pub fn despawn_gates_system(
     mut commands: Commands,
     mut intersection_events: EventReader<IntersectionEvent>,
+    mut spawn_mob_timers: ResMut<SpawnMobTimersResource>,
     despawn_gate_query: Query<Entity, With<DespawnGateComponent>>,
     mob_query: Query<Entity, With<SpawnableComponent>>,
 ) {
@@ -42,6 +43,7 @@ pub fn despawn_gates_system(
                     .iter()
                     .any(|mob_entity| mob_entity == collider2_entity)
             {
+                spawn_mob_timers.timers.remove(&collider2_entity.id());
                 commands.entity(collider2_entity).despawn_recursive();
             }
         }

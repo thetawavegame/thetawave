@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::game::GameParametersResource;
 use crate::player::PlayerComponent;
 use bevy::prelude::*;
@@ -32,8 +34,20 @@ pub struct InitialMotion {
 }
 
 #[derive(Deserialize, Clone)]
+pub struct SpawnMobBehaviorData {
+    pub mob_type: MobType,
+    pub offset_position: Vec2,
+    pub period: f32,
+}
+
+pub struct SpawnMobTimersResource {
+    pub timers: HashMap<u32, Timer>, //maps ids of entities to timers
+}
+
+#[derive(Deserialize, Clone)]
 pub enum BehaviorType {
     RotateToTarget(Option<Vec2>),
+    SpawnMob(SpawnMobBehaviorData), // type of mob, offset spawn position (from center), period
     MoveForward,
     MoveDown,
     MoveRight,
@@ -130,13 +144,18 @@ pub enum EffectType {
     Giblets(MobType),
 }
 pub fn spawnable_execute_behavior_system(
+    mut commands: Commands,
     mut contact_events: EventReader<ContactEvent>,
     rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<GameParametersResource>,
+    mut spawn_mob_timers: ResMut<SpawnMobTimersResource>,
+    time: Res<Time>,
+    mob_resource: Res<MobsResource>,
     mut spawnable_query: Query<(
         Entity,
         &mut SpawnableComponent,
         &mut RigidBodyVelocity,
+        &RigidBodyPosition,
         &Transform,
     )>,
 ) {
@@ -144,7 +163,7 @@ pub fn spawnable_execute_behavior_system(
     for contact_event in contact_events.iter() {
         contact_events_vec.push(*contact_event);
     }
-    for (entity, mut spawnable_component, mut rb_vel, spawnable_transform) in
+    for (entity, mut spawnable_component, mut rb_vel, rb_pos, spawnable_transform) in
         spawnable_query.iter_mut()
     {
         let behaviors = spawnable_component.behaviors.clone();
@@ -174,6 +193,32 @@ pub fn spawnable_execute_behavior_system(
                         &spawnable_component,
                         &mut rb_vel,
                     );
+                }
+                BehaviorType::SpawnMob(data) => {
+                    if let Some(timer) = spawn_mob_timers.timers.get_mut(&entity.id()) {
+                        timer.tick(time.delta());
+                        if timer.just_finished() {
+                            // spawn mob
+
+                            let position = Vec2::new(
+                                rb_pos.position.translation.x + data.offset_position.x,
+                                rb_pos.position.translation.y + data.offset_position.y,
+                            );
+
+                            spawn_mob(
+                                &data.mob_type,
+                                &mob_resource,
+                                position,
+                                &mut commands,
+                                &rapier_config,
+                                &game_parameters,
+                            )
+                        }
+                    } else {
+                        spawn_mob_timers
+                            .timers
+                            .insert(entity.id(), Timer::from_seconds(data.period, true));
+                    }
                 }
                 BehaviorType::BrakeHorizontal => {
                     brake_horizontal(
@@ -208,10 +253,12 @@ fn explode_on_impact(
 
 pub fn despawn_spawnable_system(
     mut commands: Commands,
+    mut spawn_mob_timers: ResMut<SpawnMobTimersResource>,
     spawnable_query: Query<(Entity, &SpawnableComponent)>,
 ) {
     for (entity, spawnable_component) in spawnable_query.iter() {
         if spawnable_component.should_despawn {
+            spawn_mob_timers.timers.remove(&entity.id());
             commands.entity(entity).despawn_recursive();
         }
     }
