@@ -1,3 +1,4 @@
+//! `thetawave` arena module
 mod barrier;
 mod gate;
 

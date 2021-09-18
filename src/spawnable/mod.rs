@@ -10,44 +10,61 @@ use strum_macros::Display;
 mod formation;
 mod mob;
 
-pub use self::formation::{spawn_formation_system, SpawnerResource, SpawnerTimer};
+pub use self::formation::{spawner_system, SpawnerResource, SpawnerResourceData};
 pub use self::mob::{spawn_mob, MobComponent, MobData, MobsResource};
 
 pub struct SpawnableComponent {
+    /// Type of spawnable
     pub spawnable_type: SpawnableType,
-    /// Acceleration of the player
+    /// Acceleration stat
     pub acceleration: Vec2,
-    /// Deceleration of the player
+    /// Deceleration stat
     pub deceleration: Vec2,
-    /// Maximum speed of the player
+    /// Maximum speed stat
     pub speed: Vec2,
+    /// Angular acceleration stat
     pub angular_acceleration: f32,
+    /// Angular deceleration stat
     pub angular_deceleration: f32,
+    /// Maximum angular speed stat
     pub angular_speed: f32,
+    /// List of behaviors that are performed
     pub behaviors: Vec<BehaviorType>,
+    /// Whether the mob should despawn next frame
+    // TODO: try removing this
     pub should_despawn: bool,
 }
 
+/// Initial motion that entity is spawned in with
 #[derive(Deserialize)]
 pub struct InitialMotion {
+    /// Optional random range of angular velocity
     pub random_angvel: Option<(f32, f32)>,
 }
 
+/// Data used to periodically spawn mobs
 #[derive(Deserialize, Clone)]
 pub struct SpawnMobBehaviorData {
+    /// Type of mob to spawn
     pub mob_type: MobType,
+    /// Offset from center of source entity
     pub offset_position: Vec2,
+    /// Period between spawnings
     pub period: f32,
 }
 
+/// Resource used to track mob spawning timers for SpawnMob behavior
+// TODO: consider moving into spawnable component
 pub struct SpawnMobTimersResource {
-    pub timers: HashMap<u32, Timer>, //maps ids of entities to timers
+    /// Maps entity ids to Timers
+    pub timers: HashMap<u32, Timer>,
 }
 
+/// Types of behaviors that can be performed by spawnables
 #[derive(Deserialize, Clone)]
 pub enum BehaviorType {
     RotateToTarget(Option<Vec2>),
-    SpawnMob(SpawnMobBehaviorData), // type of mob, offset spawn position (from center), period
+    SpawnMob(SpawnMobBehaviorData),
     MoveForward,
     MoveDown,
     MoveRight,
@@ -143,6 +160,8 @@ pub enum EffectType {
     MobExplosion,
     Giblets(MobType),
 }
+
+/// Manages excuting behaviors of spawnables
 pub fn spawnable_execute_behavior_system(
     mut commands: Commands,
     mut contact_events: EventReader<ContactEvent>,
@@ -159,10 +178,13 @@ pub fn spawnable_execute_behavior_system(
         &Transform,
     )>,
 ) {
+    // Get all contact events first (can't be read more than once within a system)
     let mut contact_events_vec = vec![];
     for contact_event in contact_events.iter() {
         contact_events_vec.push(*contact_event);
     }
+
+    // Iterate through all spawnable entities and execute their behavior
     for (entity, mut spawnable_component, mut rb_vel, rb_pos, spawnable_transform) in
         spawnable_query.iter_mut()
     {
@@ -236,6 +258,7 @@ pub fn spawnable_execute_behavior_system(
     }
 }
 
+/// Explode spawnable on impact
 fn explode_on_impact(
     entity: Entity,
     spawnable_component: &mut SpawnableComponent,
@@ -251,6 +274,7 @@ fn explode_on_impact(
     }
 }
 
+/// Despawn spawnables that are flagged with 'should_despawn'
 pub fn despawn_spawnable_system(
     mut commands: Commands,
     mut spawn_mob_timers: ResMut<SpawnMobTimersResource>,
@@ -264,10 +288,12 @@ pub fn despawn_spawnable_system(
     }
 }
 
+/// Manages setting targeting of spawnables
 pub fn spawnable_set_target_behavior_system(
     player_query: Query<&Transform, With<PlayerComponent>>,
     mut spawnable_query: Query<(&mut SpawnableComponent, &Transform)>,
 ) {
+    // Sets targetting to None
     for (mut spawnable_component, _) in spawnable_query.iter_mut() {
         for behavior in spawnable_component.behaviors.iter_mut() {
             if let BehaviorType::RotateToTarget(_) = behavior {
@@ -276,6 +302,7 @@ pub fn spawnable_set_target_behavior_system(
         }
     }
 
+    // Recalculates what the target should be
     for player_transform in player_query.iter() {
         for (mut spawnable_component, spawnable_transform) in spawnable_query.iter_mut() {
             match &spawnable_component.spawnable_type {
@@ -314,6 +341,7 @@ pub fn spawnable_set_target_behavior_system(
     }
 }
 
+/// Manages setting behaviors due to contact events
 pub fn spawnable_set_contact_behavior_system(
     mut contact_events: EventReader<ContactEvent>,
     mut spawnable_query: Query<(Entity, &mut SpawnableComponent)>,
@@ -356,10 +384,13 @@ pub fn spawnable_set_contact_behavior_system(
     }
 }
 
+/// Signed modulo function
+// TODO: move to a tools module
 pub fn signed_modulo(a: f32, n: f32) -> f32 {
     a - (a / n).floor() * n
 }
 
+/// Rotates entity to face target
 fn rotate_to_target(
     transform: &Transform,
     target_position: Vec2,
@@ -393,6 +424,7 @@ fn rotate_to_target(
     }
 }
 
+/// Move entity forward along it's axis
 fn move_forward(
     rapier_config: &RapierConfiguration,
     transform: &Transform,
@@ -422,6 +454,7 @@ fn move_forward(
     }
 }
 
+/// Moves entity down
 fn move_down(
     rapier_config: &RapierConfiguration,
     spawnable_component: &SpawnableComponent,
@@ -435,6 +468,7 @@ fn move_down(
     }
 }
 
+/// Moves entity right
 fn move_right(
     rapier_config: &RapierConfiguration,
     spawnable_component: &SpawnableComponent,
@@ -447,6 +481,7 @@ fn move_right(
     }
 }
 
+/// Moves entity left
 fn move_left(
     rapier_config: &RapierConfiguration,
     spawnable_component: &SpawnableComponent,
@@ -459,6 +494,7 @@ fn move_left(
     }
 }
 
+/// Decelerates to 0 horizontal movement
 fn brake_horizontal(
     rapier_config: &RapierConfiguration,
     game_parameters: &GameParametersResource,

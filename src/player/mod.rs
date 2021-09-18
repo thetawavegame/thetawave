@@ -1,4 +1,4 @@
-//! `thetawave_lib` player module
+//! `thetawave` player module
 
 mod components;
 mod resources;

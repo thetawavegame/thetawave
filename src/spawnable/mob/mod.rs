@@ -12,49 +12,77 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use rand::{thread_rng, Rng};
 
+/// Core component for mobs
 pub struct MobComponent {
     /// Type of mob
     pub mob_type: MobType,
 }
 
+/// Data about mob entities that can be stored in data ron file
 #[derive(Deserialize)]
 pub struct MobData {
+    /// Type of mob
     pub mob_type: MobType,
+    /// List of behaviors the mob performs
     pub behaviors: Vec<BehaviorType>,
+    /// Acceleration stat
     pub acceleration: Vec2,
+    /// Deceleration stat
     pub deceleration: Vec2,
+    /// Maximum speed that can be accelerated to
     pub speed: Vec2,
+    /// Angular acceleration stat
     pub angular_acceleration: f32,
+    /// Angular deceleration stat
     pub angular_deceleration: f32,
+    /// Maximum angular speed that can be accelerated to
     pub angular_speed: f32,
+    /// Motion that the mob initializes with
     pub initial_motion: InitialMotion,
+    /// Dimensions of the mob's hitbox
     pub collider_dimensions: Vec2,
+    /// Texture
     pub texture: TextureData,
+    /// Optional data describing the thruster
     pub thruster: Option<ThrusterData>,
 }
 
+/// Data describing thrusters
 #[derive(Deserialize)]
 pub struct ThrusterData {
+    /// Y offset from center of entity
     pub y_offset: f32,
+    /// Texture
     pub texture: TextureData,
 }
 
+/// Data describing texture
 #[derive(Deserialize)]
 pub struct TextureData {
+    /// Path to the texture
     pub path: String,
+    /// Dimensions of the texture (single frame)
     pub dimensions: Vec2,
+    /// Columns in the spritesheet
     pub cols: usize,
+    /// Rows in the spritesheet
     pub rows: usize,
+    /// Duration of a frame of animation
     pub frame_duration: f32,
+    /// How the animation switches frames
     pub animation_direction: AnimationDirection,
 }
 
+/// Stores data about mob entities
 pub struct MobsResource {
+    /// Mob types mapped to mob data
     pub mobs: HashMap<MobType, MobData>,
+    /// Mob types mapped to their texture and optional thruster texture
     pub texture_atlas_handle:
         HashMap<MobType, (Handle<TextureAtlas>, Option<Handle<TextureAtlas>>)>,
 }
 
+/// Spawn a mob entity
 pub fn spawn_mob(
     mob_type: &MobType,
     mob_resource: &MobsResource,
@@ -63,6 +91,7 @@ pub fn spawn_mob(
     rapier_config: &RapierConfiguration,
     game_parameters: &GameParametersResource,
 ) {
+    /// Get data from mob resource
     let mob_data = &mob_resource.mobs[mob_type];
     let texture_atlas_handle = mob_resource.texture_atlas_handle[mob_type].0.clone_weak();
 
@@ -72,17 +101,16 @@ pub fn spawn_mob(
     let collider_size_hy =
         mob_data.collider_dimensions.y * game_parameters.sprite_scale / rapier_config.scale / 2.0;
 
-    let transform = Transform::from_scale(Vec3::new(
-        game_parameters.sprite_scale,
-        game_parameters.sprite_scale,
-        1.0,
-    ));
-
+    // create mob entity
     let mut mob = commands.spawn();
 
     mob.insert_bundle(SpriteSheetBundle {
         texture_atlas: texture_atlas_handle,
-        transform,
+        transform: Transform::from_scale(Vec3::new(
+            game_parameters.sprite_scale,
+            game_parameters.sprite_scale,
+            1.0,
+        )),
         ..Default::default()
     })
     .insert(AnimationComponent {
@@ -138,9 +166,8 @@ pub fn spawn_mob(
     })
     .insert(Name::new(mob_data.mob_type.to_string()));
 
+    // spawn thruster as child if mob has thruster
     if let Some(thruster) = &mob_data.thruster {
-        let thruster_transform = Transform::from_xyz(0.0, thruster.y_offset, 0.0);
-
         let texture_atlas_handle = mob_resource.texture_atlas_handle[mob_type]
             .1
             .as_ref()
@@ -151,7 +178,7 @@ pub fn spawn_mob(
             parent
                 .spawn_bundle(SpriteSheetBundle {
                     texture_atlas: texture_atlas_handle,
-                    transform: thruster_transform,
+                    transform: Transform::from_xyz(0.0, thruster.y_offset, 0.0),
                     ..Default::default()
                 })
                 .insert(AnimationComponent {

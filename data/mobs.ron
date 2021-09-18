@@ -171,7 +171,7 @@
 				cols: 4,
 				rows: 1,
 				frame_duration: 0.15,
-				animation_direction: PingPong(Forward),
+				animation_direction: Forward,
 			)
 		)),
 	),

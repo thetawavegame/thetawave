@@ -53,11 +53,10 @@ fn main() {
                 .unwrap(),
             texture_atlas_handle: HashMap::new(),
         })
-        .insert_resource(
-            from_bytes::<spawnable::SpawnerResource>(include_bytes!("../data/spawner.ron"))
+        .insert_resource(spawnable::SpawnerResource::from(
+            from_bytes::<spawnable::SpawnerResourceData>(include_bytes!("../data/spawner.ron"))
                 .unwrap(),
-        )
-        .insert_resource(spawnable::SpawnerTimer(Timer::from_seconds(5.0, true)))
+        ))
         .insert_resource(
             from_bytes::<background::BackgroundsResource>(include_bytes!(
                 "../data/backgrounds.ron"
@@ -75,7 +74,7 @@ fn main() {
         .add_startup_system(arena::spawn_despawn_gates_system.system().after("init"))
         .add_startup_system(background::create_background_system.system().after("init"))
         .add_startup_system(player::spawn_player_system.system().after("init"))
-        .add_system_to_stage(CoreStage::First, spawnable::spawn_formation_system.system())
+        .add_system_to_stage(CoreStage::First, spawnable::spawner_system.system())
         .add_system(player::player_movement_system.system())
         .add_system_to_stage(
             CoreStage::PostUpdate,
@@ -112,6 +111,7 @@ fn main() {
     app.run();
 }
 
+/// Initialize values for the game
 fn setup_game(
     mut commands: Commands,
     asset_server: Res<AssetServer>,

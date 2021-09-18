@@ -35,6 +35,7 @@ macro_rules! confgen {
     }
 }
 
+/// Generates the display config file
 pub fn generate_config_files() {
     confgen!("display.ron");
 }

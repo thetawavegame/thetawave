@@ -1,23 +1,29 @@
 use bevy::prelude::*;
 use serde::Deserialize;
 
+/// Describes how to change frames of animation
 #[derive(Deserialize, Clone)]
 pub enum AnimationDirection {
     Forward,
     PingPong(PingPongDirection),
 }
 
+/// Current direction of a pingping animation
 #[derive(Deserialize, Clone)]
 pub enum PingPongDirection {
     Forward,
     Backward,
 }
 
+/// Component for managing animation
 pub struct AnimationComponent {
+    /// Timer to track frame duration,
     pub timer: Timer,
+    /// Direction of the animation
     pub direction: AnimationDirection,
 }
 
+/// Handles animation of sprites
 pub fn animate_sprite_system(
     time: Res<Time>,
     texture_atlases: Res<Assets<TextureAtlas>>,
