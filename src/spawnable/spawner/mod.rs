@@ -1,25 +1,21 @@
-use crate::{
-    game::GameParametersResource,
-    spawnable::{spawn_mob, SpawnableType},
-};
+use crate::{game::GameParametersResource, spawnable::MobsResource, tools::weighted_rng};
 use bevy::prelude::*;
 use bevy_rapier2d::physics::RapierConfiguration;
 use core::time::Duration;
-use rand::{thread_rng, Rng};
 use serde::Deserialize;
 
-use super::MobsResource;
+mod formation;
 
 /// Spawner resource data in spawner.ron data file
 #[derive(Deserialize)]
 pub struct SpawnerResourceData {
-    pub formation_pool: Vec<Formation>,
+    pub formation_pool: Vec<formation::Formation>,
     pub initial_duration: f32,
 }
 
 /// Spawner resource for managing formations and spawning
 pub struct SpawnerResource {
-    pub formation_pool: Vec<Formation>,
+    pub formation_pool: Vec<formation::Formation>,
     pub spawn_timer: Timer,
 }
 
@@ -63,52 +59,6 @@ impl SpawnerResource {
     }
 }
 
-/// Used for storing information about a spawnables in formations
-#[derive(Deserialize)]
-pub struct FormationSpawnable {
-    /// Type of spawnable in formation
-    pub spawnable_type: SpawnableType,
-    /// Position of the spawnable
-    pub position: Vec2,
-}
-
-/// A group of spawnables to be spawned at the same time
-#[derive(Deserialize)]
-pub struct Formation {
-    /// Vector of spawnables with positions
-    pub formation_spawnables: Vec<FormationSpawnable>,
-    /// Relative likelihood of spawning
-    pub weight: f32,
-    /// Time until next spawn
-    pub period: f32,
-}
-
-impl Formation {
-    pub fn spawn_formation(
-        &self,
-        mobs: &MobsResource,
-        commands: &mut Commands,
-        rapier_config: &RapierConfiguration,
-        game_parameters: &GameParametersResource,
-    ) {
-        for formation_spawnable in self.formation_spawnables.iter() {
-            // TODO: add cases for items, consumables, etc, as they are added
-            // spawn enemy
-            match &formation_spawnable.spawnable_type {
-                SpawnableType::Mob(mob_type) => spawn_mob(
-                    mob_type,
-                    mobs,
-                    formation_spawnable.position,
-                    commands,
-                    rapier_config,
-                    game_parameters,
-                ),
-                _ => {}
-            }
-        }
-    }
-}
-
 /// Manage regular spawning of entities
 pub fn spawner_system(
     mut commands: Commands,
@@ -130,19 +80,4 @@ pub fn spawner_system(
             &game_parameters,
         );
     }
-}
-
-/// Randomly picks index of vector using weights
-/// Takes in a vector of weights
-pub fn weighted_rng(probs: Vec<f32>) -> usize {
-    let prob_space = probs.iter().fold(0.0, |sum, prob| sum + prob);
-    let pos = thread_rng().gen::<f32>() * prob_space;
-    let mut sum = 0.0;
-    for (idx, prob) in probs.iter().enumerate() {
-        sum += prob;
-        if sum > pos {
-            return idx;
-        }
-    }
-    unreachable!("Error in probabilities.");
 }

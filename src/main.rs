@@ -18,6 +18,7 @@ mod game;
 mod options;
 mod player;
 mod spawnable;
+mod tools;
 mod visual;
 
 fn main() {

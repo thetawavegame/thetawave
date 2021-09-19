@@ -1,17 +1,18 @@
-use std::collections::HashMap;
-
-use crate::game::GameParametersResource;
-use crate::player::PlayerComponent;
+use crate::{
+    game::GameParametersResource, player::PlayerComponent, tools::signed_modulo,
+    visual::AnimationDirection,
+};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
+use std::collections::HashMap;
 use strum_macros::Display;
 
-mod formation;
 mod mob;
+mod spawner;
 
-pub use self::formation::{spawner_system, SpawnerResource, SpawnerResourceData};
 pub use self::mob::{spawn_mob, MobComponent, MobData, MobsResource};
+pub use self::spawner::{spawner_system, SpawnerResource, SpawnerResourceData};
 
 pub struct SpawnableComponent {
     /// Type of spawnable
@@ -33,6 +34,23 @@ pub struct SpawnableComponent {
     /// Whether the mob should despawn next frame
     // TODO: try removing this
     pub should_despawn: bool,
+}
+
+/// Data describing texture
+#[derive(Deserialize)]
+pub struct TextureData {
+    /// Path to the texture
+    pub path: String,
+    /// Dimensions of the texture (single frame)
+    pub dimensions: Vec2,
+    /// Columns in the spritesheet
+    pub cols: usize,
+    /// Rows in the spritesheet
+    pub rows: usize,
+    /// Duration of a frame of animation
+    pub frame_duration: f32,
+    /// How the animation switches frames
+    pub animation_direction: AnimationDirection,
 }
 
 /// Initial motion that entity is spawned in with
@@ -382,12 +400,6 @@ pub fn spawnable_set_contact_behavior_system(
             }
         }
     }
-}
-
-/// Signed modulo function
-// TODO: move to a tools module
-pub fn signed_modulo(a: f32, n: f32) -> f32 {
-    a - (a / n).floor() * n
 }
 
 /// Rotates entity to face target

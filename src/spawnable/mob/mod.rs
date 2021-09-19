@@ -4,8 +4,9 @@ use std::{collections::HashMap, string::ToString};
 use crate::{
     game::GameParametersResource,
     spawnable::InitialMotion,
+    spawnable::TextureData,
     spawnable::{BehaviorType, MobType, SpawnableComponent, SpawnableType},
-    visual::{AnimationComponent, AnimationDirection},
+    visual::AnimationComponent,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 use bevy::prelude::*;
@@ -56,23 +57,6 @@ pub struct ThrusterData {
     pub texture: TextureData,
 }
 
-/// Data describing texture
-#[derive(Deserialize)]
-pub struct TextureData {
-    /// Path to the texture
-    pub path: String,
-    /// Dimensions of the texture (single frame)
-    pub dimensions: Vec2,
-    /// Columns in the spritesheet
-    pub cols: usize,
-    /// Rows in the spritesheet
-    pub rows: usize,
-    /// Duration of a frame of animation
-    pub frame_duration: f32,
-    /// How the animation switches frames
-    pub animation_direction: AnimationDirection,
-}
-
 /// Stores data about mob entities
 pub struct MobsResource {
     /// Mob types mapped to mob data
@@ -91,7 +75,7 @@ pub fn spawn_mob(
     rapier_config: &RapierConfiguration,
     game_parameters: &GameParametersResource,
 ) {
-    /// Get data from mob resource
+    // Get data from mob resource
     let mob_data = &mob_resource.mobs[mob_type];
     let texture_atlas_handle = mob_resource.texture_atlas_handle[mob_type].0.clone_weak();
 
