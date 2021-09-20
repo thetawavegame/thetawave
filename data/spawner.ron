@@ -1,0 +1,91 @@
+(
+	initial_duration: 5.0,
+	formation_pool: [
+		(
+			formation_spawnables: [
+				(
+					spawnable_type: Mob(Enemy(MissileLauncher)),
+					position: (0.0, 50.0),
+				),
+				(
+					spawnable_type: Mob(Enemy(Pawn)),
+					position: (20.0, 60.0),
+				),
+				(
+					spawnable_type: Mob(Enemy(Pawn)),
+					position: (-20.0, 60.0),
+				),
+			],
+			weight: 1.0,
+			period: 7.0,
+		),
+		(
+			formation_spawnables: [
+				(
+					spawnable_type: Mob(Enemy(Drone)),
+					position: (0.0, 50.0),
+				),
+				(
+					spawnable_type: Mob(Ally(Hauler)),
+					position: (20.0, 60.0),
+				),
+				(
+					spawnable_type: Mob(Ally(Hauler)),
+					position: (-20.0, 60.0),
+				),
+			],
+			weight: 1.0,
+			period: 6.0,
+		),
+		(
+			formation_spawnables: [
+				(
+					spawnable_type: Mob(Enemy(Missile)),
+					position: (0.0, 50.0),
+				),
+				(
+					spawnable_type: Mob(Enemy(Missile)),
+					position: (20.0, 60.0),
+				),
+				(
+					spawnable_type: Mob(Enemy(Missile)),
+					position: (-20.0, 60.0),
+				),
+			],
+			weight: 1.0,
+			period: 4.0,
+		),
+		(
+			formation_spawnables: [
+				(
+					spawnable_type: Mob(Enemy(StraferRight)),
+					position: (0.0, 50.0),
+				),
+				(
+					spawnable_type: Mob(Enemy(StraferLeft)),
+					position: (-20.0, 60.0),
+				),
+			],
+			weight: 1.0,
+			period: 8.0,
+		),
+		(
+			formation_spawnables: [
+				(
+					spawnable_type: Mob(Neutral(MoneyAsteroid)),
+					position: (0.0, 50.0),
+				),
+				(
+					spawnable_type: Mob(Neutral(MoneyAsteroid)),
+					position: (20.0, 60.0),
+				),
+				(
+					spawnable_type: Mob(Neutral(MoneyAsteroid)),
+					position: (-20.0, 60.0),
+				),
+			],
+			weight: 1.0,
+			period: 4.0,
+		),
+	]
+)

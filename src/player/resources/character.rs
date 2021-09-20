@@ -16,6 +16,8 @@ pub struct Character {
     pub speed: Vec2,
     /// Collider size (relative to the sprite size)
     pub collider_dimensions: Vec2,
+    /// Density of the collider (mass of collider is proportional to its size)
+    pub collider_density: f32,
     /// Sprite sheet path
     pub sprite_path: String,
 }

@@ -1,4 +1,4 @@
-//! `thetawave_lib` game module
+//! `thetawave` game module
 
 mod resources;
 

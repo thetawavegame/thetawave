@@ -1,4 +1,4 @@
-//! `thetawave_lib` background module
+//! `thetawave` background module
 
 use bevy::prelude::Commands;
 use bevy::prelude::*;

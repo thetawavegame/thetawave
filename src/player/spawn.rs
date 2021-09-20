@@ -51,9 +51,11 @@ pub fn spawn_player_system(
                 restitution: 1.0,
                 ..Default::default()
             },
+            mass_properties: ColliderMassProps::Density(character.collider_density),
             ..Default::default()
         })
         .insert(ColliderPositionSync::Discrete)
         .insert(ColliderDebugRender::with_id(1))
-        .insert(PlayerComponent::from(character));
+        .insert(PlayerComponent::from(character))
+        .insert(Name::new("Player"));
 }

@@ -11,6 +11,10 @@ pub struct PlayerComponent {
     pub deceleration: Vec2,
     /// Maximum speed of the player
     pub speed: Vec2,
+    /// Collider dimensions
+    pub collider_dimensions: Vec2,
+    /// Collider density
+    pub collider_density: f32,
 }
 
 impl From<&Character> for PlayerComponent {
@@ -19,6 +23,8 @@ impl From<&Character> for PlayerComponent {
             acceleration: character.acceleration,
             deceleration: character.deceleration,
             speed: character.speed,
+            collider_dimensions: character.collider_dimensions,
+            collider_density: character.collider_density,
         }
     }
 }

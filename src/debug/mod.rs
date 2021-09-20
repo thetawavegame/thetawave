@@ -1,4 +1,4 @@
-//! `thetawave_lib` debug module
+//! `thetawave` debug module
 use bevy::prelude::*;
 use bevy_prototype_debug_lines::*;
 use bevy_rapier2d::prelude::*;

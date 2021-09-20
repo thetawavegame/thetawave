@@ -8,7 +8,7 @@ use std::{
 
 mod display;
 
-pub use self::display::{toggle_fullscreen_system, DisplayConfig};
+pub use self::display::{toggle_fullscreen_system, toggle_zoom_system, DisplayConfig};
 
 /// Creates config file in config directory from config file in this directory
 macro_rules! confgen {
@@ -35,6 +35,7 @@ macro_rules! confgen {
     }
 }
 
+/// Generates the display config file
 pub fn generate_config_files() {
     confgen!("display.ron");
 }

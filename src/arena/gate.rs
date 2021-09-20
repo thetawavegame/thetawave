@@ -1,0 +1,55 @@
+use crate::spawnable::{SpawnMobTimersResource, SpawnableComponent};
+use bevy::prelude::*;
+use bevy_rapier2d::prelude::*;
+
+/// Despawn gate tag
+pub struct DespawnGateComponent;
+
+/// Spawn gates for despawning entities
+pub fn spawn_despawn_gates_system(mut commands: Commands) {
+    spawn_despawn_gate(&mut commands, Vec2::new(0.0, -45.0), 96.0, 4.0);
+}
+
+/// Spawn a despawn gate
+fn spawn_despawn_gate(commands: &mut Commands, position: Vec2, width: f32, height: f32) {
+    commands
+        .spawn()
+        .insert_bundle(ColliderBundle {
+            shape: ColliderShape::cuboid(width / 2.0, height / 2.0),
+            collider_type: ColliderType::Sensor,
+            position: position.into(),
+            flags: ColliderFlags {
+                active_events: ActiveEvents::INTERSECTION_EVENTS,
+                ..Default::default()
+            },
+            ..Default::default()
+        })
+        .insert(ColliderPositionSync::Discrete)
+        .insert(DespawnGateComponent)
+        .insert(Name::new("Despawn Gate"));
+}
+
+/// Despawn spawnables when they intersect with despawn gates
+pub fn despawn_gates_system(
+    mut commands: Commands,
+    mut intersection_events: EventReader<IntersectionEvent>,
+    mut spawn_mob_timers: ResMut<SpawnMobTimersResource>,
+    despawn_gate_query: Query<Entity, With<DespawnGateComponent>>,
+    spawnable_query: Query<Entity, With<SpawnableComponent>>,
+) {
+    for despawn_gate_entity in despawn_gate_query.iter() {
+        for intersection_event in intersection_events.iter() {
+            let collider1_entity = intersection_event.collider1.entity();
+            let collider2_entity = intersection_event.collider2.entity();
+
+            if despawn_gate_entity == collider1_entity
+                && spawnable_query
+                    .iter()
+                    .any(|spawnable_entity| spawnable_entity == collider2_entity)
+            {
+                spawn_mob_timers.timers.remove(&collider2_entity.id()); // removes timer from spawn mob timers resource (if it exists)
+                commands.entity(collider2_entity).despawn_recursive();
+            }
+        }
+    }
+}

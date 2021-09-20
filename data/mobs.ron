@@ -1,0 +1,267 @@
+{
+	Enemy(Drone): (
+		mob_type: Enemy(Drone),
+		behaviors: [MoveDown, BrakeHorizontal],
+		acceleration: (0.0, 0.02),
+		deceleration: (0.02, 0.01),
+		speed: (0.0, 1.0),
+		angular_acceleration: 0.0,
+		angular_deceleration: 0.0,
+		angular_speed: 0.0,
+		initial_motion: (
+			random_angvel: None,
+		),
+		collider_dimensions: (14.0, 14.0),
+		texture: (
+			path: "texture/drone_spritesheet.png",
+			dimensions: (18.0, 18.0),
+			cols: 3,
+			rows: 1,
+			frame_duration: 0.25,
+			animation_direction: PingPong(Forward),
+		),
+		thruster: Some((
+			y_offset: 11.0,
+			texture: (
+				path: "texture/drone_thrusters_spritesheet.png",
+				dimensions: (12.0, 8.0),
+				cols: 3,
+				rows: 1,
+				frame_duration: 0.15,
+				animation_direction: PingPong(Forward),
+			)
+		)),
+	),
+	Enemy(Pawn): (
+		mob_type: Enemy(Pawn),
+		behaviors: [MoveDown, BrakeHorizontal],
+		acceleration: (0.0, 0.02),
+		deceleration: (0.02, 0.01),
+		speed: (0.0, 0.85),
+		angular_acceleration: 0.0,
+		angular_deceleration: 0.0,
+		angular_speed: 0.0,
+		initial_motion: (
+			random_angvel: None,
+		),
+		collider_dimensions: (14.0, 14.0),
+		sprite_dimensions: (18.0, 18.0),
+		texture: (
+			path: "texture/pawn_spritesheet.png",
+			dimensions: (18.0, 18.0),
+			cols: 3,
+			rows: 1,
+			frame_duration: 0.25,
+			animation_direction: PingPong(Forward),
+		),
+		thruster: Some((
+			y_offset: 11.0,
+			texture: (
+				path: "texture/pawn_thrusters_spritesheet.png",
+				dimensions: (12.0, 8.0),
+				cols: 3,
+				rows: 1,
+				frame_duration: 0.15,
+				animation_direction: PingPong(Forward),
+			)
+		)),
+	),
+	Ally(Hauler): (
+		mob_type: Ally(Hauler),
+		behaviors: [MoveDown, BrakeHorizontal],
+		acceleration: (0.0, 0.02),
+		deceleration: (0.02, 0.01),
+		speed: (0.0, 0.7),
+		angular_acceleration: 0.0,
+		angular_deceleration: 0.0,
+		angular_speed: 0.0,
+		initial_motion: (
+			random_angvel: None,
+		),
+		collider_dimensions: (14.0, 30.0),
+		texture: (
+			path: "texture/hauler_spritesheet.png",
+			dimensions: (22.0, 36.0),
+			cols: 3,
+			rows: 1,
+			frame_duration: 0.25,
+			animation_direction: PingPong(Forward),
+		),
+		thruster: Some((
+			y_offset: 18.0,
+			texture: (
+				path: "texture/hauler_thrusters_spritesheet.png",
+				dimensions: (22.0, 9.0),
+				cols: 3,
+				rows: 1,
+				frame_duration: 0.15,
+				animation_direction: PingPong(Forward),
+			)
+		)),
+	),
+	Enemy(MissileLauncher): (
+		mob_type: Enemy(MissileLauncher),
+		behaviors: [
+			MoveDown,
+			BrakeHorizontal,
+			SpawnMob(
+				(
+					mob_type: Enemy(Missile),
+					offset_position: (0.0, -7.0),
+					period: 4.0,
+				)
+			)
+		],
+		acceleration: (0.0, 0.02),
+		deceleration: (0.02, 0.01),
+		speed: (0.0, 0.75),
+		angular_acceleration: 0.0,
+		angular_deceleration: 0.0,
+		angular_speed: 0.0,
+		initial_motion: (
+			random_angvel: None,
+		),
+		collider_dimensions: (17.0, 22.0),
+		texture: (
+			path: "texture/missile_launcher_spritesheet.png",
+			dimensions: (21.0, 26.0),
+			cols: 3,
+			rows: 1,
+			frame_duration: 0.25,
+			animation_direction: PingPong(Forward),
+		),
+		thruster: Some((
+			y_offset: 13.0,
+			texture: (
+				path: "texture/missile_launcher_thrusters_spritesheet.png",
+				dimensions: (15.0, 5.0),
+				cols: 3,
+				rows: 1,
+				frame_duration: 0.15,
+				animation_direction: PingPong(Forward),
+			)
+		)),
+	),
+	Enemy(Missile): (
+		mob_type: Enemy(Missile),
+		behaviors: [RotateToTarget(None), MoveForward, ExplodeOnImpact],
+		acceleration: (0.12, 0.2),
+		deceleration: (0.05, 0.05),
+		speed: (1.5, 1.5),
+		angular_acceleration: 0.5,
+		angular_deceleration: 0.0,
+		angular_speed: 1.8,
+		initial_motion: (
+			random_angvel: None,
+		),
+		collider_dimensions: (6.0, 14.0),
+		texture: (
+			path: "texture/missile_spritesheet.png",
+			dimensions: (11.0, 17.0),
+			cols: 4,
+			rows: 1,
+			frame_duration: 0.1,
+			animation_direction: Forward,
+		),
+		thruster: Some((
+			y_offset: 9.0,
+			texture: (
+				path: "texture/missile_thrusters_spritesheet.png",
+				dimensions: (11.0, 7.0),
+				cols: 4,
+				rows: 1,
+				frame_duration: 0.15,
+				animation_direction: Forward,
+			)
+		)),
+	),
+	Enemy(StraferRight): (
+		mob_type: Enemy(StraferRight),
+		behaviors: [MoveDown, MoveRight],
+		acceleration: (0.02, 0.02),
+		deceleration: (0.02, 0.02),
+		speed: (0.75, 0.75),
+		angular_acceleration: 0.0,
+		angular_deceleration: 0.0,
+		angular_speed: 0.0,
+		initial_motion: (
+			random_angvel: None,
+		),
+		collider_dimensions: (20.0, 8.0),
+		texture: (
+			path: "texture/strafer_spritesheet.png",
+			dimensions: (24.0, 12.0),
+			cols: 3,
+			rows: 1,
+			frame_duration: 0.25,
+			animation_direction: PingPong(Forward),
+		),
+		thruster: Some((
+			y_offset: 7.0,
+			texture: (
+				path: "texture/strafer_thrusters_spritesheet.png",
+				dimensions: (22.0, 9.0),
+				cols: 3,
+				rows: 1,
+				frame_duration: 0.15,
+				animation_direction: PingPong(Forward),
+			)
+		)),
+	),
+	Enemy(StraferLeft): (
+		mob_type: Enemy(StraferLeft),
+		behaviors: [MoveDown, MoveLeft],
+		acceleration: (0.02, 0.02),
+		deceleration: (0.02, 0.02),
+		speed: (0.75, 0.75),
+		angular_acceleration: 0.0,
+		angular_deceleration: 0.0,
+		angular_speed: 0.0,
+		initial_motion: (
+			random_angvel: None,
+		),
+		collider_dimensions: (20.0, 8.0),
+		texture: (
+			path: "texture/strafer_spritesheet.png",
+			dimensions: (24.0, 12.0),
+			cols: 3,
+			rows: 1,
+			frame_duration: 0.25,
+			animation_direction: PingPong(Forward),
+		),
+		thruster: Some((
+			y_offset: 7.0,
+			texture: (
+				path: "texture/strafer_thrusters_spritesheet.png",
+				dimensions: (22.0, 9.0),
+				cols: 3,
+				rows: 1,
+				frame_duration: 0.15,
+				animation_direction: PingPong(Forward),
+			)
+		)),
+	),
+	Neutral(MoneyAsteroid): (
+		mob_type: Neutral(MoneyAsteroid),
+		behaviors: [MoveDown],
+		acceleration: (0.0, 0.02),
+		deceleration: (0.02, 0.01),
+		speed: (0.0, 0.75),
+		angular_acceleration: 0.0,
+		angular_deceleration: 0.0,
+		angular_speed: 0.0,
+		initial_motion: (
+			random_angvel: Some((-1.0, 1.0)),
+		),
+		collider_dimensions: (18.0, 18.0),
+		texture: (
+			path: "texture/money_asteroid_spritesheet.png",
+			dimensions: (21.0, 21.0),
+			cols: 1,
+			rows: 1,
+			frame_duration: 0.25,
+			animation_direction: PingPong(Forward),
+		),
+		thruster: None,
+	),
+}
