@@ -93,7 +93,13 @@ fn main() {
             CoreStage::PostUpdate,
             spawnable::spawnable_execute_behavior_system
                 .system()
-                .label("execute_behavior")
+                .after("set_contact_behavior")
+                .after("set_target_behavior"),
+        )
+        .add_system_to_stage(
+            CoreStage::PostUpdate,
+            spawnable::mob_execute_behavior_system
+                .system()
                 .after("set_contact_behavior")
                 .after("set_target_behavior"),
         )

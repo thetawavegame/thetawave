@@ -1,7 +1,8 @@
 {
 	Enemy(Drone): (
 		mob_type: Enemy(Drone),
-		behaviors: [MoveDown, BrakeHorizontal],
+		spawnable_behaviors: [MoveDown, BrakeHorizontal],
+		mob_behaviors: [],
 		acceleration: (0.0, 0.02),
 		deceleration: (0.02, 0.01),
 		speed: (0.0, 1.0),
@@ -34,7 +35,8 @@
 	),
 	Enemy(Pawn): (
 		mob_type: Enemy(Pawn),
-		behaviors: [MoveDown, BrakeHorizontal],
+		spawnable_behaviors: [MoveDown, BrakeHorizontal],
+		mob_behaviors: [],
 		acceleration: (0.0, 0.02),
 		deceleration: (0.02, 0.01),
 		speed: (0.0, 0.85),
@@ -68,7 +70,8 @@
 	),
 	Ally(Hauler): (
 		mob_type: Ally(Hauler),
-		behaviors: [MoveDown, BrakeHorizontal],
+		spawnable_behaviors: [MoveDown, BrakeHorizontal],
+		mob_behaviors: [],
 		acceleration: (0.0, 0.02),
 		deceleration: (0.02, 0.01),
 		speed: (0.0, 0.7),
@@ -101,9 +104,8 @@
 	),
 	Enemy(MissileLauncher): (
 		mob_type: Enemy(MissileLauncher),
-		behaviors: [
-			MoveDown,
-			BrakeHorizontal,
+		spawnable_behaviors: [MoveDown, BrakeHorizontal],
+		mob_behaviors: [
 			SpawnMob(
 				(
 					mob_type: Enemy(Missile),
@@ -144,7 +146,8 @@
 	),
 	Enemy(Missile): (
 		mob_type: Enemy(Missile),
-		behaviors: [RotateToTarget(None), MoveForward, ExplodeOnImpact],
+		spawnable_behaviors: [RotateToTarget(None), MoveForward],
+		mob_behaviors: [ExplodeOnImpact],
 		acceleration: (0.12, 0.2),
 		deceleration: (0.05, 0.05),
 		speed: (1.5, 1.5),
@@ -177,7 +180,8 @@
 	),
 	Enemy(StraferRight): (
 		mob_type: Enemy(StraferRight),
-		behaviors: [MoveDown, MoveRight],
+		spawnable_behaviors: [MoveDown, MoveRight],
+		mob_behaviors: [],
 		acceleration: (0.02, 0.02),
 		deceleration: (0.02, 0.02),
 		speed: (0.75, 0.75),
@@ -210,7 +214,8 @@
 	),
 	Enemy(StraferLeft): (
 		mob_type: Enemy(StraferLeft),
-		behaviors: [MoveDown, MoveLeft],
+		spawnable_behaviors: [MoveDown, MoveLeft],
+		mob_behaviors: [],
 		acceleration: (0.02, 0.02),
 		deceleration: (0.02, 0.02),
 		speed: (0.75, 0.75),
@@ -243,7 +248,8 @@
 	),
 	Neutral(MoneyAsteroid): (
 		mob_type: Neutral(MoneyAsteroid),
-		behaviors: [MoveDown],
+		spawnable_behaviors: [MoveDown],
+		mob_behaviors: [],
 		acceleration: (0.0, 0.02),
 		deceleration: (0.02, 0.01),
 		speed: (0.0, 0.75),

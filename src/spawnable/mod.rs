@@ -5,13 +5,15 @@ use crate::{
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
-use std::collections::HashMap;
 use strum_macros::Display;
 
 mod mob;
 mod spawner;
 
-pub use self::mob::{spawn_mob, MobComponent, MobData, MobsResource};
+pub use self::mob::{
+    mob_execute_behavior_system, spawn_mob, MobBehavior, MobComponent, MobData, MobsResource,
+    SpawnMobTimersResource,
+};
 pub use self::spawner::{spawner_system, SpawnerResource, SpawnerResourceData};
 
 pub struct SpawnableComponent {
@@ -30,9 +32,8 @@ pub struct SpawnableComponent {
     /// Maximum angular speed stat
     pub angular_speed: f32,
     /// List of behaviors that are performed
-    pub behaviors: Vec<BehaviorType>,
-    /// Whether the mob should despawn next frame
-    // TODO: try removing this
+    pub behaviors: Vec<SpawnableBehavior>,
+    /// Flag to despawn next frame
     pub should_despawn: bool,
 }
 
@@ -60,35 +61,15 @@ pub struct InitialMotion {
     pub random_angvel: Option<(f32, f32)>,
 }
 
-/// Data used to periodically spawn mobs
-#[derive(Deserialize, Clone)]
-pub struct SpawnMobBehaviorData {
-    /// Type of mob to spawn
-    pub mob_type: MobType,
-    /// Offset from center of source entity
-    pub offset_position: Vec2,
-    /// Period between spawnings
-    pub period: f32,
-}
-
-/// Resource used to track mob spawning timers for SpawnMob behavior
-// TODO: consider moving into spawnable component
-pub struct SpawnMobTimersResource {
-    /// Maps entity ids to Timers
-    pub timers: HashMap<u32, Timer>,
-}
-
 /// Types of behaviors that can be performed by spawnables
 #[derive(Deserialize, Clone)]
-pub enum BehaviorType {
+pub enum SpawnableBehavior {
     RotateToTarget(Option<Vec2>),
-    SpawnMob(SpawnMobBehaviorData),
     MoveForward,
     MoveDown,
     MoveRight,
     MoveLeft,
     BrakeHorizontal,
-    ExplodeOnImpact,
 }
 
 /// Type that encompasses all spawnable entities
@@ -181,112 +162,48 @@ pub enum EffectType {
 
 /// Manages excuting behaviors of spawnables
 pub fn spawnable_execute_behavior_system(
-    mut commands: Commands,
-    mut contact_events: EventReader<ContactEvent>,
     rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<GameParametersResource>,
-    mut spawn_mob_timers: ResMut<SpawnMobTimersResource>,
-    time: Res<Time>,
-    mob_resource: Res<MobsResource>,
-    mut spawnable_query: Query<(
-        Entity,
-        &mut SpawnableComponent,
-        &mut RigidBodyVelocity,
-        &RigidBodyPosition,
-        &Transform,
-    )>,
+    mut spawnable_query: Query<(&SpawnableComponent, &mut RigidBodyVelocity, &Transform)>,
 ) {
-    // Get all contact events first (can't be read more than once within a system)
-    let mut contact_events_vec = vec![];
-    for contact_event in contact_events.iter() {
-        contact_events_vec.push(*contact_event);
-    }
-
     // Iterate through all spawnable entities and execute their behavior
-    for (entity, mut spawnable_component, mut rb_vel, rb_pos, spawnable_transform) in
-        spawnable_query.iter_mut()
-    {
+    for (spawnable_component, mut rb_vel, spawnable_transform) in spawnable_query.iter_mut() {
         let behaviors = spawnable_component.behaviors.clone();
         for behavior in behaviors {
             match behavior {
-                BehaviorType::MoveDown => {
-                    move_down(&rapier_config, &spawnable_component, &mut rb_vel);
+                SpawnableBehavior::MoveDown => {
+                    move_down(&rapier_config, spawnable_component, &mut rb_vel);
                 }
-                BehaviorType::MoveRight => {
-                    move_right(&rapier_config, &spawnable_component, &mut rb_vel);
+                SpawnableBehavior::MoveRight => {
+                    move_right(&rapier_config, spawnable_component, &mut rb_vel);
                 }
-                BehaviorType::MoveLeft => {
-                    move_left(&rapier_config, &spawnable_component, &mut rb_vel);
+                SpawnableBehavior::MoveLeft => {
+                    move_left(&rapier_config, spawnable_component, &mut rb_vel);
                 }
-                BehaviorType::RotateToTarget(target_position) => {
+                SpawnableBehavior::RotateToTarget(target_position) => {
                     rotate_to_target(
                         spawnable_transform,
                         target_position.unwrap(),
-                        &spawnable_component,
+                        spawnable_component,
                         &mut rb_vel,
                     );
                 }
-                BehaviorType::MoveForward => {
+                SpawnableBehavior::MoveForward => {
                     move_forward(
                         &rapier_config,
                         spawnable_transform,
-                        &spawnable_component,
+                        spawnable_component,
                         &mut rb_vel,
                     );
                 }
-                BehaviorType::SpawnMob(data) => {
-                    if let Some(timer) = spawn_mob_timers.timers.get_mut(&entity.id()) {
-                        timer.tick(time.delta());
-                        if timer.just_finished() {
-                            // spawn mob
-
-                            let position = Vec2::new(
-                                rb_pos.position.translation.x + data.offset_position.x,
-                                rb_pos.position.translation.y + data.offset_position.y,
-                            );
-
-                            spawn_mob(
-                                &data.mob_type,
-                                &mob_resource,
-                                position,
-                                &mut commands,
-                                &rapier_config,
-                                &game_parameters,
-                            )
-                        }
-                    } else {
-                        spawn_mob_timers
-                            .timers
-                            .insert(entity.id(), Timer::from_seconds(data.period, true));
-                    }
-                }
-                BehaviorType::BrakeHorizontal => {
+                SpawnableBehavior::BrakeHorizontal => {
                     brake_horizontal(
                         &rapier_config,
                         &game_parameters,
-                        &spawnable_component,
+                        spawnable_component,
                         &mut rb_vel,
                     );
                 }
-                BehaviorType::ExplodeOnImpact => {
-                    explode_on_impact(entity, &mut spawnable_component, &contact_events_vec);
-                }
-            }
-        }
-    }
-}
-
-/// Explode spawnable on impact
-fn explode_on_impact(
-    entity: Entity,
-    spawnable_component: &mut SpawnableComponent,
-    contact_events: &[ContactEvent],
-) {
-    for contact_event in contact_events {
-        //checks for collision between spawnable and other
-        if let ContactEvent::Stopped(h1, h2) = contact_event {
-            if h1.entity() == entity || h2.entity() == entity {
-                spawnable_component.should_despawn = true;
             }
         }
     }
@@ -314,8 +231,8 @@ pub fn spawnable_set_target_behavior_system(
     // Sets targetting to None
     for (mut spawnable_component, _) in spawnable_query.iter_mut() {
         for behavior in spawnable_component.behaviors.iter_mut() {
-            if let BehaviorType::RotateToTarget(_) = behavior {
-                *behavior = BehaviorType::RotateToTarget(None);
+            if let SpawnableBehavior::RotateToTarget(_) = behavior {
+                *behavior = SpawnableBehavior::RotateToTarget(None);
             }
         }
     }
@@ -330,7 +247,7 @@ pub fn spawnable_set_target_behavior_system(
                             // set target to closest player
                             for behavior in spawnable_component.behaviors.iter_mut() {
                                 *behavior = match behavior {
-                                    BehaviorType::RotateToTarget(target) => {
+                                    SpawnableBehavior::RotateToTarget(target) => {
                                         let spawnable_position_vec2: Vec2 =
                                             spawnable_transform.translation.into();
                                         let player_position_vec2: Vec2 =
@@ -340,7 +257,9 @@ pub fn spawnable_set_target_behavior_system(
                                                 .distance(player_position_vec2)
                                                 < spawnable_position_vec2.distance(target.unwrap())
                                         {
-                                            BehaviorType::RotateToTarget(Some(player_position_vec2))
+                                            SpawnableBehavior::RotateToTarget(Some(
+                                                player_position_vec2,
+                                            ))
                                         } else {
                                             behavior.clone()
                                         }
@@ -384,8 +303,12 @@ pub fn spawnable_set_contact_behavior_system(
                                 EnemyType::StraferRight | EnemyType::StraferLeft => {
                                     for behavior in spawnable_component.behaviors.iter_mut() {
                                         *behavior = match behavior {
-                                            BehaviorType::MoveRight => BehaviorType::MoveLeft,
-                                            BehaviorType::MoveLeft => BehaviorType::MoveRight,
+                                            SpawnableBehavior::MoveRight => {
+                                                SpawnableBehavior::MoveLeft
+                                            }
+                                            SpawnableBehavior::MoveLeft => {
+                                                SpawnableBehavior::MoveRight
+                                            }
                                             _ => behavior.clone(),
                                         }
                                     }

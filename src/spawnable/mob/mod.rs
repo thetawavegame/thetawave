@@ -5,7 +5,7 @@ use crate::{
     game::GameParametersResource,
     spawnable::InitialMotion,
     spawnable::TextureData,
-    spawnable::{BehaviorType, MobType, SpawnableComponent, SpawnableType},
+    spawnable::{MobType, SpawnableBehavior, SpawnableComponent, SpawnableType},
     visual::AnimationComponent,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
@@ -17,6 +17,25 @@ use rand::{thread_rng, Rng};
 pub struct MobComponent {
     /// Type of mob
     pub mob_type: MobType,
+    pub behaviors: Vec<MobBehavior>,
+}
+
+/// Data used to periodically spawn mobs
+#[derive(Deserialize, Clone)]
+pub struct SpawnMobBehaviorData {
+    /// Type of mob to spawn
+    pub mob_type: MobType,
+    /// Offset from center of source entity
+    pub offset_position: Vec2,
+    /// Period between spawnings
+    pub period: f32,
+}
+
+/// Types of behaviors that can be performed by spawnables
+#[derive(Deserialize, Clone)]
+pub enum MobBehavior {
+    SpawnMob(SpawnMobBehaviorData),
+    ExplodeOnImpact,
 }
 
 /// Data about mob entities that can be stored in data ron file
@@ -24,8 +43,10 @@ pub struct MobComponent {
 pub struct MobData {
     /// Type of mob
     pub mob_type: MobType,
-    /// List of behaviors the mob performs
-    pub behaviors: Vec<BehaviorType>,
+    /// List of spawnable behaviors that are performed
+    pub spawnable_behaviors: Vec<SpawnableBehavior>,
+    /// List of mob behaviors that are performed
+    pub mob_behaviors: Vec<MobBehavior>,
     /// Acceleration stat
     pub acceleration: Vec2,
     /// Deceleration stat
@@ -136,6 +157,7 @@ pub fn spawn_mob(
     .insert(ColliderPositionSync::Discrete)
     .insert(MobComponent {
         mob_type: mob_data.mob_type.clone(),
+        behaviors: mob_data.mob_behaviors.clone(),
     })
     .insert(SpawnableComponent {
         spawnable_type: SpawnableType::Mob(mob_data.mob_type.clone()),
@@ -145,7 +167,7 @@ pub fn spawn_mob(
         angular_acceleration: mob_data.angular_acceleration,
         angular_deceleration: mob_data.angular_deceleration,
         angular_speed: mob_data.angular_speed,
-        behaviors: mob_data.behaviors.clone(),
+        behaviors: mob_data.spawnable_behaviors.clone(),
         should_despawn: false,
     })
     .insert(Name::new(mob_data.mob_type.to_string()));
@@ -171,5 +193,89 @@ pub fn spawn_mob(
                 })
                 .insert(Name::new("Thruster"));
         });
+    }
+}
+
+/// Resource used to track mob spawning timers for SpawnMob behavior
+// TODO: consider moving into spawnable component
+pub struct SpawnMobTimersResource {
+    /// Maps entity ids to Timers
+    pub timers: HashMap<u32, Timer>,
+}
+
+/// Manages excuting behaviors of mobs
+pub fn mob_execute_behavior_system(
+    mut commands: Commands,
+    mut contact_events: EventReader<ContactEvent>,
+    rapier_config: Res<RapierConfiguration>,
+    game_parameters: Res<GameParametersResource>,
+    mut spawn_mob_timers: ResMut<SpawnMobTimersResource>,
+    time: Res<Time>,
+    mob_resource: Res<MobsResource>,
+    mut mob_query: Query<(
+        Entity,
+        &mut SpawnableComponent,
+        &MobComponent,
+        &RigidBodyPosition,
+    )>,
+) {
+    // Get all contact events first (can't be read more than once within a system)
+    let mut contact_events_vec = vec![];
+    for contact_event in contact_events.iter() {
+        contact_events_vec.push(*contact_event);
+    }
+
+    // Iterate through all spawnable entities and execute their behavior
+    for (entity, mut spawnable_component, mob_component, rb_pos) in mob_query.iter_mut() {
+        let behaviors = mob_component.behaviors.clone();
+        for behavior in behaviors {
+            match behavior {
+                MobBehavior::SpawnMob(data) => {
+                    if let Some(timer) = spawn_mob_timers.timers.get_mut(&entity.id()) {
+                        timer.tick(time.delta());
+                        if timer.just_finished() {
+                            // spawn mob
+
+                            let position = Vec2::new(
+                                rb_pos.position.translation.x + data.offset_position.x,
+                                rb_pos.position.translation.y + data.offset_position.y,
+                            );
+
+                            spawn_mob(
+                                &data.mob_type,
+                                &mob_resource,
+                                position,
+                                &mut commands,
+                                &rapier_config,
+                                &game_parameters,
+                            )
+                        }
+                    } else {
+                        spawn_mob_timers
+                            .timers
+                            .insert(entity.id(), Timer::from_seconds(data.period, true));
+                    }
+                }
+                MobBehavior::ExplodeOnImpact => {
+                    explode_on_impact(entity, &mut spawnable_component, &contact_events_vec);
+                }
+            }
+        }
+    }
+}
+
+/// Explode spawnable on impact
+fn explode_on_impact(
+    entity: Entity,
+    spawnable_component: &mut SpawnableComponent,
+    contact_events: &[ContactEvent],
+) {
+    for contact_event in contact_events {
+        //checks for collision between spawnable and other
+        if let ContactEvent::Stopped(h1, h2) = contact_event {
+            if h1.entity() == entity || h2.entity() == entity {
+                spawnable_component.should_despawn = true;
+            }
+        }
     }
 }
