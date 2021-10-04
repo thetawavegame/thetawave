@@ -17,7 +17,10 @@ use rand::{thread_rng, Rng};
 pub struct MobComponent {
     /// Type of mob
     pub mob_type: MobType,
+    /// Mob specific behaviors
     pub behaviors: Vec<MobBehavior>,
+    /// Optional mob spawn timer
+    pub mob_spawn_timer: Option<Timer>,
 }
 
 /// Data used to periodically spawn mobs
@@ -158,6 +161,7 @@ pub fn spawn_mob(
     .insert(MobComponent {
         mob_type: mob_data.mob_type.clone(),
         behaviors: mob_data.mob_behaviors.clone(),
+        mob_spawn_timer: None,
     })
     .insert(SpawnableComponent {
         spawnable_type: SpawnableType::Mob(mob_data.mob_type.clone()),
@@ -196,26 +200,18 @@ pub fn spawn_mob(
     }
 }
 
-/// Resource used to track mob spawning timers for SpawnMob behavior
-// TODO: consider moving into spawnable component
-pub struct SpawnMobTimersResource {
-    /// Maps entity ids to Timers
-    pub timers: HashMap<u32, Timer>,
-}
-
 /// Manages excuting behaviors of mobs
 pub fn mob_execute_behavior_system(
     mut commands: Commands,
     mut contact_events: EventReader<ContactEvent>,
     rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<GameParametersResource>,
-    mut spawn_mob_timers: ResMut<SpawnMobTimersResource>,
     time: Res<Time>,
     mob_resource: Res<MobsResource>,
     mut mob_query: Query<(
         Entity,
         &mut SpawnableComponent,
-        &MobComponent,
+        &mut MobComponent,
         &RigidBodyPosition,
     )>,
 ) {
@@ -226,16 +222,20 @@ pub fn mob_execute_behavior_system(
     }
 
     // Iterate through all spawnable entities and execute their behavior
-    for (entity, mut spawnable_component, mob_component, rb_pos) in mob_query.iter_mut() {
+    for (entity, mut spawnable_component, mut mob_component, rb_pos) in mob_query.iter_mut() {
         let behaviors = mob_component.behaviors.clone();
         for behavior in behaviors {
             match behavior {
                 MobBehavior::SpawnMob(data) => {
-                    if let Some(timer) = spawn_mob_timers.timers.get_mut(&entity.id()) {
+                    // if mob component does not have a timer initialize timer
+                    // otherwise tick timer and spawn mob on completion
+                    if mob_component.mob_spawn_timer.is_none() {
+                        mob_component.mob_spawn_timer =
+                            Some(Timer::from_seconds(data.period, true));
+                    } else if let Some(timer) = &mut mob_component.mob_spawn_timer {
                         timer.tick(time.delta());
                         if timer.just_finished() {
                             // spawn mob
-
                             let position = Vec2::new(
                                 rb_pos.position.translation.x + data.offset_position.x,
                                 rb_pos.position.translation.y + data.offset_position.y,
@@ -250,10 +250,6 @@ pub fn mob_execute_behavior_system(
                                 &game_parameters,
                             )
                         }
-                    } else {
-                        spawn_mob_timers
-                            .timers
-                            .insert(entity.id(), Timer::from_seconds(data.period, true));
                     }
                 }
                 MobBehavior::ExplodeOnImpact => {

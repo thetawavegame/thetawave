@@ -64,9 +64,6 @@ fn main() {
             ))
             .unwrap(),
         )
-        .insert_resource(spawnable::SpawnMobTimersResource {
-            timers: HashMap::new(),
-        })
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(DebugLinesPlugin)

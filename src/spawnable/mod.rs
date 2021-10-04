@@ -12,7 +12,6 @@ mod spawner;
 
 pub use self::mob::{
     mob_execute_behavior_system, spawn_mob, MobBehavior, MobComponent, MobData, MobsResource,
-    SpawnMobTimersResource,
 };
 pub use self::spawner::{spawner_system, SpawnerResource, SpawnerResourceData};
 
@@ -212,12 +211,10 @@ pub fn spawnable_execute_behavior_system(
 /// Despawn spawnables that are flagged with 'should_despawn'
 pub fn despawn_spawnable_system(
     mut commands: Commands,
-    mut spawn_mob_timers: ResMut<SpawnMobTimersResource>,
     spawnable_query: Query<(Entity, &SpawnableComponent)>,
 ) {
     for (entity, spawnable_component) in spawnable_query.iter() {
         if spawnable_component.should_despawn {
-            spawn_mob_timers.timers.remove(&entity.id());
             commands.entity(entity).despawn_recursive();
         }
     }
