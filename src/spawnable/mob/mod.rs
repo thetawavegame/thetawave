@@ -5,7 +5,7 @@ use crate::{
     game::GameParametersResource,
     spawnable::InitialMotion,
     spawnable::TextureData,
-    spawnable::{MobType, SpawnableBehavior, SpawnableComponent, SpawnableType},
+    spawnable::{MobType, ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType},
     visual::AnimationComponent,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
@@ -21,6 +21,14 @@ pub struct MobComponent {
     pub behaviors: Vec<MobBehavior>,
     /// Optional mob spawn timer
     pub mob_spawn_timer: Option<Timer>,
+    /// Optional weapon timer
+    pub weapon_timer: Option<Timer>,
+    // TODO: add core stats
+    // projectile_speed
+    // projectile_damage
+    // projectile_range
+
+    // collision damage
 }
 
 /// Data used to periodically spawn mobs
@@ -34,9 +42,20 @@ pub struct SpawnMobBehaviorData {
     pub period: f32,
 }
 
+/// Data used to periodically spawn mobs
+#[derive(Deserialize, Clone)]
+pub struct PeriodicFireBehaviorData {
+    /// Type of mob to spawn
+    pub projectile_type: ProjectileType,
+    /// Offset from center of source entity
+    pub offset_position: Vec2,
+    /// Period between spawnings
+    pub period: f32,
+}
 /// Types of behaviors that can be performed by spawnables
 #[derive(Deserialize, Clone)]
 pub enum MobBehavior {
+    PeriodicFire(PeriodicFireBehaviorData),
     SpawnMob(SpawnMobBehaviorData),
     ExplodeOnImpact,
 }
@@ -162,6 +181,7 @@ pub fn spawn_mob(
         mob_type: mob_data.mob_type.clone(),
         behaviors: mob_data.mob_behaviors.clone(),
         mob_spawn_timer: None,
+        weapon_timer: None,
     })
     .insert(SpawnableComponent {
         spawnable_type: SpawnableType::Mob(mob_data.mob_type.clone()),
@@ -226,6 +246,23 @@ pub fn mob_execute_behavior_system(
         let behaviors = mob_component.behaviors.clone();
         for behavior in behaviors {
             match behavior {
+                MobBehavior::PeriodicFire(data) => {
+                    if mob_component.weapon_timer.is_none() {
+                        mob_component.weapon_timer = Some(Timer::from_seconds(data.period, true));
+                    } else if let Some(timer) = &mut mob_component.weapon_timer {
+                        timer.tick(time.delta());
+                        if timer.just_finished() {
+                            // spawn blast
+                            let position = Vec2::new(
+                                rb_pos.position.translation.x + data.offset_position.x,
+                                rb_pos.position.translation.y + data.offset_position.y,
+                            );
+
+                            //spawn_blast
+                            todo!("program spawn blast function");
+                        }
+                    }
+                }
                 MobBehavior::SpawnMob(data) => {
                     // if mob component does not have a timer initialize timer
                     // otherwise tick timer and spawn mob on completion

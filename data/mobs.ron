@@ -36,7 +36,15 @@
 	Enemy(Pawn): (
 		mob_type: Enemy(Pawn),
 		spawnable_behaviors: [MoveDown, BrakeHorizontal],
-		mob_behaviors: [],
+		mob_behaviors: [
+			PeriodicFire(
+				(
+					projectile_type: Blast,
+					offset_position: (0.0, -7.0),
+					period: 2.0,
+				)
+			)
+		],
 		acceleration: (0.0, 0.02),
 		deceleration: (0.02, 0.01),
 		speed: (0.0, 0.85),

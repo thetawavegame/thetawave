@@ -8,6 +8,7 @@ use serde::Deserialize;
 use strum_macros::Display;
 
 mod mob;
+mod projectile;
 mod spawner;
 
 pub use self::mob::{
@@ -58,6 +59,8 @@ pub struct TextureData {
 pub struct InitialMotion {
     /// Optional random range of angular velocity
     pub random_angvel: Option<(f32, f32)>,
+    /// Optional linear velocity
+    pub linvel: Option<Vec2>,
 }
 
 /// Types of behaviors that can be performed by spawnables
@@ -72,13 +75,19 @@ pub enum SpawnableBehavior {
 }
 
 /// Type that encompasses all spawnable entities
-// TODO: add projectiles (blast)
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum SpawnableType {
+    Projectile(ProjectileType),
     Consumable(ConsumableType),
     Item(ItemType),
     Effect(EffectType),
     Mob(MobType),
+}
+
+/// Type that encompasses all weapon projectiles
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+pub enum ProjectileType {
+    Blast,
 }
 
 /// Type that encompasses all spawnable mobs
