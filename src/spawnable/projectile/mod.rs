@@ -37,8 +37,7 @@ pub struct ProjectileResource {
     /// Projectile types mapped to projectile data
     pub projectiles: HashMap<ProjectileType, ProjectileData>,
     /// Mob types mapped to their texture and optional thruster texture
-    pub texture_atlas_handle:
-        HashMap<ProjectileType, (Handle<TextureAtlas>, Option<Handle<TextureAtlas>>)>,
+    pub texture_atlas_handle: HashMap<ProjectileType, Handle<TextureAtlas>>,
 }
 
 /// Spawn a mob entity
@@ -53,9 +52,8 @@ pub fn spawn_projectile(
 ) {
     // Get data from mob resource
     let projectile_data = &projectile_resource.projectiles[projectile_type];
-    let texture_atlas_handle = projectile_resource.texture_atlas_handle[projectile_type]
-        .0
-        .clone_weak();
+    let texture_atlas_handle =
+        projectile_resource.texture_atlas_handle[projectile_type].clone_weak();
 
     // scale collider to align with the sprite
     let collider_size_hx = projectile_data.collider_dimensions.x * game_parameters.sprite_scale
@@ -83,7 +81,7 @@ pub fn spawn_projectile(
             direction: projectile_data.texture.animation_direction.clone(),
         })
         .insert_bundle(RigidBodyBundle {
-            body_type: RigidBodyType::Dynamic,
+            body_type: RigidBodyType::Static,
             mass_properties: RigidBodyMassPropsFlags::ROTATION_LOCKED.into(),
             velocity: RigidBodyVelocity {
                 angvel: if let Some(random_angvel) = initial_motion.random_angvel {
@@ -102,18 +100,10 @@ pub fn spawn_projectile(
         })
         .insert_bundle(ColliderBundle {
             shape: ColliderShape::cuboid(collider_size_hx, collider_size_hy),
-            material: ColliderMaterial {
-                friction: 1.0,
-                restitution: 1.0,
-                restitution_combine_rule: CoefficientCombineRule::Max,
-                ..Default::default()
-            },
+            collider_type: ColliderType::Sensor,
             flags: ColliderFlags {
-                collision_groups: InteractionGroups::new(
-                    SPAWNABLE_COL_GROUP_MEMBERSHIP,
-                    u32::MAX ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
-                ),
-                active_events: ActiveEvents::CONTACT_EVENTS,
+                // TODO: filter out others of same faction
+                active_events: ActiveEvents::INTERSECTION_EVENTS,
                 ..Default::default()
             },
             ..Default::default()

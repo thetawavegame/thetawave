@@ -4,6 +4,7 @@ use serde::Deserialize;
 /// Describes how to change frames of animation
 #[derive(Deserialize, Clone)]
 pub enum AnimationDirection {
+    None,
     Forward,
     PingPong(PingPongDirection),
 }
@@ -39,6 +40,7 @@ pub fn animate_sprite_system(
             let texture_atlas = texture_atlases.get(texture_atlas_handle).unwrap();
 
             match &animation.direction {
+                AnimationDirection::None => {}
                 AnimationDirection::Forward => {
                     sprite.index =
                         ((sprite.index as usize + 1) % texture_atlas.textures.len()) as u32

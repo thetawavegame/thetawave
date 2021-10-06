@@ -1,0 +1,15 @@
+{
+	Blast: (
+		projectile_type: Blast,
+		spawnable_behaviors: [MoveDown],
+		collider_dimensions: (4.0, 4.0),
+		texture: (
+			path: "texture/blast_spritesheet.png",
+			dimensions: (4.0, 4.0),
+			cols: 1,
+			rows: 1,
+			frame_duration: 0.0,
+			animation_direction: None,
+		),
+	)
+}

@@ -54,6 +54,14 @@ fn main() {
                 .unwrap(),
             texture_atlas_handle: HashMap::new(),
         })
+        .insert_resource(spawnable::ProjectileResource {
+            projectiles:
+                from_bytes::<HashMap<spawnable::ProjectileType, spawnable::ProjectileData>>(
+                    include_bytes!("../data/projectiles.ron"),
+                )
+                .unwrap(),
+            texture_atlas_handle: HashMap::new(),
+        })
         .insert_resource(spawnable::SpawnerResource::from(
             from_bytes::<spawnable::SpawnerResourceData>(include_bytes!("../data/spawner.ron"))
                 .unwrap(),
@@ -121,6 +129,7 @@ fn setup_game(
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut mobs: ResMut<MobsResource>,
+    mut projectiles: ResMut<spawnable::ProjectileResource>,
     mut rapier_config: ResMut<RapierConfiguration>,
     game_parameters: Res<game::GameParametersResource>,
 ) {
@@ -139,7 +148,7 @@ fn setup_game(
     rapier_config.gravity = Vector2::zeros();
     rapier_config.scale = game_parameters.physics_scale;
 
-    // load assets
+    // load mob assets
     let mut mob_texture_atlas_dict = HashMap::new();
     for (mob_type, mob_data) in mobs.mobs.iter() {
         // mob texture
@@ -170,6 +179,28 @@ fn setup_game(
             (texture_atlases.add(mob_atlas), thruster_atlas_handle),
         );
     }
+
+    // load projectile assets
+    let mut projectile_texture_atlas_dict = HashMap::new();
+    for (projectile_type, projectile_data) in projectiles.projectiles.iter() {
+        // projectile texture
+        let texture_handle = asset_server.load(&projectile_data.texture.path[..]);
+        let projectile_atlas = TextureAtlas::from_grid(
+            texture_handle,
+            projectile_data.texture.dimensions,
+            projectile_data.texture.cols,
+            projectile_data.texture.rows,
+        );
+
+        // add projectile texture handle to dictionary
+        projectile_texture_atlas_dict.insert(
+            projectile_type.clone(),
+            texture_atlases.add(projectile_atlas),
+        );
+    }
+
+    // add texture atlas dict to the projectiles resource
+    projectiles.texture_atlas_handle = projectile_texture_atlas_dict;
 
     // add texture atlas dict to the mobs resource
     mobs.texture_atlas_handle = mob_texture_atlas_dict;

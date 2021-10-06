@@ -14,6 +14,7 @@ mod spawner;
 pub use self::mob::{
     mob_execute_behavior_system, spawn_mob, MobBehavior, MobComponent, MobData, MobsResource,
 };
+pub use self::projectile::{spawn_projectile, ProjectileData, ProjectileResource};
 pub use self::spawner::{spawner_system, SpawnerResource, SpawnerResourceData};
 
 pub struct SpawnableComponent {

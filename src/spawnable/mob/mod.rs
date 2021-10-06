@@ -5,7 +5,10 @@ use crate::{
     game::GameParametersResource,
     spawnable::InitialMotion,
     spawnable::TextureData,
-    spawnable::{MobType, ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType},
+    spawnable::{
+        spawn_projectile, MobType, ProjectileResource, ProjectileType, SpawnableBehavior,
+        SpawnableComponent, SpawnableType,
+    },
     visual::AnimationComponent,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
@@ -228,6 +231,7 @@ pub fn mob_execute_behavior_system(
     game_parameters: Res<GameParametersResource>,
     time: Res<Time>,
     mob_resource: Res<MobsResource>,
+    projectile_resource: Res<ProjectileResource>,
     mut mob_query: Query<(
         Entity,
         &mut SpawnableComponent,
@@ -259,7 +263,7 @@ pub fn mob_execute_behavior_system(
                             );
 
                             //spawn_blast
-                            todo!("program spawn blast function");
+                            //TODO: spawn_projectile(&data.projectile_type, &projectile_resource, position, )
                         }
                     }
                 }
