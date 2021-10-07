@@ -2,7 +2,7 @@ use serde::Deserialize;
 use std::{collections::HashMap, string::ToString};
 
 use crate::{
-    game::GameParametersResource,
+    game::{self, GameParametersResource},
     spawnable::InitialMotion,
     spawnable::TextureData,
     spawnable::{
@@ -262,8 +262,22 @@ pub fn mob_execute_behavior_system(
                                 rb_pos.position.translation.y + data.offset_position.y,
                             );
 
+                            // dummy value
+                            let initial_motion = InitialMotion {
+                                random_angvel: None,
+                                linvel: Some([0.0, -40.0].into()),
+                            };
+
                             //spawn_blast
-                            //TODO: spawn_projectile(&data.projectile_type, &projectile_resource, position, )
+                            spawn_projectile(
+                                &data.projectile_type,
+                                &projectile_resource,
+                                position,
+                                initial_motion,
+                                &mut commands,
+                                &rapier_config,
+                                &game_parameters,
+                            );
                         }
                     }
                 }

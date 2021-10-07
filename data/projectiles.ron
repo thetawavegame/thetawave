@@ -2,6 +2,7 @@
 	Blast: (
 		projectile_type: Blast,
 		spawnable_behaviors: [MoveDown],
+		projectile_behaviors: [ExplodeOnImpact],
 		collider_dimensions: (4.0, 4.0),
 		texture: (
 			path: "texture/blast_spritesheet.png",

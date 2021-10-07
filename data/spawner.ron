@@ -16,8 +16,8 @@
 					position: (-20.0, 60.0),
 				),
 			],
-			weight: 1.0,
-			period: 7.0,
+			weight: 1000.0,
+			period: 10000.0,
 		),
 		(
 			formation_spawnables: [

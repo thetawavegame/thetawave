@@ -17,6 +17,14 @@ use rand::{thread_rng, Rng};
 pub struct ProjectileComponent {
     /// Type of projectile
     pub projectile_type: ProjectileType,
+    /// Projectile specific behaviors
+    pub behaviors: Vec<ProjectileBehavior>,
+}
+
+/// Types of behaviors that can be performed by projectiles
+#[derive(Deserialize, Clone)]
+pub enum ProjectileBehavior {
+    ExplodeOnImpact,
 }
 
 /// Data about mob entities that can be stored in data ron file
@@ -26,6 +34,8 @@ pub struct ProjectileData {
     pub projectile_type: ProjectileType,
     /// List of spawnable behaviors that are performed
     pub spawnable_behaviors: Vec<SpawnableBehavior>,
+    /// List of projectile behaviors that are performed
+    pub projectile_behaviors: Vec<ProjectileBehavior>,
     /// Dimensions of the projectile's hitbox
     pub collider_dimensions: Vec2,
     /// Texture
@@ -81,7 +91,7 @@ pub fn spawn_projectile(
             direction: projectile_data.texture.animation_direction.clone(),
         })
         .insert_bundle(RigidBodyBundle {
-            body_type: RigidBodyType::Static,
+            body_type: RigidBodyType::Dynamic,
             mass_properties: RigidBodyMassPropsFlags::ROTATION_LOCKED.into(),
             velocity: RigidBodyVelocity {
                 angvel: if let Some(random_angvel) = initial_motion.random_angvel {
@@ -111,17 +121,32 @@ pub fn spawn_projectile(
         .insert(ColliderPositionSync::Discrete)
         .insert(ProjectileComponent {
             projectile_type: projectile_data.projectile_type.clone(),
+            behaviors: projectile_data.projectile_behaviors.clone(),
         })
         .insert(SpawnableComponent {
             spawnable_type: SpawnableType::Projectile(projectile_data.projectile_type.clone()),
             acceleration: Vec2::ZERO,
             deceleration: Vec2::ZERO,
-            speed: [f32::MAX, f32::MAX].into(), // highest possible speed
+            speed: [game_parameters.max_speed, game_parameters.max_speed].into(), // highest possible speed
             angular_acceleration: 0.0,
             angular_deceleration: 0.0,
-            angular_speed: f32::MAX,
+            angular_speed: game_parameters.max_speed,
             behaviors: projectile_data.spawnable_behaviors.clone(),
             should_despawn: false,
         })
         .insert(Name::new(projectile_data.projectile_type.to_string()));
+}
+
+// TODO: remove this function
+pub fn display_events(
+    mut intersection_events: EventReader<IntersectionEvent>,
+    mut contact_events: EventReader<ContactEvent>,
+) {
+    for intersection_event in intersection_events.iter() {
+        println!("Received intersection event: {:?}", intersection_event);
+    }
+
+    for contact_event in contact_events.iter() {
+        println!("Received contact event: {:?}", contact_event);
+    }
 }
