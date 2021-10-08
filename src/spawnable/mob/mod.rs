@@ -52,10 +52,12 @@ pub struct PeriodicFireBehaviorData {
     pub projectile_type: ProjectileType,
     /// Offset from center of source entity
     pub offset_position: Vec2,
+    /// Initial motion of soawned projectile
+    pub initial_motion: InitialMotion,
     /// Period between spawnings
     pub period: f32,
 }
-/// Types of behaviors that can be performed by spawnables
+/// Types of behaviors that can be performed by mobs
 #[derive(Deserialize, Clone)]
 pub enum MobBehavior {
     PeriodicFire(PeriodicFireBehaviorData),
@@ -237,6 +239,7 @@ pub fn mob_execute_behavior_system(
         &mut SpawnableComponent,
         &mut MobComponent,
         &RigidBodyPosition,
+        &RigidBodyVelocity,
     )>,
 ) {
     // Get all contact events first (can't be read more than once within a system)
@@ -246,7 +249,8 @@ pub fn mob_execute_behavior_system(
     }
 
     // Iterate through all spawnable entities and execute their behavior
-    for (entity, mut spawnable_component, mut mob_component, rb_pos) in mob_query.iter_mut() {
+    for (entity, mut spawnable_component, mut mob_component, rb_pos, rb_vel) in mob_query.iter_mut()
+    {
         let behaviors = mob_component.behaviors.clone();
         for behavior in behaviors {
             match behavior {
@@ -262,18 +266,20 @@ pub fn mob_execute_behavior_system(
                                 rb_pos.position.translation.y + data.offset_position.y,
                             );
 
-                            // dummy value
-                            let initial_motion = InitialMotion {
-                                random_angvel: None,
-                                linvel: Some([0.0, -40.0].into()),
-                            };
+                            // add mob velocity to initial blast velocity
+                            let mut modified_initial_motion = data.initial_motion.clone();
+
+                            if let Some(linvel) = &mut modified_initial_motion.linvel {
+                                linvel.x += rb_vel.linvel.x;
+                                linvel.y += rb_vel.linvel.y;
+                            }
 
                             //spawn_blast
                             spawn_projectile(
                                 &data.projectile_type,
                                 &projectile_resource,
                                 position,
-                                initial_motion,
+                                modified_initial_motion,
                                 &mut commands,
                                 &rapier_config,
                                 &game_parameters,
@@ -326,6 +332,7 @@ fn explode_on_impact(
         if let ContactEvent::Stopped(h1, h2) = contact_event {
             if h1.entity() == entity || h2.entity() == entity {
                 spawnable_component.should_despawn = true;
+                // TODO: spawn explode animation
             }
         }
     }

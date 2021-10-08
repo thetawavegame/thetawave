@@ -14,7 +14,9 @@ mod spawner;
 pub use self::mob::{
     mob_execute_behavior_system, spawn_mob, MobBehavior, MobComponent, MobData, MobsResource,
 };
-pub use self::projectile::{display_events, spawn_projectile, ProjectileData, ProjectileResource};
+pub use self::projectile::{
+    projectile_execute_behavior_system, spawn_projectile, ProjectileData, ProjectileResource,
+};
 pub use self::spawner::{spawner_system, SpawnerResource, SpawnerResourceData};
 
 pub struct SpawnableComponent {
@@ -56,7 +58,7 @@ pub struct TextureData {
 }
 
 /// Initial motion that entity is spawned in with
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct InitialMotion {
     /// Optional random range of angular velocity
     pub random_angvel: Option<(f32, f32)>,

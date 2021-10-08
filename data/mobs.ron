@@ -41,6 +41,10 @@
 				(
 					projectile_type: Blast,
 					offset_position: (0.0, -4.0),
+					initial_motion: (
+						random_angvel: None,
+						linvel: Some((0.0, -40.0)),
+					),
 					period: 3.0,
 				)
 			)
@@ -189,7 +193,19 @@
 	Enemy(StraferRight): (
 		mob_type: Enemy(StraferRight),
 		spawnable_behaviors: [MoveDown, MoveRight],
-		mob_behaviors: [],
+		mob_behaviors: [
+			PeriodicFire(
+				(
+					projectile_type: Blast,
+					offset_position: (0.0, -2.5),
+					initial_motion: (
+						random_angvel: None,
+						linvel: Some((0.0, -25.0)),
+					),
+					period: 4.0,
+				)
+			)
+		],
 		acceleration: (0.02, 0.02),
 		deceleration: (0.02, 0.02),
 		speed: (0.75, 0.75),
@@ -223,7 +239,19 @@
 	Enemy(StraferLeft): (
 		mob_type: Enemy(StraferLeft),
 		spawnable_behaviors: [MoveDown, MoveLeft],
-		mob_behaviors: [],
+		mob_behaviors: [
+			PeriodicFire(
+				(
+					projectile_type: Blast,
+					offset_position: (0.0, -2.5),
+					initial_motion: (
+						random_angvel: None,
+						linvel: Some((0.0, -25.0)),
+					),
+					period: 4.0,
+				)
+			)
+		],
 		acceleration: (0.02, 0.02),
 		deceleration: (0.02, 0.02),
 		speed: (0.75, 0.75),

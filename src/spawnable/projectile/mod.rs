@@ -5,9 +5,10 @@ use crate::{
     game::GameParametersResource,
     spawnable::InitialMotion,
     spawnable::TextureData,
-    spawnable::{ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType},
+    spawnable::{
+        PlayerComponent, ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType,
+    },
     visual::AnimationComponent,
-    HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
@@ -113,6 +114,7 @@ pub fn spawn_projectile(
             collider_type: ColliderType::Sensor,
             flags: ColliderFlags {
                 // TODO: filter out others of same faction
+                //collision_groups: InteractionGroups::new(PROJECTILE_GROUP_MEMBERSHIP, filter)
                 active_events: ActiveEvents::INTERSECTION_EVENTS,
                 ..Default::default()
             },
@@ -137,16 +139,57 @@ pub fn spawn_projectile(
         .insert(Name::new(projectile_data.projectile_type.to_string()));
 }
 
-// TODO: remove this function
-pub fn display_events(
+pub fn projectile_execute_behavior_system(
+    mut commands: Commands,
     mut intersection_events: EventReader<IntersectionEvent>,
-    mut contact_events: EventReader<ContactEvent>,
+    rapier_config: Res<RapierConfiguration>,
+    mut projectile_query: Query<(Entity, &mut SpawnableComponent, &mut ProjectileComponent)>,
+    player_query: Query<Entity, With<PlayerComponent>>,
 ) {
+    let mut intersection_events_vec = vec![];
     for intersection_event in intersection_events.iter() {
-        println!("Received intersection event: {:?}", intersection_event);
+        intersection_events_vec.push(*intersection_event);
     }
 
-    for contact_event in contact_events.iter() {
-        println!("Received contact event: {:?}", contact_event);
+    for (entity, mut spawnable_component, mut projectile_component) in projectile_query.iter_mut() {
+        let behaviors = projectile_component.behaviors.clone();
+        for behavior in behaviors {
+            match behavior {
+                ProjectileBehavior::ExplodeOnImpact => {
+                    //TODO: call explode on impact
+                    explode_on_impact(
+                        entity,
+                        &mut spawnable_component,
+                        &intersection_events_vec,
+                        &player_query,
+                    )
+                }
+            }
+        }
+    }
+}
+
+fn explode_on_impact(
+    entity: Entity,
+    spawnable_component: &mut SpawnableComponent,
+    intersection_events: &[IntersectionEvent],
+    player_query: &Query<Entity, With<PlayerComponent>>,
+) {
+    for intersection_event in intersection_events {
+        let collider1_entity = intersection_event.collider1.entity();
+        let collider2_entity = intersection_event.collider2.entity();
+
+        if (entity == collider1_entity
+            && player_query
+                .iter()
+                .any(|player_entity| player_entity == collider2_entity))
+            || (entity == collider2_entity
+                && player_query
+                    .iter()
+                    .any(|player_entity| player_entity == collider1_entity))
+        {
+            spawnable_component.should_despawn = true;
+            // TODO: spawn explode animation
+        }
     }
 }
