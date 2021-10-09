@@ -39,7 +39,7 @@
 		mob_behaviors: [
 			PeriodicFire(
 				(
-					projectile_type: Blast,
+					projectile_type: Blast(Enemy),
 					offset_position: (0.0, -4.0),
 					initial_motion: (
 						random_angvel: None,
@@ -196,7 +196,7 @@
 		mob_behaviors: [
 			PeriodicFire(
 				(
-					projectile_type: Blast,
+					projectile_type: Blast(Enemy),
 					offset_position: (0.0, -2.5),
 					initial_motion: (
 						random_angvel: None,
@@ -242,7 +242,7 @@
 		mob_behaviors: [
 			PeriodicFire(
 				(
-					projectile_type: Blast,
+					projectile_type: Blast(Enemy),
 					offset_position: (0.0, -2.5),
 					initial_motion: (
 						random_angvel: None,

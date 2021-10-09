@@ -90,7 +90,15 @@ pub enum SpawnableType {
 /// Type that encompasses all weapon projectiles
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum ProjectileType {
-    Blast,
+    Blast(Faction),
+}
+
+/// Factions
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+pub enum Faction {
+    Ally,
+    Enemy,
+    Neutral,
 }
 
 /// Type that encompasses all spawnable mobs
