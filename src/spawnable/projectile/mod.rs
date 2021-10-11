@@ -6,8 +6,8 @@ use crate::{
     spawnable::InitialMotion,
     spawnable::TextureData,
     spawnable::{
-        MobComponent, PlayerComponent, ProjectileType, SpawnableBehavior, SpawnableComponent,
-        SpawnableType,
+        DespawnTimerComponent, MobComponent, PlayerComponent, ProjectileType, SpawnableBehavior,
+        SpawnableComponent, SpawnableType,
     },
     visual::AnimationComponent,
 };
@@ -57,6 +57,7 @@ pub fn spawn_projectile(
     projectile_type: &ProjectileType,
     projectile_resource: &ProjectileResource,
     position: Vec2,
+    despawn_time: f32, // time before despawning
     initial_motion: InitialMotion,
     commands: &mut Commands,
     rapier_config: &RapierConfiguration,
@@ -136,6 +137,9 @@ pub fn spawn_projectile(
             angular_speed: game_parameters.max_speed,
             behaviors: projectile_data.spawnable_behaviors.clone(),
             should_despawn: false,
+        })
+        .insert(DespawnTimerComponent {
+            despawn_timer: Timer::from_seconds(despawn_time, false),
         })
         .insert(Name::new(projectile_data.projectile_type.to_string()));
 }

@@ -120,7 +120,8 @@ fn main() {
         .add_system(options::toggle_zoom_system.system())
         .add_system(arena::despawn_gates_system.system())
         .add_system(visual::animate_sprite_system.system())
-        .add_system(background::rotate_planet_system.system());
+        .add_system(background::rotate_planet_system.system())
+        .add_system(spawnable::despawn_timer_system.system());
 
     if cfg!(debug_assertions) {
         app.add_plugin(WorldInspectorPlugin::new())

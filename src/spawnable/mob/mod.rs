@@ -2,12 +2,10 @@ use serde::Deserialize;
 use std::{collections::HashMap, string::ToString};
 
 use crate::{
-    game::{self, GameParametersResource},
-    spawnable::InitialMotion,
-    spawnable::TextureData,
+    game::GameParametersResource,
     spawnable::{
-        spawn_projectile, MobType, ProjectileResource, ProjectileType, SpawnableBehavior,
-        SpawnableComponent, SpawnableType,
+        spawn_projectile, InitialMotion, MobType, ProjectileResource, ProjectileType,
+        SpawnableBehavior, SpawnableComponent, SpawnableType, TextureData,
     },
     visual::AnimationComponent,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
@@ -54,6 +52,8 @@ pub struct PeriodicFireBehaviorData {
     pub offset_position: Vec2,
     /// Initial motion of soawned projectile
     pub initial_motion: InitialMotion,
+    /// Time until projectile despawns
+    pub despawn_time: f32,
     /// Period between spawnings
     pub period: f32,
 }
@@ -279,6 +279,7 @@ pub fn mob_execute_behavior_system(
                                 &data.projectile_type,
                                 &projectile_resource,
                                 position,
+                                data.despawn_time,
                                 modified_initial_motion,
                                 &mut commands,
                                 &rapier_config,

@@ -179,6 +179,23 @@ pub enum EffectType {
     Giblets(MobType),
 }
 
+pub struct DespawnTimerComponent {
+    despawn_timer: Timer,
+}
+
+pub fn despawn_timer_system(
+    mut commands: Commands,
+    time: Res<Time>,
+    mut despawn_timer_query: Query<(Entity, &mut DespawnTimerComponent)>,
+) {
+    for (entity, mut despawn_timer) in despawn_timer_query.iter_mut() {
+        despawn_timer.despawn_timer.tick(time.delta());
+        if despawn_timer.despawn_timer.just_finished() {
+            commands.entity(entity).despawn_recursive();
+        }
+    }
+}
+
 /// Manages excuting behaviors of spawnables
 pub fn spawnable_execute_behavior_system(
     rapier_config: Res<RapierConfiguration>,
