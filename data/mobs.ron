@@ -45,7 +45,7 @@
 						random_angvel: None,
 						linvel: Some((0.0, -40.0)),
 					),
-					despawn_time: 5.0,
+					despawn_time: 2.5,
 					period: 3.0,
 				)
 			)
@@ -203,7 +203,7 @@
 						random_angvel: None,
 						linvel: Some((0.0, -25.0)),
 					),
-					despawn_time: 3.0,
+					despawn_time: 1.5,
 					period: 4.0,
 				)
 			)
@@ -250,7 +250,7 @@
 						random_angvel: None,
 						linvel: Some((0.0, -25.0)),
 					),
-					despawn_time: 3.0,
+					despawn_time: 1.5,
 					period: 4.0,
 				)
 			)

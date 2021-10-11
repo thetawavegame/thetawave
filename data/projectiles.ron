@@ -1,7 +1,7 @@
 {
 	Blast(Enemy): (
 		projectile_type: Blast(Enemy),
-		spawnable_behaviors: [MoveDown],
+		spawnable_behaviors: [],
 		projectile_behaviors: [ExplodeOnImpact],
 		collider_dimensions: (4.0, 4.0),
 		texture: (
@@ -15,7 +15,7 @@
 	),
 	Blast(Neutral): (
 		projectile_type: Blast(Neutral),
-		spawnable_behaviors: [MoveDown],
+		spawnable_behaviors: [],
 		projectile_behaviors: [ExplodeOnImpact],
 		collider_dimensions: (4.0, 4.0),
 		texture: (
@@ -29,7 +29,7 @@
 	),
 	Blast(Ally): (
 		projectile_type: Blast(Ally),
-		spawnable_behaviors: [MoveDown],
+		spawnable_behaviors: [],
 		projectile_behaviors: [ExplodeOnImpact],
 		collider_dimensions: (4.0, 4.0),
 		texture: (
