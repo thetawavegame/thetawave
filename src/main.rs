@@ -82,6 +82,7 @@ fn main() {
         .add_startup_system(player::spawn_player_system.system().after("init"))
         .add_system_to_stage(CoreStage::First, spawnable::spawner_system.system())
         .add_system(player::player_movement_system.system())
+        .add_system_to_stage(CoreStage::First, player::player_fire_weapon_system.system())
         .add_system_to_stage(
             CoreStage::PostUpdate,
             spawnable::spawnable_set_target_behavior_system

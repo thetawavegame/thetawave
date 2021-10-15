@@ -39,7 +39,7 @@ impl From<&Character> for PlayerComponent {
             projectile_despawn_time: character.projectile_despawn_time,
             projectile_velocity: character.projectile_velocity,
             projectile_offset_position: character.projectile_offset_position,
-            fire_timer: Timer::from_seconds(character.fire_period, true),
+            fire_timer: Timer::from_seconds(character.fire_period, false),
         }
     }
 }
