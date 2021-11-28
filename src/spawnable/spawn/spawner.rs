@@ -4,18 +4,20 @@ use bevy_rapier2d::physics::RapierConfiguration;
 use core::time::Duration;
 use serde::Deserialize;
 
-mod formation;
-
 /// Spawner resource data in spawner.ron data file
 #[derive(Deserialize)]
 pub struct SpawnerResourceData {
-    pub formation_pool: Vec<formation::Formation>,
+    /// Pool of formations that can be spawned
+    pub formation_pool: Vec<super::formation::Formation>,
+    /// Delay before first formation is spawned
     pub initial_duration: f32,
 }
 
 /// Spawner resource for managing formations and spawning
 pub struct SpawnerResource {
-    pub formation_pool: Vec<formation::Formation>,
+    /// Pool of formations that can be spawned
+    pub formation_pool: Vec<super::formation::Formation>,
+    /// Tracks time until next formation is spawned
     pub spawn_timer: Timer,
 }
 
