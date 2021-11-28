@@ -24,12 +24,6 @@ pub struct MobComponent {
     pub mob_spawn_timer: Option<Timer>,
     /// Optional weapon timer
     pub weapon_timer: Option<Timer>,
-    // TODO: add core stats
-    // projectile_speed
-    // projectile_damage
-    // projectile_range
-
-    // collision damage
 }
 
 /// Data used to periodically spawn mobs
@@ -225,7 +219,7 @@ pub fn spawn_mob(
     }
 }
 
-/// Manages excuting behaviors of mobs
+/// Manages excuteing behaviors of mobs
 pub fn mob_execute_behavior_system(
     mut commands: Commands,
     mut contact_events: EventReader<ContactEvent>,

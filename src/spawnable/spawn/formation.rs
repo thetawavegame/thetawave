@@ -27,6 +27,7 @@ pub struct Formation {
 }
 
 impl Formation {
+    /// Spawn all spawnables in the formation at once
     pub fn spawn_formation(
         &self,
         mobs: &MobsResource,

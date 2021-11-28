@@ -1,6 +1,5 @@
 use crate::{player::Character, spawnable::ProjectileType};
 use bevy::prelude::*;
-use serde::Deserialize;
 
 /// Component for managing core attributes of the player
 #[derive(Debug)]

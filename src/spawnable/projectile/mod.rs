@@ -144,6 +144,7 @@ pub fn spawn_projectile(
         .insert(Name::new(projectile_data.projectile_type.to_string()));
 }
 
+/// Manages executing behaviors of mobs
 pub fn projectile_execute_behavior_system(
     mut intersection_events: EventReader<IntersectionEvent>,
     mut projectile_query: Query<(Entity, &mut SpawnableComponent, &ProjectileComponent)>,
@@ -172,6 +173,7 @@ pub fn projectile_execute_behavior_system(
     }
 }
 
+/// Explode projectile on impact
 fn explode_on_impact(
     entity: Entity,
     spawnable_component: &mut SpawnableComponent,
