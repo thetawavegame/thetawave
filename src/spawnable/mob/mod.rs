@@ -1,6 +1,8 @@
 use serde::Deserialize;
 use std::{collections::HashMap, string::ToString};
 
+pub mod health;
+
 use crate::{
     game::GameParametersResource,
     spawnable::{

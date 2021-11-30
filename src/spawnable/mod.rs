@@ -9,7 +9,8 @@ mod projectile;
 mod spawn;
 
 pub use self::mob::{
-    mob_execute_behavior_system, spawn_mob, MobBehavior, MobComponent, MobData, MobsResource,
+    health::Health, mob_execute_behavior_system, spawn_mob, MobBehavior, MobComponent, MobData,
+    MobsResource,
 };
 pub use self::projectile::{
     projectile_execute_behavior_system, spawn_projectile, ProjectileData, ProjectileResource,

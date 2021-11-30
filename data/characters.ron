@@ -12,6 +12,11 @@
 			projectile_velocity: (0.0, 5.0),
 			projectile_offset_position: (0.0, 4.0),
 			fire_period: 0.4,
+			health: (
+				max_health: 100.0,
+				health: 100.0,
+				armor: 0,	
+			)
 		)
 	}
 )
