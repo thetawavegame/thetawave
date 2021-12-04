@@ -9,6 +9,8 @@
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		attack_damage: 0.0,
+		collision_damage: 12.0,
 		initial_motion: (
 			random_angvel: None,
 		),
@@ -56,6 +58,8 @@
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		attack_damage: 10.0,
+		collision_damage: 8.0,
 		initial_motion: (
 			random_angvel: None,
 		),
@@ -91,6 +95,8 @@
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		attack_damage: 0.0,
+		collision_damage: 5.0,
 		initial_motion: (
 			random_angvel: None,
 		),
@@ -133,6 +139,8 @@
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		attack_damage: 0.0,
+		collision_damage: 6.0,
 		initial_motion: (
 			random_angvel: None,
 		),
@@ -167,6 +175,8 @@
 		angular_acceleration: 0.5,
 		angular_deceleration: 0.0,
 		angular_speed: 1.8,
+		attack_damage: 0.0,
+		collision_damage: 18.0,
 		initial_motion: (
 			random_angvel: None,
 		),
@@ -214,6 +224,8 @@
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		attack_damage: 8.0,
+		collision_damage: 10.0,
 		initial_motion: (
 			random_angvel: None,
 		),
@@ -261,6 +273,8 @@
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		attack_damage: 8.0,
+		collision_damage: 10.0,
 		initial_motion: (
 			random_angvel: None,
 		),
@@ -295,6 +309,8 @@
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		attack_damage: 0.0,
+		collision_damage: 7.0,
 		initial_motion: (
 			random_angvel: Some((-1.0, 1.0)),
 		),

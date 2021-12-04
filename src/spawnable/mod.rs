@@ -1,5 +1,8 @@
-use crate::{player::PlayerComponent, visual::AnimationDirection};
+use crate::{
+    player::PlayerComponent, spawnable::projectile::ProjectileComponent, visual::AnimationDirection,
+};
 use bevy::prelude::*;
+use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 use strum_macros::Display;
 
@@ -198,6 +201,58 @@ pub fn despawn_spawnable_system(
     for (entity, spawnable_component) in spawnable_query.iter() {
         if spawnable_component.should_despawn {
             commands.entity(entity).despawn_recursive();
+        }
+    }
+}
+
+// Manages damage dealing on collision
+pub fn collision_damage_system(
+    mut intersection_events: EventReader<IntersectionEvent>,
+    mut player_query: Query<(Entity, &mut PlayerComponent)>,
+    projectile_query: Query<(Entity, &ProjectileComponent)>,
+) {
+    for intersection_event in intersection_events.iter() {
+        let mut colliding_entities = vec![];
+        let collider1_entity = intersection_event.collider1.entity();
+        let collider2_entity = intersection_event.collider2.entity();
+        colliding_entities.push(collider1_entity);
+        colliding_entities.push(collider2_entity);
+
+        // check if player was collided with
+        for (player_entity, mut player_component) in player_query.iter_mut() {
+            if player_entity == collider1_entity {
+                for (projectile_entity, projectile_component) in projectile_query.iter() {
+                    if projectile_entity == collider2_entity
+                        && (match projectile_component.projectile_type.clone() {
+                            ProjectileType::Blast(faction) => match faction {
+                                Faction::Ally => false,
+                                Faction::Enemy => true,
+                                Faction::Neutral => true,
+                            },
+                        })
+                    {
+                        player_component
+                            .health
+                            .take_damage(projectile_component.damage);
+                    }
+                }
+            } else if player_entity == collider2_entity {
+                for (projectile_entity, projectile_component) in projectile_query.iter() {
+                    if projectile_entity == collider1_entity
+                        && (match projectile_component.projectile_type.clone() {
+                            ProjectileType::Blast(faction) => match faction {
+                                Faction::Ally => false,
+                                Faction::Enemy => true,
+                                Faction::Neutral => true,
+                            },
+                        })
+                    {
+                        player_component
+                            .health
+                            .take_damage(projectile_component.damage);
+                    }
+                }
+            }
         }
     }
 }

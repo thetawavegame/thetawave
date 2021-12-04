@@ -42,6 +42,7 @@ pub fn player_fire_weapon_system(
                 &player.projectile_type,
                 &projectile_resource,
                 position,
+                10.0, // TODO: pass from player component
                 player.projectile_despawn_time,
                 initial_motion,
                 &mut commands,

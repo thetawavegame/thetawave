@@ -21,6 +21,8 @@ pub struct ProjectileComponent {
     pub projectile_type: ProjectileType,
     /// Projectile specific behaviors
     pub behaviors: Vec<ProjectileBehavior>,
+    /// Damage dealt to target
+    pub damage: f32,
 }
 
 /// Types of behaviors that can be performed by projectiles
@@ -57,6 +59,7 @@ pub fn spawn_projectile(
     projectile_type: &ProjectileType,
     projectile_resource: &ProjectileResource,
     position: Vec2,
+    damage: f32,
     despawn_time: f32, // time before despawning
     initial_motion: InitialMotion,
     commands: &mut Commands,
@@ -126,6 +129,7 @@ pub fn spawn_projectile(
         .insert(ProjectileComponent {
             projectile_type: projectile_data.projectile_type.clone(),
             behaviors: projectile_data.projectile_behaviors.clone(),
+            damage,
         })
         .insert(SpawnableComponent {
             spawnable_type: SpawnableType::Projectile(projectile_data.projectile_type.clone()),
@@ -148,7 +152,7 @@ pub fn spawn_projectile(
 pub fn projectile_execute_behavior_system(
     mut intersection_events: EventReader<IntersectionEvent>,
     mut projectile_query: Query<(Entity, &mut SpawnableComponent, &ProjectileComponent)>,
-    player_query: Query<Entity, With<PlayerComponent>>,
+    mut player_query: Query<(Entity, &mut PlayerComponent)>,
     mob_query: Query<(Entity, &MobComponent)>,
 ) {
     let mut intersection_events_vec = vec![];
@@ -165,7 +169,7 @@ pub fn projectile_execute_behavior_system(
                     &mut spawnable_component,
                     projectile_component,
                     &intersection_events_vec,
-                    &player_query,
+                    &mut player_query,
                     &mob_query,
                 ),
             }
@@ -179,7 +183,7 @@ fn explode_on_impact(
     spawnable_component: &mut SpawnableComponent,
     projectile_component: &ProjectileComponent,
     intersection_events: &[IntersectionEvent],
-    player_query: &Query<Entity, With<PlayerComponent>>,
+    player_query: &mut Query<(Entity, &mut PlayerComponent)>,
     mob_query: &Query<(Entity, &MobComponent)>,
 ) {
     for intersection_event in intersection_events {
@@ -205,16 +209,16 @@ fn explode_on_impact(
                 // Enemy projectiles can hit allies and neutrals
                 super::Faction::Enemy => (
                     player_query
-                        .iter()
-                        .any(|player_entity| player_entity == collider1_entity)
+                        .iter_mut()
+                        .any(|(player_entity, _)| player_entity == collider1_entity)
                         || mob_query.iter().any(|(mob_entity, mob_component)| {
                             mob_entity == collider1_entity
                                 && (matches!(mob_component.mob_type, super::MobType::Ally(_))
                                     || matches!(mob_component.mob_type, super::MobType::Neutral(_)))
                         }),
                     player_query
-                        .iter()
-                        .any(|player_entity| player_entity == collider2_entity)
+                        .iter_mut()
+                        .any(|(player_entity, _)| player_entity == collider2_entity)
                         || mob_query.iter().any(|(mob_entity, mob_component)| {
                             mob_entity == collider2_entity
                                 && (matches!(mob_component.mob_type, super::MobType::Ally(_))
@@ -224,16 +228,16 @@ fn explode_on_impact(
                 // Neutral projectiles can hit allies and enemies
                 super::Faction::Neutral => (
                     player_query
-                        .iter()
-                        .any(|player_entity| player_entity == collider1_entity)
+                        .iter_mut()
+                        .any(|(player_entity, _)| player_entity == collider1_entity)
                         || mob_query.iter().any(|(mob_entity, mob_component)| {
                             mob_entity == collider1_entity
                                 && (matches!(mob_component.mob_type, super::MobType::Ally(_))
                                     || matches!(mob_component.mob_type, super::MobType::Enemy(_)))
                         }),
                     player_query
-                        .iter()
-                        .any(|player_entity| player_entity == collider2_entity)
+                        .iter_mut()
+                        .any(|(player_entity, _)| player_entity == collider2_entity)
                         || mob_query.iter().any(|(mob_entity, mob_component)| {
                             mob_entity == collider2_entity
                                 && (matches!(mob_component.mob_type, super::MobType::Ally(_))
@@ -247,6 +251,7 @@ fn explode_on_impact(
             || (entity == collider2_entity && collider1_check)
         {
             spawnable_component.should_despawn = true;
+
             // TODO: spawn explode animation
         }
     }

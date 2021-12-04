@@ -26,6 +26,10 @@ pub struct MobComponent {
     pub mob_spawn_timer: Option<Timer>,
     /// Optional weapon timer
     pub weapon_timer: Option<Timer>,
+    /// Damage dealt to other factions through attacks
+    pub attack_damage: f32,
+    /// Damage dealt to other factions on collision
+    pub collision_damage: f32,
 }
 
 /// Data used to periodically spawn mobs
@@ -90,6 +94,10 @@ pub struct MobData {
     pub texture: TextureData,
     /// Optional data describing the thruster
     pub thruster: Option<ThrusterData>,
+    /// Damage dealt to other factions through attacks
+    pub attack_damage: f32,
+    /// Damage dealt to other factions on collision
+    pub collision_damage: f32,
 }
 
 /// Data describing thrusters
@@ -183,6 +191,8 @@ pub fn spawn_mob(
         behaviors: mob_data.mob_behaviors.clone(),
         mob_spawn_timer: None,
         weapon_timer: None,
+        attack_damage: mob_data.attack_damage,
+        collision_damage: mob_data.collision_damage,
     })
     .insert(SpawnableComponent {
         spawnable_type: SpawnableType::Mob(mob_data.mob_type.clone()),
@@ -275,6 +285,7 @@ pub fn mob_execute_behavior_system(
                                 &data.projectile_type,
                                 &projectile_resource,
                                 position,
+                                mob_component.attack_damage,
                                 data.despawn_time,
                                 modified_initial_motion,
                                 &mut commands,

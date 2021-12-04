@@ -123,6 +123,7 @@ fn main() {
                 .after("set_contact_behavior")
                 .after("set_target_behavior"),
         )
+        .add_system(spawnable::collision_damage_system.system())
         .add_system(ui::update_ui.system())
         .add_system(spawnable::despawn_spawnable_system.system())
         .add_system(options::toggle_fullscreen_system.system())
