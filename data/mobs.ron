@@ -2,7 +2,7 @@
 	Enemy(Drone): (
 		mob_type: Enemy(Drone),
 		spawnable_behaviors: [MoveDown, BrakeHorizontal],
-		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact],
+		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
 		acceleration: (0.0, 0.02),
 		deceleration: (0.02, 0.01),
 		speed: (0.0, 1.0),
@@ -46,6 +46,7 @@
 		mob_behaviors: [
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
+			DieAtZeroHealth,
 			PeriodicFire(
 				(
 					projectile_type: Blast(Enemy),
@@ -100,7 +101,7 @@
 	Ally(Hauler): (
 		mob_type: Ally(Hauler),
 		spawnable_behaviors: [MoveDown, BrakeHorizontal],
-		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact],
+		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
 		acceleration: (0.0, 0.02),
 		deceleration: (0.02, 0.01),
 		speed: (0.0, 0.7),
@@ -144,6 +145,7 @@
 		mob_behaviors: [
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
+			DieAtZeroHealth,
 			SpawnMob(
 				(
 					mob_type: Enemy(Missile),
@@ -192,7 +194,7 @@
 	Enemy(Missile): (
 		mob_type: Enemy(Missile),
 		spawnable_behaviors: [RotateToTarget(None), MoveForward],
-		mob_behaviors: [ExplodeOnImpact, DealDamageToPlayerOnImpact, ReceiveDamageOnImpact],
+		mob_behaviors: [ExplodeOnImpact, DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
 		acceleration: (0.12, 0.2),
 		deceleration: (0.05, 0.05),
 		speed: (1.5, 1.5),
@@ -236,6 +238,7 @@
 		mob_behaviors: [
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
+			DieAtZeroHealth,
 			PeriodicFire(
 				(
 					projectile_type: Blast(Enemy),
@@ -292,6 +295,7 @@
 		mob_behaviors: [
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
+			DieAtZeroHealth,
 			PeriodicFire(
 				(
 					projectile_type: Blast(Enemy),
@@ -345,7 +349,7 @@
 	Neutral(MoneyAsteroid): (
 		mob_type: Neutral(MoneyAsteroid),
 		spawnable_behaviors: [MoveDown],
-		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact],
+		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
 		acceleration: (0.0, 0.02),
 		deceleration: (0.02, 0.01),
 		speed: (0.0, 0.75),

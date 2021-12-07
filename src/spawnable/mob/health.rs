@@ -18,7 +18,7 @@ impl Health {
     }
 
     /// Check if health is below zero
-    pub fn is_alive(&self) -> bool {
+    pub fn is_dead(&self) -> bool {
         self.health <= 0.0
     }
 

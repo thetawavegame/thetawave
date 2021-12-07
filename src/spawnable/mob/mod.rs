@@ -67,6 +67,7 @@ pub enum MobBehavior {
     ExplodeOnImpact,
     DealDamageToPlayerOnImpact,
     ReceiveDamageOnImpact,
+    DieAtZeroHealth,
 }
 
 /// Data about mob entities that can be stored in data ron file
@@ -351,6 +352,11 @@ pub fn mob_execute_behavior_system(
                         &mut mob_component,
                         &mut player_query,
                     );
+                }
+                MobBehavior::DieAtZeroHealth => {
+                    if mob_component.health.is_dead() {
+                        spawnable_component.should_despawn = true;
+                    }
                 }
             }
         }
