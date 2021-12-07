@@ -1,6 +1,8 @@
 use crate::{player::Character, spawnable::ProjectileType};
 use bevy::prelude::*;
 
+use crate::misc::Health;
+
 /// Component for managing core attributes of the player
 #[derive(Debug)]
 pub struct PlayerComponent {
@@ -24,6 +26,9 @@ pub struct PlayerComponent {
     pub projectile_offset_position: Vec2,
     /// Tracks time between firing blasts
     pub fire_timer: Timer,
+    pub health: Health,
+    pub attack_damage: f32,
+    pub collision_damage: f32,
 }
 
 impl From<&Character> for PlayerComponent {
@@ -39,6 +44,9 @@ impl From<&Character> for PlayerComponent {
             projectile_velocity: character.projectile_velocity,
             projectile_offset_position: character.projectile_offset_position,
             fire_timer: Timer::from_seconds(character.fire_period, false),
+            health: character.health.clone(),
+            attack_damage: character.attack_damage,
+            collision_damage: character.collision_damage,
         }
     }
 }

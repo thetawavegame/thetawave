@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use serde::Deserialize;
 use std::collections::HashMap;
 
-use crate::spawnable::ProjectileType;
+use crate::{misc::Health, spawnable::ProjectileType};
 
 /// Contains data necessary to create a player entity.
 /// A character is chosen at the beginning of the game.
@@ -32,6 +32,9 @@ pub struct Character {
     pub projectile_offset_position: Vec2,
     /// Period of time between firing blasts
     pub fire_period: f32,
+    pub health: Health,
+    pub attack_damage: f32,
+    pub collision_damage: f32,
 }
 
 /// Manages all characters

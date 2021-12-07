@@ -2,17 +2,24 @@
 	Enemy(Drone): (
 		mob_type: Enemy(Drone),
 		spawnable_behaviors: [MoveDown, BrakeHorizontal],
-		mob_behaviors: [],
+		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
 		acceleration: (0.0, 0.02),
 		deceleration: (0.02, 0.01),
 		speed: (0.0, 1.0),
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		attack_damage: 0.0,
+		collision_damage: 12.0,
 		initial_motion: (
 			random_angvel: None,
 		),
 		collider_dimensions: (14.0, 14.0),
+		health: (
+			max_health: 20.0,
+			health: 20.0,
+			armor: 0,
+		),
 		texture: (
 			path: "texture/drone_spritesheet.png",
 			dimensions: (18.0, 18.0),
@@ -37,6 +44,9 @@
 		mob_type: Enemy(Pawn),
 		spawnable_behaviors: [MoveDown, BrakeHorizontal],
 		mob_behaviors: [
+			ReceiveDamageOnImpact,
+			DealDamageToPlayerOnImpact,
+			DieAtZeroHealth,
 			PeriodicFire(
 				(
 					projectile_type: Blast(Enemy),
@@ -56,11 +66,18 @@
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		attack_damage: 10.0,
+		collision_damage: 8.0,
 		initial_motion: (
 			random_angvel: None,
 		),
 		collider_dimensions: (14.0, 14.0),
 		sprite_dimensions: (18.0, 18.0),
+		health: (
+			max_health: 20.0,
+			health: 20.0,
+			armor: 0,
+		),
 		texture: (
 			path: "texture/pawn_spritesheet.png",
 			dimensions: (18.0, 18.0),
@@ -84,17 +101,24 @@
 	Ally(Hauler): (
 		mob_type: Ally(Hauler),
 		spawnable_behaviors: [MoveDown, BrakeHorizontal],
-		mob_behaviors: [],
+		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
 		acceleration: (0.0, 0.02),
 		deceleration: (0.02, 0.01),
 		speed: (0.0, 0.7),
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		attack_damage: 0.0,
+		collision_damage: 5.0,
 		initial_motion: (
 			random_angvel: None,
 		),
 		collider_dimensions: (14.0, 30.0),
+		health: (
+			max_health: 20.0,
+			health: 20.0,
+			armor: 0,
+		),
 		texture: (
 			path: "texture/hauler_spritesheet.png",
 			dimensions: (22.0, 36.0),
@@ -119,6 +143,9 @@
 		mob_type: Enemy(MissileLauncher),
 		spawnable_behaviors: [MoveDown, BrakeHorizontal],
 		mob_behaviors: [
+			ReceiveDamageOnImpact,
+			DealDamageToPlayerOnImpact,
+			DieAtZeroHealth,
 			SpawnMob(
 				(
 					mob_type: Enemy(Missile),
@@ -133,10 +160,17 @@
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		attack_damage: 0.0,
+		collision_damage: 6.0,
 		initial_motion: (
 			random_angvel: None,
 		),
 		collider_dimensions: (17.0, 22.0),
+		health: (
+			max_health: 20.0,
+			health: 20.0,
+			armor: 0,
+		),	
 		texture: (
 			path: "texture/missile_launcher_spritesheet.png",
 			dimensions: (21.0, 26.0),
@@ -160,17 +194,24 @@
 	Enemy(Missile): (
 		mob_type: Enemy(Missile),
 		spawnable_behaviors: [RotateToTarget(None), MoveForward],
-		mob_behaviors: [ExplodeOnImpact],
+		mob_behaviors: [ExplodeOnImpact, DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
 		acceleration: (0.12, 0.2),
 		deceleration: (0.05, 0.05),
 		speed: (1.5, 1.5),
 		angular_acceleration: 0.5,
 		angular_deceleration: 0.0,
 		angular_speed: 1.8,
+		attack_damage: 0.0,
+		collision_damage: 18.0,
 		initial_motion: (
 			random_angvel: None,
 		),
 		collider_dimensions: (6.0, 14.0),
+		health: (
+			max_health: 20.0,
+			health: 20.0,
+			armor: 0,
+		),	
 		texture: (
 			path: "texture/missile_spritesheet.png",
 			dimensions: (11.0, 17.0),
@@ -195,6 +236,9 @@
 		mob_type: Enemy(StraferRight),
 		spawnable_behaviors: [MoveDown, MoveRight],
 		mob_behaviors: [
+			ReceiveDamageOnImpact,
+			DealDamageToPlayerOnImpact,
+			DieAtZeroHealth,
 			PeriodicFire(
 				(
 					projectile_type: Blast(Enemy),
@@ -214,10 +258,17 @@
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		attack_damage: 8.0,
+		collision_damage: 10.0,
 		initial_motion: (
 			random_angvel: None,
 		),
 		collider_dimensions: (20.0, 8.0),
+		health: (
+			max_health: 20.0,
+			health: 20.0,
+			armor: 0,
+		),	
 		texture: (
 			path: "texture/strafer_spritesheet.png",
 			dimensions: (24.0, 12.0),
@@ -242,6 +293,9 @@
 		mob_type: Enemy(StraferLeft),
 		spawnable_behaviors: [MoveDown, MoveLeft],
 		mob_behaviors: [
+			ReceiveDamageOnImpact,
+			DealDamageToPlayerOnImpact,
+			DieAtZeroHealth,
 			PeriodicFire(
 				(
 					projectile_type: Blast(Enemy),
@@ -261,10 +315,17 @@
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		attack_damage: 8.0,
+		collision_damage: 10.0,
 		initial_motion: (
 			random_angvel: None,
 		),
 		collider_dimensions: (20.0, 8.0),
+		health: (
+			max_health: 20.0,
+			health: 20.0,
+			armor: 0,
+		),	
 		texture: (
 			path: "texture/strafer_spritesheet.png",
 			dimensions: (24.0, 12.0),
@@ -288,17 +349,24 @@
 	Neutral(MoneyAsteroid): (
 		mob_type: Neutral(MoneyAsteroid),
 		spawnable_behaviors: [MoveDown],
-		mob_behaviors: [],
+		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
 		acceleration: (0.0, 0.02),
 		deceleration: (0.02, 0.01),
 		speed: (0.0, 0.75),
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
+		attack_damage: 0.0,
+		collision_damage: 7.0,
 		initial_motion: (
 			random_angvel: Some((-1.0, 1.0)),
 		),
 		collider_dimensions: (18.0, 18.0),
+		health: (
+			max_health: 20.0,
+			health: 20.0,
+			armor: 0,
+		),	
 		texture: (
 			path: "texture/money_asteroid_spritesheet.png",
 			dimensions: (21.0, 21.0),

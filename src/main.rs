@@ -15,10 +15,13 @@ mod arena;
 mod background;
 mod debug;
 mod game;
+mod misc;
 mod options;
 mod player;
+mod scanner;
 mod spawnable;
 mod tools;
+mod ui;
 mod visual;
 
 fn main() {
@@ -72,6 +75,7 @@ fn main() {
             ))
             .unwrap(),
         )
+        .add_event::<spawnable::CollisionEvent>()
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(DebugLinesPlugin)
@@ -79,7 +83,13 @@ fn main() {
         .add_startup_system(arena::spawn_barriers_system.system().after("init"))
         .add_startup_system(arena::spawn_despawn_gates_system.system().after("init"))
         .add_startup_system(background::create_background_system.system().after("init"))
-        .add_startup_system(player::spawn_player_system.system().after("init"))
+        .add_startup_system(
+            player::spawn_player_system
+                .system()
+                .label("spawn_player")
+                .after("init"),
+        )
+        .add_startup_system(ui::setup_ui.system().after("spawn_player"))
         .add_system_to_stage(CoreStage::First, spawnable::spawner_system.system())
         .add_system(player::player_movement_system.system())
         .add_system_to_stage(CoreStage::First, player::player_fire_weapon_system.system())
@@ -107,15 +117,33 @@ fn main() {
             spawnable::mob_execute_behavior_system
                 .system()
                 .after("set_contact_behavior")
-                .after("set_target_behavior"),
+                .after("set_target_behavior")
+                .after("intersection_collision")
+                .after("contact_collision"),
         )
         .add_system_to_stage(
             CoreStage::PostUpdate,
             spawnable::projectile_execute_behavior_system
                 .system()
                 .after("set_contact_behavior")
-                .after("set_target_behavior"),
+                .after("set_target_behavior")
+                .after("intersection_collision")
+                .after("contact_collision"),
         )
+        .add_system_to_stage(
+            CoreStage::PostUpdate,
+            spawnable::intersection_collision_system
+                .system()
+                .label("intersection_collision"),
+        )
+        .add_system_to_stage(
+            CoreStage::PostUpdate,
+            spawnable::contact_collision_system
+                .system()
+                .label("contact_collision"),
+        )
+        .add_system(scanner::scanner_system.system())
+        .add_system(ui::update_ui.system())
         .add_system(spawnable::despawn_spawnable_system.system())
         .add_system(options::toggle_fullscreen_system.system())
         .add_system(options::toggle_zoom_system.system())

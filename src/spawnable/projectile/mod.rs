@@ -6,8 +6,7 @@ use crate::{
     spawnable::InitialMotion,
     spawnable::TextureData,
     spawnable::{
-        DespawnTimerComponent, MobComponent, PlayerComponent, ProjectileType, SpawnableBehavior,
-        SpawnableComponent, SpawnableType,
+        DespawnTimerComponent, ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType,
     },
     visual::AnimationComponent,
 };
@@ -15,18 +14,18 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use rand::{thread_rng, Rng};
 
+mod behavior;
+
+pub use self::behavior::{projectile_execute_behavior_system, ProjectileBehavior};
+
 /// Core component for projectiles
 pub struct ProjectileComponent {
     /// Type of projectile
     pub projectile_type: ProjectileType,
     /// Projectile specific behaviors
     pub behaviors: Vec<ProjectileBehavior>,
-}
-
-/// Types of behaviors that can be performed by projectiles
-#[derive(Deserialize, Clone)]
-pub enum ProjectileBehavior {
-    ExplodeOnImpact,
+    /// Damage dealt to target
+    pub damage: f32,
 }
 
 /// Data about mob entities that can be stored in data ron file
@@ -52,11 +51,13 @@ pub struct ProjectileResource {
     pub texture_atlas_handle: HashMap<ProjectileType, Handle<TextureAtlas>>,
 }
 
+#[allow(clippy::too_many_arguments)]
 /// Spawn a mob entity
 pub fn spawn_projectile(
     projectile_type: &ProjectileType,
     projectile_resource: &ProjectileResource,
     position: Vec2,
+    damage: f32,
     despawn_time: f32, // time before despawning
     initial_motion: InitialMotion,
     commands: &mut Commands,
@@ -126,6 +127,7 @@ pub fn spawn_projectile(
         .insert(ProjectileComponent {
             projectile_type: projectile_data.projectile_type.clone(),
             behaviors: projectile_data.projectile_behaviors.clone(),
+            damage,
         })
         .insert(SpawnableComponent {
             spawnable_type: SpawnableType::Projectile(projectile_data.projectile_type.clone()),
@@ -142,112 +144,4 @@ pub fn spawn_projectile(
             despawn_timer: Timer::from_seconds(despawn_time, false),
         })
         .insert(Name::new(projectile_data.projectile_type.to_string()));
-}
-
-/// Manages executing behaviors of mobs
-pub fn projectile_execute_behavior_system(
-    mut intersection_events: EventReader<IntersectionEvent>,
-    mut projectile_query: Query<(Entity, &mut SpawnableComponent, &ProjectileComponent)>,
-    player_query: Query<Entity, With<PlayerComponent>>,
-    mob_query: Query<(Entity, &MobComponent)>,
-) {
-    let mut intersection_events_vec = vec![];
-    for intersection_event in intersection_events.iter() {
-        intersection_events_vec.push(*intersection_event);
-    }
-
-    for (entity, mut spawnable_component, projectile_component) in projectile_query.iter_mut() {
-        let behaviors = projectile_component.behaviors.clone();
-        for behavior in behaviors {
-            match behavior {
-                ProjectileBehavior::ExplodeOnImpact => explode_on_impact(
-                    entity,
-                    &mut spawnable_component,
-                    projectile_component,
-                    &intersection_events_vec,
-                    &player_query,
-                    &mob_query,
-                ),
-            }
-        }
-    }
-}
-
-/// Explode projectile on impact
-fn explode_on_impact(
-    entity: Entity,
-    spawnable_component: &mut SpawnableComponent,
-    projectile_component: &ProjectileComponent,
-    intersection_events: &[IntersectionEvent],
-    player_query: &Query<Entity, With<PlayerComponent>>,
-    mob_query: &Query<(Entity, &MobComponent)>,
-) {
-    for intersection_event in intersection_events {
-        let collider1_entity = intersection_event.collider1.entity();
-        let collider2_entity = intersection_event.collider2.entity();
-
-        let (collider1_check, collider2_check) = match projectile_component.projectile_type.clone()
-        {
-            ProjectileType::Blast(faction) => match faction {
-                // Ally projectiles can hit enemies and neutrals
-                super::Faction::Ally => (
-                    mob_query.iter().any(|(mob_entity, mob_component)| {
-                        mob_entity == collider1_entity
-                            && (matches!(mob_component.mob_type, super::MobType::Enemy(_))
-                                || matches!(mob_component.mob_type, super::MobType::Neutral(_)))
-                    }),
-                    mob_query.iter().any(|(mob_entity, mob_component)| {
-                        mob_entity == collider2_entity
-                            && (matches!(mob_component.mob_type, super::MobType::Enemy(_))
-                                || matches!(mob_component.mob_type, super::MobType::Neutral(_)))
-                    }),
-                ),
-                // Enemy projectiles can hit allies and neutrals
-                super::Faction::Enemy => (
-                    player_query
-                        .iter()
-                        .any(|player_entity| player_entity == collider1_entity)
-                        || mob_query.iter().any(|(mob_entity, mob_component)| {
-                            mob_entity == collider1_entity
-                                && (matches!(mob_component.mob_type, super::MobType::Ally(_))
-                                    || matches!(mob_component.mob_type, super::MobType::Neutral(_)))
-                        }),
-                    player_query
-                        .iter()
-                        .any(|player_entity| player_entity == collider2_entity)
-                        || mob_query.iter().any(|(mob_entity, mob_component)| {
-                            mob_entity == collider2_entity
-                                && (matches!(mob_component.mob_type, super::MobType::Ally(_))
-                                    || matches!(mob_component.mob_type, super::MobType::Neutral(_)))
-                        }),
-                ),
-                // Neutral projectiles can hit allies and enemies
-                super::Faction::Neutral => (
-                    player_query
-                        .iter()
-                        .any(|player_entity| player_entity == collider1_entity)
-                        || mob_query.iter().any(|(mob_entity, mob_component)| {
-                            mob_entity == collider1_entity
-                                && (matches!(mob_component.mob_type, super::MobType::Ally(_))
-                                    || matches!(mob_component.mob_type, super::MobType::Enemy(_)))
-                        }),
-                    player_query
-                        .iter()
-                        .any(|player_entity| player_entity == collider2_entity)
-                        || mob_query.iter().any(|(mob_entity, mob_component)| {
-                            mob_entity == collider2_entity
-                                && (matches!(mob_component.mob_type, super::MobType::Ally(_))
-                                    || matches!(mob_component.mob_type, super::MobType::Enemy(_)))
-                        }),
-                ),
-            },
-        };
-
-        if (entity == collider1_entity && collider2_check)
-            || (entity == collider2_entity && collider1_check)
-        {
-            spawnable_component.should_despawn = true;
-            // TODO: spawn explode animation
-        }
-    }
 }

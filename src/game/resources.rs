@@ -16,4 +16,6 @@ pub struct GameParametersResource {
     pub camera_z: f32,
     /// Z coordinate of camera in zoomed out mode
     pub camera_zoom_out_z: f32,
+    /// Range of mouse scanning
+    pub scan_range: f32,
 }
