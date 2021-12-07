@@ -17,6 +17,7 @@ mod debug;
 mod game;
 mod options;
 mod player;
+mod scanner;
 mod spawnable;
 mod tools;
 mod ui;
@@ -140,6 +141,7 @@ fn main() {
                 .system()
                 .label("contact_collision"),
         )
+        .add_system(scanner::scanner_system.system())
         .add_system(ui::update_ui.system())
         .add_system(spawnable::despawn_spawnable_system.system())
         .add_system(options::toggle_fullscreen_system.system())
