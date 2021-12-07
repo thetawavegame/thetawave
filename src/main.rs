@@ -15,6 +15,7 @@ mod arena;
 mod background;
 mod debug;
 mod game;
+mod misc;
 mod options;
 mod player;
 mod scanner;

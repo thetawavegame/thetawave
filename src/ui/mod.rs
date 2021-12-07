@@ -4,6 +4,7 @@ use crate::player::PlayerComponent;
 
 pub struct HealthUI;
 
+/// Initialize ui
 pub fn setup_ui(mut commands: Commands, asset_server: ResMut<AssetServer>) {
     let font = asset_server.load("fonts/SpaceMadness.ttf");
     commands.spawn_bundle(UiCameraBundle::default());
@@ -23,7 +24,7 @@ pub fn setup_ui(mut commands: Commands, asset_server: ResMut<AssetServer>) {
             text: Text::with_section(
                 "Health: 0/0",
                 TextStyle {
-                    font: font.clone(),
+                    font,
                     font_size: 16.0,
                     color: Color::WHITE,
                 },
@@ -34,6 +35,7 @@ pub fn setup_ui(mut commands: Commands, asset_server: ResMut<AssetServer>) {
         .insert(HealthUI);
 }
 
+/// Update ui to current data from game
 pub fn update_ui(
     mut ui_query: Query<&mut Text, With<HealthUI>>,
     player_query: Query<&PlayerComponent>,

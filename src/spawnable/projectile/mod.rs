@@ -6,14 +6,17 @@ use crate::{
     spawnable::InitialMotion,
     spawnable::TextureData,
     spawnable::{
-        CollisionEvent, DespawnTimerComponent, Faction, MobComponent, PlayerComponent,
-        ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType,
+        DespawnTimerComponent, ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType,
     },
     visual::AnimationComponent,
 };
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use rand::{thread_rng, Rng};
+
+mod behavior;
+
+pub use self::behavior::{projectile_execute_behavior_system, ProjectileBehavior};
 
 /// Core component for projectiles
 pub struct ProjectileComponent {
@@ -23,12 +26,6 @@ pub struct ProjectileComponent {
     pub behaviors: Vec<ProjectileBehavior>,
     /// Damage dealt to target
     pub damage: f32,
-}
-
-/// Types of behaviors that can be performed by projectiles
-#[derive(Deserialize, Clone)]
-pub enum ProjectileBehavior {
-    ExplodeOnImpact,
 }
 
 /// Data about mob entities that can be stored in data ron file
@@ -54,6 +51,7 @@ pub struct ProjectileResource {
     pub texture_atlas_handle: HashMap<ProjectileType, Handle<TextureAtlas>>,
 }
 
+#[allow(clippy::too_many_arguments)]
 /// Spawn a mob entity
 pub fn spawn_projectile(
     projectile_type: &ProjectileType,
@@ -146,98 +144,4 @@ pub fn spawn_projectile(
             despawn_timer: Timer::from_seconds(despawn_time, false),
         })
         .insert(Name::new(projectile_data.projectile_type.to_string()));
-}
-
-/// Manages executing behaviors of mobs
-pub fn projectile_execute_behavior_system(
-    mut projectile_query: Query<(Entity, &mut SpawnableComponent, &ProjectileComponent)>,
-    mut player_query: Query<(Entity, &mut PlayerComponent)>,
-    mut mob_query: Query<(Entity, &mut MobComponent)>,
-    mut collision_events: EventReader<CollisionEvent>,
-) {
-    let mut collision_events_vec = vec![];
-    for collision_event in collision_events.iter() {
-        collision_events_vec.push(collision_event);
-    }
-
-    for (entity, mut spawnable_component, projectile_component) in projectile_query.iter_mut() {
-        let behaviors = projectile_component.behaviors.clone();
-        for behavior in behaviors {
-            match behavior {
-                ProjectileBehavior::ExplodeOnImpact => explode_on_impact(
-                    entity,
-                    &mut spawnable_component,
-                    &collision_events_vec,
-                    &mut player_query,
-                    &mut mob_query,
-                ),
-            }
-        }
-    }
-}
-
-/// Explode projectile on impact
-fn explode_on_impact(
-    entity: Entity,
-    spawnable_component: &mut SpawnableComponent,
-    collision_events: &[&CollisionEvent],
-    player_query: &mut Query<(Entity, &mut PlayerComponent)>,
-    mob_query: &mut Query<(Entity, &mut MobComponent)>,
-) {
-    for collision_event in collision_events.iter() {
-        match collision_event {
-            CollisionEvent::PlayerToProjectileIntersection {
-                player_entity,
-                projectile_entity,
-                projectile_faction,
-                projectile_damage,
-            } => {
-                if entity == *projectile_entity
-                    && matches!(
-                        projectile_faction.clone(),
-                        Faction::Neutral | Faction::Enemy
-                    )
-                {
-                    // despawn blast
-                    spawnable_component.should_despawn = true;
-                    // spawn explosion
-                    // deal damage to player
-                    for (player_entity_q, mut player_component) in player_query.iter_mut() {
-                        if *player_entity == player_entity_q {
-                            player_component.health.take_damage(*projectile_damage);
-                        }
-                    }
-                    continue;
-                }
-            }
-
-            CollisionEvent::MobToProjectileIntersection {
-                mob_entity,
-                projectile_entity,
-                mob_faction,
-                projectile_faction,
-                projectile_damage,
-            } => {
-                if entity == *projectile_entity
-                    && !match mob_faction {
-                        Faction::Ally => matches!(projectile_faction, Faction::Ally),
-                        Faction::Enemy => matches!(projectile_faction, Faction::Enemy),
-                        Faction::Neutral => matches!(projectile_faction, Faction::Neutral),
-                    }
-                {
-                    // despawn blast
-                    spawnable_component.should_despawn = true;
-                    // spawn explosion
-                    // deal damage to mob
-                    for (mob_entity_q, mut mob_component) in mob_query.iter_mut() {
-                        if *mob_entity == mob_entity_q {
-                            mob_component.health.take_damage(*projectile_damage);
-                        }
-                    }
-                    continue;
-                }
-            }
-            _ => {}
-        }
-    }
 }
