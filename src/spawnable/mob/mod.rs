@@ -6,8 +6,9 @@ pub mod health;
 use crate::{
     game::GameParametersResource,
     spawnable::{
-        spawn_projectile, InitialMotion, MobType, ProjectileResource, ProjectileType,
-        SpawnableBehavior, SpawnableComponent, SpawnableType, TextureData,
+        spawn_projectile, CollisionEvent, Faction, Health, InitialMotion, MobType, PlayerComponent,
+        ProjectileResource, ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType,
+        TextureData,
     },
     visual::AnimationComponent,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
@@ -30,6 +31,7 @@ pub struct MobComponent {
     pub attack_damage: f32,
     /// Damage dealt to other factions on collision
     pub collision_damage: f32,
+    pub health: Health,
 }
 
 /// Data used to periodically spawn mobs
@@ -63,6 +65,8 @@ pub enum MobBehavior {
     PeriodicFire(PeriodicFireBehaviorData),
     SpawnMob(SpawnMobBehaviorData),
     ExplodeOnImpact,
+    DealDamageToPlayerOnImpact,
+    ReceiveDamageOnImpact,
 }
 
 /// Data about mob entities that can be stored in data ron file
@@ -98,6 +102,7 @@ pub struct MobData {
     pub attack_damage: f32,
     /// Damage dealt to other factions on collision
     pub collision_damage: f32,
+    pub health: Health,
 }
 
 /// Data describing thrusters
@@ -193,6 +198,7 @@ pub fn spawn_mob(
         weapon_timer: None,
         attack_damage: mob_data.attack_damage,
         collision_damage: mob_data.collision_damage,
+        health: mob_data.health.clone(),
     })
     .insert(SpawnableComponent {
         spawnable_type: SpawnableType::Mob(mob_data.mob_type.clone()),
@@ -234,7 +240,7 @@ pub fn spawn_mob(
 /// Manages excuteing behaviors of mobs
 pub fn mob_execute_behavior_system(
     mut commands: Commands,
-    mut contact_events: EventReader<ContactEvent>,
+    mut collision_events: EventReader<CollisionEvent>,
     rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<GameParametersResource>,
     time: Res<Time>,
@@ -247,11 +253,12 @@ pub fn mob_execute_behavior_system(
         &RigidBodyPosition,
         &RigidBodyVelocity,
     )>,
+    mut player_query: Query<(Entity, &mut PlayerComponent)>,
 ) {
     // Get all contact events first (can't be read more than once within a system)
-    let mut contact_events_vec = vec![];
-    for contact_event in contact_events.iter() {
-        contact_events_vec.push(*contact_event);
+    let mut collision_events_vec = vec![];
+    for collision_event in collision_events.iter() {
+        collision_events_vec.push(collision_event);
     }
 
     // Iterate through all spawnable entities and execute their behavior
@@ -322,9 +329,100 @@ pub fn mob_execute_behavior_system(
                     }
                 }
                 MobBehavior::ExplodeOnImpact => {
-                    explode_on_impact(entity, &mut spawnable_component, &contact_events_vec);
+                    explode_on_impact(
+                        entity,
+                        &mut spawnable_component,
+                        &collision_events_vec,
+                        &mut player_query,
+                    );
+                }
+                MobBehavior::DealDamageToPlayerOnImpact => {
+                    deal_damage_to_player_on_impact(
+                        entity,
+                        &collision_events_vec,
+                        &mut mob_component,
+                        &mut player_query,
+                    );
+                }
+                MobBehavior::ReceiveDamageOnImpact => {
+                    receive_damage_on_impact(
+                        entity,
+                        &collision_events_vec,
+                        &mut mob_component,
+                        &mut player_query,
+                    );
                 }
             }
+        }
+    }
+}
+
+fn receive_damage_on_impact(
+    entity: Entity,
+    collision_events: &[&CollisionEvent],
+    mob_component: &mut MobComponent,
+    player_query: &mut Query<(Entity, &mut PlayerComponent)>,
+) {
+    for collision_event in collision_events.iter() {
+        match collision_event {
+            CollisionEvent::PlayerToMobContact {
+                player_entity,
+                mob_entity,
+                mob_faction,
+                player_damage,
+                mob_damage,
+            } => {
+                if entity == *mob_entity {
+                    for (player_entity_q, mut player_component) in player_query.iter_mut() {
+                        if player_entity_q == *player_entity {
+                            mob_component.health.take_damage(*player_damage);
+                        }
+                    }
+                }
+            }
+            CollisionEvent::MobToMobContact {
+                mob_entity_1,
+                mob_faction_1,
+                mob_damage_1,
+                mob_entity_2,
+                mob_faction_2,
+                mob_damage_2,
+            } => {
+                if entity == *mob_entity_1 {
+                    mob_component.health.take_damage(*mob_damage_2);
+                }
+            }
+
+            _ => {}
+        }
+    }
+}
+
+fn deal_damage_to_player_on_impact(
+    entity: Entity,
+    collision_events: &[&CollisionEvent],
+    mob_component: &mut MobComponent,
+    player_query: &mut Query<(Entity, &mut PlayerComponent)>,
+) {
+    for collision_event in collision_events.iter() {
+        match collision_event {
+            CollisionEvent::PlayerToMobContact {
+                player_entity,
+                mob_entity,
+                mob_faction,
+                player_damage,
+                mob_damage,
+            } => {
+                if entity == *mob_entity {
+                    // deal damage to player
+                    for (player_entity_q, mut player_component) in player_query.iter_mut() {
+                        if player_entity_q == *player_entity {
+                            player_component.health.take_damage(*mob_damage);
+                        }
+                    }
+                }
+            }
+            _ => {}
         }
     }
 }
@@ -333,15 +431,42 @@ pub fn mob_execute_behavior_system(
 fn explode_on_impact(
     entity: Entity,
     spawnable_component: &mut SpawnableComponent,
-    contact_events: &[ContactEvent],
+    collision_events: &[&CollisionEvent],
+    player_query: &mut Query<(Entity, &mut PlayerComponent)>,
 ) {
-    for contact_event in contact_events {
-        //checks for collision between spawnable and other
-        if let ContactEvent::Stopped(h1, h2) = contact_event {
-            if h1.entity() == entity || h2.entity() == entity {
-                spawnable_component.should_despawn = true;
-                // TODO: spawn explode animation
+    for collision_event in collision_events.iter() {
+        match collision_event {
+            CollisionEvent::PlayerToMobContact {
+                player_entity,
+                mob_entity,
+                mob_faction,
+                player_damage,
+                mob_damage,
+            } => {
+                // remove faction check to allow allied mobs to harm players
+                if entity == *mob_entity {
+                    // despawn mob
+                    spawnable_component.should_despawn = true;
+                    // TODO: spawn explosion
+                    continue;
+                }
             }
+            CollisionEvent::MobToMobContact {
+                mob_entity_1,
+                mob_faction_1,
+                mob_damage_1,
+                mob_entity_2,
+                mob_faction_2,
+                mob_damage_2,
+            } => {
+                if entity == *mob_entity_1 {
+                    // despawn mob
+                    spawnable_component.should_despawn = true;
+                    // TODO: spawn explosion
+                    continue;
+                }
+            }
+            _ => {}
         }
     }
 }

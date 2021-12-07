@@ -33,6 +33,8 @@ pub struct Character {
     /// Period of time between firing blasts
     pub fire_period: f32,
     pub health: Health,
+    pub attack_damage: f32,
+    pub collision_damage: f32,
 }
 
 /// Manages all characters

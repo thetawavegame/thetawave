@@ -16,7 +16,9 @@
 				max_health: 100.0,
 				health: 100.0,
 				armor: 0,	
-			)
+			),
+			attack_damage: 10.0,
+			collision_damage: 10.0,
 		)
 	}
 )

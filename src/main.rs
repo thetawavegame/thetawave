@@ -73,6 +73,7 @@ fn main() {
             ))
             .unwrap(),
         )
+        .add_event::<spawnable::CollisionEvent>()
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(DebugLinesPlugin)
@@ -114,16 +115,31 @@ fn main() {
             spawnable::mob_execute_behavior_system
                 .system()
                 .after("set_contact_behavior")
-                .after("set_target_behavior"),
+                .after("set_target_behavior")
+                .after("intersection_collision")
+                .after("contact_collision"),
         )
         .add_system_to_stage(
             CoreStage::PostUpdate,
             spawnable::projectile_execute_behavior_system
                 .system()
                 .after("set_contact_behavior")
-                .after("set_target_behavior"),
+                .after("set_target_behavior")
+                .after("intersection_collision")
+                .after("contact_collision"),
         )
-        .add_system(spawnable::collision_damage_system.system())
+        .add_system_to_stage(
+            CoreStage::PostUpdate,
+            spawnable::intersection_collision_system
+                .system()
+                .label("intersection_collision"),
+        )
+        .add_system_to_stage(
+            CoreStage::PostUpdate,
+            spawnable::contact_collision_system
+                .system()
+                .label("contact_collision"),
+        )
         .add_system(ui::update_ui.system())
         .add_system(spawnable::despawn_spawnable_system.system())
         .add_system(options::toggle_fullscreen_system.system())

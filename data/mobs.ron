@@ -2,7 +2,7 @@
 	Enemy(Drone): (
 		mob_type: Enemy(Drone),
 		spawnable_behaviors: [MoveDown, BrakeHorizontal],
-		mob_behaviors: [],
+		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact],
 		acceleration: (0.0, 0.02),
 		deceleration: (0.02, 0.01),
 		speed: (0.0, 1.0),
@@ -15,6 +15,11 @@
 			random_angvel: None,
 		),
 		collider_dimensions: (14.0, 14.0),
+		health: (
+			max_health: 20.0,
+			health: 20.0,
+			armor: 0,
+		),
 		texture: (
 			path: "texture/drone_spritesheet.png",
 			dimensions: (18.0, 18.0),
@@ -39,6 +44,8 @@
 		mob_type: Enemy(Pawn),
 		spawnable_behaviors: [MoveDown, BrakeHorizontal],
 		mob_behaviors: [
+			ReceiveDamageOnImpact,
+			DealDamageToPlayerOnImpact,
 			PeriodicFire(
 				(
 					projectile_type: Blast(Enemy),
@@ -65,6 +72,11 @@
 		),
 		collider_dimensions: (14.0, 14.0),
 		sprite_dimensions: (18.0, 18.0),
+		health: (
+			max_health: 20.0,
+			health: 20.0,
+			armor: 0,
+		),
 		texture: (
 			path: "texture/pawn_spritesheet.png",
 			dimensions: (18.0, 18.0),
@@ -88,7 +100,7 @@
 	Ally(Hauler): (
 		mob_type: Ally(Hauler),
 		spawnable_behaviors: [MoveDown, BrakeHorizontal],
-		mob_behaviors: [],
+		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact],
 		acceleration: (0.0, 0.02),
 		deceleration: (0.02, 0.01),
 		speed: (0.0, 0.7),
@@ -101,6 +113,11 @@
 			random_angvel: None,
 		),
 		collider_dimensions: (14.0, 30.0),
+		health: (
+			max_health: 20.0,
+			health: 20.0,
+			armor: 0,
+		),
 		texture: (
 			path: "texture/hauler_spritesheet.png",
 			dimensions: (22.0, 36.0),
@@ -125,6 +142,8 @@
 		mob_type: Enemy(MissileLauncher),
 		spawnable_behaviors: [MoveDown, BrakeHorizontal],
 		mob_behaviors: [
+			ReceiveDamageOnImpact,
+			DealDamageToPlayerOnImpact,
 			SpawnMob(
 				(
 					mob_type: Enemy(Missile),
@@ -145,6 +164,11 @@
 			random_angvel: None,
 		),
 		collider_dimensions: (17.0, 22.0),
+		health: (
+			max_health: 20.0,
+			health: 20.0,
+			armor: 0,
+		),	
 		texture: (
 			path: "texture/missile_launcher_spritesheet.png",
 			dimensions: (21.0, 26.0),
@@ -168,7 +192,7 @@
 	Enemy(Missile): (
 		mob_type: Enemy(Missile),
 		spawnable_behaviors: [RotateToTarget(None), MoveForward],
-		mob_behaviors: [ExplodeOnImpact],
+		mob_behaviors: [ExplodeOnImpact, DealDamageToPlayerOnImpact, ReceiveDamageOnImpact],
 		acceleration: (0.12, 0.2),
 		deceleration: (0.05, 0.05),
 		speed: (1.5, 1.5),
@@ -181,6 +205,11 @@
 			random_angvel: None,
 		),
 		collider_dimensions: (6.0, 14.0),
+		health: (
+			max_health: 20.0,
+			health: 20.0,
+			armor: 0,
+		),	
 		texture: (
 			path: "texture/missile_spritesheet.png",
 			dimensions: (11.0, 17.0),
@@ -205,6 +234,8 @@
 		mob_type: Enemy(StraferRight),
 		spawnable_behaviors: [MoveDown, MoveRight],
 		mob_behaviors: [
+			ReceiveDamageOnImpact,
+			DealDamageToPlayerOnImpact,
 			PeriodicFire(
 				(
 					projectile_type: Blast(Enemy),
@@ -230,6 +261,11 @@
 			random_angvel: None,
 		),
 		collider_dimensions: (20.0, 8.0),
+		health: (
+			max_health: 20.0,
+			health: 20.0,
+			armor: 0,
+		),	
 		texture: (
 			path: "texture/strafer_spritesheet.png",
 			dimensions: (24.0, 12.0),
@@ -254,6 +290,8 @@
 		mob_type: Enemy(StraferLeft),
 		spawnable_behaviors: [MoveDown, MoveLeft],
 		mob_behaviors: [
+			ReceiveDamageOnImpact,
+			DealDamageToPlayerOnImpact,
 			PeriodicFire(
 				(
 					projectile_type: Blast(Enemy),
@@ -279,6 +317,11 @@
 			random_angvel: None,
 		),
 		collider_dimensions: (20.0, 8.0),
+		health: (
+			max_health: 20.0,
+			health: 20.0,
+			armor: 0,
+		),	
 		texture: (
 			path: "texture/strafer_spritesheet.png",
 			dimensions: (24.0, 12.0),
@@ -302,7 +345,7 @@
 	Neutral(MoneyAsteroid): (
 		mob_type: Neutral(MoneyAsteroid),
 		spawnable_behaviors: [MoveDown],
-		mob_behaviors: [],
+		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact],
 		acceleration: (0.0, 0.02),
 		deceleration: (0.02, 0.01),
 		speed: (0.0, 0.75),
@@ -315,6 +358,11 @@
 			random_angvel: Some((-1.0, 1.0)),
 		),
 		collider_dimensions: (18.0, 18.0),
+		health: (
+			max_health: 20.0,
+			health: 20.0,
+			armor: 0,
+		),	
 		texture: (
 			path: "texture/money_asteroid_spritesheet.png",
 			dimensions: (21.0, 21.0),
