@@ -17,7 +17,9 @@ pub use self::mob::{
 pub use self::projectile::{
     projectile_execute_behavior_system, spawn_projectile, ProjectileData, ProjectileResource,
 };
-pub use self::spawn::{spawner_system, SpawnerResource, SpawnerResourceData};
+pub use self::spawn::{
+    spawner_system, FormationPool, FormationPoolsResource, SpawnerResource, SpawnerResourceData,
+};
 
 pub use self::behavior::{
     spawnable_execute_behavior_system, spawnable_set_contact_behavior_system,

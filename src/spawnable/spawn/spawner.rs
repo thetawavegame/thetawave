@@ -4,11 +4,13 @@ use bevy_rapier2d::physics::RapierConfiguration;
 use core::time::Duration;
 use serde::Deserialize;
 
+pub type FormationPool = Vec<super::formation::Formation>;
+
 /// Spawner resource data in spawner.ron data file
 #[derive(Deserialize)]
 pub struct SpawnerResourceData {
     /// Pool of formations that can be spawned
-    pub formation_pool: Vec<super::formation::Formation>,
+    pub formation_pool: super::FormationPoolType,
     /// Delay before first formation is spawned
     pub initial_duration: f32,
 }
@@ -16,7 +18,7 @@ pub struct SpawnerResourceData {
 /// Spawner resource for managing formations and spawning
 pub struct SpawnerResource {
     /// Pool of formations that can be spawned
-    pub formation_pool: Vec<super::formation::Formation>,
+    pub formation_pool: super::FormationPoolType,
     /// Tracks time until next formation is spawned
     pub spawn_timer: Timer,
 }
@@ -32,8 +34,12 @@ impl From<SpawnerResourceData> for SpawnerResource {
 
 impl SpawnerResource {
     /// Set time until next spawn
-    fn set_spawn_duration(&mut self, formation_idx: usize) {
-        let new_duration = self.formation_pool[formation_idx].period;
+    fn set_spawn_duration(
+        &mut self,
+        formation_idx: usize,
+        formation_pools: &super::FormationPoolsResource,
+    ) {
+        let new_duration = formation_pools[&self.formation_pool][formation_idx].period;
 
         self.spawn_timer
             .set_duration(Duration::from_secs_f32(new_duration));
@@ -44,20 +50,24 @@ impl SpawnerResource {
         &mut self,
         commands: &mut Commands,
         mobs: &MobsResource,
+        formation_pools: &super::FormationPoolsResource,
         rapier_config: &RapierConfiguration,
         game_parameters: &GameParametersResource,
     ) {
-        let weights = self.formation_pool.iter().map(|x| x.weight).collect();
+        let weights = formation_pools[&self.formation_pool]
+            .iter()
+            .map(|x| x.weight)
+            .collect();
 
         let random_idx = weighted_rng(weights);
 
-        self.formation_pool[random_idx].spawn_formation(
+        formation_pools[&self.formation_pool][random_idx].spawn_formation(
             mobs,
             commands,
             rapier_config,
             game_parameters,
         );
-        self.set_spawn_duration(random_idx)
+        self.set_spawn_duration(random_idx, formation_pools);
     }
 }
 
@@ -66,6 +76,7 @@ pub fn spawner_system(
     mut commands: Commands,
     mut spawner_resource: ResMut<SpawnerResource>,
     mobs: Res<MobsResource>,
+    formation_pools: Res<super::FormationPoolsResource>,
     time: Res<Time>,
     rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<GameParametersResource>,
@@ -78,6 +89,7 @@ pub fn spawner_system(
         spawner_resource.spawn_random_formation(
             &mut commands,
             &mobs,
+            &formation_pools,
             &rapier_config,
             &game_parameters,
         );

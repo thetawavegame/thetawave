@@ -15,6 +15,7 @@ mod arena;
 mod background;
 mod debug;
 mod game;
+mod level;
 mod misc;
 mod options;
 mod player;
@@ -45,6 +46,12 @@ fn main() {
         .insert_resource(
             from_bytes::<player::CharactersResource>(include_bytes!("../data/characters.ron"))
                 .unwrap(),
+        )
+        .insert_resource(
+            from_bytes::<spawnable::FormationPoolsResource>(include_bytes!(
+                "../data/formation_pools.ron"
+            ))
+            .unwrap(),
         )
         .insert_resource(
             from_bytes::<game::GameParametersResource>(include_bytes!(

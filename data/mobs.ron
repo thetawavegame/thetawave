@@ -361,10 +361,10 @@
 		initial_motion: (
 			random_angvel: Some((-1.0, 1.0)),
 		),
-		collider_dimensions: (18.0, 18.0),
+		collider_dimensions: (16.0, 16.0),
 		health: (
-			max_health: 20.0,
-			health: 20.0,
+			max_health: 50.0,
+			health: 50.0,
 			armor: 0,
 		),	
 		texture: (

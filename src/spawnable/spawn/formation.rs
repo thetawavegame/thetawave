@@ -1,10 +1,20 @@
+use std::collections::HashMap;
+
 use crate::{
     game::GameParametersResource,
-    spawnable::{spawn_mob, MobsResource, SpawnableType},
+    spawnable::{spawn_mob, FormationPool, MobsResource, SpawnableType},
 };
 use bevy::prelude::*;
 use bevy_rapier2d::physics::RapierConfiguration;
 use serde::Deserialize;
+
+pub type FormationPoolsResource = HashMap<FormationPoolType, FormationPool>;
+
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
+pub enum FormationPoolType {
+    Easy,
+    Asteroids,
+}
 
 /// Used for storing information about a spawnables in formations
 #[derive(Deserialize)]
