@@ -1,4 +1,7 @@
-use crate::{game::GameParametersResource, spawnable::MobsResource, tools::weighted_rng};
+use crate::{
+    game::GameParametersResource, level::SpawnFormationEvent, spawnable::MobsResource,
+    tools::weighted_rng,
+};
 use bevy::prelude::*;
 use bevy_rapier2d::physics::RapierConfiguration;
 use core::time::Duration;
@@ -93,5 +96,20 @@ pub fn spawner_system(
             &rapier_config,
             &game_parameters,
         );
+    }
+}
+
+pub fn spawn_formation_system(
+    mut commands: Commands,
+    mut event_reader: EventReader<SpawnFormationEvent>,
+    mobs: Res<MobsResource>,
+    rapier_config: Res<RapierConfiguration>,
+    game_parameters: Res<GameParametersResource>,
+) {
+    for event in event_reader.iter() {
+        event
+            .formation
+            .spawn_formation(&mobs, &mut commands, &rapier_config, &game_parameters);
+        //self.set_spawn_duration(random_idx, formation_pools);
     }
 }

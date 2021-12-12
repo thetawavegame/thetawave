@@ -200,7 +200,7 @@
 				),
 				(
 					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (-45.0, 49.0),
+					position: (-43.0, 49.0),
 				),
 				(
 					spawnable_type: Mob(Neutral(MoneyAsteroid)),
@@ -208,7 +208,7 @@
 				),
 				(
 					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (46.0, 57.0),
+					position: (43.0, 57.0),
 				),
 				(
 					spawnable_type: Mob(Neutral(MoneyAsteroid)),

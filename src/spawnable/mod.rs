@@ -18,7 +18,8 @@ pub use self::projectile::{
     projectile_execute_behavior_system, spawn_projectile, ProjectileData, ProjectileResource,
 };
 pub use self::spawn::{
-    spawner_system, FormationPool, FormationPoolsResource, SpawnerResource, SpawnerResourceData,
+    spawn_formation_system, Formation, FormationPool, FormationPoolType, FormationPoolsResource,
+    SpawnerResource, SpawnerResourceData,
 };
 
 pub use self::behavior::{

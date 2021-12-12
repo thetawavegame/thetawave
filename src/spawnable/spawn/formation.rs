@@ -17,7 +17,7 @@ pub enum FormationPoolType {
 }
 
 /// Used for storing information about a spawnables in formations
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct FormationSpawnable {
     /// Type of spawnable in formation
     pub spawnable_type: SpawnableType,
@@ -26,7 +26,7 @@ pub struct FormationSpawnable {
 }
 
 /// A group of spawnables to be spawned at the same time
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct Formation {
     /// Vector of spawnables with positions
     pub formation_spawnables: Vec<FormationSpawnable>,

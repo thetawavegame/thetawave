@@ -59,6 +59,12 @@ fn main() {
             ))
             .unwrap(),
         )
+        .insert_resource(level::RunResource::from(
+            from_bytes::<level::RunResourceData>(include_bytes!("../data/run.ron")).unwrap(),
+        ))
+        .insert_resource(level::LevelsResource::from(
+            from_bytes::<level::LevelsResourceData>(include_bytes!("../data/levels.ron")).unwrap(),
+        ))
         .insert_resource(MobsResource {
             mobs: from_bytes::<HashMap<MobType, MobData>>(include_bytes!("../data/mobs.ron"))
                 .unwrap(),
@@ -72,10 +78,12 @@ fn main() {
                 .unwrap(),
             texture_atlas_handle: HashMap::new(),
         })
+        /*
         .insert_resource(spawnable::SpawnerResource::from(
             from_bytes::<spawnable::SpawnerResourceData>(include_bytes!("../data/spawner.ron"))
                 .unwrap(),
         ))
+        */
         .insert_resource(
             from_bytes::<background::BackgroundsResource>(include_bytes!(
                 "../data/backgrounds.ron"
@@ -83,6 +91,9 @@ fn main() {
             .unwrap(),
         )
         .add_event::<spawnable::CollisionEvent>()
+        .add_event::<level::SpawnFormationEvent>()
+        .add_event::<level::LevelCompletedEvent>()
+        .add_event::<arena::EnemyReachedBottomGateEvent>()
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(DebugLinesPlugin)
@@ -97,7 +108,18 @@ fn main() {
                 .after("init"),
         )
         .add_startup_system(ui::setup_ui.system().after("spawn_player"))
-        .add_system_to_stage(CoreStage::First, spawnable::spawner_system.system())
+        .add_system_to_stage(
+            CoreStage::First,
+            level::level_system.system().label("level"),
+        )
+        .add_system_to_stage(
+            CoreStage::First,
+            spawnable::spawn_formation_system.system().after("level"),
+        )
+        .add_system_to_stage(
+            CoreStage::First,
+            level::next_level_system.system().after("level"),
+        )
         .add_system(player::player_movement_system.system())
         .add_system_to_stage(CoreStage::First, player::player_fire_weapon_system.system())
         .add_system_to_stage(
@@ -175,6 +197,8 @@ fn setup_game(
     mut mobs: ResMut<MobsResource>,
     mut projectiles: ResMut<spawnable::ProjectileResource>,
     mut rapier_config: ResMut<RapierConfiguration>,
+    mut run_resource: ResMut<level::RunResource>,
+    levels_resource: Res<level::LevelsResource>,
     game_parameters: Res<game::GameParametersResource>,
 ) {
     // setup camera
@@ -248,4 +272,7 @@ fn setup_game(
 
     // add texture atlas dict to the mobs resource
     mobs.texture_atlas_handle = mob_texture_atlas_dict;
+
+    // create run resource
+    run_resource.create_levels(&levels_resource);
 }

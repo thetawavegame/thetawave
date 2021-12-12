@@ -31,6 +31,7 @@ pub struct MobComponent {
     pub attack_damage: f32,
     /// Damage dealt to other factions on collision
     pub collision_damage: f32,
+    pub defense_damage: f32,
     pub health: Health,
 }
 
@@ -67,6 +68,7 @@ pub struct MobData {
     pub attack_damage: f32,
     /// Damage dealt to other factions on collision
     pub collision_damage: f32,
+    pub defense_damage: f32,
     pub health: Health,
 }
 
@@ -163,6 +165,7 @@ pub fn spawn_mob(
         weapon_timer: None,
         attack_damage: mob_data.attack_damage,
         collision_damage: mob_data.collision_damage,
+        defense_damage: mob_data.defense_damage,
         health: mob_data.health.clone(),
     })
     .insert(SpawnableComponent {
