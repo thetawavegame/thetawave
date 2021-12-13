@@ -1,18 +1,18 @@
+use bevy::prelude::*;
+use bevy_rapier2d::prelude::*;
+use rand::{thread_rng, Rng};
 use serde::Deserialize;
 use std::{collections::HashMap, string::ToString};
 
 use crate::{
+    animation::AnimationComponent,
     game::GameParametersResource,
     spawnable::InitialMotion,
     spawnable::TextureData,
     spawnable::{
         DespawnTimerComponent, ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType,
     },
-    visual::AnimationComponent,
 };
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
-use rand::{thread_rng, Rng};
 
 mod behavior;
 

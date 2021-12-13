@@ -11,6 +11,7 @@
 		angular_speed: 0.0,
 		attack_damage: 0.0,
 		collision_damage: 12.0,
+		defense_damage: 10.0,
 		initial_motion: (
 			random_angvel: None,
 		),
@@ -68,6 +69,7 @@
 		angular_speed: 0.0,
 		attack_damage: 10.0,
 		collision_damage: 8.0,
+		defense_damage: 10.0,
 		initial_motion: (
 			random_angvel: None,
 		),
@@ -110,6 +112,7 @@
 		angular_speed: 0.0,
 		attack_damage: 0.0,
 		collision_damage: 5.0,
+		defense_damage: 0.0,
 		initial_motion: (
 			random_angvel: None,
 		),
@@ -162,6 +165,7 @@
 		angular_speed: 0.0,
 		attack_damage: 0.0,
 		collision_damage: 6.0,
+		defense_damage: 25.0,
 		initial_motion: (
 			random_angvel: None,
 		),
@@ -203,6 +207,7 @@
 		angular_speed: 1.8,
 		attack_damage: 0.0,
 		collision_damage: 18.0,
+		defense_damage: 0.0,
 		initial_motion: (
 			random_angvel: None,
 		),
@@ -234,7 +239,7 @@
 	),
 	Enemy(StraferRight): (
 		mob_type: Enemy(StraferRight),
-		spawnable_behaviors: [MoveDown, MoveRight],
+		spawnable_behaviors: [MoveDown, MoveRight, ChangeHorizontalDirectionOnImpact],
 		mob_behaviors: [
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
@@ -260,13 +265,14 @@
 		angular_speed: 0.0,
 		attack_damage: 8.0,
 		collision_damage: 10.0,
+		defense_damage: 15.0,
 		initial_motion: (
 			random_angvel: None,
 		),
 		collider_dimensions: (20.0, 8.0),
 		health: (
-			max_health: 20.0,
-			health: 20.0,
+			max_health: 40.0,
+			health: 40.0,
 			armor: 0,
 		),	
 		texture: (
@@ -291,7 +297,7 @@
 	),
 	Enemy(StraferLeft): (
 		mob_type: Enemy(StraferLeft),
-		spawnable_behaviors: [MoveDown, MoveLeft],
+		spawnable_behaviors: [MoveDown, MoveLeft, ChangeHorizontalDirectionOnImpact],
 		mob_behaviors: [
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
@@ -317,13 +323,14 @@
 		angular_speed: 0.0,
 		attack_damage: 8.0,
 		collision_damage: 10.0,
+		defense_damage: 15.0,
 		initial_motion: (
 			random_angvel: None,
 		),
 		collider_dimensions: (20.0, 8.0),
 		health: (
-			max_health: 20.0,
-			health: 20.0,
+			max_health: 40.0,
+			health: 40.0,
 			armor: 0,
 		),	
 		texture: (
@@ -358,13 +365,14 @@
 		angular_speed: 0.0,
 		attack_damage: 0.0,
 		collision_damage: 7.0,
+		defense_damage: 0.0,
 		initial_motion: (
 			random_angvel: Some((-1.0, 1.0)),
 		),
-		collider_dimensions: (18.0, 18.0),
+		collider_dimensions: (16.0, 16.0),
 		health: (
-			max_health: 20.0,
-			health: 20.0,
+			max_health: 50.0,
+			health: 50.0,
 			armor: 0,
 		),	
 		texture: (

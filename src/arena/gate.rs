@@ -1,4 +1,4 @@
-use crate::spawnable::SpawnableComponent;
+use crate::spawnable::{MobComponent, SpawnableComponent};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
@@ -35,6 +35,8 @@ pub fn despawn_gates_system(
     mut intersection_events: EventReader<IntersectionEvent>,
     despawn_gate_query: Query<Entity, With<DespawnGateComponent>>,
     spawnable_query: Query<Entity, With<SpawnableComponent>>,
+    mob_query: Query<(Entity, &MobComponent)>,
+    mut enemy_bottom_event: EventWriter<EnemyReachedBottomGateEvent>,
 ) {
     for despawn_gate_entity in despawn_gate_query.iter() {
         for intersection_event in intersection_events.iter() {
@@ -47,7 +49,16 @@ pub fn despawn_gates_system(
                     .any(|spawnable_entity| spawnable_entity == collider2_entity)
             {
                 commands.entity(collider2_entity).despawn_recursive();
+
+                for (mob_entity, mob_component) in mob_query.iter() {
+                    if mob_entity == collider2_entity {
+                        enemy_bottom_event
+                            .send(EnemyReachedBottomGateEvent(mob_component.defense_damage));
+                    }
+                }
             }
         }
     }
 }
+
+pub struct EnemyReachedBottomGateEvent(pub f32);

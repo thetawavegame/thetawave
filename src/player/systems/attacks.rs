@@ -7,6 +7,7 @@ use crate::{
     spawnable::{spawn_projectile, InitialMotion, ProjectileResource},
 };
 
+/// Manages the players firing weapons
 pub fn player_fire_weapon_system(
     keyboard_input: Res<Input<MouseButton>>,
     rapier_config: Res<RapierConfiguration>,

@@ -11,18 +11,20 @@ pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: u32 = 0b0010;
 pub const HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP: u32 = 0b0100;
 pub const VERTICAL_BARRIER_COL_GROUP_MEMBERSHIP: u32 = 0b1000;
 
+mod animation;
 mod arena;
 mod background;
+mod collision;
 mod debug;
 mod game;
 mod misc;
 mod options;
 mod player;
+mod run;
 mod scanner;
 mod spawnable;
 mod tools;
 mod ui;
-mod visual;
 
 fn main() {
     options::generate_config_files();
@@ -47,11 +49,23 @@ fn main() {
                 .unwrap(),
         )
         .insert_resource(
+            from_bytes::<run::FormationPoolsResource>(include_bytes!(
+                "../data/formation_pools.ron"
+            ))
+            .unwrap(),
+        )
+        .insert_resource(
             from_bytes::<game::GameParametersResource>(include_bytes!(
                 "../data/game_parameters.ron"
             ))
             .unwrap(),
         )
+        .insert_resource(run::RunResource::from(
+            from_bytes::<run::RunResourceData>(include_bytes!("../data/run.ron")).unwrap(),
+        ))
+        .insert_resource(run::LevelsResource::from(
+            from_bytes::<run::LevelsResourceData>(include_bytes!("../data/levels.ron")).unwrap(),
+        ))
         .insert_resource(MobsResource {
             mobs: from_bytes::<HashMap<MobType, MobData>>(include_bytes!("../data/mobs.ron"))
                 .unwrap(),
@@ -65,17 +79,16 @@ fn main() {
                 .unwrap(),
             texture_atlas_handle: HashMap::new(),
         })
-        .insert_resource(spawnable::SpawnerResource::from(
-            from_bytes::<spawnable::SpawnerResourceData>(include_bytes!("../data/spawner.ron"))
-                .unwrap(),
-        ))
         .insert_resource(
             from_bytes::<background::BackgroundsResource>(include_bytes!(
                 "../data/backgrounds.ron"
             ))
             .unwrap(),
         )
-        .add_event::<spawnable::CollisionEvent>()
+        .add_event::<collision::CollisionEvent>()
+        .add_event::<run::SpawnFormationEvent>()
+        .add_event::<run::LevelCompletedEvent>()
+        .add_event::<arena::EnemyReachedBottomGateEvent>()
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(DebugLinesPlugin)
@@ -90,7 +103,15 @@ fn main() {
                 .after("init"),
         )
         .add_startup_system(ui::setup_ui.system().after("spawn_player"))
-        .add_system_to_stage(CoreStage::First, spawnable::spawner_system.system())
+        .add_system_to_stage(CoreStage::First, run::level_system.system().label("level"))
+        .add_system_to_stage(
+            CoreStage::First,
+            run::spawn_formation_system.system().after("level"),
+        )
+        .add_system_to_stage(
+            CoreStage::First,
+            run::next_level_system.system().after("level"),
+        )
         .add_system(player::player_movement_system.system())
         .add_system_to_stage(CoreStage::First, player::player_fire_weapon_system.system())
         .add_system_to_stage(
@@ -101,22 +122,14 @@ fn main() {
         )
         .add_system_to_stage(
             CoreStage::PostUpdate,
-            spawnable::spawnable_set_contact_behavior_system
-                .system()
-                .label("set_contact_behavior"),
-        )
-        .add_system_to_stage(
-            CoreStage::PostUpdate,
             spawnable::spawnable_execute_behavior_system
                 .system()
-                .after("set_contact_behavior")
                 .after("set_target_behavior"),
         )
         .add_system_to_stage(
             CoreStage::PostUpdate,
             spawnable::mob_execute_behavior_system
                 .system()
-                .after("set_contact_behavior")
                 .after("set_target_behavior")
                 .after("intersection_collision")
                 .after("contact_collision"),
@@ -125,20 +138,19 @@ fn main() {
             CoreStage::PostUpdate,
             spawnable::projectile_execute_behavior_system
                 .system()
-                .after("set_contact_behavior")
                 .after("set_target_behavior")
                 .after("intersection_collision")
                 .after("contact_collision"),
         )
         .add_system_to_stage(
             CoreStage::PostUpdate,
-            spawnable::intersection_collision_system
+            collision::intersection_collision_system
                 .system()
                 .label("intersection_collision"),
         )
         .add_system_to_stage(
             CoreStage::PostUpdate,
-            spawnable::contact_collision_system
+            collision::contact_collision_system
                 .system()
                 .label("contact_collision"),
         )
@@ -148,7 +160,7 @@ fn main() {
         .add_system(options::toggle_fullscreen_system.system())
         .add_system(options::toggle_zoom_system.system())
         .add_system(arena::despawn_gates_system.system())
-        .add_system(visual::animate_sprite_system.system())
+        .add_system(animation::animate_sprite_system.system())
         .add_system(background::rotate_planet_system.system())
         .add_system(spawnable::despawn_timer_system.system());
 
@@ -161,6 +173,7 @@ fn main() {
 }
 
 /// Initialize values for the game
+#[allow(clippy::too_many_arguments)]
 fn setup_game(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -168,6 +181,8 @@ fn setup_game(
     mut mobs: ResMut<MobsResource>,
     mut projectiles: ResMut<spawnable::ProjectileResource>,
     mut rapier_config: ResMut<RapierConfiguration>,
+    mut run_resource: ResMut<run::RunResource>,
+    levels_resource: Res<run::LevelsResource>,
     game_parameters: Res<game::GameParametersResource>,
 ) {
     // setup camera
@@ -241,4 +256,7 @@ fn setup_game(
 
     // add texture atlas dict to the mobs resource
     mobs.texture_atlas_handle = mob_texture_atlas_dict;
+
+    // create run resource
+    run_resource.create_levels(&levels_resource);
 }
