@@ -239,7 +239,7 @@
 	),
 	Enemy(StraferRight): (
 		mob_type: Enemy(StraferRight),
-		spawnable_behaviors: [MoveDown, MoveRight],
+		spawnable_behaviors: [MoveDown, MoveRight, ChangeHorizontalDirectionOnImpact],
 		mob_behaviors: [
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
@@ -271,8 +271,8 @@
 		),
 		collider_dimensions: (20.0, 8.0),
 		health: (
-			max_health: 20.0,
-			health: 20.0,
+			max_health: 40.0,
+			health: 40.0,
 			armor: 0,
 		),	
 		texture: (
@@ -297,7 +297,7 @@
 	),
 	Enemy(StraferLeft): (
 		mob_type: Enemy(StraferLeft),
-		spawnable_behaviors: [MoveDown, MoveLeft],
+		spawnable_behaviors: [MoveDown, MoveLeft, ChangeHorizontalDirectionOnImpact],
 		mob_behaviors: [
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
@@ -329,8 +329,8 @@
 		),
 		collider_dimensions: (20.0, 8.0),
 		health: (
-			max_health: 20.0,
-			health: 20.0,
+			max_health: 40.0,
+			health: 40.0,
 			armor: 0,
 		),	
 		texture: (

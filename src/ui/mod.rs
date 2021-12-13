@@ -1,18 +1,22 @@
 use bevy::prelude::*;
 
-use crate::{
-    level::{LevelType, RunResource},
-    player::PlayerComponent,
-};
+use crate::{player::PlayerComponent, run::RunResource};
 
+/// Tag for player health ui
 pub struct HealthUI;
+
+/// Tag for level ui
 pub struct LevelUI;
 
-/// Initialize ui
+/// Initialize all ui
 pub fn setup_ui(mut commands: Commands, asset_server: ResMut<AssetServer>) {
+    // setup font
     let font = asset_server.load("fonts/SpaceMadness.ttf");
+
+    // spawn camera for viewing ui
     commands.spawn_bundle(UiCameraBundle::default());
 
+    // spawn player health ui
     commands
         .spawn_bundle(TextBundle {
             style: Style {
@@ -38,6 +42,7 @@ pub fn setup_ui(mut commands: Commands, asset_server: ResMut<AssetServer>) {
         })
         .insert(HealthUI);
 
+    // spawn level health ui
     commands
         .spawn_bundle(TextBundle {
             style: Style {
@@ -64,6 +69,7 @@ pub fn setup_ui(mut commands: Commands, asset_server: ResMut<AssetServer>) {
         .insert(LevelUI);
 }
 
+#[allow(clippy::type_complexity)]
 /// Update ui to current data from game
 pub fn update_ui(
     mut ui_queries: QuerySet<(
@@ -73,6 +79,7 @@ pub fn update_ui(
     player_query: Query<&PlayerComponent>,
     run_resource: Res<RunResource>,
 ) {
+    // update player health ui
     for mut text_component in ui_queries.q0_mut().iter_mut() {
         for player_component in player_query.iter() {
             text_component.sections[0].value = format!(
@@ -81,15 +88,17 @@ pub fn update_ui(
                 player_component.health.get_max_health()
             );
         }
+        continue;
     }
 
+    // update level ui
     for mut text_component in ui_queries.q1_mut().iter_mut() {
         text_component.sections[0].value = format!(
             "Phase Type: {}\nPhase Number: {}\nObjective:{}",
             run_resource.levels[run_resource.level_idx].get_phase_name(),
             run_resource.levels[run_resource.level_idx].get_phase_number(),
             match &run_resource.levels[run_resource.level_idx].objective {
-                crate::level::ObjectiveType::Defense(health) => {
+                crate::run::ObjectiveType::Defense(health) => {
                     format!(
                         "\n    Defense: {}/{}",
                         health.get_health(),
@@ -98,5 +107,6 @@ pub fn update_ui(
                 }
             }
         );
+        continue;
     }
 }

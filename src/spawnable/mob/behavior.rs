@@ -1,14 +1,15 @@
+use bevy::prelude::*;
+use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 
 use crate::{
+    collision::CollisionEvent,
     game::GameParametersResource,
     spawnable::{
-        spawn_projectile, CollisionEvent, InitialMotion, MobType, PlayerComponent,
-        ProjectileResource, ProjectileType, SpawnableComponent,
+        spawn_projectile, InitialMotion, MobType, PlayerComponent, ProjectileResource,
+        ProjectileType, SpawnableComponent,
     },
 };
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
 
 /// Types of behaviors that can be performed by mobs
 #[derive(Deserialize, Clone)]
@@ -167,6 +168,7 @@ pub fn mob_execute_behavior_system(
     }
 }
 
+/// Take damage from colliding entity on impact
 fn receive_damage_on_impact(
     entity: Entity,
     collision_events: &[&CollisionEvent],
@@ -208,6 +210,7 @@ fn receive_damage_on_impact(
     }
 }
 
+/// Deal damage to colliding entity on impact
 fn deal_damage_to_player_on_impact(
     entity: Entity,
     collision_events: &[&CollisionEvent],

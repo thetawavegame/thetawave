@@ -1,4 +1,5 @@
 use crate::{
+    collision::CollisionEvent,
     game::GameParametersResource,
     player::PlayerComponent,
     spawnable::{EnemyType, MobType, SpawnableComponent, SpawnableType},
@@ -17,33 +18,47 @@ pub enum SpawnableBehavior {
     MoveRight,
     MoveLeft,
     BrakeHorizontal,
+    ChangeHorizontalDirectionOnImpact,
 }
 
 /// Manages excuting behaviors of spawnables
 pub fn spawnable_execute_behavior_system(
     rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<GameParametersResource>,
-    mut spawnable_query: Query<(&SpawnableComponent, &mut RigidBodyVelocity, &Transform)>,
+    mut spawnable_query: Query<(
+        Entity,
+        &mut SpawnableComponent,
+        &mut RigidBodyVelocity,
+        &Transform,
+    )>,
+    mut collision_events: EventReader<CollisionEvent>,
 ) {
+    let mut collision_events_vec = vec![];
+    for collision_event in collision_events.iter() {
+        collision_events_vec.push(collision_event);
+    }
+
     // Iterate through all spawnable entities and execute their behavior
-    for (spawnable_component, mut rb_vel, spawnable_transform) in spawnable_query.iter_mut() {
+    for (spawnable_entity, mut spawnable_component, mut rb_vel, spawnable_transform) in
+        spawnable_query.iter_mut()
+    {
         let behaviors = spawnable_component.behaviors.clone();
         for behavior in behaviors {
             match behavior {
                 SpawnableBehavior::MoveDown => {
-                    move_down(&rapier_config, spawnable_component, &mut rb_vel);
+                    move_down(&rapier_config, &spawnable_component, &mut rb_vel);
                 }
                 SpawnableBehavior::MoveRight => {
-                    move_right(&rapier_config, spawnable_component, &mut rb_vel);
+                    move_right(&rapier_config, &spawnable_component, &mut rb_vel);
                 }
                 SpawnableBehavior::MoveLeft => {
-                    move_left(&rapier_config, spawnable_component, &mut rb_vel);
+                    move_left(&rapier_config, &spawnable_component, &mut rb_vel);
                 }
                 SpawnableBehavior::RotateToTarget(target_position) => {
                     rotate_to_target(
                         spawnable_transform,
                         target_position.unwrap(),
-                        spawnable_component,
+                        &spawnable_component,
                         &mut rb_vel,
                     );
                 }
@@ -51,7 +66,7 @@ pub fn spawnable_execute_behavior_system(
                     move_forward(
                         &rapier_config,
                         spawnable_transform,
-                        spawnable_component,
+                        &spawnable_component,
                         &mut rb_vel,
                     );
                 }
@@ -59,56 +74,16 @@ pub fn spawnable_execute_behavior_system(
                     brake_horizontal(
                         &rapier_config,
                         &game_parameters,
-                        spawnable_component,
+                        &spawnable_component,
                         &mut rb_vel,
                     );
                 }
-            }
-        }
-    }
-}
-
-/// Manages setting behaviors due to contact events
-pub fn spawnable_set_contact_behavior_system(
-    mut contact_events: EventReader<ContactEvent>,
-    mut spawnable_query: Query<(Entity, &mut SpawnableComponent)>,
-) {
-    // set behaviors based on contact events
-    for contact_event in contact_events.iter() {
-        if let ContactEvent::Started(h1, h2) = contact_event {
-            let collider1_entity = h1.entity();
-            let collider2_entity = h2.entity();
-            for (spawnable_entity, mut spawnable_component) in spawnable_query.iter_mut() {
-                let spawnable_entity = if spawnable_entity == collider1_entity {
-                    Some(collider1_entity)
-                } else if spawnable_entity == collider2_entity {
-                    Some(collider2_entity)
-                } else {
-                    None
-                };
-                if spawnable_entity.is_some() {
-                    match &spawnable_component.spawnable_type {
-                        SpawnableType::Mob(mob_type) => match mob_type {
-                            MobType::Enemy(enemy_type) => match enemy_type {
-                                EnemyType::StraferRight | EnemyType::StraferLeft => {
-                                    for behavior in spawnable_component.behaviors.iter_mut() {
-                                        *behavior = match behavior {
-                                            SpawnableBehavior::MoveRight => {
-                                                SpawnableBehavior::MoveLeft
-                                            }
-                                            SpawnableBehavior::MoveLeft => {
-                                                SpawnableBehavior::MoveRight
-                                            }
-                                            _ => behavior.clone(),
-                                        }
-                                    }
-                                }
-                                _ => {}
-                            },
-                            _ => {}
-                        },
-                        _ => {}
-                    }
+                SpawnableBehavior::ChangeHorizontalDirectionOnImpact => {
+                    change_horizontal_direction_on_impact(
+                        spawnable_entity,
+                        &collision_events_vec,
+                        &mut spawnable_component,
+                    );
                 }
             }
         }
@@ -166,6 +141,35 @@ pub fn spawnable_set_target_behavior_system(
                 },
                 _ => {}
             }
+        }
+    }
+}
+
+/// Toggles the horizontal direction of a spawnable on impact
+fn change_horizontal_direction_on_impact(
+    entity: Entity,
+    collision_events: &[&CollisionEvent],
+    spawnable_component: &mut SpawnableComponent,
+) {
+    for collision_event in collision_events.iter() {
+        match collision_event {
+            CollisionEvent::PlayerToMobContact { mob_entity, .. }
+            | CollisionEvent::MobToMobContact {
+                mob_entity_1: mob_entity,
+                ..
+            }
+            | CollisionEvent::MobToBarrierContact { mob_entity, .. } => {
+                if entity == *mob_entity {
+                    for behavior in spawnable_component.behaviors.iter_mut() {
+                        *behavior = match behavior {
+                            SpawnableBehavior::MoveRight => SpawnableBehavior::MoveLeft,
+                            SpawnableBehavior::MoveLeft => SpawnableBehavior::MoveRight,
+                            _ => behavior.clone(),
+                        }
+                    }
+                }
+            }
+            _ => {}
         }
     }
 }

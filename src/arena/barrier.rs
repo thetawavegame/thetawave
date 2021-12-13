@@ -2,6 +2,8 @@ use crate::{HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERS
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
+pub struct ArenaBarrierComponent;
+
 /// Spawns arena barriers
 pub fn spawn_barriers_system(mut commands: Commands) {
     // spawn horizontal barriers at top and bottom of arena
@@ -32,6 +34,7 @@ fn spawn_barrier(commands: &mut Commands, position: Vec2, width: f32, height: f3
         })
         .insert(RigidBodyPositionSync::Discrete)
         .insert(ColliderDebugRender::with_id(0))
+        .insert(ArenaBarrierComponent)
         .insert(Name::new("Barrier"));
 }
 

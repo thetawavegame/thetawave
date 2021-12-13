@@ -1,9 +1,10 @@
+use bevy::prelude::*;
+use bevy_rapier2d::prelude::*;
+
 use crate::{
     game::GameParametersResource,
     player::{CharactersResource, PlayerComponent},
 };
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
 
 /// Spawns player into the game
 pub fn spawn_player_system(

@@ -1,7 +1,6 @@
-use crate::{player::Character, spawnable::ProjectileType};
 use bevy::prelude::*;
 
-use crate::misc::Health;
+use crate::{misc::Health, player::Character, spawnable::ProjectileType};
 
 /// Component for managing core attributes of the player
 #[derive(Debug)]

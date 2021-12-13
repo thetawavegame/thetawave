@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
-use crate::game::GameParametersResource;
-use crate::spawnable::MobComponent;
+use crate::{game::GameParametersResource, spawnable::MobComponent};
 
+/// Manages scanning of entities using the cursor
 pub fn scanner_system(
     windows: Res<Windows>,
     game_params: Res<GameParametersResource>,
@@ -33,6 +33,7 @@ pub fn scanner_system(
     }
 }
 
+/// Converts mouse position units to in-game physics units
 fn mouse_pos_to_rapier_pos(
     mouse_pos: Vec2,
     window: &Window,

@@ -1,64 +1,12 @@
-use std::{collections::HashMap, time::Duration};
-
 use bevy::prelude::*;
 use serde::Deserialize;
+use std::{collections::HashMap, time::Duration};
 
-use crate::{
-    arena::EnemyReachedBottomGateEvent,
-    misc::Health,
-    spawnable::{Formation, FormationPoolType, FormationPoolsResource},
-    tools::weighted_rng,
-};
+use crate::{arena::EnemyReachedBottomGateEvent, misc::Health, tools::weighted_rng};
+
+use super::formation;
 
 pub type LevelsResourceData = HashMap<LevelType, LevelData>;
-pub type RunResourceData = Vec<LevelType>;
-
-pub struct RunResource {
-    pub level_idx: usize,
-    pub level_types: Vec<LevelType>,
-    pub levels: Vec<Level>,
-}
-
-impl From<RunResourceData> for RunResource {
-    fn from(resource_data: RunResourceData) -> Self {
-        RunResource {
-            level_idx: 0,
-            level_types: resource_data,
-            levels: vec![],
-        }
-    }
-}
-
-impl RunResource {
-    pub fn create_levels(&mut self, levels_resource: &LevelsResource) {
-        for level_type in self.level_types.iter() {
-            self.levels
-                .push(levels_resource.levels.get(level_type).unwrap().clone());
-        }
-    }
-
-    pub fn is_ready(&self) -> bool {
-        self.level_types.len() == self.levels.len()
-    }
-
-    pub fn tick(
-        &mut self,
-        delta: Duration,
-        spawn_formation: &mut EventWriter<SpawnFormationEvent>,
-        level_completed: &mut EventWriter<LevelCompletedEvent>,
-        enemy_reached_bottom: &mut EventReader<EnemyReachedBottomGateEvent>,
-        formation_pools: &FormationPoolsResource,
-    ) {
-        // remove this and create a vector of levels on startup
-        self.levels[self.level_idx].tick(
-            delta,
-            spawn_formation,
-            level_completed,
-            enemy_reached_bottom,
-            formation_pools,
-        );
-    }
-}
 
 #[derive(Clone)]
 pub struct LevelsResource {
@@ -86,11 +34,6 @@ pub struct LevelData {
     pub timeline: LevelTimeline,
     pub initial_delay: f32,
     pub objective: ObjectiveType,
-}
-
-pub struct SpawnFormationEvent {
-    //pub formation_pool: FormationPoolType,
-    pub formation: Formation,
 }
 
 pub struct LevelCompletedEvent;
@@ -148,10 +91,10 @@ impl Level {
     pub fn tick(
         &mut self,
         delta: Duration,
-        spawn_formation: &mut EventWriter<SpawnFormationEvent>,
+        spawn_formation: &mut EventWriter<formation::SpawnFormationEvent>,
         level_completed: &mut EventWriter<LevelCompletedEvent>,
         enemy_reached_bottom: &mut EventReader<EnemyReachedBottomGateEvent>,
-        formation_pools: &FormationPoolsResource,
+        formation_pools: &formation::FormationPoolsResource,
     ) {
         #[allow(clippy::single_match)]
         match &mut self.objective {
@@ -202,7 +145,7 @@ impl Level {
                                     ),
                                 );
 
-                                spawn_formation.send(SpawnFormationEvent {
+                                spawn_formation.send(formation::SpawnFormationEvent {
                                     formation: formation_pools[&event_formation_pool][random_idx]
                                         .clone(),
                                 });
@@ -263,7 +206,7 @@ pub enum LevelPhaseType {
     FormationSpawn {
         time: f32,
         initial_delay: f32,
-        formation_pool: FormationPoolType,
+        formation_pool: formation::FormationPoolType,
     },
     Break {
         time: f32,
@@ -271,11 +214,11 @@ pub enum LevelPhaseType {
 }
 
 pub fn level_system(
-    mut run_resource: ResMut<RunResource>,
-    mut spawn_formation: EventWriter<SpawnFormationEvent>,
+    mut run_resource: ResMut<super::RunResource>,
+    mut spawn_formation: EventWriter<formation::SpawnFormationEvent>,
     mut level_completed: EventWriter<LevelCompletedEvent>,
     mut enemy_reached_bottom: EventReader<EnemyReachedBottomGateEvent>,
-    formation_pools: Res<FormationPoolsResource>,
+    formation_pools: Res<formation::FormationPoolsResource>,
     time: Res<Time>,
 ) {
     if run_resource.is_ready() {
@@ -289,11 +232,13 @@ pub fn level_system(
     }
 }
 
+/// Progress to the next level when current level is completed
 pub fn next_level_system(
     mut level_completed: EventReader<LevelCompletedEvent>,
-    mut run_resource: ResMut<RunResource>,
+    mut run_resource: ResMut<super::RunResource>,
 ) {
     for _level_completed in level_completed.iter() {
         run_resource.level_idx += 1;
+        // TODO: check if at the last level and end the game
     }
 }

@@ -1,5 +1,6 @@
-use crate::spawnable::{
-    CollisionEvent, Faction, MobComponent, PlayerComponent, SpawnableComponent,
+use crate::{
+    collision::CollisionEvent,
+    spawnable::{Faction, MobComponent, PlayerComponent, SpawnableComponent},
 };
 use bevy::prelude::*;
 use serde::Deserialize;

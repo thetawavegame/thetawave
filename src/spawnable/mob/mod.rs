@@ -1,18 +1,18 @@
+use bevy::prelude::*;
+use bevy_rapier2d::prelude::*;
+use rand::{thread_rng, Rng};
 use serde::Deserialize;
 use std::{collections::HashMap, string::ToString};
 
 use crate::{
+    animation::AnimationComponent,
     game::GameParametersResource,
     misc::Health,
     spawnable::{
         InitialMotion, MobType, SpawnableBehavior, SpawnableComponent, SpawnableType, TextureData,
     },
-    visual::AnimationComponent,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
-use rand::{thread_rng, Rng};
 
 mod behavior;
 pub use self::behavior::{mob_execute_behavior_system, MobBehavior};
