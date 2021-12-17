@@ -1,11 +1,14 @@
-use bevy::{pbr::AmbientLight, prelude::*, render::camera::PerspectiveProjection};
+use bevy::{
+    diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
+    pbr::AmbientLight,
+    prelude::*,
+    render::camera::PerspectiveProjection,
+};
 use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_prototype_debug_lines::*;
 use bevy_rapier2d::{na::Vector2, prelude::*};
 use ron::de::{from_bytes, from_str};
 use std::{collections::HashMap, env::current_dir, fs::read_to_string};
-
-use crate::spawnable::{MobData, MobType, MobsResource};
 
 pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: u32 = 0b0010;
 pub const HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP: u32 = 0b0100;
@@ -66,9 +69,18 @@ fn main() {
         .insert_resource(run::LevelsResource::from(
             from_bytes::<run::LevelsResourceData>(include_bytes!("../data/levels.ron")).unwrap(),
         ))
-        .insert_resource(MobsResource {
-            mobs: from_bytes::<HashMap<MobType, MobData>>(include_bytes!("../data/mobs.ron"))
-                .unwrap(),
+        .insert_resource(spawnable::MobsResource {
+            mobs: from_bytes::<HashMap<spawnable::MobType, spawnable::MobData>>(include_bytes!(
+                "../data/mobs.ron"
+            ))
+            .unwrap(),
+            texture_atlas_handle: HashMap::new(),
+        })
+        .insert_resource(spawnable::EffectsResource {
+            effects: from_bytes::<HashMap<spawnable::EffectType, spawnable::EffectData>>(
+                include_bytes!("../data/effects.ron"),
+            )
+            .unwrap(),
             texture_atlas_handle: HashMap::new(),
         })
         .insert_resource(spawnable::ProjectileResource {
@@ -89,9 +101,12 @@ fn main() {
         .add_event::<run::SpawnFormationEvent>()
         .add_event::<run::LevelCompletedEvent>()
         .add_event::<arena::EnemyReachedBottomGateEvent>()
+        .add_event::<spawnable::SpawnEffectEvent>()
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(DebugLinesPlugin)
+        //.add_plugin(FrameTimeDiagnosticsPlugin::default())
+        //.add_plugin(LogDiagnosticsPlugin::default())
         .add_startup_system(setup_game.system().label("init"))
         .add_startup_system(arena::spawn_barriers_system.system().after("init"))
         .add_startup_system(arena::spawn_despawn_gates_system.system().after("init"))
@@ -140,7 +155,23 @@ fn main() {
                 .system()
                 .after("set_target_behavior")
                 .after("intersection_collision")
-                .after("contact_collision"),
+                .after("contact_collision")
+                .label("projectile_execute_behavior"),
+        )
+        .add_system_to_stage(
+            CoreStage::PostUpdate,
+            spawnable::effect_execute_behavior_system
+                .system()
+                .after("set_target_behavior")
+                .after("intersection_collision")
+                .after("contact_collision")
+                .label("effect_execute_behavior"),
+        )
+        .add_system_to_stage(
+            CoreStage::PostUpdate,
+            spawnable::spawn_effect_system
+                .system()
+                .after("projectile_execute_behavior"),
         )
         .add_system_to_stage(
             CoreStage::PostUpdate,
@@ -178,8 +209,9 @@ fn setup_game(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
-    mut mobs: ResMut<MobsResource>,
+    mut mobs: ResMut<spawnable::MobsResource>,
     mut projectiles: ResMut<spawnable::ProjectileResource>,
+    mut effects: ResMut<spawnable::EffectsResource>,
     mut rapier_config: ResMut<RapierConfiguration>,
     mut run_resource: ResMut<run::RunResource>,
     levels_resource: Res<run::LevelsResource>,
@@ -250,6 +282,25 @@ fn setup_game(
             texture_atlases.add(projectile_atlas),
         );
     }
+
+    // load effect assets
+    let mut effect_texture_atlas_dict = HashMap::new();
+    for (effect_type, effect_data) in effects.effects.iter() {
+        // effect texture
+        let texture_handle = asset_server.load(&effect_data.texture.path[..]);
+        let effect_atlas = TextureAtlas::from_grid(
+            texture_handle,
+            effect_data.texture.dimensions,
+            effect_data.texture.cols,
+            effect_data.texture.rows,
+        );
+
+        // add effect texture handle to dictionary
+        effect_texture_atlas_dict.insert(effect_type.clone(), texture_atlases.add(effect_atlas));
+    }
+
+    // add texture atlas dict to the effects resource
+    effects.texture_atlas_handle = effect_texture_atlas_dict;
 
     // add texture atlas dict to the projectiles resource
     projectiles.texture_atlas_handle = projectile_texture_atlas_dict;
