@@ -1,0 +1,38 @@
+{
+	AllyBlastExplosion: (
+		effect_type: AllyBlastExplosion,
+		effect_behaviors: [DespawnAfterAnimation],
+		texture: (
+			path: "texture/ally_blast_explosion_spritesheet.png",
+			dimensions: (10, 10),
+			cols: 7,
+			rows: 1,
+			frame_duration: .1,
+			animation_direction: Forward,
+		),
+	),
+	AllyBlastDespawn: (
+		effect_type: AllyBlastDespawn,
+		effect_behaviors: [DespawnAfterAnimation],
+		texture: (
+			path: "texture/ally_blast_despawn_spritesheet.png",
+			dimensions: (10, 10),
+			cols: 6,
+			rows: 1,
+			frame_duration: .1,
+			animation_direction: Forward,
+		),
+	),
+	MobExplosion: (
+		effect_type: MobExplosion,
+		effect_behaviors: [DespawnAfterAnimation],
+		texture: (
+			path: "texture/mob_explosion_spritesheet.png",
+			dimensions: (24, 24),
+			cols: 10,
+			rows: 1,
+			frame_duration: .1,
+			animation_direction: Forward,
+		),
+	),
+}

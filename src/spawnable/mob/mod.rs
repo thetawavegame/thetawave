@@ -5,12 +5,10 @@ use serde::Deserialize;
 use std::{collections::HashMap, string::ToString};
 
 use crate::{
-    animation::AnimationComponent,
+    animation::{AnimationComponent, TextureData},
     game::GameParametersResource,
     misc::Health,
-    spawnable::{
-        InitialMotion, MobType, SpawnableBehavior, SpawnableComponent, SpawnableType, TextureData,
-    },
+    spawnable::{InitialMotion, MobType, SpawnableBehavior, SpawnableComponent, SpawnableType},
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 

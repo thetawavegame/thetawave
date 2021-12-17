@@ -1,9 +1,10 @@
-use crate::{animation::AnimationDirection, player::PlayerComponent};
+use crate::player::PlayerComponent;
 use bevy::prelude::*;
 use serde::Deserialize;
 use strum_macros::Display;
 
 mod behavior;
+mod effect;
 mod mob;
 mod projectile;
 
@@ -17,6 +18,11 @@ pub use self::projectile::{
 
 pub use self::behavior::{
     spawnable_execute_behavior_system, spawnable_set_target_behavior_system, SpawnableBehavior,
+};
+
+pub use self::effect::{
+    effect_execute_behavior_system, spawn_effect, spawn_effect_system, EffectData, EffectsResource,
+    SpawnEffectEvent,
 };
 
 /// Core component of spawnable entities
@@ -39,23 +45,6 @@ pub struct SpawnableComponent {
     pub behaviors: Vec<SpawnableBehavior>,
     /// Flag to despawn next frame
     pub should_despawn: bool,
-}
-
-/// Data describing texture
-#[derive(Deserialize)]
-pub struct TextureData {
-    /// Path to the texture
-    pub path: String,
-    /// Dimensions of the texture (single frame)
-    pub dimensions: Vec2,
-    /// Columns in the spritesheet
-    pub cols: usize,
-    /// Rows in the spritesheet
-    pub rows: usize,
-    /// Duration of a frame of animation
-    pub frame_duration: f32,
-    /// How the animation switches frames
-    pub animation_direction: AnimationDirection,
 }
 
 /// Initial motion that entity is spawned in with
@@ -162,11 +151,13 @@ pub enum ItemType {
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum EffectType {
     AllyBlastExplosion,
-    EnemyBlastExplosion,
-    PoisonBlastExplosion,
-    CriticalBlastExplosion,
+    AllyBlastDespawn,
     MobExplosion,
-    Giblets(MobType),
+    //EnemyBlastExplosion,
+    //PoisonBlastExplosion,
+    //CriticalBlastExplosion,
+    //MobExplosion,
+    //Giblets(MobType),
 }
 
 /// Component that despawns entity after amount of time has passed

@@ -5,10 +5,9 @@ use serde::Deserialize;
 use std::{collections::HashMap, string::ToString};
 
 use crate::{
-    animation::AnimationComponent,
+    animation::{AnimationComponent, TextureData},
     game::GameParametersResource,
     spawnable::InitialMotion,
-    spawnable::TextureData,
     spawnable::{
         DespawnTimerComponent, ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType,
     },
@@ -80,6 +79,12 @@ pub fn spawn_projectile(
     // create mob entity
     let mut projectile = commands.spawn();
 
+    let mut projectile_behaviors = projectile_data.projectile_behaviors.clone();
+    projectile_behaviors.push(ProjectileBehavior::TimedDespawn {
+        despawn_time,
+        current_time: 0.0,
+    });
+
     projectile
         .insert_bundle(SpriteSheetBundle {
             texture_atlas: texture_atlas_handle,
@@ -126,7 +131,7 @@ pub fn spawn_projectile(
         .insert(ColliderPositionSync::Discrete)
         .insert(ProjectileComponent {
             projectile_type: projectile_data.projectile_type.clone(),
-            behaviors: projectile_data.projectile_behaviors.clone(),
+            behaviors: projectile_behaviors,
             damage,
         })
         .insert(SpawnableComponent {
@@ -140,8 +145,10 @@ pub fn spawn_projectile(
             behaviors: projectile_data.spawnable_behaviors.clone(),
             should_despawn: false,
         })
+        /*
         .insert(DespawnTimerComponent {
             despawn_timer: Timer::from_seconds(despawn_time, false),
         })
+        */
         .insert(Name::new(projectile_data.projectile_type.to_string()));
 }

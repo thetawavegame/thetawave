@@ -6,8 +6,8 @@ use crate::{
     collision::CollisionEvent,
     game::GameParametersResource,
     spawnable::{
-        spawn_projectile, InitialMotion, MobType, PlayerComponent, ProjectileResource,
-        ProjectileType, SpawnableComponent,
+        spawn_projectile, EffectType, InitialMotion, MobType, PlayerComponent, ProjectileResource,
+        ProjectileType, SpawnEffectEvent, SpawnableComponent,
     },
 };
 
@@ -66,6 +66,7 @@ pub fn mob_execute_behavior_system(
         &RigidBodyVelocity,
     )>,
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
+    mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
 ) {
     // Get all contact events first (can't be read more than once within a system)
     let mut collision_events_vec = vec![];
@@ -141,7 +142,13 @@ pub fn mob_execute_behavior_system(
                     }
                 }
                 MobBehavior::ExplodeOnImpact => {
-                    explode_on_impact(entity, &mut spawnable_component, &collision_events_vec);
+                    explode_on_impact(
+                        entity,
+                        &mut spawnable_component,
+                        &collision_events_vec,
+                        &mut spawn_effect_event_writer,
+                        &rb_pos,
+                    );
                 }
                 MobBehavior::DealDamageToPlayerOnImpact => {
                     deal_damage_to_player_on_impact(
@@ -161,6 +168,11 @@ pub fn mob_execute_behavior_system(
                 MobBehavior::DieAtZeroHealth => {
                     if mob_component.health.is_dead() {
                         spawnable_component.should_despawn = true;
+                        // spawn mob explosion
+                        spawn_effect_event_writer.send(SpawnEffectEvent {
+                            effect_type: EffectType::MobExplosion,
+                            position: rb_pos.position.translation.into(),
+                        });
                     }
                 }
             }
@@ -242,6 +254,8 @@ fn explode_on_impact(
     entity: Entity,
     spawnable_component: &mut SpawnableComponent,
     collision_events: &[&CollisionEvent],
+    spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
+    rb_pos: &RigidBodyPosition,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
@@ -256,7 +270,11 @@ fn explode_on_impact(
                 if entity == *mob_entity {
                     // despawn mob
                     spawnable_component.should_despawn = true;
-                    // TODO: spawn explosion
+                    // spawn mob explosion
+                    spawn_effect_event_writer.send(SpawnEffectEvent {
+                        effect_type: EffectType::MobExplosion,
+                        position: rb_pos.position.translation.into(),
+                    });
                     continue;
                 }
             }
@@ -271,7 +289,11 @@ fn explode_on_impact(
                 if entity == *mob_entity_1 {
                     // despawn mob
                     spawnable_component.should_despawn = true;
-                    // TODO: spawn explosion
+                    // spawn mob explosion
+                    spawn_effect_event_writer.send(SpawnEffectEvent {
+                        effect_type: EffectType::MobExplosion,
+                        position: rb_pos.position.translation.into(),
+                    });
                     continue;
                 }
             }
