@@ -9,7 +9,7 @@
 			dimensions: (4.0, 4.0),
 			cols: 1,
 			rows: 1,
-			frame_duration: 0.0,
+			frame_duration: 1.0, // changed from 0.0
 			animation_direction: None,
 		),
 	),
@@ -23,7 +23,7 @@
 			dimensions: (4.0, 4.0),
 			cols: 1,
 			rows: 1,
-			frame_duration: 0.0,
+			frame_duration: 1.0, // changed from 0.0
 			animation_direction: None,
 		),
 	),
@@ -37,7 +37,7 @@
 			dimensions: (4.0, 4.0),
 			cols: 1,
 			rows: 1,
-			frame_duration: 0.0,
+			frame_duration: 1.0, // changed from 0.0
 			animation_direction: None,
 		),
 	)

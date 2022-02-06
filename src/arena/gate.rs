@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 /// Despawn gate tag
+#[derive(Component)]
 pub struct DespawnGateComponent;
 
 /// Spawn gates for despawning entities
@@ -15,13 +16,14 @@ fn spawn_despawn_gate(commands: &mut Commands, position: Vec2, width: f32, heigh
     commands
         .spawn()
         .insert_bundle(ColliderBundle {
-            shape: ColliderShape::cuboid(width / 2.0, height / 2.0),
-            collider_type: ColliderType::Sensor,
+            shape: ColliderShape::cuboid(width / 2.0, height / 2.0).into(),
+            collider_type: ColliderType::Sensor.into(),
             position: position.into(),
             flags: ColliderFlags {
                 active_events: ActiveEvents::INTERSECTION_EVENTS,
                 ..Default::default()
-            },
+            }
+            .into(),
             ..Default::default()
         })
         .insert(ColliderPositionSync::Discrete)

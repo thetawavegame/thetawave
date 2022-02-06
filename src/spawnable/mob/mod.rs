@@ -16,6 +16,7 @@ mod behavior;
 pub use self::behavior::{mob_execute_behavior_system, MobBehavior};
 
 /// Core component for mobs
+#[derive(Component)]
 pub struct MobComponent {
     /// Type of mob
     pub mob_type: MobType,
@@ -124,7 +125,7 @@ pub fn spawn_mob(
         direction: mob_data.texture.animation_direction.clone(),
     })
     .insert_bundle(RigidBodyBundle {
-        body_type: RigidBodyType::Dynamic,
+        body_type: RigidBodyType::Dynamic.into(),
         mass_properties: RigidBodyMassPropsFlags::ROTATION_LOCKED.into(),
         velocity: RigidBodyVelocity {
             angvel: if let Some(random_angvel) = mob_data.initial_motion.random_angvel {
@@ -133,18 +134,20 @@ pub fn spawn_mob(
                 0.0
             },
             ..Default::default()
-        },
+        }
+        .into(),
         position: position.into(),
         ..Default::default()
     })
     .insert_bundle(ColliderBundle {
-        shape: ColliderShape::cuboid(collider_size_hx, collider_size_hy),
+        shape: ColliderShape::cuboid(collider_size_hx, collider_size_hy).into(),
         material: ColliderMaterial {
             friction: 1.0,
             restitution: 1.0,
             restitution_combine_rule: CoefficientCombineRule::Max,
             ..Default::default()
-        },
+        }
+        .into(),
         flags: ColliderFlags {
             collision_groups: InteractionGroups::new(
                 SPAWNABLE_COL_GROUP_MEMBERSHIP,
@@ -152,7 +155,8 @@ pub fn spawn_mob(
             ),
             active_events: ActiveEvents::CONTACT_EVENTS,
             ..Default::default()
-        },
+        }
+        .into(),
         ..Default::default()
     })
     .insert(ColliderPositionSync::Discrete)

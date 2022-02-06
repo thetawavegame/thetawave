@@ -4,6 +4,7 @@ use serde::Deserialize;
 use strum_macros::Display;
 
 mod behavior;
+mod consumable;
 mod effect;
 mod mob;
 mod projectile;
@@ -26,6 +27,7 @@ pub use self::effect::{
 };
 
 /// Core component of spawnable entities
+#[derive(Component)]
 pub struct SpawnableComponent {
     /// Type of spawnable
     pub spawnable_type: SpawnableType,
@@ -161,6 +163,8 @@ pub enum EffectType {
 }
 
 /// Component that despawns entity after amount of time has passed
+
+#[derive(Component)]
 pub struct DespawnTimerComponent {
     despawn_timer: Timer,
 }

@@ -12,7 +12,11 @@ pub fn player_fire_weapon_system(
     keyboard_input: Res<Input<MouseButton>>,
     rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<GameParametersResource>,
-    mut player_query: Query<(&mut PlayerComponent, &RigidBodyVelocity, &RigidBodyPosition)>,
+    mut player_query: Query<(
+        &mut PlayerComponent,
+        &RigidBodyVelocityComponent,
+        &RigidBodyPositionComponent,
+    )>,
     time: Res<Time>,
     projectile_resource: Res<ProjectileResource>,
     mut commands: Commands,

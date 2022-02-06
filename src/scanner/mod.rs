@@ -7,7 +7,7 @@ use crate::{game::GameParametersResource, spawnable::MobComponent};
 pub fn scanner_system(
     windows: Res<Windows>,
     game_params: Res<GameParametersResource>,
-    mob_query: Query<(Entity, &MobComponent, &RigidBodyPosition)>,
+    mob_query: Query<(Entity, &MobComponent, &RigidBodyPositionComponent)>,
     rapier_config: Res<RapierConfiguration>,
 ) {
     let window = windows.get_primary().unwrap();

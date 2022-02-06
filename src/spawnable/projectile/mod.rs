@@ -18,6 +18,7 @@ mod behavior;
 pub use self::behavior::{projectile_execute_behavior_system, ProjectileBehavior};
 
 /// Core component for projectiles
+#[derive(Component)]
 pub struct ProjectileComponent {
     /// Type of projectile
     pub projectile_type: ProjectileType,
@@ -100,7 +101,7 @@ pub fn spawn_projectile(
             direction: projectile_data.texture.animation_direction.clone(),
         })
         .insert_bundle(RigidBodyBundle {
-            body_type: RigidBodyType::Dynamic,
+            body_type: RigidBodyType::Dynamic.into(),
             mass_properties: RigidBodyMassPropsFlags::ROTATION_LOCKED.into(),
             velocity: RigidBodyVelocity {
                 angvel: if let Some(random_angvel) = initial_motion.random_angvel {
@@ -113,19 +114,21 @@ pub fn spawn_projectile(
                 } else {
                     Vec2::ZERO.into()
                 },
-            },
+            }
+            .into(),
             position: position.into(),
             ..Default::default()
         })
         .insert_bundle(ColliderBundle {
-            shape: ColliderShape::cuboid(collider_size_hx, collider_size_hy),
-            collider_type: ColliderType::Sensor,
+            shape: ColliderShape::cuboid(collider_size_hx, collider_size_hy).into(),
+            collider_type: ColliderType::Sensor.into(),
             flags: ColliderFlags {
                 // TODO: filter out others of same faction
                 //collision_groups: InteractionGroups::new(PROJECTILE_GROUP_MEMBERSHIP, filter)
                 active_events: ActiveEvents::INTERSECTION_EVENTS,
                 ..Default::default()
-            },
+            }
+            .into(),
             ..Default::default()
         })
         .insert(ColliderPositionSync::Discrete)

@@ -20,7 +20,7 @@ impl From<DisplayConfig> for WindowDescriptor {
             width: display_config.width,
             height: display_config.height,
             mode: if display_config.fullscreen {
-                WindowMode::Fullscreen { use_size: false }
+                WindowMode::Fullscreen
             } else {
                 WindowMode::Windowed
             },
@@ -37,7 +37,7 @@ pub fn toggle_fullscreen_system(keyboard_input: Res<Input<KeyCode>>, mut windows
     if fullscreen_input {
         window.set_mode(match window.mode() {
             WindowMode::Fullscreen { .. } => WindowMode::Windowed,
-            WindowMode::Windowed => WindowMode::Fullscreen { use_size: false },
+            WindowMode::Windowed => WindowMode::Fullscreen,
             _ => window.mode(),
         });
     }

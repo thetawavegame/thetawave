@@ -12,6 +12,7 @@ use super::EffectType;
 mod behavior;
 pub use self::behavior::effect_execute_behavior_system;
 
+#[derive(Component)]
 pub struct EffectComponent {
     pub effect_type: super::EffectType,
     pub behaviors: Vec<behavior::EffectBehavior>,
@@ -94,7 +95,7 @@ pub fn spawn_effect(
             should_despawn: false,
         })
         .insert_bundle(RigidBodyBundle {
-            body_type: RigidBodyType::Static,
+            body_type: RigidBodyType::Static.into(),
             position: position.into(),
             ..Default::default()
         })

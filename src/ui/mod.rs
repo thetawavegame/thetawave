@@ -3,9 +3,11 @@ use bevy::prelude::*;
 use crate::{player::PlayerComponent, run::RunResource};
 
 /// Tag for player health ui
+#[derive(Component)]
 pub struct HealthUI;
 
 /// Tag for level ui
+#[derive(Component)]
 pub struct LevelUI;
 
 /// Initialize all ui
@@ -73,14 +75,14 @@ pub fn setup_ui(mut commands: Commands, asset_server: ResMut<AssetServer>) {
 /// Update ui to current data from game
 pub fn update_ui(
     mut ui_queries: QuerySet<(
-        Query<&mut Text, With<HealthUI>>,
-        Query<&mut Text, With<LevelUI>>,
+        QueryState<&mut Text, With<HealthUI>>,
+        QueryState<&mut Text, With<LevelUI>>,
     )>,
     player_query: Query<&PlayerComponent>,
     run_resource: Res<RunResource>,
 ) {
     // update player health ui
-    for mut text_component in ui_queries.q0_mut().iter_mut() {
+    for mut text_component in ui_queries.q0().iter_mut() {
         for player_component in player_query.iter() {
             text_component.sections[0].value = format!(
                 "Health: {}/{}",
@@ -92,7 +94,7 @@ pub fn update_ui(
     }
 
     // update level ui
-    for mut text_component in ui_queries.q1_mut().iter_mut() {
+    for mut text_component in ui_queries.q1().iter_mut() {
         text_component.sections[0].value = format!(
             "Phase Type: {}\nPhase Number: {}\nObjective:{}",
             run_resource.levels[run_resource.level_idx].get_phase_name(),

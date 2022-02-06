@@ -4,8 +4,8 @@ use bevy::{
     prelude::*,
     render::camera::PerspectiveProjection,
 };
-use bevy_inspector_egui::WorldInspectorPlugin;
-use bevy_prototype_debug_lines::*;
+//use bevy_inspector_egui::WorldInspectorPlugin;
+//use bevy_prototype_debug_lines::*;
 use bevy_rapier2d::{na::Vector2, prelude::*};
 use ron::de::{from_bytes, from_str};
 use std::{collections::HashMap, env::current_dir, fs::read_to_string};
@@ -18,7 +18,7 @@ mod animation;
 mod arena;
 mod background;
 mod collision;
-mod debug;
+//mod debug;
 mod game;
 mod misc;
 mod options;
@@ -39,7 +39,7 @@ fn main() {
     )
     .unwrap();
 
-    let mut app = App::build();
+    let mut app = App::new();
 
     app.insert_resource(WindowDescriptor::from(display_config))
         .insert_resource(ClearColor(Color::BLACK))
@@ -104,7 +104,7 @@ fn main() {
         .add_event::<spawnable::SpawnEffectEvent>()
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
-        .add_plugin(DebugLinesPlugin)
+        //.add_plugin(DebugLinesPlugin)
         //.add_plugin(FrameTimeDiagnosticsPlugin::default())
         //.add_plugin(LogDiagnosticsPlugin::default())
         .add_startup_system(setup_game.system().label("init"))
@@ -195,10 +195,12 @@ fn main() {
         .add_system(background::rotate_planet_system.system())
         .add_system(spawnable::despawn_timer_system.system());
 
+    /*
     if cfg!(debug_assertions) {
         app.add_plugin(WorldInspectorPlugin::new())
             .add_system(debug::collider_debug_lines_system.system());
     }
+    */
 
     app.run();
 }

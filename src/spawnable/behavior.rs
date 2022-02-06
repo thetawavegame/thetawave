@@ -5,7 +5,7 @@ use crate::{
     spawnable::{EnemyType, MobType, SpawnableComponent, SpawnableType},
     tools::signed_modulo,
 };
-use bevy::prelude::*;
+use bevy::{math::Vec3Swizzles, prelude::*};
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 
@@ -28,7 +28,7 @@ pub fn spawnable_execute_behavior_system(
     mut spawnable_query: Query<(
         Entity,
         &mut SpawnableComponent,
-        &mut RigidBodyVelocity,
+        &mut RigidBodyVelocityComponent,
         &Transform,
     )>,
     mut collision_events: EventReader<CollisionEvent>,
@@ -116,9 +116,9 @@ pub fn spawnable_set_target_behavior_system(
                                 *behavior = match behavior {
                                     SpawnableBehavior::RotateToTarget(target) => {
                                         let spawnable_position_vec2: Vec2 =
-                                            spawnable_transform.translation.into();
+                                            spawnable_transform.translation.xy();
                                         let player_position_vec2: Vec2 =
-                                            player_transform.translation.into();
+                                            player_transform.translation.xy();
                                         if target.is_none()
                                             || spawnable_position_vec2
                                                 .distance(player_position_vec2)

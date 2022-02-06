@@ -25,13 +25,14 @@ pub fn spawn_player_system(
         character.collider_dimensions.y * game_parameters.sprite_scale / rapier_config.scale / 2.0;
 
     // get player texture
-    let texture_handle = asset_server.load(format!("texture/{}", character.sprite_path).as_str());
+    //let texture_handle = asset_server.load(format!("texture/{}", character.sprite_path).as_str());
 
     // spawn the player
     commands
         .spawn()
         .insert_bundle(SpriteBundle {
-            material: materials.add(texture_handle.into()),
+            //material: materials.add(texture_handle.into()),
+            texture: asset_server.load(format!("texture/{}", character.sprite_path).as_str()),
             transform: Transform::from_scale(Vec3::new(
                 game_parameters.sprite_scale,
                 game_parameters.sprite_scale,
@@ -40,19 +41,20 @@ pub fn spawn_player_system(
             ..Default::default()
         })
         .insert_bundle(RigidBodyBundle {
-            body_type: RigidBodyType::Dynamic,
+            body_type: RigidBodyType::Dynamic.into(),
             mass_properties: RigidBodyMassPropsFlags::ROTATION_LOCKED.into(),
             position: Vec2::new(0.0, 0.0).into(),
             ..Default::default()
         })
         .insert_bundle(ColliderBundle {
-            shape: ColliderShape::cuboid(collider_size_hx, collider_size_hy),
+            shape: ColliderShape::cuboid(collider_size_hx, collider_size_hy).into(),
             material: ColliderMaterial {
                 friction: 0.0,
                 restitution: 1.0,
                 ..Default::default()
-            },
-            mass_properties: ColliderMassProps::Density(character.collider_density),
+            }
+            .into(),
+            mass_properties: ColliderMassProps::Density(character.collider_density).into(),
             ..Default::default()
         })
         .insert(ColliderPositionSync::Discrete)

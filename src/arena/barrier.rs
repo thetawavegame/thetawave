@@ -2,6 +2,7 @@ use crate::{HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERS
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
+#[derive(Component)]
 pub struct ArenaBarrierComponent;
 
 /// Spawns arena barriers
@@ -19,17 +20,18 @@ fn spawn_barrier(commands: &mut Commands, position: Vec2, width: f32, height: f3
     commands
         .spawn()
         .insert_bundle(RigidBodyBundle {
-            body_type: RigidBodyType::Static,
+            body_type: RigidBodyType::Static.into(),
             position: position.into(),
             ..Default::default()
         })
         .insert_bundle(ColliderBundle {
-            shape: ColliderShape::cuboid(width / 2.0, height / 2.0),
+            shape: ColliderShape::cuboid(width / 2.0, height / 2.0).into(),
             material: ColliderMaterial {
                 friction: 0.0,
                 restitution: 1.0,
                 ..Default::default()
-            },
+            }
+            .into(),
             ..Default::default()
         })
         .insert(RigidBodyPositionSync::Discrete)
@@ -43,24 +45,26 @@ fn spawn_spawnables_pass_barrier(commands: &mut Commands, position: Vec2, width:
     commands
         .spawn()
         .insert_bundle(RigidBodyBundle {
-            body_type: RigidBodyType::Static,
+            body_type: RigidBodyType::Static.into(),
             position: position.into(),
             ..Default::default()
         })
         .insert_bundle(ColliderBundle {
-            shape: ColliderShape::cuboid(width / 2.0, height / 2.0),
+            shape: ColliderShape::cuboid(width / 2.0, height / 2.0).into(),
             material: ColliderMaterial {
                 friction: 0.0,
                 restitution: 1.0,
                 ..Default::default()
-            },
+            }
+            .into(),
             flags: ColliderFlags {
                 collision_groups: InteractionGroups::new(
                     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
                     u32::MAX ^ SPAWNABLE_COL_GROUP_MEMBERSHIP, // filters out spawnable group
                 ),
                 ..Default::default()
-            },
+            }
+            .into(),
             ..Default::default()
         })
         .insert(RigidBodyPositionSync::Discrete)

@@ -6,7 +6,7 @@ use bevy_rapier2d::prelude::*;
 /// Draw lines over colliders
 pub fn collider_debug_lines_system(
     mut lines: ResMut<DebugLines>,
-    player_colliders: Query<(&ColliderPosition, &ColliderShape)>,
+    player_colliders: Query<(&ColliderPositionComponent, &ColliderShapeComponent)>,
     rapier_config: Res<RapierConfiguration>,
 ) {
     // draw colliders

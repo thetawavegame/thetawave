@@ -5,7 +5,7 @@ use crate::{
     },
 };
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::RigidBodyPosition;
+use bevy_rapier2d::prelude::{RigidBodyPosition, RigidBodyPositionComponent};
 use serde::Deserialize;
 
 /// Types of behaviors that can be performed by projectiles
@@ -22,7 +22,7 @@ pub enum ProjectileBehavior {
 pub fn projectile_execute_behavior_system(
     mut projectile_query: Query<(
         Entity,
-        &RigidBodyPosition,
+        &RigidBodyPositionComponent,
         &mut SpawnableComponent,
         &mut super::ProjectileComponent,
     )>,

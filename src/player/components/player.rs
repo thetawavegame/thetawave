@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::{misc::Health, player::Character, spawnable::ProjectileType};
 
 /// Component for managing core attributes of the player
-#[derive(Debug)]
+#[derive(Component, Debug)]
 pub struct PlayerComponent {
     /// Acceleration of the player
     pub acceleration: Vec2,

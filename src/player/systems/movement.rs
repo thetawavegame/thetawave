@@ -7,7 +7,7 @@ pub fn player_movement_system(
     keyboard_input: Res<Input<KeyCode>>,
     rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<GameParametersResource>,
-    mut player_info: Query<(&PlayerComponent, &mut RigidBodyVelocity)>,
+    mut player_info: Query<(&PlayerComponent, &mut RigidBodyVelocityComponent)>,
 ) {
     for (player, mut rb_vels) in player_info.iter_mut() {
         // get key presses
