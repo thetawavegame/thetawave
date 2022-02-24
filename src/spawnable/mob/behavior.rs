@@ -101,6 +101,7 @@ pub fn mob_execute_behavior_system(
                             }
 
                             //spawn_blast
+                            // TODO: change to event for spawning projectiles
                             spawn_projectile(
                                 &data.projectile_type,
                                 &projectile_resource,
