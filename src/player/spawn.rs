@@ -19,10 +19,8 @@ pub fn spawn_player_system(
     let character = &characters.characters["juggernaut"];
 
     // scale collider to align with the sprite
-    let collider_size_hx =
-        character.collider_dimensions.x * game_parameters.sprite_scale / rapier_config.scale / 2.0;
-    let collider_size_hy =
-        character.collider_dimensions.y * game_parameters.sprite_scale / rapier_config.scale / 2.0;
+    let collider_size_hx = character.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
+    let collider_size_hy = character.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
 
     // get player texture
     //let texture_handle = asset_server.load(format!("texture/{}", character.sprite_path).as_str());
@@ -40,25 +38,15 @@ pub fn spawn_player_system(
             )),
             ..Default::default()
         })
-        .insert_bundle(RigidBodyBundle {
-            body_type: RigidBodyType::Dynamic.into(),
-            mass_properties: RigidBodyMassPropsFlags::ROTATION_LOCKED.into(),
-            position: Vec2::new(0.0, 0.0).into(),
+        .insert(RigidBody::Dynamic)
+        .insert(LockedAxes::ROTATION_LOCKED)
+        .insert(Transform::from_translation(Vec3::ZERO))
+        .insert(Collider::cuboid(collider_size_hx, collider_size_hy))
+        .insert(Restitution::new(1.0))
+        .insert(MassProperties {
+            mass: character.collider_density,
             ..Default::default()
         })
-        .insert_bundle(ColliderBundle {
-            shape: ColliderShape::cuboid(collider_size_hx, collider_size_hy).into(),
-            material: ColliderMaterial {
-                friction: 0.0,
-                restitution: 1.0,
-                ..Default::default()
-            }
-            .into(),
-            mass_properties: ColliderMassProps::Density(character.collider_density).into(),
-            ..Default::default()
-        })
-        .insert(ColliderPositionSync::Discrete)
-        .insert(ColliderDebugRender::with_id(1))
         .insert(PlayerComponent::from(character))
         .insert(Name::new("Player"));
 }

@@ -4,11 +4,11 @@ use crate::{
     spawnable::{Faction, MobComponent, MobType, ProjectileComponent, ProjectileType},
 };
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use bevy_rapier2d::{prelude::*, rapier::prelude::CollisionEventFlags};
 
 /// Types of collisions
 #[derive(Debug)]
-pub enum CollisionEvent {
+pub enum SortedCollisionEvent {
     PlayerToProjectileIntersection {
         player_entity: Entity,
         projectile_entity: Entity,
@@ -52,91 +52,104 @@ pub struct CollidingEntities {
 
 /// Creates events from intersection collisions
 pub fn intersection_collision_system(
-    mut collision_event_writer: EventWriter<CollisionEvent>,
-    mut intersection_events: EventReader<IntersectionEvent>,
+    mut collision_event_writer: EventWriter<SortedCollisionEvent>,
+    mut collision_events: EventReader<CollisionEvent>,
     player_query: Query<Entity, With<PlayerComponent>>,
     mob_query: Query<(Entity, &MobComponent)>,
     projectile_query: Query<(Entity, &ProjectileComponent)>,
 ) {
-    'intersection_events: for intersection_event in intersection_events.iter() {
-        let collider1_entity = intersection_event.collider1.entity();
-        let collider2_entity = intersection_event.collider2.entity();
+    'collision_events: for collision_event in collision_events.iter() {
+        //let collider1_entity = intersection_event.collider1.entity();
+        //let collider2_entity = intersection_event.collider2.entity();
 
-        //check if player was collided with
-        for player_entity in player_query.iter() {
-            // first entity is player second, is the other colliding entity
-            let colliding_entities: Option<CollidingEntities> = if player_entity == collider1_entity
-            {
-                Some(CollidingEntities {
-                    primary: collider1_entity,
-                    secondary: collider2_entity,
-                })
-            } else if player_entity == collider2_entity {
-                Some(CollidingEntities {
-                    primary: collider2_entity,
-                    secondary: collider1_entity,
-                })
-            } else {
-                None
-            };
+        if let CollisionEvent::Started(
+            collider1_entity,
+            collider2_entity,
+            CollisionEventFlags::SENSOR,
+        ) = collision_event
+        {
+            //check if player was collided with
+            for player_entity in player_query.iter() {
+                // first entity is player second, is the other colliding entity
+                let colliding_entities: Option<CollidingEntities> =
+                    if player_entity == *collider1_entity {
+                        Some(CollidingEntities {
+                            primary: *collider1_entity,
+                            secondary: *collider2_entity,
+                        })
+                    } else if player_entity == *collider2_entity {
+                        Some(CollidingEntities {
+                            primary: *collider2_entity,
+                            secondary: *collider1_entity,
+                        })
+                    } else {
+                        None
+                    };
 
-            if let Some(colliding_entities) = colliding_entities {
-                // check for projectile
-                for (projectile_entity, projectile_component) in projectile_query.iter() {
-                    if colliding_entities.secondary == projectile_entity {
-                        collision_event_writer.send(
-                            CollisionEvent::PlayerToProjectileIntersection {
-                                player_entity: colliding_entities.primary,
-                                projectile_entity: colliding_entities.secondary,
-                                projectile_faction: match projectile_component
-                                    .projectile_type
-                                    .clone()
-                                {
-                                    ProjectileType::Blast(faction) => faction,
+                if let Some(colliding_entities) = colliding_entities {
+                    // check for projectile
+                    for (projectile_entity, projectile_component) in projectile_query.iter() {
+                        if colliding_entities.secondary == projectile_entity {
+                            collision_event_writer.send(
+                                SortedCollisionEvent::PlayerToProjectileIntersection {
+                                    player_entity: colliding_entities.primary,
+                                    projectile_entity: colliding_entities.secondary,
+                                    projectile_faction: match projectile_component
+                                        .projectile_type
+                                        .clone()
+                                    {
+                                        ProjectileType::Blast(faction) => faction,
+                                    },
+                                    projectile_damage: projectile_component.damage,
                                 },
-                                projectile_damage: projectile_component.damage,
-                            },
-                        );
-                        continue 'intersection_events;
+                            );
+                            continue 'collision_events;
+                        }
                     }
                 }
             }
-        }
 
-        for (mob_entity, mob_component) in mob_query.iter() {
-            // first entity is projectile, second is the other colliding entity
-            let colliding_entities: Option<CollidingEntities> = if mob_entity == collider1_entity {
-                Some(CollidingEntities {
-                    primary: collider1_entity,
-                    secondary: collider2_entity,
-                })
-            } else if mob_entity == collider2_entity {
-                Some(CollidingEntities {
-                    primary: collider2_entity,
-                    secondary: collider1_entity,
-                })
-            } else {
-                None
-            };
+            for (mob_entity, mob_component) in mob_query.iter() {
+                // first entity is projectile, second is the other colliding entity
+                let colliding_entities: Option<CollidingEntities> =
+                    if mob_entity == *collider1_entity {
+                        Some(CollidingEntities {
+                            primary: *collider1_entity,
+                            secondary: *collider2_entity,
+                        })
+                    } else if mob_entity == *collider2_entity {
+                        Some(CollidingEntities {
+                            primary: *collider2_entity,
+                            secondary: *collider1_entity,
+                        })
+                    } else {
+                        None
+                    };
 
-            if let Some(colliding_entities) = colliding_entities {
-                // check for projectile
-                for (projectile_entity, projectile_component) in projectile_query.iter() {
-                    if colliding_entities.secondary == projectile_entity {
-                        collision_event_writer.send(CollisionEvent::MobToProjectileIntersection {
-                            mob_entity: colliding_entities.primary,
-                            projectile_entity: colliding_entities.secondary,
-                            mob_faction: match mob_component.mob_type {
-                                MobType::Enemy(_) => Faction::Enemy,
-                                MobType::Ally(_) => Faction::Ally,
-                                MobType::Neutral(_) => Faction::Neutral,
-                            },
-                            projectile_faction: match projectile_component.projectile_type.clone() {
-                                ProjectileType::Blast(faction) => faction,
-                            },
-                            projectile_damage: projectile_component.damage,
-                        });
-                        continue 'intersection_events;
+                if let Some(colliding_entities) = colliding_entities {
+                    // check for projectile
+                    for (projectile_entity, projectile_component) in projectile_query.iter() {
+                        if colliding_entities.secondary == projectile_entity {
+                            collision_event_writer.send(
+                                SortedCollisionEvent::MobToProjectileIntersection {
+                                    mob_entity: colliding_entities.primary,
+                                    projectile_entity: colliding_entities.secondary,
+                                    mob_faction: match mob_component.mob_type {
+                                        MobType::Enemy(_) => Faction::Enemy,
+                                        MobType::Ally(_) => Faction::Ally,
+                                        MobType::Neutral(_) => Faction::Neutral,
+                                    },
+                                    projectile_faction: match projectile_component
+                                        .projectile_type
+                                        .clone()
+                                    {
+                                        ProjectileType::Blast(faction) => faction,
+                                    },
+                                    projectile_damage: projectile_component.damage,
+                                },
+                            );
+                            continue 'collision_events;
+                        }
                     }
                 }
             }
@@ -146,30 +159,27 @@ pub fn intersection_collision_system(
 
 /// Creates events from contact collisions
 pub fn contact_collision_system(
-    mut collision_event_writer: EventWriter<CollisionEvent>,
-    mut contact_events: EventReader<ContactEvent>,
+    mut collision_event_writer: EventWriter<SortedCollisionEvent>,
+    mut collision_events: EventReader<CollisionEvent>,
     player_query: Query<(Entity, &PlayerComponent)>,
     mob_query: Query<(Entity, &MobComponent)>,
     barrier_query: Query<Entity, With<ArenaBarrierComponent>>,
 ) {
-    'contact_events: for contact_event in contact_events.iter() {
-        if let ContactEvent::Stopped(h1, h2) = contact_event {
-            let collider1_entity = h1.entity();
-            let collider2_entity = h2.entity();
-
+    'collision_events: for contact_event in collision_events.iter() {
+        if let CollisionEvent::Stopped(collider1_entity, collider2_entity, _) = contact_event {
             //check if player was collided with
             for (player_entity, player_component) in player_query.iter() {
                 // first entity is player second, is the other colliding entity
                 let colliding_entities: Option<CollidingEntities> =
-                    if player_entity == collider1_entity {
+                    if player_entity == *collider1_entity {
                         Some(CollidingEntities {
-                            primary: collider1_entity,
-                            secondary: collider2_entity,
+                            primary: *collider1_entity,
+                            secondary: *collider2_entity,
                         })
-                    } else if player_entity == collider2_entity {
+                    } else if player_entity == *collider2_entity {
                         Some(CollidingEntities {
-                            primary: collider2_entity,
-                            secondary: collider1_entity,
+                            primary: *collider2_entity,
+                            secondary: *collider1_entity,
                         })
                     } else {
                         None
@@ -178,7 +188,7 @@ pub fn contact_collision_system(
                 if let Some(colliding_entities) = colliding_entities {
                     for (mob_entity, mob_component) in mob_query.iter() {
                         if colliding_entities.secondary == mob_entity {
-                            collision_event_writer.send(CollisionEvent::PlayerToMobContact {
+                            collision_event_writer.send(SortedCollisionEvent::PlayerToMobContact {
                                 player_entity: colliding_entities.primary,
                                 mob_entity: colliding_entities.secondary,
                                 mob_faction: match mob_component.mob_type.clone() {
@@ -189,7 +199,7 @@ pub fn contact_collision_system(
                                 player_damage: player_component.collision_damage,
                                 mob_damage: mob_component.collision_damage,
                             });
-                            continue 'contact_events;
+                            continue 'collision_events;
                         }
                     }
                 }
@@ -199,15 +209,15 @@ pub fn contact_collision_system(
             for (mob_entity_1, mob_component_1) in mob_query.iter() {
                 // first entity is player second, is the other colliding entity
                 let colliding_entities: Option<CollidingEntities> =
-                    if mob_entity_1 == collider1_entity {
+                    if mob_entity_1 == *collider1_entity {
                         Some(CollidingEntities {
-                            primary: collider1_entity,
-                            secondary: collider2_entity,
+                            primary: *collider1_entity,
+                            secondary: *collider2_entity,
                         })
-                    } else if mob_entity_1 == collider2_entity {
+                    } else if mob_entity_1 == *collider2_entity {
                         Some(CollidingEntities {
-                            primary: collider2_entity,
-                            secondary: collider1_entity,
+                            primary: *collider2_entity,
+                            secondary: *collider1_entity,
                         })
                     } else {
                         None
@@ -217,7 +227,7 @@ pub fn contact_collision_system(
                     // check if mob collided with other mob
                     for (mob_entity_2, mob_component_2) in mob_query.iter() {
                         if colliding_entities.secondary == mob_entity_2 {
-                            collision_event_writer.send(CollisionEvent::MobToMobContact {
+                            collision_event_writer.send(SortedCollisionEvent::MobToMobContact {
                                 mob_entity_1: colliding_entities.primary,
                                 mob_faction_1: match mob_component_1.mob_type {
                                     MobType::Enemy(_) => Faction::Enemy,
@@ -233,7 +243,7 @@ pub fn contact_collision_system(
                                 },
                                 mob_damage_2: mob_component_2.collision_damage,
                             });
-                            collision_event_writer.send(CollisionEvent::MobToMobContact {
+                            collision_event_writer.send(SortedCollisionEvent::MobToMobContact {
                                 mob_entity_1: colliding_entities.secondary,
                                 mob_faction_1: match mob_component_2.mob_type {
                                     MobType::Enemy(_) => Faction::Enemy,
@@ -249,17 +259,19 @@ pub fn contact_collision_system(
                                 },
                                 mob_damage_2: mob_component_1.collision_damage,
                             });
-                            continue 'contact_events;
+                            continue 'collision_events;
                         }
                     }
 
                     for barrier_entity in barrier_query.iter() {
                         if colliding_entities.secondary == barrier_entity {
-                            collision_event_writer.send(CollisionEvent::MobToBarrierContact {
-                                mob_entity: colliding_entities.primary,
-                                barrier_entity,
-                            });
-                            continue 'contact_events;
+                            collision_event_writer.send(
+                                SortedCollisionEvent::MobToBarrierContact {
+                                    mob_entity: colliding_entities.primary,
+                                    barrier_entity,
+                                },
+                            );
+                            continue 'collision_events;
                         }
                     }
                 }

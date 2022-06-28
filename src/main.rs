@@ -96,13 +96,13 @@ fn main() {
             ))
             .unwrap(),
         )
-        .add_event::<collision::CollisionEvent>()
+        .add_event::<collision::SortedCollisionEvent>()
         .add_event::<run::SpawnFormationEvent>()
         .add_event::<run::LevelCompletedEvent>()
         .add_event::<arena::EnemyReachedBottomGateEvent>()
         .add_event::<spawnable::SpawnEffectEvent>()
         .add_plugins(DefaultPlugins)
-        .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
+        .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(10.0))
         //.add_plugin(DebugLinesPlugin)
         //.add_plugin(FrameTimeDiagnosticsPlugin::default())
         //.add_plugin(LogDiagnosticsPlugin::default())
@@ -201,8 +201,7 @@ fn setup_game(
     commands.spawn_bundle(camera);
 
     // setup rapier
-    rapier_config.gravity = Vector2::zeros();
-    rapier_config.scale = game_parameters.physics_scale;
+    rapier_config.gravity = Vec2::ZERO;
 
     // load mob assets
     let mut mob_texture_atlas_dict = HashMap::new();

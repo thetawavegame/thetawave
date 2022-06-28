@@ -19,23 +19,10 @@ pub fn spawn_barriers_system(mut commands: Commands) {
 fn spawn_barrier(commands: &mut Commands, position: Vec2, width: f32, height: f32) {
     commands
         .spawn()
-        .insert_bundle(RigidBodyBundle {
-            body_type: RigidBodyType::Static.into(),
-            position: position.into(),
-            ..Default::default()
-        })
-        .insert_bundle(ColliderBundle {
-            shape: ColliderShape::cuboid(width / 2.0, height / 2.0).into(),
-            material: ColliderMaterial {
-                friction: 0.0,
-                restitution: 1.0,
-                ..Default::default()
-            }
-            .into(),
-            ..Default::default()
-        })
-        .insert(RigidBodyPositionSync::Discrete)
-        .insert(ColliderDebugRender::with_id(0))
+        .insert(RigidBody::Fixed)
+        .insert(Transform::from_translation(position.extend(0.0)))
+        .insert(Collider::cuboid(width / 2.0, height / 2.0))
+        .insert(Restitution::new(1.0))
         .insert(ArenaBarrierComponent)
         .insert(Name::new("Barrier"));
 }
@@ -44,29 +31,13 @@ fn spawn_barrier(commands: &mut Commands, position: Vec2, width: f32, height: f3
 fn spawn_spawnables_pass_barrier(commands: &mut Commands, position: Vec2, width: f32, height: f32) {
     commands
         .spawn()
-        .insert_bundle(RigidBodyBundle {
-            body_type: RigidBodyType::Static.into(),
-            position: position.into(),
-            ..Default::default()
+        .insert(RigidBody::Fixed)
+        .insert(Transform::from_translation(position.extend(0.0)))
+        .insert(Collider::cuboid(width / 2.0, height / 2.0))
+        .insert(Restitution::new(1.0))
+        .insert(CollisionGroups {
+            memberships: HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
+            filters: u32::MAX ^ SPAWNABLE_COL_GROUP_MEMBERSHIP,
         })
-        .insert_bundle(ColliderBundle {
-            shape: ColliderShape::cuboid(width / 2.0, height / 2.0).into(),
-            material: ColliderMaterial {
-                friction: 0.0,
-                restitution: 1.0,
-                ..Default::default()
-            }
-            .into(),
-            flags: ColliderFlags {
-                collision_groups: InteractionGroups::new(
-                    HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
-                    u32::MAX ^ SPAWNABLE_COL_GROUP_MEMBERSHIP, // filters out spawnable group
-                ),
-                ..Default::default()
-            }
-            .into(),
-            ..Default::default()
-        })
-        .insert(RigidBodyPositionSync::Discrete)
         .insert(Name::new("Spawnables-Pass Barrier"));
 }

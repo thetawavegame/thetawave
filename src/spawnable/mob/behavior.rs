@@ -1,9 +1,10 @@
+use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 
 use crate::{
-    collision::CollisionEvent,
+    collision::SortedCollisionEvent,
     game::GameParametersResource,
     spawnable::{
         spawn_projectile, EffectType, InitialMotion, MobType, PlayerComponent, ProjectileResource,
@@ -52,7 +53,7 @@ pub struct PeriodicFireBehaviorData {
 /// Manages excuteing behaviors of mobs
 pub fn mob_execute_behavior_system(
     mut commands: Commands,
-    mut collision_events: EventReader<CollisionEvent>,
+    mut collision_events: EventReader<SortedCollisionEvent>,
     rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<GameParametersResource>,
     time: Res<Time>,
@@ -62,8 +63,8 @@ pub fn mob_execute_behavior_system(
         Entity,
         &mut SpawnableComponent,
         &mut super::MobComponent,
-        &RigidBodyPositionComponent,
-        &RigidBodyVelocityComponent,
+        &Transform,
+        &Velocity,
     )>,
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
@@ -75,7 +76,8 @@ pub fn mob_execute_behavior_system(
     }
 
     // Iterate through all spawnable entities and execute their behavior
-    for (entity, mut spawnable_component, mut mob_component, rb_pos, rb_vel) in mob_query.iter_mut()
+    for (entity, mut spawnable_component, mut mob_component, mob_transform, mob_velocity) in
+        mob_query.iter_mut()
     {
         let behaviors = mob_component.behaviors.clone();
         for behavior in behaviors {
@@ -88,16 +90,16 @@ pub fn mob_execute_behavior_system(
                         if timer.just_finished() {
                             // spawn blast
                             let position = Vec2::new(
-                                rb_pos.position.translation.x + data.offset_position.x,
-                                rb_pos.position.translation.y + data.offset_position.y,
+                                mob_transform.translation.x + data.offset_position.x,
+                                mob_transform.translation.y + data.offset_position.y,
                             );
 
                             // add mob velocity to initial blast velocity
                             let mut modified_initial_motion = data.initial_motion.clone();
 
                             if let Some(linvel) = &mut modified_initial_motion.linvel {
-                                linvel.x += rb_vel.linvel.x;
-                                linvel.y += rb_vel.linvel.y;
+                                linvel.x += mob_velocity.linvel.x;
+                                linvel.y += mob_velocity.linvel.y;
                             }
 
                             //spawn_blast
@@ -110,7 +112,6 @@ pub fn mob_execute_behavior_system(
                                 data.despawn_time,
                                 modified_initial_motion,
                                 &mut commands,
-                                &rapier_config,
                                 &game_parameters,
                             );
                         }
@@ -127,8 +128,8 @@ pub fn mob_execute_behavior_system(
                         if timer.just_finished() {
                             // spawn mob
                             let position = Vec2::new(
-                                rb_pos.position.translation.x + data.offset_position.x,
-                                rb_pos.position.translation.y + data.offset_position.y,
+                                mob_transform.translation.x + data.offset_position.x,
+                                mob_transform.translation.y + data.offset_position.y,
                             );
 
                             super::spawn_mob(
@@ -136,7 +137,6 @@ pub fn mob_execute_behavior_system(
                                 &mob_resource,
                                 position,
                                 &mut commands,
-                                &rapier_config,
                                 &game_parameters,
                             )
                         }
@@ -148,7 +148,7 @@ pub fn mob_execute_behavior_system(
                         &mut spawnable_component,
                         &collision_events_vec,
                         &mut spawn_effect_event_writer,
-                        &rb_pos,
+                        &mob_transform,
                     );
                 }
                 MobBehavior::DealDamageToPlayerOnImpact => {
@@ -172,7 +172,7 @@ pub fn mob_execute_behavior_system(
                         // spawn mob explosion
                         spawn_effect_event_writer.send(SpawnEffectEvent {
                             effect_type: EffectType::MobExplosion,
-                            position: rb_pos.position.translation.into(),
+                            position: mob_transform.translation.xy(),
                         });
                     }
                 }
@@ -184,13 +184,13 @@ pub fn mob_execute_behavior_system(
 /// Take damage from colliding entity on impact
 fn receive_damage_on_impact(
     entity: Entity,
-    collision_events: &[&CollisionEvent],
+    collision_events: &[&SortedCollisionEvent],
     mob_component: &mut super::MobComponent,
     player_query: &mut Query<(Entity, &mut PlayerComponent)>,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
-            CollisionEvent::PlayerToMobContact {
+            SortedCollisionEvent::PlayerToMobContact {
                 player_entity,
                 mob_entity,
                 mob_faction: _,
@@ -205,7 +205,7 @@ fn receive_damage_on_impact(
                     }
                 }
             }
-            CollisionEvent::MobToMobContact {
+            SortedCollisionEvent::MobToMobContact {
                 mob_entity_1,
                 mob_faction_1: _,
                 mob_damage_1: _,
@@ -226,11 +226,11 @@ fn receive_damage_on_impact(
 /// Deal damage to colliding entity on impact
 fn deal_damage_to_player_on_impact(
     entity: Entity,
-    collision_events: &[&CollisionEvent],
+    collision_events: &[&SortedCollisionEvent],
     player_query: &mut Query<(Entity, &mut PlayerComponent)>,
 ) {
     for collision_event in collision_events.iter() {
-        if let CollisionEvent::PlayerToMobContact {
+        if let SortedCollisionEvent::PlayerToMobContact {
             player_entity,
             mob_entity,
             mob_faction: _,
@@ -254,13 +254,13 @@ fn deal_damage_to_player_on_impact(
 fn explode_on_impact(
     entity: Entity,
     spawnable_component: &mut SpawnableComponent,
-    collision_events: &[&CollisionEvent],
+    collision_events: &[&SortedCollisionEvent],
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
-    rb_pos: &RigidBodyPosition,
+    transform: &Transform,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
-            CollisionEvent::PlayerToMobContact {
+            SortedCollisionEvent::PlayerToMobContact {
                 player_entity: _,
                 mob_entity,
                 mob_faction: _,
@@ -274,12 +274,12 @@ fn explode_on_impact(
                     // spawn mob explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::MobExplosion,
-                        position: rb_pos.position.translation.into(),
+                        position: transform.translation.xy(),
                     });
                     continue;
                 }
             }
-            CollisionEvent::MobToMobContact {
+            SortedCollisionEvent::MobToMobContact {
                 mob_entity_1,
                 mob_faction_1: _,
                 mob_damage_1: _,
@@ -293,7 +293,7 @@ fn explode_on_impact(
                     // spawn mob explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::MobExplosion,
-                        position: rb_pos.position.translation.into(),
+                        position: transform.translation.xy(),
                     });
                     continue;
                 }

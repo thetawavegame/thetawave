@@ -95,7 +95,6 @@ pub fn spawn_mob(
     mob_resource: &MobsResource,
     position: Vec2,
     commands: &mut Commands,
-    rapier_config: &RapierConfiguration,
     game_parameters: &GameParametersResource,
 ) {
     // Get data from mob resource
@@ -103,10 +102,8 @@ pub fn spawn_mob(
     let texture_atlas_handle = mob_resource.texture_atlas_handle[mob_type].0.clone_weak();
 
     // scale collider to align with the sprite
-    let collider_size_hx =
-        mob_data.collider_dimensions.x * game_parameters.sprite_scale / rapier_config.scale / 2.0;
-    let collider_size_hy =
-        mob_data.collider_dimensions.y * game_parameters.sprite_scale / rapier_config.scale / 2.0;
+    let collider_size_hx = mob_data.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
+    let collider_size_hy = mob_data.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
 
     // create mob entity
     let mut mob = commands.spawn();
@@ -124,42 +121,26 @@ pub fn spawn_mob(
         timer: Timer::from_seconds(mob_data.texture.frame_duration, true),
         direction: mob_data.texture.animation_direction.clone(),
     })
-    .insert_bundle(RigidBodyBundle {
-        body_type: RigidBodyType::Dynamic.into(),
-        mass_properties: RigidBodyMassPropsFlags::ROTATION_LOCKED.into(),
-        velocity: RigidBodyVelocity {
-            angvel: if let Some(random_angvel) = mob_data.initial_motion.random_angvel {
-                thread_rng().gen_range(random_angvel.0..=random_angvel.1)
-            } else {
-                0.0
-            },
-            ..Default::default()
-        }
-        .into(),
-        position: position.into(),
+    .insert(RigidBody::Dynamic)
+    .insert(LockedAxes::ROTATION_LOCKED)
+    .insert(Velocity {
+        angvel: if let Some(random_angvel) = mob_data.initial_motion.random_angvel {
+            thread_rng().gen_range(random_angvel.0..=random_angvel.1)
+        } else {
+            0.0
+        },
         ..Default::default()
     })
-    .insert_bundle(ColliderBundle {
-        shape: ColliderShape::cuboid(collider_size_hx, collider_size_hy).into(),
-        material: ColliderMaterial {
-            friction: 1.0,
-            restitution: 1.0,
-            restitution_combine_rule: CoefficientCombineRule::Max,
-            ..Default::default()
-        }
-        .into(),
-        flags: ColliderFlags {
-            collision_groups: InteractionGroups::new(
-                SPAWNABLE_COL_GROUP_MEMBERSHIP,
-                u32::MAX ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
-            ),
-            active_events: ActiveEvents::CONTACT_EVENTS,
-            ..Default::default()
-        }
-        .into(),
-        ..Default::default()
+    .insert(Collider::cuboid(collider_size_hx, collider_size_hy))
+    .insert(Friction::new(1.0))
+    .insert(Restitution {
+        coefficient: 1.0,
+        combine_rule: CoefficientCombineRule::Max,
     })
-    .insert(ColliderPositionSync::Discrete)
+    .insert(CollisionGroups {
+        memberships: HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
+        filters: u32::MAX ^ SPAWNABLE_COL_GROUP_MEMBERSHIP,
+    })
     .insert(MobComponent {
         mob_type: mob_data.mob_type.clone(),
         behaviors: mob_data.mob_behaviors.clone(),

@@ -1,11 +1,12 @@
 use crate::{
-    collision::CollisionEvent,
+    collision::SortedCollisionEvent,
     spawnable::{
         EffectType, Faction, MobComponent, PlayerComponent, SpawnEffectEvent, SpawnableComponent,
     },
 };
+use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::{RigidBodyPosition, RigidBodyPositionComponent};
+//use bevy_rapier2d::prelude::{RigidBodyPosition, RigidBodyPositionComponent};
 use serde::Deserialize;
 
 /// Types of behaviors that can be performed by projectiles
@@ -22,13 +23,13 @@ pub enum ProjectileBehavior {
 pub fn projectile_execute_behavior_system(
     mut projectile_query: Query<(
         Entity,
-        &RigidBodyPositionComponent,
+        &Transform,
         &mut SpawnableComponent,
         &mut super::ProjectileComponent,
     )>,
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
     mut mob_query: Query<(Entity, &mut MobComponent)>,
-    mut collision_events: EventReader<CollisionEvent>,
+    mut collision_events: EventReader<SortedCollisionEvent>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     time: Res<Time>,
 ) {
@@ -37,7 +38,7 @@ pub fn projectile_execute_behavior_system(
         collision_events_vec.push(collision_event);
     }
 
-    for (entity, rb_pos, mut spawnable_component, mut projectile_component) in
+    for (entity, projectile_transform, mut spawnable_component, mut projectile_component) in
         projectile_query.iter_mut()
     {
         //let behaviors = projectile_component.behaviors.clone();
@@ -45,7 +46,7 @@ pub fn projectile_execute_behavior_system(
             match behavior {
                 ProjectileBehavior::ExplodeOnImpact => explode_on_impact(
                     entity,
-                    rb_pos,
+                    projectile_transform,
                     &mut spawnable_component,
                     &collision_events_vec,
                     &mut spawn_effect_event_writer,
@@ -62,7 +63,10 @@ pub fn projectile_execute_behavior_system(
                         // TODO: spawn fizzle out animation
                         spawn_effect_event_writer.send(SpawnEffectEvent {
                             effect_type: EffectType::AllyBlastDespawn,
-                            position: rb_pos.position.translation.into(),
+                            position: Vec2::new(
+                                projectile_transform.translation.x,
+                                projectile_transform.translation.y,
+                            ),
                         });
                     }
                 }
@@ -74,16 +78,16 @@ pub fn projectile_execute_behavior_system(
 /// Explode projectile on impact
 fn explode_on_impact(
     entity: Entity,
-    rb_pos: &RigidBodyPosition,
+    transform: &Transform,
     spawnable_component: &mut SpawnableComponent,
-    collision_events: &[&CollisionEvent],
+    collision_events: &[&SortedCollisionEvent],
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
     player_query: &mut Query<(Entity, &mut PlayerComponent)>,
     mob_query: &mut Query<(Entity, &mut MobComponent)>,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
-            CollisionEvent::PlayerToProjectileIntersection {
+            SortedCollisionEvent::PlayerToProjectileIntersection {
                 player_entity,
                 projectile_entity,
                 projectile_faction,
@@ -100,7 +104,7 @@ fn explode_on_impact(
                     // spawn explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::AllyBlastExplosion,
-                        position: rb_pos.position.translation.into(),
+                        position: transform.translation.xy(),
                     });
                     // deal damage to player
                     for (player_entity_q, mut player_component) in player_query.iter_mut() {
@@ -112,7 +116,7 @@ fn explode_on_impact(
                 }
             }
 
-            CollisionEvent::MobToProjectileIntersection {
+            SortedCollisionEvent::MobToProjectileIntersection {
                 mob_entity,
                 projectile_entity,
                 mob_faction,
@@ -131,7 +135,7 @@ fn explode_on_impact(
                     // spawn explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::AllyBlastExplosion,
-                        position: rb_pos.position.translation.into(),
+                        position: transform.translation.xy(),
                     });
                     // deal damage to mob
                     for (mob_entity_q, mut mob_component) in mob_query.iter_mut() {

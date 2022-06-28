@@ -1,5 +1,5 @@
 use crate::{
-    collision::CollisionEvent,
+    collision::SortedCollisionEvent,
     game::GameParametersResource,
     player::PlayerComponent,
     spawnable::{EnemyType, MobType, SpawnableComponent, SpawnableType},
@@ -23,15 +23,9 @@ pub enum SpawnableBehavior {
 
 /// Manages excuting behaviors of spawnables
 pub fn spawnable_execute_behavior_system(
-    rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<GameParametersResource>,
-    mut spawnable_query: Query<(
-        Entity,
-        &mut SpawnableComponent,
-        &mut RigidBodyVelocityComponent,
-        &Transform,
-    )>,
-    mut collision_events: EventReader<CollisionEvent>,
+    mut spawnable_query: Query<(Entity, &mut SpawnableComponent, &mut Velocity, &Transform)>,
+    mut collision_events: EventReader<SortedCollisionEvent>,
 ) {
     let mut collision_events_vec = vec![];
     for collision_event in collision_events.iter() {
@@ -46,13 +40,13 @@ pub fn spawnable_execute_behavior_system(
         for behavior in behaviors {
             match behavior {
                 SpawnableBehavior::MoveDown => {
-                    move_down(&rapier_config, &spawnable_component, &mut rb_vel);
+                    move_down(&spawnable_component, &mut rb_vel);
                 }
                 SpawnableBehavior::MoveRight => {
-                    move_right(&rapier_config, &spawnable_component, &mut rb_vel);
+                    move_right(&spawnable_component, &mut rb_vel);
                 }
                 SpawnableBehavior::MoveLeft => {
-                    move_left(&rapier_config, &spawnable_component, &mut rb_vel);
+                    move_left(&spawnable_component, &mut rb_vel);
                 }
                 SpawnableBehavior::RotateToTarget(target_position) => {
                     rotate_to_target(
@@ -63,20 +57,10 @@ pub fn spawnable_execute_behavior_system(
                     );
                 }
                 SpawnableBehavior::MoveForward => {
-                    move_forward(
-                        &rapier_config,
-                        spawnable_transform,
-                        &spawnable_component,
-                        &mut rb_vel,
-                    );
+                    move_forward(spawnable_transform, &spawnable_component, &mut rb_vel);
                 }
                 SpawnableBehavior::BrakeHorizontal => {
-                    brake_horizontal(
-                        &rapier_config,
-                        &game_parameters,
-                        &spawnable_component,
-                        &mut rb_vel,
-                    );
+                    brake_horizontal(&game_parameters, &spawnable_component, &mut rb_vel);
                 }
                 SpawnableBehavior::ChangeHorizontalDirectionOnImpact => {
                     change_horizontal_direction_on_impact(
@@ -148,17 +132,17 @@ pub fn spawnable_set_target_behavior_system(
 /// Toggles the horizontal direction of a spawnable on impact
 fn change_horizontal_direction_on_impact(
     entity: Entity,
-    collision_events: &[&CollisionEvent],
+    collision_events: &[&SortedCollisionEvent],
     spawnable_component: &mut SpawnableComponent,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
-            CollisionEvent::PlayerToMobContact { mob_entity, .. }
-            | CollisionEvent::MobToMobContact {
+            SortedCollisionEvent::PlayerToMobContact { mob_entity, .. }
+            | SortedCollisionEvent::MobToMobContact {
                 mob_entity_1: mob_entity,
                 ..
             }
-            | CollisionEvent::MobToBarrierContact { mob_entity, .. } => {
+            | SortedCollisionEvent::MobToBarrierContact { mob_entity, .. } => {
                 if entity == *mob_entity {
                     for behavior in spawnable_component.behaviors.iter_mut() {
                         *behavior = match behavior {
@@ -179,7 +163,7 @@ fn rotate_to_target(
     transform: &Transform,
     target_position: Vec2,
     spawnable_component: &SpawnableComponent,
-    rb_vel: &mut RigidBodyVelocity,
+    rb_vel: &mut Velocity,
 ) {
     let mut target_angle = ((transform.translation.y - target_position.y)
         .atan2(transform.translation.x - target_position.x))
@@ -210,86 +194,72 @@ fn rotate_to_target(
 
 /// Move entity forward along it's axis
 fn move_forward(
-    rapier_config: &RapierConfiguration,
     transform: &Transform,
     spawnable_component: &SpawnableComponent,
-    rb_vel: &mut RigidBodyVelocity,
+    rb_vel: &mut Velocity,
 ) {
     let angle = (transform.rotation.to_axis_angle().1 * transform.rotation.to_axis_angle().0.z)
         - (std::f32::consts::FRAC_PI_2);
 
-    let max_speed_x = (spawnable_component.speed.x * angle.cos() * rapier_config.scale).abs();
-    let max_speed_y = (spawnable_component.speed.y * angle.sin() * rapier_config.scale).abs();
+    let max_speed_x = (spawnable_component.speed.x * angle.cos()).abs();
+    let max_speed_y = (spawnable_component.speed.y * angle.sin()).abs();
 
     if rb_vel.linvel.x > max_speed_x {
-        rb_vel.linvel.x -= spawnable_component.deceleration.x * rapier_config.scale;
+        rb_vel.linvel.x -= spawnable_component.deceleration.x;
     } else if rb_vel.linvel.x < -max_speed_x {
-        rb_vel.linvel.x += spawnable_component.deceleration.x * rapier_config.scale;
+        rb_vel.linvel.x += spawnable_component.deceleration.x;
     } else {
-        rb_vel.linvel.x += spawnable_component.acceleration.x * angle.cos() * rapier_config.scale;
+        rb_vel.linvel.x += spawnable_component.acceleration.x * angle.cos();
     }
 
     if rb_vel.linvel.y > max_speed_y {
-        rb_vel.linvel.y -= spawnable_component.deceleration.y * rapier_config.scale;
+        rb_vel.linvel.y -= spawnable_component.deceleration.y;
     } else if rb_vel.linvel.y < -max_speed_y {
-        rb_vel.linvel.y += spawnable_component.deceleration.y * rapier_config.scale;
+        rb_vel.linvel.y += spawnable_component.deceleration.y;
     } else {
-        rb_vel.linvel.y += spawnable_component.acceleration.x * angle.sin() * rapier_config.scale;
+        rb_vel.linvel.y += spawnable_component.acceleration.x * angle.sin();
     }
 }
 
 /// Moves entity down
-fn move_down(
-    rapier_config: &RapierConfiguration,
-    spawnable_component: &SpawnableComponent,
-    rb_vel: &mut RigidBodyVelocity,
-) {
+fn move_down(spawnable_component: &SpawnableComponent, rb_vel: &mut Velocity) {
     //move down
-    if rb_vel.linvel.y > spawnable_component.speed.y * rapier_config.scale * -1.0 {
-        rb_vel.linvel.y -= spawnable_component.acceleration.y * rapier_config.scale;
+    if rb_vel.linvel.y > spawnable_component.speed.y * -1.0 {
+        rb_vel.linvel.y -= spawnable_component.acceleration.y;
     } else {
-        rb_vel.linvel.y += spawnable_component.deceleration.y * rapier_config.scale;
+        rb_vel.linvel.y += spawnable_component.deceleration.y;
     }
 }
 
 /// Moves entity right
-fn move_right(
-    rapier_config: &RapierConfiguration,
-    spawnable_component: &SpawnableComponent,
-    rb_vel: &mut RigidBodyVelocity,
-) {
-    if rb_vel.linvel.x < spawnable_component.speed.x * rapier_config.scale {
-        rb_vel.linvel.x += spawnable_component.acceleration.x * rapier_config.scale;
+fn move_right(spawnable_component: &SpawnableComponent, rb_vel: &mut Velocity) {
+    if rb_vel.linvel.x < spawnable_component.speed.x {
+        rb_vel.linvel.x += spawnable_component.acceleration.x;
     } else {
-        rb_vel.linvel.x -= spawnable_component.deceleration.x * rapier_config.scale;
+        rb_vel.linvel.x -= spawnable_component.deceleration.x;
     }
 }
 
 /// Moves entity left
-fn move_left(
-    rapier_config: &RapierConfiguration,
-    spawnable_component: &SpawnableComponent,
-    rb_vel: &mut RigidBodyVelocity,
-) {
-    if rb_vel.linvel.x > spawnable_component.speed.x * rapier_config.scale * -1.0 {
-        rb_vel.linvel.x -= spawnable_component.acceleration.x * rapier_config.scale;
+fn move_left(spawnable_component: &SpawnableComponent, rb_vel: &mut Velocity) {
+    if rb_vel.linvel.x > spawnable_component.speed.x * -1.0 {
+        rb_vel.linvel.x -= spawnable_component.acceleration.x;
     } else {
-        rb_vel.linvel.x += spawnable_component.deceleration.x * rapier_config.scale;
+        rb_vel.linvel.x += spawnable_component.deceleration.x;
     }
 }
 
 /// Decelerates to 0 horizontal movement
 fn brake_horizontal(
-    rapier_config: &RapierConfiguration,
     game_parameters: &GameParametersResource,
     spawnable_component: &SpawnableComponent,
-    rb_vel: &mut RigidBodyVelocity,
+    rb_vel: &mut Velocity,
 ) {
     // decelerate in x direction
     if rb_vel.linvel.x > game_parameters.stop_threshold {
-        rb_vel.linvel.x -= spawnable_component.deceleration.x * rapier_config.scale;
+        rb_vel.linvel.x -= spawnable_component.deceleration.x;
     } else if rb_vel.linvel.x < game_parameters.stop_threshold * -1.0 {
-        rb_vel.linvel.x += spawnable_component.deceleration.x * rapier_config.scale;
+        rb_vel.linvel.x += spawnable_component.deceleration.x;
     } else {
         rb_vel.linvel.x = 0.0;
     }

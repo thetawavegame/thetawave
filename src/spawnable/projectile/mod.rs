@@ -61,7 +61,6 @@ pub fn spawn_projectile(
     despawn_time: f32, // time before despawning
     initial_motion: InitialMotion,
     commands: &mut Commands,
-    rapier_config: &RapierConfiguration,
     game_parameters: &GameParametersResource,
 ) {
     // Get data from mob resource
@@ -70,12 +69,10 @@ pub fn spawn_projectile(
         projectile_resource.texture_atlas_handle[projectile_type].clone_weak();
 
     // scale collider to align with the sprite
-    let collider_size_hx = projectile_data.collider_dimensions.x * game_parameters.sprite_scale
-        / rapier_config.scale
-        / 2.0;
-    let collider_size_hy = projectile_data.collider_dimensions.y * game_parameters.sprite_scale
-        / rapier_config.scale
-        / 2.0;
+    let collider_size_hx =
+        projectile_data.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
+    let collider_size_hy =
+        projectile_data.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
 
     // create mob entity
     let mut projectile = commands.spawn();
@@ -100,38 +97,23 @@ pub fn spawn_projectile(
             timer: Timer::from_seconds(projectile_data.texture.frame_duration, true),
             direction: projectile_data.texture.animation_direction.clone(),
         })
-        .insert_bundle(RigidBodyBundle {
-            body_type: RigidBodyType::Dynamic.into(),
-            mass_properties: RigidBodyMassPropsFlags::ROTATION_LOCKED.into(),
-            velocity: RigidBodyVelocity {
-                angvel: if let Some(random_angvel) = initial_motion.random_angvel {
-                    thread_rng().gen_range(random_angvel.0..=random_angvel.1)
-                } else {
-                    0.0
-                },
-                linvel: if let Some(linvel) = initial_motion.linvel {
-                    linvel.into()
-                } else {
-                    Vec2::ZERO.into()
-                },
-            }
-            .into(),
-            position: position.into(),
-            ..Default::default()
+        .insert(RigidBody::Dynamic)
+        .insert(LockedAxes::ROTATION_LOCKED)
+        .insert(Velocity {
+            angvel: if let Some(random_angvel) = initial_motion.random_angvel {
+                thread_rng().gen_range(random_angvel.0..=random_angvel.1)
+            } else {
+                0.0
+            },
+            linvel: if let Some(linvel) = initial_motion.linvel {
+                linvel.into()
+            } else {
+                Vec2::ZERO.into()
+            },
         })
-        .insert_bundle(ColliderBundle {
-            shape: ColliderShape::cuboid(collider_size_hx, collider_size_hy).into(),
-            collider_type: ColliderType::Sensor.into(),
-            flags: ColliderFlags {
-                // TODO: filter out others of same faction
-                //collision_groups: InteractionGroups::new(PROJECTILE_GROUP_MEMBERSHIP, filter)
-                active_events: ActiveEvents::INTERSECTION_EVENTS,
-                ..Default::default()
-            }
-            .into(),
-            ..Default::default()
-        })
-        .insert(ColliderPositionSync::Discrete)
+        .insert(Transform::from_translation(position.extend(0.0)))
+        .insert(Collider::cuboid(collider_size_hx, collider_size_hy))
+        .insert(Sensor(true))
         .insert(ProjectileComponent {
             projectile_type: projectile_data.projectile_type.clone(),
             behaviors: projectile_behaviors,

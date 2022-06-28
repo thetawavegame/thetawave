@@ -94,11 +94,7 @@ pub fn spawn_effect(
             behaviors: vec![],
             should_despawn: false,
         })
-        .insert_bundle(RigidBodyBundle {
-            body_type: RigidBodyType::Static.into(),
-            position: position.into(),
-            ..Default::default()
-        })
-        .insert(RigidBodyPositionSync::Discrete)
+        .insert(RigidBody::Fixed)
+        .insert(Transform::from_translation(position.extend(0.0)))
         .insert(Name::new(effect_data.effect_type.to_string()));
 }
