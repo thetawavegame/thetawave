@@ -29,19 +29,22 @@ pub fn spawn_player_system(
     commands
         .spawn()
         .insert_bundle(SpriteBundle {
-            //material: materials.add(texture_handle.into()),
             texture: asset_server.load(format!("texture/{}", character.sprite_path).as_str()),
-            transform: Transform::from_scale(Vec3::new(
-                game_parameters.sprite_scale,
-                game_parameters.sprite_scale,
-                0.0,
-            )),
             ..Default::default()
         })
         .insert(RigidBody::Dynamic)
         .insert(LockedAxes::ROTATION_LOCKED)
-        .insert(Transform::from_translation(Vec3::ZERO))
+        .insert(Transform {
+            translation: Vec3::ZERO,
+            scale: Vec3::new(
+                game_parameters.sprite_scale,
+                game_parameters.sprite_scale,
+                1.0,
+            ),
+            ..Default::default()
+        })
         .insert(Collider::cuboid(collider_size_hx, collider_size_hy))
+        .insert(Velocity::default())
         .insert(Restitution::new(1.0))
         .insert(MassProperties {
             mass: character.collider_density,

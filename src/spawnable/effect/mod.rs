@@ -68,11 +68,6 @@ pub fn spawn_effect(
     effect
         .insert_bundle(SpriteSheetBundle {
             texture_atlas: texture_atlas_handle,
-            transform: Transform::from_scale(Vec3::new(
-                game_parameters.sprite_scale,
-                game_parameters.sprite_scale,
-                1.0,
-            )),
             ..Default::default()
         })
         .insert(AnimationComponent {
@@ -95,6 +90,14 @@ pub fn spawn_effect(
             should_despawn: false,
         })
         .insert(RigidBody::Fixed)
-        .insert(Transform::from_translation(position.extend(0.0)))
+        .insert_bundle(TransformBundle::from_transform(Transform {
+            translation: position.extend(0.0),
+            scale: Vec3::new(
+                game_parameters.sprite_scale,
+                game_parameters.sprite_scale,
+                1.0,
+            ),
+            ..Default::default()
+        }))
         .insert(Name::new(effect_data.effect_type.to_string()));
 }

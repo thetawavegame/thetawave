@@ -8,14 +8,17 @@ pub struct DespawnGateComponent;
 
 /// Spawn gates for despawning entities
 pub fn spawn_despawn_gates_system(mut commands: Commands) {
-    spawn_despawn_gate(&mut commands, Vec2::new(0.0, -45.0), 96.0, 4.0);
+    spawn_despawn_gate(&mut commands, Vec2::new(0.0, -450.0), 1000.0, 50.0);
 }
 
 /// Spawn a despawn gate
 fn spawn_despawn_gate(commands: &mut Commands, position: Vec2, width: f32, height: f32) {
     commands
         .spawn()
-        .insert(Transform::from_translation(position.extend(0.0)))
+        .insert_bundle(TransformBundle::from_transform(
+            Transform::from_translation(position.extend(0.0)),
+        ))
+        //.insert(Transform::from_translation(position.extend(0.0)))
         .insert(Collider::cuboid(width / 2.0, height / 2.0))
         .insert(Sensor(true))
         .insert(DespawnGateComponent)

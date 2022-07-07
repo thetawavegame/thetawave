@@ -10,7 +10,6 @@ use crate::{
 /// Manages the players firing weapons
 pub fn player_fire_weapon_system(
     keyboard_input: Res<Input<MouseButton>>,
-    rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<GameParametersResource>,
     mut player_query: Query<(&mut PlayerComponent, &Velocity, &Transform)>,
     time: Res<Time>,

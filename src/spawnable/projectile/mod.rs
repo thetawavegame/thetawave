@@ -86,11 +86,6 @@ pub fn spawn_projectile(
     projectile
         .insert_bundle(SpriteSheetBundle {
             texture_atlas: texture_atlas_handle,
-            transform: Transform::from_scale(Vec3::new(
-                game_parameters.sprite_scale,
-                game_parameters.sprite_scale,
-                1.0,
-            )),
             ..Default::default()
         })
         .insert(AnimationComponent {
@@ -111,7 +106,15 @@ pub fn spawn_projectile(
                 Vec2::ZERO.into()
             },
         })
-        .insert(Transform::from_translation(position.extend(0.0)))
+        .insert(Transform {
+            translation: position.extend(0.0),
+            scale: Vec3::new(
+                game_parameters.sprite_scale,
+                game_parameters.sprite_scale,
+                0.0,
+            ),
+            ..Default::default()
+        })
         .insert(Collider::cuboid(collider_size_hx, collider_size_hy))
         .insert(Sensor(true))
         .insert(ProjectileComponent {

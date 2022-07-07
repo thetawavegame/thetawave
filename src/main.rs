@@ -90,12 +90,12 @@ fn main() {
                 .unwrap(),
             texture_atlas_handle: HashMap::new(),
         })
-        .insert_resource(
+        /*.insert_resource(
             from_bytes::<background::BackgroundsResource>(include_bytes!(
                 "../data/backgrounds.ron"
             ))
             .unwrap(),
-        )
+        )*/
         .add_event::<collision::SortedCollisionEvent>()
         .add_event::<run::SpawnFormationEvent>()
         .add_event::<run::LevelCompletedEvent>()
@@ -103,13 +103,14 @@ fn main() {
         .add_event::<spawnable::SpawnEffectEvent>()
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(10.0))
+        .add_plugin(RapierDebugRenderPlugin::default())
         //.add_plugin(DebugLinesPlugin)
         //.add_plugin(FrameTimeDiagnosticsPlugin::default())
         //.add_plugin(LogDiagnosticsPlugin::default())
         .add_startup_system(setup_game.label("init"))
         .add_startup_system(arena::spawn_barriers_system.after("init"))
         .add_startup_system(arena::spawn_despawn_gates_system.after("init"))
-        .add_startup_system(background::create_background_system.after("init"))
+        //.add_startup_system(background::create_background_system.after("init"))
         .add_startup_system(
             player::spawn_player_system
                 .label("spawn_player")
@@ -168,7 +169,7 @@ fn main() {
         .add_system(options::toggle_zoom_system)
         .add_system(arena::despawn_gates_system)
         .add_system(animation::animate_sprite_system)
-        .add_system(background::rotate_planet_system)
+        //.add_system(background::rotate_planet_system)
         .add_system(spawnable::despawn_timer_system);
 
     /*
