@@ -1,5 +1,5 @@
 use crate::game::GameParametersResource;
-use bevy::{prelude::*, render::camera::Camera, window::WindowMode};
+use bevy::{prelude::*, render::camera::Camera2d, window::WindowMode};
 use serde::Deserialize;
 
 /// Display settings of the window
@@ -46,17 +46,17 @@ pub fn toggle_fullscreen_system(keyboard_input: Res<Input<KeyCode>>, mut windows
 /// Toggles a zoomed out camera perspective on key press
 pub fn toggle_zoom_system(
     keyboard_input: Res<Input<KeyCode>>,
-    mut camera_query: Query<&mut Transform, With<Camera>>,
+    mut camera_query: Query<&mut OrthographicProjection, With<Camera2d>>,
     game_parameters: Res<GameParametersResource>,
 ) {
     let fullscreen_input = keyboard_input.just_released(KeyCode::V);
 
     if fullscreen_input {
-        for mut camera_transform in camera_query.iter_mut() {
-            if camera_transform.translation.z as i32 == game_parameters.camera_z as i32 {
-                camera_transform.translation.z = game_parameters.camera_zoom_out_z;
+        for mut proj in camera_query.iter_mut() {
+            if proj.scale == 1.0 {
+                proj.scale = game_parameters.camera_zoom_out_scale;
             } else {
-                camera_transform.translation.z = game_parameters.camera_z;
+                proj.scale = 1.0;
             }
         }
     }

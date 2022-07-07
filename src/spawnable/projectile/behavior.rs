@@ -61,6 +61,7 @@ pub fn projectile_execute_behavior_system(
                     if current_time > despawn_time {
                         spawnable_component.should_despawn = true;
                         // TODO: spawn fizzle out animation
+
                         spawn_effect_event_writer.send(SpawnEffectEvent {
                             effect_type: EffectType::AllyBlastDespawn,
                             position: Vec2::new(

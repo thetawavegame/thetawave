@@ -16,7 +16,7 @@
 		effect_behaviors: [DespawnAfterAnimation],
 		texture: (
 			path: "texture/ally_blast_despawn_spritesheet.png",
-			dimensions: (10, 10),
+			dimensions: (8, 8),
 			cols: 6,
 			rows: 1,
 			frame_duration: .1,

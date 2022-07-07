@@ -25,6 +25,7 @@ fn spawn_barrier(commands: &mut Commands, position: Vec2, width: f32, height: f3
         ))
         .insert(Collider::cuboid(width / 2.0, height / 2.0))
         .insert(Restitution::new(1.0))
+        .insert(Friction::new(0.0))
         .insert(ArenaBarrierComponent)
         .insert(Name::new("Barrier"));
 }
@@ -39,6 +40,7 @@ fn spawn_spawnables_pass_barrier(commands: &mut Commands, position: Vec2, width:
         ))
         .insert(Collider::cuboid(width / 2.0, height / 2.0))
         .insert(Restitution::new(1.0))
+        .insert(Friction::new(0.0))
         .insert(CollisionGroups {
             memberships: HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
             filters: u32::MAX ^ SPAWNABLE_COL_GROUP_MEMBERSHIP,

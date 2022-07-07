@@ -3,12 +3,13 @@ use bevy::{
     pbr::AmbientLight,
     prelude::*,
 };
-//use bevy_inspector_egui::WorldInspectorPlugin;
+use bevy_inspector_egui::WorldInspectorPlugin;
 //use bevy_prototype_debug_lines::*;
 use bevy_rapier2d::{na::Vector2, prelude::*};
 use ron::de::{from_bytes, from_str};
 use std::{collections::HashMap, env::current_dir, fs::read_to_string};
 
+pub const PHYSICS_SCALE: f32 = 10.0;
 pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: u32 = 0b0010;
 pub const HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP: u32 = 0b0100;
 pub const VERTICAL_BARRIER_COL_GROUP_MEMBERSHIP: u32 = 0b1000;
@@ -90,19 +91,21 @@ fn main() {
                 .unwrap(),
             texture_atlas_handle: HashMap::new(),
         })
-        /*.insert_resource(
+        .insert_resource(
             from_bytes::<background::BackgroundsResource>(include_bytes!(
                 "../data/backgrounds.ron"
             ))
             .unwrap(),
-        )*/
+        )
         .add_event::<collision::SortedCollisionEvent>()
         .add_event::<run::SpawnFormationEvent>()
         .add_event::<run::LevelCompletedEvent>()
         .add_event::<arena::EnemyReachedBottomGateEvent>()
         .add_event::<spawnable::SpawnEffectEvent>()
         .add_plugins(DefaultPlugins)
-        .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(10.0))
+        .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
+            PHYSICS_SCALE,
+        ))
         .add_plugin(RapierDebugRenderPlugin::default())
         //.add_plugin(DebugLinesPlugin)
         //.add_plugin(FrameTimeDiagnosticsPlugin::default())
@@ -110,7 +113,7 @@ fn main() {
         .add_startup_system(setup_game.label("init"))
         .add_startup_system(arena::spawn_barriers_system.after("init"))
         .add_startup_system(arena::spawn_despawn_gates_system.after("init"))
-        //.add_startup_system(background::create_background_system.after("init"))
+        .add_startup_system(background::create_background_system.after("init"))
         .add_startup_system(
             player::spawn_player_system
                 .label("spawn_player")
@@ -118,7 +121,7 @@ fn main() {
         )
         .add_startup_system(ui::setup_ui.after("spawn_player"))
         .add_system_to_stage(CoreStage::First, run::level_system.label("level"))
-        .add_system_to_stage(CoreStage::First, run::spawn_formation_system.after("level"))
+        //.add_system_to_stage(CoreStage::First, run::spawn_formation_system.after("level"))
         .add_system_to_stage(CoreStage::First, run::next_level_system.after("level"))
         .add_system(player::player_movement_system)
         .add_system_to_stage(CoreStage::First, player::player_fire_weapon_system)
@@ -169,15 +172,12 @@ fn main() {
         .add_system(options::toggle_zoom_system)
         .add_system(arena::despawn_gates_system)
         .add_system(animation::animate_sprite_system)
-        //.add_system(background::rotate_planet_system)
+        .add_system(background::rotate_planet_system)
         .add_system(spawnable::despawn_timer_system);
 
-    /*
     if cfg!(debug_assertions) {
-        app.add_plugin(WorldInspectorPlugin::new())
-            .add_system(debug::collider_debug_lines_system.system());
+        app.add_plugin(WorldInspectorPlugin::new());
     }
-    */
 
     app.run();
 }
@@ -196,10 +196,21 @@ fn setup_game(
     levels_resource: Res<run::LevelsResource>,
     game_parameters: Res<game::GameParametersResource>,
 ) {
-    // setup camera
-    let mut camera = OrthographicCameraBundle::new_2d();
-    camera.transform = Transform::from_xyz(0.0, 0.0, 1000.0);
-    commands.spawn_bundle(camera);
+    // setup cameras
+    let mut camera_2d = OrthographicCameraBundle::new_2d();
+    camera_2d.transform = Transform::from_xyz(0.0, 0.0, game_parameters.camera_z);
+    commands.spawn_bundle(camera_2d);
+
+    let camera_3d = PerspectiveCameraBundle {
+        transform: Transform::from_xyz(0.0, 0.0, game_parameters.camera_z)
+            .looking_at(Vec3::ZERO, Vec3::Y),
+        perspective_projection: PerspectiveProjection {
+            far: 10000.0,
+            ..Default::default()
+        },
+        ..Default::default()
+    };
+    commands.spawn_bundle(camera_3d);
 
     // setup rapier
     rapier_config.gravity = Vec2::ZERO;
@@ -259,6 +270,7 @@ fn setup_game(
     let mut effect_texture_atlas_dict = HashMap::new();
     for (effect_type, effect_data) in effects.effects.iter() {
         // effect texture
+        println!("loading resource: {}", &effect_data.texture.path[..]);
         let texture_handle = asset_server.load(&effect_data.texture.path[..]);
         let effect_atlas = TextureAtlas::from_grid(
             texture_handle,

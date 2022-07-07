@@ -4,8 +4,6 @@ use serde::Deserialize;
 /// Values used globally throughout the game
 #[derive(Deserialize)]
 pub struct GameParametersResource {
-    /// Scale of rapier physics
-    pub physics_scale: f32,
     /// Sprite image size multiplier
     pub sprite_scale: f32,
     /// Threshold to set velocity to zero
@@ -15,7 +13,7 @@ pub struct GameParametersResource {
     /// Standard z coordinate of camera
     pub camera_z: f32,
     /// Z coordinate of camera in zoomed out mode
-    pub camera_zoom_out_z: f32,
+    pub camera_zoom_out_scale: f32,
     /// Range of mouse scanning
     pub scan_range: f32,
 }
