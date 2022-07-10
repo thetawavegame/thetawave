@@ -42,6 +42,9 @@ fn main() {
     let mut app = App::new();
 
     app.insert_resource(WindowDescriptor::from(display_config))
+        .insert_resource(
+            from_bytes::<options::DisplayConfig>(include_bytes!("../config/display.ron")).unwrap(),
+        )
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(AmbientLight {
             color: Color::WHITE,
@@ -121,7 +124,7 @@ fn main() {
         )
         .add_startup_system(ui::setup_ui.after("spawn_player"))
         .add_system_to_stage(CoreStage::First, run::level_system.label("level"))
-        //.add_system_to_stage(CoreStage::First, run::spawn_formation_system.after("level"))
+        .add_system_to_stage(CoreStage::First, run::spawn_formation_system.after("level"))
         .add_system_to_stage(CoreStage::First, run::next_level_system.after("level"))
         .add_system(player::player_movement_system)
         .add_system_to_stage(CoreStage::First, player::player_fire_weapon_system)

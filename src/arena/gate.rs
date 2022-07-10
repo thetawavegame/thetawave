@@ -34,23 +34,30 @@ pub fn despawn_gates_system(
     mob_query: Query<(Entity, &MobComponent)>,
     mut enemy_bottom_event: EventWriter<EnemyReachedBottomGateEvent>,
 ) {
-    for despawn_gate_entity in despawn_gate_query.iter() {
-        for collision_event in collision_events.iter() {
+    'event_loop: for collision_event in collision_events.iter() {
+        for despawn_gate_entity in despawn_gate_query.iter() {
             if let CollisionEvent::Started(
                 collider1_entity,
                 collider2_entity,
                 CollisionEventFlags::SENSOR,
             ) = collision_event
             {
-                if despawn_gate_entity == *collider1_entity
-                    && spawnable_query
-                        .iter()
-                        .any(|spawnable_entity| spawnable_entity == *collider2_entity)
+                let other_entity = if despawn_gate_entity == *collider1_entity {
+                    collider2_entity
+                } else if despawn_gate_entity == *collider2_entity {
+                    collider1_entity
+                } else {
+                    continue 'event_loop;
+                };
+
+                if spawnable_query
+                    .iter()
+                    .any(|spawnable_entity| spawnable_entity == *other_entity)
                 {
-                    commands.entity(*collider2_entity).despawn_recursive();
+                    commands.entity(*other_entity).despawn_recursive();
 
                     for (mob_entity, mob_component) in mob_query.iter() {
-                        if mob_entity == *collider2_entity {
+                        if mob_entity == *other_entity {
                             enemy_bottom_event
                                 .send(EnemyReachedBottomGateEvent(mob_component.defense_damage));
                         }

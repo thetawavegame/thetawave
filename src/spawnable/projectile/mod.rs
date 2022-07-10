@@ -133,6 +133,7 @@ pub fn spawn_projectile(
             behaviors: projectile_data.spawnable_behaviors.clone(),
             should_despawn: false,
         })
+        .insert(ActiveEvents::COLLISION_EVENTS)
         /*
         .insert(DespawnTimerComponent {
             despawn_timer: Timer::from_seconds(despawn_time, false),

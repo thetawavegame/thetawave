@@ -110,11 +110,15 @@ pub fn spawn_mob(
 
     mob.insert_bundle(SpriteSheetBundle {
         texture_atlas: texture_atlas_handle,
-        transform: Transform::from_scale(Vec3::new(
-            game_parameters.sprite_scale,
-            game_parameters.sprite_scale,
-            1.0,
-        )),
+        transform: Transform {
+            translation: position.extend(0.0),
+            scale: Vec3::new(
+                game_parameters.sprite_scale,
+                game_parameters.sprite_scale,
+                1.0,
+            ),
+            ..Default::default()
+        },
         ..Default::default()
     })
     .insert(AnimationComponent {
@@ -138,8 +142,8 @@ pub fn spawn_mob(
         combine_rule: CoefficientCombineRule::Max,
     })
     .insert(CollisionGroups {
-        memberships: HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
-        filters: u32::MAX ^ SPAWNABLE_COL_GROUP_MEMBERSHIP,
+        memberships: SPAWNABLE_COL_GROUP_MEMBERSHIP,
+        filters: u32::MAX ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
     })
     .insert(MobComponent {
         mob_type: mob_data.mob_type.clone(),
@@ -162,6 +166,7 @@ pub fn spawn_mob(
         behaviors: mob_data.spawnable_behaviors.clone(),
         should_despawn: false,
     })
+    .insert(ActiveEvents::COLLISION_EVENTS)
     .insert(Name::new(mob_data.mob_type.to_string()));
 
     // spawn thruster as child if mob has thruster

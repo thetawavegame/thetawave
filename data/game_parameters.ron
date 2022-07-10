@@ -4,5 +4,5 @@
 	max_speed: 10000,
 	camera_z: 950,
 	camera_zoom_out_scale: 1.5,
-	scan_range: 10.0,
+	scan_range: 100.0,
 )

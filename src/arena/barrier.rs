@@ -11,8 +11,8 @@ pub fn spawn_barriers_system(mut commands: Commands) {
     spawn_spawnables_pass_barrier(&mut commands, Vec2::new(0.0, 360.0), 1000.0, 30.0);
     spawn_spawnables_pass_barrier(&mut commands, Vec2::new(0.0, -360.0), 1000.0, 30.0);
     // spawn vertical barriers at right and left of arena
-    spawn_barrier(&mut commands, Vec2::new(500.0, 0.0), 30.0, 1000.0);
-    spawn_barrier(&mut commands, Vec2::new(-500.0, 0.0), 30.0, 1000.0);
+    spawn_barrier(&mut commands, Vec2::new(500.0, 0.0), 30.0, 3000.0);
+    spawn_barrier(&mut commands, Vec2::new(-500.0, 0.0), 30.0, 3000.0);
 }
 
 /// Spawns an arena barrier
