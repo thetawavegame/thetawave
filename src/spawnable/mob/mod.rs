@@ -16,6 +16,7 @@ mod behavior;
 pub use self::behavior::{mob_execute_behavior_system, MobBehavior};
 
 /// Core component for mobs
+#[derive(Component)]
 pub struct MobComponent {
     /// Type of mob
     pub mob_type: MobType,
@@ -94,7 +95,6 @@ pub fn spawn_mob(
     mob_resource: &MobsResource,
     position: Vec2,
     commands: &mut Commands,
-    rapier_config: &RapierConfiguration,
     game_parameters: &GameParametersResource,
 ) {
     // Get data from mob resource
@@ -102,60 +102,49 @@ pub fn spawn_mob(
     let texture_atlas_handle = mob_resource.texture_atlas_handle[mob_type].0.clone_weak();
 
     // scale collider to align with the sprite
-    let collider_size_hx =
-        mob_data.collider_dimensions.x * game_parameters.sprite_scale / rapier_config.scale / 2.0;
-    let collider_size_hy =
-        mob_data.collider_dimensions.y * game_parameters.sprite_scale / rapier_config.scale / 2.0;
+    let collider_size_hx = mob_data.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
+    let collider_size_hy = mob_data.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
 
     // create mob entity
     let mut mob = commands.spawn();
 
     mob.insert_bundle(SpriteSheetBundle {
         texture_atlas: texture_atlas_handle,
-        transform: Transform::from_scale(Vec3::new(
-            game_parameters.sprite_scale,
-            game_parameters.sprite_scale,
-            1.0,
-        )),
+        transform: Transform {
+            translation: position.extend(0.0),
+            scale: Vec3::new(
+                game_parameters.sprite_scale,
+                game_parameters.sprite_scale,
+                1.0,
+            ),
+            ..Default::default()
+        },
         ..Default::default()
     })
     .insert(AnimationComponent {
         timer: Timer::from_seconds(mob_data.texture.frame_duration, true),
         direction: mob_data.texture.animation_direction.clone(),
     })
-    .insert_bundle(RigidBodyBundle {
-        body_type: RigidBodyType::Dynamic,
-        mass_properties: RigidBodyMassPropsFlags::ROTATION_LOCKED.into(),
-        velocity: RigidBodyVelocity {
-            angvel: if let Some(random_angvel) = mob_data.initial_motion.random_angvel {
-                thread_rng().gen_range(random_angvel.0..=random_angvel.1)
-            } else {
-                0.0
-            },
-            ..Default::default()
-        },
-        position: position.into(),
-        ..Default::default()
-    })
-    .insert_bundle(ColliderBundle {
-        shape: ColliderShape::cuboid(collider_size_hx, collider_size_hy),
-        material: ColliderMaterial {
-            friction: 1.0,
-            restitution: 1.0,
-            restitution_combine_rule: CoefficientCombineRule::Max,
-            ..Default::default()
-        },
-        flags: ColliderFlags {
-            collision_groups: InteractionGroups::new(
-                SPAWNABLE_COL_GROUP_MEMBERSHIP,
-                u32::MAX ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
-            ),
-            active_events: ActiveEvents::CONTACT_EVENTS,
-            ..Default::default()
+    .insert(RigidBody::Dynamic)
+    .insert(LockedAxes::ROTATION_LOCKED)
+    .insert(Velocity {
+        angvel: if let Some(random_angvel) = mob_data.initial_motion.random_angvel {
+            thread_rng().gen_range(random_angvel.0..=random_angvel.1)
+        } else {
+            0.0
         },
         ..Default::default()
     })
-    .insert(ColliderPositionSync::Discrete)
+    .insert(Collider::cuboid(collider_size_hx, collider_size_hy))
+    .insert(Friction::new(1.0))
+    .insert(Restitution {
+        coefficient: 1.0,
+        combine_rule: CoefficientCombineRule::Max,
+    })
+    .insert(CollisionGroups {
+        memberships: SPAWNABLE_COL_GROUP_MEMBERSHIP,
+        filters: u32::MAX ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
+    })
     .insert(MobComponent {
         mob_type: mob_data.mob_type.clone(),
         behaviors: mob_data.mob_behaviors.clone(),
@@ -177,6 +166,7 @@ pub fn spawn_mob(
         behaviors: mob_data.spawnable_behaviors.clone(),
         should_despawn: false,
     })
+    .insert(ActiveEvents::COLLISION_EVENTS)
     .insert(Name::new(mob_data.mob_type.to_string()));
 
     // spawn thruster as child if mob has thruster

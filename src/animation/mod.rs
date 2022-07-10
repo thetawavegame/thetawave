@@ -34,6 +34,7 @@ pub struct TextureData {
 }
 
 /// Component for managing animation
+#[derive(Component)]
 pub struct AnimationComponent {
     /// Timer to track frame duration,
     pub timer: Timer,
@@ -59,16 +60,15 @@ pub fn animate_sprite_system(
             match &animation.direction {
                 AnimationDirection::None => {}
                 AnimationDirection::Forward => {
-                    sprite.index =
-                        ((sprite.index as usize + 1) % texture_atlas.textures.len()) as u32
+                    sprite.index = ((sprite.index as usize + 1) % texture_atlas.textures.len())
                 }
                 AnimationDirection::PingPong(direction) => match direction {
                     PingPongDirection::Forward => {
-                        if sprite.index < (texture_atlas.textures.len() - 1) as u32 {
+                        if sprite.index < (texture_atlas.textures.len() - 1) {
                             sprite.index += 1;
                         }
 
-                        if sprite.index == (texture_atlas.textures.len() - 1) as u32 {
+                        if sprite.index == (texture_atlas.textures.len() - 1) {
                             animation.direction =
                                 AnimationDirection::PingPong(PingPongDirection::Backward)
                         }

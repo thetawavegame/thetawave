@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy_rapier2d::physics::RapierConfiguration;
 use serde::Deserialize;
 use std::collections::HashMap;
 
@@ -40,7 +39,6 @@ impl Formation {
         &self,
         mobs: &spawnable::MobsResource,
         commands: &mut Commands,
-        rapier_config: &RapierConfiguration,
         game_parameters: &game::GameParametersResource,
     ) {
         for formation_spawnable in self.formation_spawnables.iter() {
@@ -52,7 +50,6 @@ impl Formation {
                     mobs,
                     formation_spawnable.position,
                     commands,
-                    rapier_config,
                     game_parameters,
                 ),
                 _ => {}
@@ -72,12 +69,11 @@ pub fn spawn_formation_system(
     mut commands: Commands,
     mut event_reader: EventReader<SpawnFormationEvent>,
     mobs: Res<spawnable::MobsResource>,
-    rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<game::GameParametersResource>,
 ) {
     for event in event_reader.iter() {
         event
             .formation
-            .spawn_formation(&mobs, &mut commands, &rapier_config, &game_parameters);
+            .spawn_formation(&mobs, &mut commands, &game_parameters);
     }
 }

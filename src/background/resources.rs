@@ -62,8 +62,8 @@ impl PlanetData {
         // spawn light entity
         if let Some(light_data) = &self.light {
             commands
-                .spawn_bundle(LightBundle {
-                    light: Light {
+                .spawn_bundle(PointLightBundle {
+                    point_light: PointLight {
                         color: light_data.color,
                         intensity: light_data.intensity,
                         range: light_data.range,

@@ -3,9 +3,9 @@
 		mob_type: Enemy(Drone),
 		spawnable_behaviors: [MoveDown, BrakeHorizontal],
 		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
-		acceleration: (0.0, 0.02),
-		deceleration: (0.02, 0.01),
-		speed: (0.0, 1.0),
+		acceleration: (0.0, 2.0),
+		deceleration: (2.0, 1.0),
+		speed: (0.0, 100.0),
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
@@ -15,7 +15,7 @@
 		initial_motion: (
 			random_angvel: None,
 		),
-		collider_dimensions: (14.0, 14.0),
+		collider_dimensions: (5.0, 5.0),
 		health: (
 			max_health: 20.0,
 			health: 20.0,
@@ -51,19 +51,19 @@
 			PeriodicFire(
 				(
 					projectile_type: Blast(Enemy),
-					offset_position: (0.0, -4.0),
+					offset_position: (0.0, -40.0),
 					initial_motion: (
 						random_angvel: None,
-						linvel: Some((0.0, -40.0)),
+						linvel: Some((0.0, -400.0)),
 					),
 					despawn_time: 2.5,
 					period: 3.0,
 				)
 			)
 		],
-		acceleration: (0.0, 0.02),
-		deceleration: (0.02, 0.01),
-		speed: (0.0, 0.85),
+		acceleration: (0.0, 2.0),
+		deceleration: (2.0, 1.0),
+		speed: (0.0, 85.0),
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
@@ -73,7 +73,7 @@
 		initial_motion: (
 			random_angvel: None,
 		),
-		collider_dimensions: (14.0, 14.0),
+		collider_dimensions: (5.0, 5.0),
 		sprite_dimensions: (18.0, 18.0),
 		health: (
 			max_health: 20.0,
@@ -104,9 +104,9 @@
 		mob_type: Ally(Hauler),
 		spawnable_behaviors: [MoveDown, BrakeHorizontal],
 		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
-		acceleration: (0.0, 0.02),
-		deceleration: (0.02, 0.01),
-		speed: (0.0, 0.7),
+		acceleration: (0.0, 2.0),
+		deceleration: (2.0, 1.0),
+		speed: (0.0, 70.0),
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
@@ -116,7 +116,7 @@
 		initial_motion: (
 			random_angvel: None,
 		),
-		collider_dimensions: (14.0, 30.0),
+		collider_dimensions: (5.0, 10.0),
 		health: (
 			max_health: 20.0,
 			health: 20.0,
@@ -152,14 +152,14 @@
 			SpawnMob(
 				(
 					mob_type: Enemy(Missile),
-					offset_position: (0.0, -7.0),
+					offset_position: (0.0, -70.0),
 					period: 4.0,
 				)
 			)
 		],
-		acceleration: (0.0, 0.02),
-		deceleration: (0.02, 0.01),
-		speed: (0.0, 0.75),
+		acceleration: (0.0, 2.0),
+		deceleration: (2.0, 1.0),
+		speed: (0.0, 75.0),
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
@@ -169,7 +169,7 @@
 		initial_motion: (
 			random_angvel: None,
 		),
-		collider_dimensions: (17.0, 22.0),
+		collider_dimensions: (6.0, 8.0),
 		health: (
 			max_health: 20.0,
 			health: 20.0,
@@ -199,9 +199,9 @@
 		mob_type: Enemy(Missile),
 		spawnable_behaviors: [RotateToTarget(None), MoveForward],
 		mob_behaviors: [ExplodeOnImpact, DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
-		acceleration: (0.12, 0.2),
-		deceleration: (0.05, 0.05),
-		speed: (1.5, 1.5),
+		acceleration: (12.0, 2.0),
+		deceleration: (5.0, 5.0),
+		speed: (150.0, 150.0),
 		angular_acceleration: 0.5,
 		angular_deceleration: 0.0,
 		angular_speed: 1.8,
@@ -211,7 +211,7 @@
 		initial_motion: (
 			random_angvel: None,
 		),
-		collider_dimensions: (6.0, 14.0),
+		collider_dimensions: (1.5, 4.0),
 		health: (
 			max_health: 20.0,
 			health: 20.0,
@@ -247,19 +247,19 @@
 			PeriodicFire(
 				(
 					projectile_type: Blast(Enemy),
-					offset_position: (0.0, -2.5),
+					offset_position: (0.0, -25.0),
 					initial_motion: (
 						random_angvel: None,
-						linvel: Some((0.0, -25.0)),
+						linvel: Some((0.0, -250.0)),
 					),
 					despawn_time: 1.5,
 					period: 4.0,
 				)
 			)
 		],
-		acceleration: (0.02, 0.02),
-		deceleration: (0.02, 0.02),
-		speed: (0.75, 0.75),
+		acceleration: (2.0, 2.0),
+		deceleration: (2.0, 2.0),
+		speed: (75.0, 75.0),
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
@@ -269,7 +269,7 @@
 		initial_motion: (
 			random_angvel: None,
 		),
-		collider_dimensions: (20.0, 8.0),
+		collider_dimensions: (7.0, 2.0),
 		health: (
 			max_health: 40.0,
 			health: 40.0,
@@ -305,19 +305,19 @@
 			PeriodicFire(
 				(
 					projectile_type: Blast(Enemy),
-					offset_position: (0.0, -2.5),
+					offset_position: (0.0, -25.0),
 					initial_motion: (
 						random_angvel: None,
-						linvel: Some((0.0, -25.0)),
+						linvel: Some((0.0, -250.0)),
 					),
 					despawn_time: 1.5,
 					period: 4.0,
 				)
 			)
 		],
-		acceleration: (0.02, 0.02),
-		deceleration: (0.02, 0.02),
-		speed: (0.75, 0.75),
+		acceleration: (2.0, 2.0),
+		deceleration: (2.0, 2.0),
+		speed: (75.0, 75.0),
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
@@ -327,7 +327,7 @@
 		initial_motion: (
 			random_angvel: None,
 		),
-		collider_dimensions: (20.0, 8.0),
+		collider_dimensions: (7.0, 2.0),
 		health: (
 			max_health: 40.0,
 			health: 40.0,
@@ -357,9 +357,9 @@
 		mob_type: Neutral(MoneyAsteroid),
 		spawnable_behaviors: [MoveDown],
 		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
-		acceleration: (0.0, 0.02),
-		deceleration: (0.02, 0.01),
-		speed: (0.0, 0.75),
+		acceleration: (0.0, 2.0),
+		deceleration: (2.0, 1.0),
+		speed: (0.0, 75.0),
 		angular_acceleration: 0.0,
 		angular_deceleration: 0.0,
 		angular_speed: 0.0,
@@ -369,7 +369,7 @@
 		initial_motion: (
 			random_angvel: Some((-1.0, 1.0)),
 		),
-		collider_dimensions: (16.0, 16.0),
+		collider_dimensions: (5.0, 5.0),
 		health: (
 			max_health: 50.0,
 			health: 50.0,

@@ -1,14 +1,14 @@
 //! `thetawave` background module
 
 use bevy::prelude::Commands;
-use bevy::prelude::*;
+use bevy::{prelude::*, reflect};
 
 mod resources;
 
 pub use self::resources::BackgroundsResource;
 
 /// Component to manage movement of planets
-#[derive(Reflect, Default)]
+#[derive(Reflect, Default, Component)]
 #[reflect(Component)]
 pub struct PlanetComponent {
     /// Speed of rotation about the z axis

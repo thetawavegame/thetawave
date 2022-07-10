@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{math::Vec3Swizzles, prelude::*};
 use bevy_rapier2d::prelude::*;
 
 use crate::{game::GameParametersResource, spawnable::MobComponent};
@@ -7,15 +7,13 @@ use crate::{game::GameParametersResource, spawnable::MobComponent};
 pub fn scanner_system(
     windows: Res<Windows>,
     game_params: Res<GameParametersResource>,
-    mob_query: Query<(Entity, &MobComponent, &RigidBodyPosition)>,
-    rapier_config: Res<RapierConfiguration>,
+    mob_query: Query<(Entity, &MobComponent, &Transform)>,
 ) {
     let window = windows.get_primary().unwrap();
 
     if let Some(mouse_pos) = window.cursor_position() {
-        for (mob_entity, mob_component, mob_rb_pos) in mob_query.iter() {
-            if mouse_pos_to_rapier_pos(mouse_pos, window, &rapier_config)
-                .distance(mob_rb_pos.position.translation.into())
+        for (mob_entity, mob_component, transform) in mob_query.iter() {
+            if mouse_pos_to_rapier_pos(mouse_pos, window).distance(transform.translation.xy())
                 < game_params.scan_range
             {
                 println!(
@@ -34,13 +32,9 @@ pub fn scanner_system(
 }
 
 /// Converts mouse position units to in-game physics units
-fn mouse_pos_to_rapier_pos(
-    mouse_pos: Vec2,
-    window: &Window,
-    rapier_config: &RapierConfiguration,
-) -> Vec2 {
+fn mouse_pos_to_rapier_pos(mouse_pos: Vec2, window: &Window) -> Vec2 {
     Vec2::new(
-        (mouse_pos.x - (window.width() / 2.0)) / rapier_config.scale,
-        (mouse_pos.y - (window.height() / 2.0)) / rapier_config.scale,
+        (mouse_pos.x - (window.width() / 2.0)),
+        (mouse_pos.y - (window.height() / 2.0)),
     )
 }

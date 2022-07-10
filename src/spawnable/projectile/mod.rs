@@ -18,6 +18,7 @@ mod behavior;
 pub use self::behavior::{projectile_execute_behavior_system, ProjectileBehavior};
 
 /// Core component for projectiles
+#[derive(Component)]
 pub struct ProjectileComponent {
     /// Type of projectile
     pub projectile_type: ProjectileType,
@@ -60,7 +61,6 @@ pub fn spawn_projectile(
     despawn_time: f32, // time before despawning
     initial_motion: InitialMotion,
     commands: &mut Commands,
-    rapier_config: &RapierConfiguration,
     game_parameters: &GameParametersResource,
 ) {
     // Get data from mob resource
@@ -69,12 +69,10 @@ pub fn spawn_projectile(
         projectile_resource.texture_atlas_handle[projectile_type].clone_weak();
 
     // scale collider to align with the sprite
-    let collider_size_hx = projectile_data.collider_dimensions.x * game_parameters.sprite_scale
-        / rapier_config.scale
-        / 2.0;
-    let collider_size_hy = projectile_data.collider_dimensions.y * game_parameters.sprite_scale
-        / rapier_config.scale
-        / 2.0;
+    let collider_size_hx =
+        projectile_data.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
+    let collider_size_hy =
+        projectile_data.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
 
     // create mob entity
     let mut projectile = commands.spawn();
@@ -88,47 +86,37 @@ pub fn spawn_projectile(
     projectile
         .insert_bundle(SpriteSheetBundle {
             texture_atlas: texture_atlas_handle,
-            transform: Transform::from_scale(Vec3::new(
-                game_parameters.sprite_scale,
-                game_parameters.sprite_scale,
-                1.0,
-            )),
             ..Default::default()
         })
         .insert(AnimationComponent {
             timer: Timer::from_seconds(projectile_data.texture.frame_duration, true),
             direction: projectile_data.texture.animation_direction.clone(),
         })
-        .insert_bundle(RigidBodyBundle {
-            body_type: RigidBodyType::Dynamic,
-            mass_properties: RigidBodyMassPropsFlags::ROTATION_LOCKED.into(),
-            velocity: RigidBodyVelocity {
-                angvel: if let Some(random_angvel) = initial_motion.random_angvel {
-                    thread_rng().gen_range(random_angvel.0..=random_angvel.1)
-                } else {
-                    0.0
-                },
-                linvel: if let Some(linvel) = initial_motion.linvel {
-                    linvel.into()
-                } else {
-                    Vec2::ZERO.into()
-                },
+        .insert(RigidBody::Dynamic)
+        .insert(LockedAxes::ROTATION_LOCKED)
+        .insert(Velocity {
+            angvel: if let Some(random_angvel) = initial_motion.random_angvel {
+                thread_rng().gen_range(random_angvel.0..=random_angvel.1)
+            } else {
+                0.0
             },
-            position: position.into(),
+            linvel: if let Some(linvel) = initial_motion.linvel {
+                linvel.into()
+            } else {
+                Vec2::ZERO.into()
+            },
+        })
+        .insert(Transform {
+            translation: position.extend(0.0),
+            scale: Vec3::new(
+                game_parameters.sprite_scale,
+                game_parameters.sprite_scale,
+                0.0,
+            ),
             ..Default::default()
         })
-        .insert_bundle(ColliderBundle {
-            shape: ColliderShape::cuboid(collider_size_hx, collider_size_hy),
-            collider_type: ColliderType::Sensor,
-            flags: ColliderFlags {
-                // TODO: filter out others of same faction
-                //collision_groups: InteractionGroups::new(PROJECTILE_GROUP_MEMBERSHIP, filter)
-                active_events: ActiveEvents::INTERSECTION_EVENTS,
-                ..Default::default()
-            },
-            ..Default::default()
-        })
-        .insert(ColliderPositionSync::Discrete)
+        .insert(Collider::cuboid(collider_size_hx, collider_size_hy))
+        .insert(Sensor(true))
         .insert(ProjectileComponent {
             projectile_type: projectile_data.projectile_type.clone(),
             behaviors: projectile_behaviors,
@@ -145,6 +133,7 @@ pub fn spawn_projectile(
             behaviors: projectile_data.spawnable_behaviors.clone(),
             should_despawn: false,
         })
+        .insert(ActiveEvents::COLLISION_EVENTS)
         /*
         .insert(DespawnTimerComponent {
             despawn_timer: Timer::from_seconds(despawn_time, false),

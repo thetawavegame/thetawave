@@ -12,6 +12,7 @@ use super::EffectType;
 mod behavior;
 pub use self::behavior::effect_execute_behavior_system;
 
+#[derive(Component)]
 pub struct EffectComponent {
     pub effect_type: super::EffectType,
     pub behaviors: Vec<behavior::EffectBehavior>,
@@ -67,11 +68,6 @@ pub fn spawn_effect(
     effect
         .insert_bundle(SpriteSheetBundle {
             texture_atlas: texture_atlas_handle,
-            transform: Transform::from_scale(Vec3::new(
-                game_parameters.sprite_scale,
-                game_parameters.sprite_scale,
-                1.0,
-            )),
             ..Default::default()
         })
         .insert(AnimationComponent {
@@ -93,11 +89,15 @@ pub fn spawn_effect(
             behaviors: vec![],
             should_despawn: false,
         })
-        .insert_bundle(RigidBodyBundle {
-            body_type: RigidBodyType::Static,
-            position: position.into(),
+        .insert(RigidBody::Fixed)
+        .insert_bundle(TransformBundle::from_transform(Transform {
+            translation: position.extend(0.0),
+            scale: Vec3::new(
+                game_parameters.sprite_scale,
+                game_parameters.sprite_scale,
+                1.0,
+            ),
             ..Default::default()
-        })
-        .insert(RigidBodyPositionSync::Discrete)
+        }))
         .insert(Name::new(effect_data.effect_type.to_string()));
 }

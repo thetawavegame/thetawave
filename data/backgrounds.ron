@@ -20,13 +20,13 @@
 					material_path: "models/sun.glb#Material0",
 					light: Some((
 						color: Rgba (
-            				red: 1.0,
+            				red: 0.7,
             				green: 0.27,
             				blue: 0.0,
             				alpha: 1.0,
 						),
-						intensity: 20000000.0,
-						range: 10000000.0,
+						intensity: 200000000.0,
+						range: 1000000000.0,
 					)),
 				),
 			]
