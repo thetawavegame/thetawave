@@ -6,8 +6,9 @@ use bevy::{
 use bevy_inspector_egui::WorldInspectorPlugin;
 //use bevy_prototype_debug_lines::*;
 use bevy_rapier2d::{na::Vector2, prelude::*};
+use console_error_panic_hook;
 use ron::de::{from_bytes, from_str};
-use std::{collections::HashMap, env::current_dir, fs::read_to_string};
+use std::{collections::HashMap, env::current_dir, fs::read_to_string, panic};
 
 pub const PHYSICS_SCALE: f32 = 10.0;
 pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: u32 = 0b0010;
@@ -29,158 +30,179 @@ mod spawnable;
 mod tools;
 mod ui;
 
-fn main() {
+#[cfg(target_arch = "wasm32")]
+fn get_display_config() -> Option<options::DisplayConfig> {
+    None
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn get_display_config() -> Option<options::DisplayConfig> {
     options::generate_config_files();
 
     let config_path = current_dir().unwrap().join("config");
 
-    let display_config = from_str::<options::DisplayConfig>(
-        &read_to_string(config_path.join("display.ron")).unwrap(),
+    Some(
+        from_str::<options::DisplayConfig>(
+            &read_to_string(config_path.join("display.ron")).unwrap(),
+        )
+        .unwrap(),
     )
-    .unwrap();
+}
+
+fn main() {
+    panic::set_hook(Box::new(console_error_panic_hook::hook));
+
+    let display_config = get_display_config();
 
     let mut app = App::new();
 
-    app.insert_resource(WindowDescriptor::from(display_config))
-        .insert_resource(
-            from_bytes::<options::DisplayConfig>(include_bytes!("../config/display.ron")).unwrap(),
-        )
-        .insert_resource(ClearColor(Color::BLACK))
-        .insert_resource(AmbientLight {
-            color: Color::WHITE,
-            brightness: 0.1,
-        })
-        .insert_resource(
-            from_bytes::<player::CharactersResource>(include_bytes!("../data/characters.ron"))
-                .unwrap(),
-        )
-        .insert_resource(
-            from_bytes::<run::FormationPoolsResource>(include_bytes!(
-                "../data/formation_pools.ron"
-            ))
+    app.insert_resource(if let Some(display_config) = display_config {
+        WindowDescriptor::from(display_config)
+    } else {
+        WindowDescriptor {
+            title: "Theta Wave".to_string(),
+            width: 1280.0,
+            height: 720.0,
+            mode: bevy::window::WindowMode::Windowed,
+            ..Default::default()
+        }
+    })
+    .insert_resource(ClearColor(Color::BLACK))
+    .insert_resource(AmbientLight {
+        color: Color::WHITE,
+        brightness: 0.1,
+    })
+    .insert_resource(
+        from_bytes::<player::CharactersResource>(include_bytes!("../data/characters.ron")).unwrap(),
+    )
+    .insert_resource(
+        from_bytes::<run::FormationPoolsResource>(include_bytes!("../data/formation_pools.ron"))
             .unwrap(),
-        )
-        .insert_resource(
-            from_bytes::<game::GameParametersResource>(include_bytes!(
-                "../data/game_parameters.ron"
-            ))
+    )
+    .insert_resource(
+        from_bytes::<game::GameParametersResource>(include_bytes!("../data/game_parameters.ron"))
             .unwrap(),
-        )
-        .insert_resource(run::RunResource::from(
-            from_bytes::<run::RunResourceData>(include_bytes!("../data/run.ron")).unwrap(),
+    )
+    .insert_resource(run::RunResource::from(
+        from_bytes::<run::RunResourceData>(include_bytes!("../data/run.ron")).unwrap(),
+    ))
+    .insert_resource(run::LevelsResource::from(
+        from_bytes::<run::LevelsResourceData>(include_bytes!("../data/levels.ron")).unwrap(),
+    ))
+    .insert_resource(spawnable::MobsResource {
+        mobs: from_bytes::<HashMap<spawnable::MobType, spawnable::MobData>>(include_bytes!(
+            "../data/mobs.ron"
         ))
-        .insert_resource(run::LevelsResource::from(
-            from_bytes::<run::LevelsResourceData>(include_bytes!("../data/levels.ron")).unwrap(),
-        ))
-        .insert_resource(spawnable::MobsResource {
-            mobs: from_bytes::<HashMap<spawnable::MobType, spawnable::MobData>>(include_bytes!(
-                "../data/mobs.ron"
-            ))
+        .unwrap(),
+        texture_atlas_handle: HashMap::new(),
+    })
+    .insert_resource(spawnable::EffectsResource {
+        effects: from_bytes::<HashMap<spawnable::EffectType, spawnable::EffectData>>(
+            include_bytes!("../data/effects.ron"),
+        )
+        .unwrap(),
+        texture_atlas_handle: HashMap::new(),
+    })
+    .insert_resource(spawnable::ProjectileResource {
+        projectiles: from_bytes::<HashMap<spawnable::ProjectileType, spawnable::ProjectileData>>(
+            include_bytes!("../data/projectiles.ron"),
+        )
+        .unwrap(),
+        texture_atlas_handle: HashMap::new(),
+    })
+    .insert_resource(
+        from_bytes::<background::BackgroundsResource>(include_bytes!("../data/backgrounds.ron"))
             .unwrap(),
-            texture_atlas_handle: HashMap::new(),
-        })
-        .insert_resource(spawnable::EffectsResource {
-            effects: from_bytes::<HashMap<spawnable::EffectType, spawnable::EffectData>>(
-                include_bytes!("../data/effects.ron"),
-            )
-            .unwrap(),
-            texture_atlas_handle: HashMap::new(),
-        })
-        .insert_resource(spawnable::ProjectileResource {
-            projectiles:
-                from_bytes::<HashMap<spawnable::ProjectileType, spawnable::ProjectileData>>(
-                    include_bytes!("../data/projectiles.ron"),
-                )
-                .unwrap(),
-            texture_atlas_handle: HashMap::new(),
-        })
-        .insert_resource(
-            from_bytes::<background::BackgroundsResource>(include_bytes!(
-                "../data/backgrounds.ron"
-            ))
-            .unwrap(),
-        )
-        .add_event::<collision::SortedCollisionEvent>()
-        .add_event::<run::SpawnFormationEvent>()
-        .add_event::<run::LevelCompletedEvent>()
-        .add_event::<arena::EnemyReachedBottomGateEvent>()
-        .add_event::<spawnable::SpawnEffectEvent>()
-        .add_plugins(DefaultPlugins)
-        .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
-            PHYSICS_SCALE,
-        ))
-        .add_plugin(RapierDebugRenderPlugin::default())
-        //.add_plugin(DebugLinesPlugin)
-        //.add_plugin(FrameTimeDiagnosticsPlugin::default())
-        //.add_plugin(LogDiagnosticsPlugin::default())
-        .add_startup_system(setup_game.label("init"))
-        .add_startup_system(arena::spawn_barriers_system.after("init"))
-        .add_startup_system(arena::spawn_despawn_gates_system.after("init"))
-        .add_startup_system(background::create_background_system.after("init"))
-        .add_startup_system(
-            player::spawn_player_system
-                .label("spawn_player")
-                .after("init"),
-        )
-        .add_startup_system(ui::setup_ui.after("spawn_player"))
-        .add_system_to_stage(CoreStage::First, run::level_system.label("level"))
-        .add_system_to_stage(CoreStage::First, run::spawn_formation_system.after("level"))
-        .add_system_to_stage(CoreStage::First, run::next_level_system.after("level"))
-        .add_system(player::player_movement_system)
-        .add_system_to_stage(CoreStage::First, player::player_fire_weapon_system)
-        .add_system_to_stage(
-            CoreStage::PostUpdate,
-            spawnable::spawnable_set_target_behavior_system.label("set_target_behavior"),
-        )
-        .add_system_to_stage(
-            CoreStage::PostUpdate,
-            spawnable::spawnable_execute_behavior_system.after("set_target_behavior"),
-        )
-        .add_system_to_stage(
-            CoreStage::PostUpdate,
-            spawnable::mob_execute_behavior_system
-                .after("set_target_behavior")
-                .after("intersection_collision")
-                .after("contact_collision"),
-        )
-        .add_system_to_stage(
-            CoreStage::PostUpdate,
-            spawnable::projectile_execute_behavior_system
-                .after("set_target_behavior")
-                .after("intersection_collision")
-                .after("contact_collision")
-                .label("projectile_execute_behavior"),
-        )
-        .add_system_to_stage(
-            CoreStage::PostUpdate,
-            spawnable::effect_execute_behavior_system
-                .after("set_target_behavior")
-                .after("intersection_collision")
-                .after("contact_collision")
-                .label("effect_execute_behavior"),
-        )
-        .add_system_to_stage(CoreStage::First, spawnable::spawn_effect_system) // event generated in projectile execute behavior
-        .add_system_to_stage(
-            CoreStage::PostUpdate,
-            collision::intersection_collision_system.label("intersection_collision"),
-        )
-        .add_system_to_stage(
-            CoreStage::PostUpdate,
-            collision::contact_collision_system.label("contact_collision"),
-        )
-        .add_system(scanner::scanner_system)
-        .add_system(ui::update_ui)
-        .add_system(spawnable::despawn_spawnable_system)
-        .add_system(options::toggle_fullscreen_system)
-        .add_system(options::toggle_zoom_system)
-        .add_system(arena::despawn_gates_system)
-        .add_system(animation::animate_sprite_system)
-        .add_system(background::rotate_planet_system)
-        .add_system(spawnable::despawn_timer_system);
+    )
+    .add_event::<collision::SortedCollisionEvent>()
+    .add_event::<run::SpawnFormationEvent>()
+    .add_event::<run::LevelCompletedEvent>()
+    .add_event::<arena::EnemyReachedBottomGateEvent>()
+    .add_event::<spawnable::SpawnEffectEvent>()
+    .add_plugins(DefaultPlugins)
+    .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
+        PHYSICS_SCALE,
+    ))
+    .add_plugin(RapierDebugRenderPlugin::default())
+    //.add_plugin(DebugLinesPlugin)
+    //.add_plugin(FrameTimeDiagnosticsPlugin::default())
+    //.add_plugin(LogDiagnosticsPlugin::default())
+    .add_startup_system(setup_game.label("init"))
+    .add_startup_system(arena::spawn_barriers_system.after("init"))
+    .add_startup_system(arena::spawn_despawn_gates_system.after("init"))
+    .add_startup_system(background::create_background_system.after("init"))
+    .add_startup_system(
+        player::spawn_player_system
+            .label("spawn_player")
+            .after("init"),
+    )
+    .add_startup_system(ui::setup_ui.after("spawn_player"))
+    .add_system_to_stage(CoreStage::First, run::level_system.label("level"))
+    .add_system_to_stage(CoreStage::First, run::spawn_formation_system.after("level"))
+    .add_system_to_stage(CoreStage::First, run::next_level_system.after("level"))
+    .add_system(player::player_movement_system)
+    .add_system_to_stage(CoreStage::First, player::player_fire_weapon_system)
+    .add_system_to_stage(
+        CoreStage::PostUpdate,
+        spawnable::spawnable_set_target_behavior_system.label("set_target_behavior"),
+    )
+    .add_system_to_stage(
+        CoreStage::PostUpdate,
+        spawnable::spawnable_execute_behavior_system.after("set_target_behavior"),
+    )
+    .add_system_to_stage(
+        CoreStage::PostUpdate,
+        spawnable::mob_execute_behavior_system
+            .after("set_target_behavior")
+            .after("intersection_collision")
+            .after("contact_collision"),
+    )
+    .add_system_to_stage(
+        CoreStage::PostUpdate,
+        spawnable::projectile_execute_behavior_system
+            .after("set_target_behavior")
+            .after("intersection_collision")
+            .after("contact_collision")
+            .label("projectile_execute_behavior"),
+    )
+    .add_system_to_stage(
+        CoreStage::PostUpdate,
+        spawnable::effect_execute_behavior_system
+            .after("set_target_behavior")
+            .after("intersection_collision")
+            .after("contact_collision")
+            .label("effect_execute_behavior"),
+    )
+    .add_system_to_stage(CoreStage::First, spawnable::spawn_effect_system) // event generated in projectile execute behavior
+    .add_system_to_stage(
+        CoreStage::PostUpdate,
+        collision::intersection_collision_system.label("intersection_collision"),
+    )
+    .add_system_to_stage(
+        CoreStage::PostUpdate,
+        collision::contact_collision_system.label("contact_collision"),
+    )
+    .add_system(scanner::scanner_system)
+    .add_system(ui::update_ui)
+    .add_system(spawnable::despawn_spawnable_system)
+    .add_system(options::toggle_fullscreen_system)
+    .add_system(options::toggle_zoom_system)
+    .add_system(arena::despawn_gates_system)
+    .add_system(animation::animate_sprite_system)
+    .add_system(background::rotate_planet_system)
+    .add_system(spawnable::despawn_timer_system);
 
     if cfg!(debug_assertions) {
         app.add_plugin(WorldInspectorPlugin::new());
     }
+
+    /*
+    if !cfg!(unknown) {
+        app.insert_resource(
+            from_bytes::<options::DisplayConfig>(include_bytes!("../config/display.ron")).unwrap(),
+        );
+    }
+    */
 
     app.run();
 }

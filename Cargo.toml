@@ -12,3 +12,11 @@ ron = "0.6.4"
 rand = "0.8.4"
 strum = "0.21.0"
 strum_macros = "0.21"
+console_error_panic_hook = "0.1.7"
+
+# optimize dev packages as we don't need them in debug version
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.dev]
+opt-level = 1

@@ -2,4 +2,5 @@
 .vscode/
 target/
 config/
+out/
 Cargo.lock
