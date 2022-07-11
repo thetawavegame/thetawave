@@ -1,7 +1,7 @@
 //! `thetawave` background module
 
 use bevy::prelude::Commands;
-use bevy::{prelude::*, reflect};
+use bevy::prelude::*;
 
 mod resources;
 

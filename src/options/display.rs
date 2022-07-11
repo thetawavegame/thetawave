@@ -6,17 +6,17 @@ use serde::Deserialize;
 #[derive(Deserialize)]
 pub struct DisplayConfig {
     /// Width of window
-    width: f32,
+    pub width: f32,
     /// Height of window
-    height: f32,
+    pub height: f32,
     /// True of fullsceen, false if windowed
-    fullscreen: bool,
+    pub fullscreen: bool,
 }
 
 impl From<DisplayConfig> for WindowDescriptor {
     fn from(display_config: DisplayConfig) -> Self {
         WindowDescriptor {
-            title: "Theta Wave".to_string(),
+            title: "Thetawave".to_string(),
             width: display_config.width,
             height: display_config.height,
             mode: if display_config.fullscreen {

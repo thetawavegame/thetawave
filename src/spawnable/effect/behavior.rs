@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use serde::Deserialize;
 
-use crate::{animation::AnimationComponent, spawnable::SpawnableComponent};
+use crate::spawnable::SpawnableComponent;
 
 /// Types of behaviors that can be performed by mobs
 #[derive(Deserialize, Clone)]

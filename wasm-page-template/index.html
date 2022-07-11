@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        body {
+            margin: 0;
+            background: rgb(39, 0, 71);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            background-color: white;
+        }
+
+        .title {
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <script type="module">
+        // prevent right click
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        import init from './theta-wave.js'
+        init()
+    </script>
+</body>
+
+</html>

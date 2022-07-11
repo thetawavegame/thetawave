@@ -1,13 +1,8 @@
-use bevy::{
-    diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
-    pbr::AmbientLight,
-    prelude::*,
-};
+use bevy::{pbr::AmbientLight, prelude::*};
 use bevy_inspector_egui::WorldInspectorPlugin;
-//use bevy_prototype_debug_lines::*;
-use bevy_rapier2d::{na::Vector2, prelude::*};
-use ron::de::{from_bytes, from_str};
-use std::{collections::HashMap, env::current_dir, fs::read_to_string};
+use bevy_rapier2d::prelude::*;
+use ron::de::from_bytes;
+use std::collections::HashMap;
 
 pub const PHYSICS_SCALE: f32 = 10.0;
 pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: u32 = 0b0010;
@@ -18,7 +13,6 @@ mod animation;
 mod arena;
 mod background;
 mod collision;
-//mod debug;
 mod game;
 mod misc;
 mod options;
@@ -29,22 +23,37 @@ mod spawnable;
 mod tools;
 mod ui;
 
-fn main() {
+// Don't generate a display config for wasm
+#[cfg(target_arch = "wasm32")]
+fn get_display_config() -> options::DisplayConfig {
+    use std::panic;
+    panic::set_hook(Box::new(console_error_panic_hook::hook)); // pushes rust errors to the browser console
+    options::DisplayConfig {
+        width: 1280.0,
+        height: 720.0,
+        fullscreen: false,
+    }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn get_display_config() -> options::DisplayConfig {
+    use ron::de::from_str;
+    use std::{env::current_dir, fs::read_to_string};
+
     options::generate_config_files();
 
     let config_path = current_dir().unwrap().join("config");
 
-    let display_config = from_str::<options::DisplayConfig>(
-        &read_to_string(config_path.join("display.ron")).unwrap(),
-    )
-    .unwrap();
+    from_str::<options::DisplayConfig>(&read_to_string(config_path.join("display.ron")).unwrap())
+        .unwrap()
+}
+
+fn main() {
+    let display_config = get_display_config();
 
     let mut app = App::new();
 
     app.insert_resource(WindowDescriptor::from(display_config))
-        .insert_resource(
-            from_bytes::<options::DisplayConfig>(include_bytes!("../config/display.ron")).unwrap(),
-        )
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(AmbientLight {
             color: Color::WHITE,
@@ -109,10 +118,6 @@ fn main() {
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
             PHYSICS_SCALE,
         ))
-        .add_plugin(RapierDebugRenderPlugin::default())
-        //.add_plugin(DebugLinesPlugin)
-        //.add_plugin(FrameTimeDiagnosticsPlugin::default())
-        //.add_plugin(LogDiagnosticsPlugin::default())
         .add_startup_system(setup_game.label("init"))
         .add_startup_system(arena::spawn_barriers_system.after("init"))
         .add_startup_system(arena::spawn_despawn_gates_system.after("init"))
@@ -178,8 +183,10 @@ fn main() {
         .add_system(background::rotate_planet_system)
         .add_system(spawnable::despawn_timer_system);
 
+    // plugins to use only in debug mode
     if cfg!(debug_assertions) {
-        app.add_plugin(WorldInspectorPlugin::new());
+        app.add_plugin(WorldInspectorPlugin::new())
+            .add_plugin(RapierDebugRenderPlugin::default());
     }
 
     app.run();
