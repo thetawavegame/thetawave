@@ -1,5 +1,4 @@
 use bevy::{math::Vec3Swizzles, prelude::*};
-use bevy_rapier2d::prelude::*;
 
 use crate::{game::GameParametersResource, spawnable::MobComponent};
 
@@ -34,7 +33,7 @@ pub fn scanner_system(
 /// Converts mouse position units to in-game physics units
 fn mouse_pos_to_rapier_pos(mouse_pos: Vec2, window: &Window) -> Vec2 {
     Vec2::new(
-        (mouse_pos.x - (window.width() / 2.0)),
-        (mouse_pos.y - (window.height() / 2.0)),
+        mouse_pos.x - (window.width() / 2.0),
+        mouse_pos.y - (window.height() / 2.0),
     )
 }
