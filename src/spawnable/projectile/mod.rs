@@ -8,9 +8,7 @@ use crate::{
     animation::{AnimationComponent, TextureData},
     game::GameParametersResource,
     spawnable::InitialMotion,
-    spawnable::{
-        DespawnTimerComponent, ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType,
-    },
+    spawnable::{ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType},
 };
 
 mod behavior;
@@ -101,9 +99,9 @@ pub fn spawn_projectile(
                 0.0
             },
             linvel: if let Some(linvel) = initial_motion.linvel {
-                linvel.into()
+                linvel
             } else {
-                Vec2::ZERO.into()
+                Vec2::ZERO
             },
         })
         .insert(Transform {

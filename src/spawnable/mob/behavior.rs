@@ -54,7 +54,6 @@ pub struct PeriodicFireBehaviorData {
 pub fn mob_execute_behavior_system(
     mut commands: Commands,
     mut collision_events: EventReader<SortedCollisionEvent>,
-    rapier_config: Res<RapierConfiguration>,
     game_parameters: Res<GameParametersResource>,
     time: Res<Time>,
     mob_resource: Res<super::MobsResource>,
@@ -148,7 +147,7 @@ pub fn mob_execute_behavior_system(
                         &mut spawnable_component,
                         &collision_events_vec,
                         &mut spawn_effect_event_writer,
-                        &mob_transform,
+                        mob_transform,
                     );
                 }
                 MobBehavior::DealDamageToPlayerOnImpact => {
