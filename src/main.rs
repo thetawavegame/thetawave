@@ -103,6 +103,14 @@ fn main() {
                 .unwrap(),
             texture_atlas_handle: HashMap::new(),
         })
+        .insert_resource(spawnable::ConsumableResource {
+            consumables:
+                from_bytes::<HashMap<spawnable::ConsumableType, spawnable::ConsumableData>>(
+                    include_bytes!("../data/consumables.ron"),
+                )
+                .unwrap(),
+            texture_atlas_handle: HashMap::new(),
+        })
         .insert_resource(
             from_bytes::<background::BackgroundsResource>(include_bytes!(
                 "../data/backgrounds.ron"
@@ -118,6 +126,7 @@ fn main() {
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
             PHYSICS_SCALE,
         ))
+        .add_startup_system(spawnable::spawn_consumable_test_system.after("init"))
         .add_startup_system(setup_game.label("init"))
         .add_startup_system(arena::spawn_barriers_system.after("init"))
         .add_startup_system(arena::spawn_despawn_gates_system.after("init"))
@@ -201,6 +210,7 @@ fn setup_game(
     mut mobs: ResMut<spawnable::MobsResource>,
     mut projectiles: ResMut<spawnable::ProjectileResource>,
     mut effects: ResMut<spawnable::EffectsResource>,
+    mut consumables: ResMut<spawnable::ConsumableResource>,
     mut rapier_config: ResMut<RapierConfiguration>,
     mut run_resource: ResMut<run::RunResource>,
     levels_resource: Res<run::LevelsResource>,
@@ -280,7 +290,6 @@ fn setup_game(
     let mut effect_texture_atlas_dict = HashMap::new();
     for (effect_type, effect_data) in effects.effects.iter() {
         // effect texture
-        println!("loading resource: {}", &effect_data.texture.path[..]);
         let texture_handle = asset_server.load(&effect_data.texture.path[..]);
         let effect_atlas = TextureAtlas::from_grid(
             texture_handle,
@@ -292,6 +301,28 @@ fn setup_game(
         // add effect texture handle to dictionary
         effect_texture_atlas_dict.insert(effect_type.clone(), texture_atlases.add(effect_atlas));
     }
+
+    // load consumable assets
+    let mut consumable_texture_atlas_dict = HashMap::new();
+    for (consumable_type, consumable_data) in consumables.consumables.iter() {
+        // consumable texture
+        let texture_handle = asset_server.load(&consumable_data.texture.path[..]);
+        let consumable_atlas = TextureAtlas::from_grid(
+            texture_handle,
+            consumable_data.texture.dimensions,
+            consumable_data.texture.cols,
+            consumable_data.texture.rows,
+        );
+
+        // add consumable texture handle to dictionary
+        consumable_texture_atlas_dict.insert(
+            consumable_type.clone(),
+            texture_atlases.add(consumable_atlas),
+        );
+    }
+
+    // add texture atlas dict to the effects resource
+    consumables.texture_atlas_handle = consumable_texture_atlas_dict;
 
     // add texture atlas dict to the effects resource
     effects.texture_atlas_handle = effect_texture_atlas_dict;

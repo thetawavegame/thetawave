@@ -1,0 +1,20 @@
+{
+    HealthWrench: (
+        consumable_type: HealthWrench,
+        collider_dimensions: (3.0, 3.0),
+        spawnable_behaviors: [],
+        consumable_effects: [GainHealth(10.0)],
+        consumable_behaviors: [ApplyEffectsOnImpact],
+        initial_motion: (
+            random_linvel: Some(((-80, -80),(80, 80))),
+        ),
+        texture: (
+			path: "texture/health_wrench_spritesheet.png",
+			dimensions: (12.0, 12.0),
+			cols: 1,
+			rows: 1,
+			frame_duration: 1.0,
+			animation_direction: None,
+		),
+    )
+}

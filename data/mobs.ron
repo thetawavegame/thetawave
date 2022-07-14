@@ -12,9 +12,7 @@
 		attack_damage: 0.0,
 		collision_damage: 12.0,
 		defense_damage: 10.0,
-		initial_motion: (
-			random_angvel: None,
-		),
+		initial_motion: (),
 		collider_dimensions: (5.0, 5.0),
 		health: (
 			max_health: 20.0,
@@ -70,9 +68,7 @@
 		attack_damage: 10.0,
 		collision_damage: 8.0,
 		defense_damage: 10.0,
-		initial_motion: (
-			random_angvel: None,
-		),
+		initial_motion: (),
 		collider_dimensions: (5.0, 5.0),
 		sprite_dimensions: (18.0, 18.0),
 		health: (
@@ -113,9 +109,7 @@
 		attack_damage: 0.0,
 		collision_damage: 5.0,
 		defense_damage: 0.0,
-		initial_motion: (
-			random_angvel: None,
-		),
+		initial_motion: (),
 		collider_dimensions: (5.0, 10.0),
 		health: (
 			max_health: 20.0,
@@ -166,9 +160,7 @@
 		attack_damage: 0.0,
 		collision_damage: 6.0,
 		defense_damage: 25.0,
-		initial_motion: (
-			random_angvel: None,
-		),
+		initial_motion: (),
 		collider_dimensions: (6.0, 8.0),
 		health: (
 			max_health: 20.0,
@@ -208,9 +200,7 @@
 		attack_damage: 0.0,
 		collision_damage: 18.0,
 		defense_damage: 0.0,
-		initial_motion: (
-			random_angvel: None,
-		),
+		initial_motion: (),
 		collider_dimensions: (1.5, 4.0),
 		health: (
 			max_health: 20.0,
@@ -266,9 +256,7 @@
 		attack_damage: 8.0,
 		collision_damage: 10.0,
 		defense_damage: 15.0,
-		initial_motion: (
-			random_angvel: None,
-		),
+		initial_motion: (),
 		collider_dimensions: (7.0, 2.0),
 		health: (
 			max_health: 40.0,
@@ -307,7 +295,6 @@
 					projectile_type: Blast(Enemy),
 					offset_position: (0.0, -25.0),
 					initial_motion: (
-						random_angvel: None,
 						linvel: Some((0.0, -250.0)),
 					),
 					despawn_time: 1.5,
@@ -324,9 +311,7 @@
 		attack_damage: 8.0,
 		collision_damage: 10.0,
 		defense_damage: 15.0,
-		initial_motion: (
-			random_angvel: None,
-		),
+		initial_motion: (),
 		collider_dimensions: (7.0, 2.0),
 		health: (
 			max_health: 40.0,
