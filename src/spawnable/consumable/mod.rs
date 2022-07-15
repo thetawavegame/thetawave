@@ -36,6 +36,9 @@ pub struct ConsumableData {
     pub initial_motion: InitialMotion,
     pub consumable_effects: Vec<ConsumableEffect>,
     pub consumable_behaviors: Vec<ConsumableBehavior>,
+    pub speed: Vec2,
+    pub acceleration: Vec2,
+    pub deceleration: Vec2,
 }
 
 pub struct ConsumableResource {
@@ -108,12 +111,12 @@ pub fn spawn_consumable(
         })
         .insert(SpawnableComponent {
             spawnable_type: SpawnableType::Consumable(consumable_data.consumable_type.clone()),
-            acceleration: Vec2::ZERO,
-            deceleration: Vec2::ZERO,
-            speed: [game_parameters.max_speed, game_parameters.max_speed].into(),
+            acceleration: consumable_data.acceleration,
+            deceleration: consumable_data.deceleration,
+            speed: consumable_data.speed,
             angular_acceleration: 0.0,
             angular_deceleration: 0.0,
-            angular_speed: game_parameters.max_speed,
+            angular_speed: 0.0,
             behaviors: consumable_data.spawnable_behaviors.clone(),
             should_despawn: false,
         })
