@@ -1,7 +1,9 @@
 use crate::{
     arena::ArenaBarrierComponent,
     player::PlayerComponent,
-    spawnable::{Faction, MobComponent, MobType, ProjectileComponent, ProjectileType},
+    spawnable::{
+        ConsumableComponent, Faction, MobComponent, MobType, ProjectileComponent, ProjectileType,
+    },
 };
 use bevy::prelude::*;
 use bevy_rapier2d::{prelude::*, rapier::prelude::CollisionEventFlags};
@@ -21,6 +23,10 @@ pub enum SortedCollisionEvent {
         mob_faction: Faction,
         projectile_faction: Faction,
         projectile_damage: f32,
+    },
+    PlayerToConsumableIntersection {
+        player_entity: Entity,
+        consumable_entity: Entity,
     },
     PlayerToMobContact {
         player_entity: Entity,
@@ -55,6 +61,7 @@ pub fn intersection_collision_system(
     mut collision_event_writer: EventWriter<SortedCollisionEvent>,
     mut collision_events: EventReader<CollisionEvent>,
     player_query: Query<Entity, With<PlayerComponent>>,
+    consumable_query: Query<Entity, With<ConsumableComponent>>,
     mob_query: Query<(Entity, &MobComponent)>,
     projectile_query: Query<(Entity, &ProjectileComponent)>,
 ) {
@@ -101,6 +108,18 @@ pub fn intersection_collision_system(
                                         ProjectileType::Blast(faction) => faction,
                                     },
                                     projectile_damage: projectile_component.damage,
+                                },
+                            );
+                            continue 'collision_events;
+                        }
+                    }
+                    // check for consumable
+                    for consumable_entity in consumable_query.iter() {
+                        if colliding_entities.secondary == consumable_entity {
+                            collision_event_writer.send(
+                                SortedCollisionEvent::PlayerToConsumableIntersection {
+                                    player_entity: colliding_entities.primary,
+                                    consumable_entity: colliding_entities.secondary,
                                 },
                             );
                             continue 'collision_events;

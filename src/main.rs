@@ -173,6 +173,14 @@ fn main() {
                 .after("contact_collision")
                 .label("effect_execute_behavior"),
         )
+        .add_system_to_stage(
+            CoreStage::PostUpdate,
+            spawnable::consumable_execute_behavior_system
+                .after("set_target_behavior")
+                .after("intersection_collision")
+                .after("contact_collision")
+                .label("consumable_execute_behavior"),
+        )
         .add_system_to_stage(CoreStage::First, spawnable::spawn_effect_system) // event generated in projectile execute behavior
         .add_system_to_stage(
             CoreStage::PostUpdate,

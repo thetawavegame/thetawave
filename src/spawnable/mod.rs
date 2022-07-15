@@ -29,7 +29,8 @@ pub use self::effect::{
 };
 
 pub use self::consumable::{
-    spawn_consumable, spawn_consumable_test_system, ConsumableData, ConsumableResource,
+    consumable_execute_behavior_system, spawn_consumable, spawn_consumable_test_system,
+    ConsumableComponent, ConsumableData, ConsumableResource,
 };
 
 /// Core component of spawnable entities
@@ -188,6 +189,7 @@ pub enum EffectType {
     AllyBlastExplosion,
     AllyBlastDespawn,
     MobExplosion,
+    ConsumableDespawn,
     //EnemyBlastExplosion,
     //PoisonBlastExplosion,
     //CriticalBlastExplosion,

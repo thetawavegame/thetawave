@@ -13,11 +13,12 @@ use crate::{
 
 mod behavior;
 
-pub use self::behavior::ConsumableBehavior;
+pub use self::behavior::{consumable_execute_behavior_system, ConsumableBehavior};
 
 #[derive(Deserialize, Clone)]
 pub enum ConsumableEffect {
     GainHealth(f32),
+    GainDefense(f32),
 }
 
 #[derive(Component)]
@@ -51,13 +52,43 @@ pub fn spawn_consumable_test_system(
     consumable_resource: Res<ConsumableResource>,
     game_parameters: Res<GameParametersResource>,
 ) {
-    spawn_consumable(
-        &ConsumableType::HealthWrench,
-        &consumable_resource,
-        Vec2::new(0.0, 100.0),
-        &mut commands,
-        &game_parameters,
-    );
+    for _ in 1..11 {
+        spawn_consumable(
+            &ConsumableType::HealthWrench,
+            &consumable_resource,
+            Vec2::new(0.0, 100.0),
+            &mut commands,
+            &game_parameters,
+        );
+        spawn_consumable(
+            &ConsumableType::DefenseWrench,
+            &consumable_resource,
+            Vec2::new(0.0, 100.0),
+            &mut commands,
+            &game_parameters,
+        );
+        spawn_consumable(
+            &ConsumableType::Armor,
+            &consumable_resource,
+            Vec2::new(0.0, 100.0),
+            &mut commands,
+            &game_parameters,
+        );
+        spawn_consumable(
+            &ConsumableType::Money5,
+            &consumable_resource,
+            Vec2::new(0.0, 100.0),
+            &mut commands,
+            &game_parameters,
+        );
+        spawn_consumable(
+            &ConsumableType::Money1,
+            &consumable_resource,
+            Vec2::new(0.0, 100.0),
+            &mut commands,
+            &game_parameters,
+        );
+    }
 }
 
 pub fn spawn_consumable(
