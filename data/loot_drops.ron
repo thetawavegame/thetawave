@@ -1,5 +1,6 @@
 (
     consumable_drops: {
+        Nothing: [],
         Standard: [
             (
                 rolls: 1,
@@ -17,7 +18,7 @@
                 consumable: Money1,
             ),
         ],
-        MoneyAsteroid:[
+        MoneyAsteroid: [
             (
                 rolls: 1,
                 probability: 1.0,

@@ -1,8 +1,10 @@
+use bevy::diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin};
 use bevy::{pbr::AmbientLight, prelude::*};
 use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_rapier2d::prelude::*;
 use ron::de::from_bytes;
 use std::collections::HashMap;
+use ui::FPSUI;
 
 pub const PHYSICS_SCALE: f32 = 10.0;
 pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: u32 = 0b0010;
@@ -209,7 +211,9 @@ fn main() {
     // plugins to use only in debug mode
     if cfg!(debug_assertions) {
         app.add_plugin(WorldInspectorPlugin::new())
-            .add_plugin(RapierDebugRenderPlugin::default());
+            .add_plugin(RapierDebugRenderPlugin::default())
+            .add_plugin(FrameTimeDiagnosticsPlugin::default())
+            .add_system(fps_system);
     }
 
     app.run();
@@ -349,4 +353,14 @@ fn setup_game(
 
     // create run resource
     run_resource.create_levels(&levels_resource);
+}
+
+fn fps_system(diagnostics: Res<Diagnostics>, mut query: Query<&mut Text, With<FPSUI>>) {
+    let mut text = query.single_mut();
+
+    if let Some(fps) = diagnostics.get(FrameTimeDiagnosticsPlugin::FPS) {
+        if let Some(average) = fps.average() {
+            text.sections[0].value = format!("fps: {:.2}", average);
+        }
+    };
 }

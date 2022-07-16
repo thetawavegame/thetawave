@@ -205,7 +205,7 @@
 		defense_damage: 0.0,
 		initial_motion: (),
 		collider_dimensions: (1.5, 4.0),
-		consumable_drops: Standard,
+		consumable_drops: Nothing,
 		health: (
 			max_health: 20.0,
 			health: 20.0,

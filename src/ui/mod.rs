@@ -10,6 +10,9 @@ pub struct HealthUI;
 #[derive(Component)]
 pub struct LevelUI;
 
+#[derive(Component)]
+pub struct FPSUI;
+
 /// Initialize all ui
 pub fn setup_ui(mut commands: Commands, asset_server: ResMut<AssetServer>) {
     // setup font
@@ -60,7 +63,7 @@ pub fn setup_ui(mut commands: Commands, asset_server: ResMut<AssetServer>) {
             text: Text::with_section(
                 "Phase Type: None\nPhase Number: None\nObjective: None",
                 TextStyle {
-                    font,
+                    font: font.clone(),
                     font_size: 12.0,
                     color: Color::WHITE,
                 },
@@ -69,6 +72,34 @@ pub fn setup_ui(mut commands: Commands, asset_server: ResMut<AssetServer>) {
             ..TextBundle::default()
         })
         .insert(LevelUI);
+
+    // debug ui
+    if cfg!(debug_assertions) {
+        commands
+            .spawn_bundle(TextBundle {
+                style: Style {
+                    size: Size::default(),
+                    position: Rect {
+                        left: Val::Percent(90.0),
+                        bottom: Val::Percent(5.0),
+                        ..Rect::default()
+                    },
+                    position_type: PositionType::Absolute,
+                    ..Style::default()
+                },
+                text: Text::with_section(
+                    "fps: ",
+                    TextStyle {
+                        font,
+                        font_size: 18.0,
+                        color: Color::WHITE,
+                    },
+                    TextAlignment::default(),
+                ),
+                ..Default::default()
+            })
+            .insert(FPSUI);
+    }
 }
 
 #[allow(clippy::type_complexity)]
