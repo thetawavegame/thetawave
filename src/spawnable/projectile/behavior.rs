@@ -41,7 +41,6 @@ pub fn projectile_execute_behavior_system(
     for (entity, projectile_transform, mut spawnable_component, mut projectile_component) in
         projectile_query.iter_mut()
     {
-        //let behaviors = projectile_component.behaviors.clone();
         for behavior in &mut projectile_component.behaviors {
             match behavior {
                 ProjectileBehavior::ExplodeOnImpact => explode_on_impact(

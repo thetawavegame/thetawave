@@ -28,6 +28,8 @@ pub struct PlayerComponent {
     pub health: Health,
     pub attack_damage: f32,
     pub collision_damage: f32,
+    pub attraction_distance: f32,
+    pub attraction_acceleration: f32,
 }
 
 impl From<&Character> for PlayerComponent {
@@ -46,6 +48,8 @@ impl From<&Character> for PlayerComponent {
             health: character.health.clone(),
             attack_damage: character.attack_damage,
             collision_damage: character.collision_damage,
+            attraction_distance: character.attraction_distance,
+            attraction_acceleration: character.attraction_acceleration,
         }
     }
 }

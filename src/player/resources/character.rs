@@ -35,6 +35,8 @@ pub struct Character {
     pub health: Health,
     pub attack_damage: f32,
     pub collision_damage: f32,
+    pub attraction_distance: f32,
+    pub attraction_acceleration: f32,
 }
 
 /// Manages all characters

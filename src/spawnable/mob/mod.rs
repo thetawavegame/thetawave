@@ -7,6 +7,7 @@ use std::{collections::HashMap, string::ToString};
 use crate::{
     animation::{AnimationComponent, TextureData},
     game::GameParametersResource,
+    loot::ConsumableDropListType,
     misc::Health,
     spawnable::{InitialMotion, MobType, SpawnableBehavior, SpawnableComponent, SpawnableType},
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
@@ -32,6 +33,7 @@ pub struct MobComponent {
     pub collision_damage: f32,
     pub defense_damage: f32,
     pub health: Health,
+    pub consumable_drops: ConsumableDropListType,
 }
 
 /// Data about mob entities that can be stored in data ron file
@@ -69,6 +71,7 @@ pub struct MobData {
     pub collision_damage: f32,
     pub defense_damage: f32,
     pub health: Health,
+    pub consumable_drops: ConsumableDropListType,
 }
 
 /// Data describing thrusters
@@ -154,6 +157,7 @@ pub fn spawn_mob(
         collision_damage: mob_data.collision_damage,
         defense_damage: mob_data.defense_damage,
         health: mob_data.health.clone(),
+        consumable_drops: mob_data.consumable_drops.clone(),
     })
     .insert(SpawnableComponent {
         spawnable_type: SpawnableType::Mob(mob_data.mob_type.clone()),

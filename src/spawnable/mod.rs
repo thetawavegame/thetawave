@@ -29,8 +29,8 @@ pub use self::effect::{
 };
 
 pub use self::consumable::{
-    consumable_execute_behavior_system, spawn_consumable, spawn_consumable_test_system,
-    ConsumableComponent, ConsumableData, ConsumableResource,
+    consumable_execute_behavior_system, spawn_consumable, spawn_consumable_system,
+    ConsumableComponent, ConsumableData, ConsumableResource, SpawnConsumableEvent,
 };
 
 /// Core component of spawnable entities

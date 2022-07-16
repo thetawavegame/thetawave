@@ -14,6 +14,7 @@
 		defense_damage: 10.0,
 		initial_motion: (),
 		collider_dimensions: (5.0, 5.0),
+		consumable_drops: Standard,
 		health: (
 			max_health: 20.0,
 			health: 20.0,
@@ -70,7 +71,7 @@
 		defense_damage: 10.0,
 		initial_motion: (),
 		collider_dimensions: (5.0, 5.0),
-		sprite_dimensions: (18.0, 18.0),
+		consumable_drops: Standard,
 		health: (
 			max_health: 20.0,
 			health: 20.0,
@@ -111,6 +112,7 @@
 		defense_damage: 0.0,
 		initial_motion: (),
 		collider_dimensions: (5.0, 10.0),
+		consumable_drops: Standard,
 		health: (
 			max_health: 20.0,
 			health: 20.0,
@@ -162,6 +164,7 @@
 		defense_damage: 25.0,
 		initial_motion: (),
 		collider_dimensions: (6.0, 8.0),
+		consumable_drops: Standard,
 		health: (
 			max_health: 20.0,
 			health: 20.0,
@@ -202,6 +205,7 @@
 		defense_damage: 0.0,
 		initial_motion: (),
 		collider_dimensions: (1.5, 4.0),
+		consumable_drops: Standard,
 		health: (
 			max_health: 20.0,
 			health: 20.0,
@@ -258,6 +262,7 @@
 		defense_damage: 15.0,
 		initial_motion: (),
 		collider_dimensions: (7.0, 2.0),
+		consumable_drops: Standard,
 		health: (
 			max_health: 40.0,
 			health: 40.0,
@@ -313,6 +318,7 @@
 		defense_damage: 15.0,
 		initial_motion: (),
 		collider_dimensions: (7.0, 2.0),
+		consumable_drops: Standard,
 		health: (
 			max_health: 40.0,
 			health: 40.0,
@@ -351,6 +357,7 @@
 		attack_damage: 0.0,
 		collision_damage: 7.0,
 		defense_damage: 0.0,
+		consumable_drops: MoneyAsteroid,
 		initial_motion: (
 			random_angvel: Some((-1.0, 1.0)),
 		),

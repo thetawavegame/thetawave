@@ -14,6 +14,7 @@ mod arena;
 mod background;
 mod collision;
 mod game;
+mod loot;
 mod misc;
 mod options;
 mod player;
@@ -59,6 +60,10 @@ fn main() {
             color: Color::WHITE,
             brightness: 0.1,
         })
+        .insert_resource(
+            from_bytes::<loot::LootDropsResource>(include_bytes!("../data/loot_drops.ron"))
+                .unwrap(),
+        )
         .insert_resource(
             from_bytes::<player::CharactersResource>(include_bytes!("../data/characters.ron"))
                 .unwrap(),
@@ -122,11 +127,11 @@ fn main() {
         .add_event::<run::LevelCompletedEvent>()
         .add_event::<arena::EnemyReachedBottomGateEvent>()
         .add_event::<spawnable::SpawnEffectEvent>()
+        .add_event::<spawnable::SpawnConsumableEvent>()
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
             PHYSICS_SCALE,
         ))
-        .add_startup_system(spawnable::spawn_consumable_test_system.after("init"))
         .add_startup_system(setup_game.label("init"))
         .add_startup_system(arena::spawn_barriers_system.after("init"))
         .add_startup_system(arena::spawn_despawn_gates_system.after("init"))
@@ -182,6 +187,7 @@ fn main() {
                 .label("consumable_execute_behavior"),
         )
         .add_system_to_stage(CoreStage::First, spawnable::spawn_effect_system) // event generated in projectile execute behavior
+        .add_system_to_stage(CoreStage::First, spawnable::spawn_consumable_system) // event generated in mob execute behavior
         .add_system_to_stage(
             CoreStage::PostUpdate,
             collision::intersection_collision_system.label("intersection_collision"),

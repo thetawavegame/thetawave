@@ -19,6 +19,8 @@
 			),
 			attack_damage: 10.0,
 			collision_damage: 10.0,
+			attraction_distance: 120.0,
+			attraction_acceleration: 3.0,
 		)
 	}
 )

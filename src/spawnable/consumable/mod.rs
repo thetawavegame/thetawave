@@ -28,6 +28,28 @@ pub struct ConsumableComponent {
     pub behaviors: Vec<ConsumableBehavior>,
 }
 
+pub struct SpawnConsumableEvent {
+    pub consumable_type: ConsumableType,
+    pub position: Vec2,
+}
+
+pub fn spawn_consumable_system(
+    mut commands: Commands,
+    mut event_reader: EventReader<SpawnConsumableEvent>,
+    consumables_resource: Res<ConsumableResource>,
+    game_parameters: Res<GameParametersResource>,
+) {
+    for event in event_reader.iter() {
+        spawn_consumable(
+            &event.consumable_type,
+            &consumables_resource,
+            event.position,
+            &mut commands,
+            &game_parameters,
+        );
+    }
+}
+
 #[derive(Deserialize)]
 pub struct ConsumableData {
     pub consumable_type: ConsumableType,
@@ -45,50 +67,6 @@ pub struct ConsumableData {
 pub struct ConsumableResource {
     pub consumables: HashMap<ConsumableType, ConsumableData>,
     pub texture_atlas_handle: HashMap<ConsumableType, Handle<TextureAtlas>>,
-}
-
-pub fn spawn_consumable_test_system(
-    mut commands: Commands,
-    consumable_resource: Res<ConsumableResource>,
-    game_parameters: Res<GameParametersResource>,
-) {
-    for _ in 1..11 {
-        spawn_consumable(
-            &ConsumableType::HealthWrench,
-            &consumable_resource,
-            Vec2::new(0.0, 100.0),
-            &mut commands,
-            &game_parameters,
-        );
-        spawn_consumable(
-            &ConsumableType::DefenseWrench,
-            &consumable_resource,
-            Vec2::new(0.0, 100.0),
-            &mut commands,
-            &game_parameters,
-        );
-        spawn_consumable(
-            &ConsumableType::Armor,
-            &consumable_resource,
-            Vec2::new(0.0, 100.0),
-            &mut commands,
-            &game_parameters,
-        );
-        spawn_consumable(
-            &ConsumableType::Money5,
-            &consumable_resource,
-            Vec2::new(0.0, 100.0),
-            &mut commands,
-            &game_parameters,
-        );
-        spawn_consumable(
-            &ConsumableType::Money1,
-            &consumable_resource,
-            Vec2::new(0.0, 100.0),
-            &mut commands,
-            &game_parameters,
-        );
-    }
 }
 
 pub fn spawn_consumable(
