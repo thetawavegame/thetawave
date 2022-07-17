@@ -1,5 +1,7 @@
 use crate::player::PlayerComponent;
 use bevy::prelude::*;
+use bevy_rapier2d::prelude::Velocity;
+use rand::{thread_rng, Rng};
 use serde::Deserialize;
 use strum_macros::Display;
 
@@ -26,6 +28,11 @@ pub use self::effect::{
     SpawnEffectEvent,
 };
 
+pub use self::consumable::{
+    consumable_execute_behavior_system, spawn_consumable, spawn_consumable_system,
+    ConsumableComponent, ConsumableData, ConsumableResource, SpawnConsumableEvent,
+};
+
 /// Core component of spawnable entities
 #[derive(Component)]
 pub struct SpawnableComponent {
@@ -50,12 +57,39 @@ pub struct SpawnableComponent {
 }
 
 /// Initial motion that entity is spawned in with
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, Default)]
 pub struct InitialMotion {
+    /// Optional angular velocity
+    pub angvel: Option<f32>,
     /// Optional random range of angular velocity
     pub random_angvel: Option<(f32, f32)>,
     /// Optional linear velocity
     pub linvel: Option<Vec2>,
+    /// Optional random range of linear velocity
+    pub random_linvel: Option<(Vec2, Vec2)>,
+}
+
+impl From<InitialMotion> for Velocity {
+    fn from(im: InitialMotion) -> Self {
+        let random_linvel = if let Some((lower, upper)) = im.random_linvel {
+            let x = thread_rng().gen_range(lower.x..=upper.x);
+            let y = thread_rng().gen_range(lower.y..=upper.y);
+            Vec2::new(x, y)
+        } else {
+            Vec2::ZERO
+        };
+
+        let random_angvel = if let Some((lower, upper)) = im.random_angvel {
+            thread_rng().gen_range(lower..=upper)
+        } else {
+            0.0
+        };
+
+        Velocity {
+            linvel: im.linvel.unwrap_or_default() + random_linvel,
+            angvel: im.angvel.unwrap_or_default() + random_angvel,
+        }
+    }
 }
 
 /// Type that encompasses all spawnable entities
@@ -155,6 +189,7 @@ pub enum EffectType {
     AllyBlastExplosion,
     AllyBlastDespawn,
     MobExplosion,
+    ConsumableDespawn,
     //EnemyBlastExplosion,
     //PoisonBlastExplosion,
     //CriticalBlastExplosion,

@@ -31,11 +31,11 @@ pub fn player_fire_weapon_system(
             );
 
             let initial_motion = InitialMotion {
-                random_angvel: None,
                 linvel: Some(Vec2::new(
                     (player_component.projectile_velocity.x) + rb_vels.linvel.x,
                     (player_component.projectile_velocity.y) + rb_vels.linvel.y,
                 )),
+                ..Default::default()
             };
 
             spawn_projectile(

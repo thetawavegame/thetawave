@@ -35,4 +35,16 @@
 			animation_direction: Forward,
 		),
 	),
+	ConsumableDespawn: (
+		effect_type: ConsumableDespawn,
+		effect_behaviors: [DespawnAfterAnimation],
+		texture: (
+			path: "texture/consumable_despawn_spritesheet.png",
+			dimensions: (9, 9),
+			cols: 5,
+			rows: 1,
+			frame_duration: .05,
+			animation_direction: Forward,
+		),
+	),
 }

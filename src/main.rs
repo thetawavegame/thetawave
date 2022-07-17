@@ -1,8 +1,10 @@
+use bevy::diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin};
 use bevy::{pbr::AmbientLight, prelude::*};
 use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_rapier2d::prelude::*;
 use ron::de::from_bytes;
 use std::collections::HashMap;
+use ui::FPSUI;
 
 pub const PHYSICS_SCALE: f32 = 10.0;
 pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: u32 = 0b0010;
@@ -14,6 +16,7 @@ mod arena;
 mod background;
 mod collision;
 mod game;
+mod loot;
 mod misc;
 mod options;
 mod player;
@@ -60,6 +63,10 @@ fn main() {
             brightness: 0.1,
         })
         .insert_resource(
+            from_bytes::<loot::LootDropsResource>(include_bytes!("../data/loot_drops.ron"))
+                .unwrap(),
+        )
+        .insert_resource(
             from_bytes::<player::CharactersResource>(include_bytes!("../data/characters.ron"))
                 .unwrap(),
         )
@@ -103,6 +110,14 @@ fn main() {
                 .unwrap(),
             texture_atlas_handle: HashMap::new(),
         })
+        .insert_resource(spawnable::ConsumableResource {
+            consumables:
+                from_bytes::<HashMap<spawnable::ConsumableType, spawnable::ConsumableData>>(
+                    include_bytes!("../data/consumables.ron"),
+                )
+                .unwrap(),
+            texture_atlas_handle: HashMap::new(),
+        })
         .insert_resource(
             from_bytes::<background::BackgroundsResource>(include_bytes!(
                 "../data/backgrounds.ron"
@@ -114,6 +129,7 @@ fn main() {
         .add_event::<run::LevelCompletedEvent>()
         .add_event::<arena::EnemyReachedBottomGateEvent>()
         .add_event::<spawnable::SpawnEffectEvent>()
+        .add_event::<spawnable::SpawnConsumableEvent>()
         .add_plugins(DefaultPlugins)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
             PHYSICS_SCALE,
@@ -164,7 +180,16 @@ fn main() {
                 .after("contact_collision")
                 .label("effect_execute_behavior"),
         )
+        .add_system_to_stage(
+            CoreStage::PostUpdate,
+            spawnable::consumable_execute_behavior_system
+                .after("set_target_behavior")
+                .after("intersection_collision")
+                .after("contact_collision")
+                .label("consumable_execute_behavior"),
+        )
         .add_system_to_stage(CoreStage::First, spawnable::spawn_effect_system) // event generated in projectile execute behavior
+        .add_system_to_stage(CoreStage::First, spawnable::spawn_consumable_system) // event generated in mob execute behavior
         .add_system_to_stage(
             CoreStage::PostUpdate,
             collision::intersection_collision_system.label("intersection_collision"),
@@ -186,7 +211,9 @@ fn main() {
     // plugins to use only in debug mode
     if cfg!(debug_assertions) {
         app.add_plugin(WorldInspectorPlugin::new())
-            .add_plugin(RapierDebugRenderPlugin::default());
+            .add_plugin(RapierDebugRenderPlugin::default())
+            .add_plugin(FrameTimeDiagnosticsPlugin::default())
+            .add_system(fps_system);
     }
 
     app.run();
@@ -201,6 +228,7 @@ fn setup_game(
     mut mobs: ResMut<spawnable::MobsResource>,
     mut projectiles: ResMut<spawnable::ProjectileResource>,
     mut effects: ResMut<spawnable::EffectsResource>,
+    mut consumables: ResMut<spawnable::ConsumableResource>,
     mut rapier_config: ResMut<RapierConfiguration>,
     mut run_resource: ResMut<run::RunResource>,
     levels_resource: Res<run::LevelsResource>,
@@ -280,7 +308,6 @@ fn setup_game(
     let mut effect_texture_atlas_dict = HashMap::new();
     for (effect_type, effect_data) in effects.effects.iter() {
         // effect texture
-        println!("loading resource: {}", &effect_data.texture.path[..]);
         let texture_handle = asset_server.load(&effect_data.texture.path[..]);
         let effect_atlas = TextureAtlas::from_grid(
             texture_handle,
@@ -293,6 +320,28 @@ fn setup_game(
         effect_texture_atlas_dict.insert(effect_type.clone(), texture_atlases.add(effect_atlas));
     }
 
+    // load consumable assets
+    let mut consumable_texture_atlas_dict = HashMap::new();
+    for (consumable_type, consumable_data) in consumables.consumables.iter() {
+        // consumable texture
+        let texture_handle = asset_server.load(&consumable_data.texture.path[..]);
+        let consumable_atlas = TextureAtlas::from_grid(
+            texture_handle,
+            consumable_data.texture.dimensions,
+            consumable_data.texture.cols,
+            consumable_data.texture.rows,
+        );
+
+        // add consumable texture handle to dictionary
+        consumable_texture_atlas_dict.insert(
+            consumable_type.clone(),
+            texture_atlases.add(consumable_atlas),
+        );
+    }
+
+    // add texture atlas dict to the effects resource
+    consumables.texture_atlas_handle = consumable_texture_atlas_dict;
+
     // add texture atlas dict to the effects resource
     effects.texture_atlas_handle = effect_texture_atlas_dict;
 
@@ -304,4 +353,14 @@ fn setup_game(
 
     // create run resource
     run_resource.create_levels(&levels_resource);
+}
+
+fn fps_system(diagnostics: Res<Diagnostics>, mut query: Query<&mut Text, With<FPSUI>>) {
+    let mut text = query.single_mut();
+
+    if let Some(fps) = diagnostics.get(FrameTimeDiagnosticsPlugin::FPS) {
+        if let Some(average) = fps.average() {
+            text.sections[0].value = format!("fps: {:.2}", average);
+        }
+    };
 }

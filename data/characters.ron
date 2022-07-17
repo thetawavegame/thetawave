@@ -14,11 +14,14 @@
 			fire_period: 0.4,
 			health: (
 				max_health: 100.0,
-				health: 100.0,
+				health: 50.0,
 				armor: 0,	
 			),
 			attack_damage: 10.0,
 			collision_damage: 10.0,
+			attraction_distance: 120.0,
+			attraction_acceleration: 3.0,
+			money: 3,
 		)
 	}
 )

@@ -6,9 +6,10 @@ use serde::Deserialize;
 use crate::{
     collision::SortedCollisionEvent,
     game::GameParametersResource,
+    loot::LootDropsResource,
     spawnable::{
         spawn_projectile, EffectType, InitialMotion, MobType, PlayerComponent, ProjectileResource,
-        ProjectileType, SpawnEffectEvent, SpawnableComponent,
+        ProjectileType, SpawnConsumableEvent, SpawnEffectEvent, SpawnableComponent,
     },
 };
 
@@ -67,6 +68,8 @@ pub fn mob_execute_behavior_system(
     )>,
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
+    mut spawn_consumable_event_writer: EventWriter<SpawnConsumableEvent>,
+    loot_drops_resource: Res<LootDropsResource>,
 ) {
     // Get all contact events first (can't be read more than once within a system)
     let mut collision_events_vec = vec![];
@@ -173,6 +176,13 @@ pub fn mob_execute_behavior_system(
                             effect_type: EffectType::MobExplosion,
                             position: mob_transform.translation.xy(),
                         });
+
+                        // drop loot
+                        loot_drops_resource.roll_and_spawn_consumables(
+                            &mob_component.consumable_drops,
+                            &mut spawn_consumable_event_writer,
+                            mob_transform.translation.xy(),
+                        );
                     }
                 }
             }

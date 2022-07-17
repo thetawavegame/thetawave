@@ -1,0 +1,44 @@
+(
+    consumable_drops: {
+        Nothing: [],
+        Standard: [
+            (
+                rolls: 1,
+                probability: 0.03,
+                consumable: Armor,
+            ),
+            (
+                rolls: 1,
+                probability: 0.08,
+                consumable: HealthWrench,
+            ),
+            (
+                rolls: 1,
+                probability: 0.05,
+                consumable: DefenseWrench,
+            ),
+            (
+                rolls: 2,
+                probability: 0.1,
+                consumable: Money1,
+            ),
+        ],
+        MoneyAsteroid: [
+            (
+                rolls: 1,
+                probability: 1.0,
+                consumable: Money1,
+            ),
+            (
+                rolls: 5,
+                probability: 0.2,
+                consumable: Money1,
+            ),
+            (
+                rolls: 1,
+                probability: 0.2,
+                consumable: Money5,
+            ),
+        ],
+    }
+)
