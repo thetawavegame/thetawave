@@ -146,6 +146,12 @@ fn apply_effects_on_impact(
                                         health.heal(*defense);
                                     }
                                 }
+                                ConsumableEffect::GainArmor(armor) => {
+                                    player_component.health.gain_armor(*armor);
+                                }
+                                ConsumableEffect::GainMoney(money) => {
+                                    player_component.money += *money;
+                                }
                             }
                         }
                     }

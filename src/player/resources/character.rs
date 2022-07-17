@@ -32,11 +32,18 @@ pub struct Character {
     pub projectile_offset_position: Vec2,
     /// Period of time between firing blasts
     pub fire_period: f32,
+    /// Health of the player
     pub health: Health,
+    /// Amount of damage dealt per attack
     pub attack_damage: f32,
+    /// Amount of damage dealt on contact
     pub collision_damage: f32,
+    /// Distance to attract items and consumables
     pub attraction_distance: f32,
+    /// Acceleration applied to items and conumables in attraction distance
     pub attraction_acceleration: f32,
+    /// Amount of money character has collected
+    pub money: usize,
 }
 
 /// Manages all characters

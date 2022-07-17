@@ -30,6 +30,7 @@ pub struct PlayerComponent {
     pub collision_damage: f32,
     pub attraction_distance: f32,
     pub attraction_acceleration: f32,
+    pub money: usize,
 }
 
 impl From<&Character> for PlayerComponent {
@@ -50,6 +51,7 @@ impl From<&Character> for PlayerComponent {
             collision_damage: character.collision_damage,
             attraction_distance: character.attraction_distance,
             attraction_acceleration: character.attraction_acceleration,
+            money: character.money,
         }
     }
 }
