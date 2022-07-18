@@ -8,7 +8,7 @@ pub struct DespawnGateComponent;
 
 /// Spawn gates for despawning entities
 pub fn spawn_despawn_gates_system(mut commands: Commands) {
-    spawn_despawn_gate(&mut commands, Vec2::new(0.0, -450.0), 1000.0, 50.0);
+    spawn_despawn_gate(&mut commands, Vec2::new(0.0, -800.0), 1000.0, 50.0);
 }
 
 /// Spawn a despawn gate

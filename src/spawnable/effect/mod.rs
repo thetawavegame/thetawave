@@ -23,6 +23,7 @@ pub struct EffectData {
     pub effect_type: super::EffectType,
     pub texture: TextureData,
     pub effect_behaviors: Vec<behavior::EffectBehavior>,
+    pub z_level: f32,
 }
 
 pub struct EffectsResource {
@@ -90,7 +91,7 @@ pub fn spawn_effect(
         })
         .insert(RigidBody::Fixed)
         .insert_bundle(TransformBundle::from_transform(Transform {
-            translation: position.extend(0.0),
+            translation: position.extend(effect_data.z_level),
             scale: Vec3::new(
                 game_parameters.sprite_scale,
                 game_parameters.sprite_scale,

@@ -2,6 +2,7 @@
 	AllyBlastExplosion: (
 		effect_type: AllyBlastExplosion,
 		effect_behaviors: [DespawnAfterAnimation],
+		z_level: 10.0,
 		texture: (
 			path: "texture/ally_blast_explosion_spritesheet.png",
 			dimensions: (12, 12),
@@ -14,6 +15,7 @@
 	AllyBlastDespawn: (
 		effect_type: AllyBlastDespawn,
 		effect_behaviors: [DespawnAfterAnimation],
+		z_level: 9.0,
 		texture: (
 			path: "texture/ally_blast_despawn_spritesheet.png",
 			dimensions: (10, 10),
@@ -26,6 +28,7 @@
 	MobExplosion: (
 		effect_type: MobExplosion,
 		effect_behaviors: [DespawnAfterAnimation],
+		z_level: -5.0,
 		texture: (
 			path: "texture/mob_explosion_spritesheet.png",
 			dimensions: (26, 26),
@@ -38,6 +41,7 @@
 	ConsumableDespawn: (
 		effect_type: ConsumableDespawn,
 		effect_behaviors: [DespawnAfterAnimation],
+		z_level: 9.0,
 		texture: (
 			path: "texture/consumable_despawn_spritesheet.png",
 			dimensions: (9, 9),

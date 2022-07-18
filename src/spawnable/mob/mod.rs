@@ -72,6 +72,7 @@ pub struct MobData {
     pub defense_damage: f32,
     pub health: Health,
     pub consumable_drops: ConsumableDropListType,
+    pub z_level: f32,
 }
 
 /// Data describing thrusters
@@ -114,7 +115,7 @@ pub fn spawn_mob(
     mob.insert_bundle(SpriteSheetBundle {
         texture_atlas: texture_atlas_handle,
         transform: Transform {
-            translation: position.extend(0.0),
+            translation: position.extend(mob_data.z_level),
             scale: Vec3::new(
                 game_parameters.sprite_scale,
                 game_parameters.sprite_scale,

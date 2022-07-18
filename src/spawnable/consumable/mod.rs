@@ -64,6 +64,7 @@ pub struct ConsumableData {
     pub speed: Vec2,
     pub acceleration: Vec2,
     pub deceleration: Vec2,
+    pub z_level: f32,
 }
 
 pub struct ConsumableResource {
@@ -105,7 +106,7 @@ pub fn spawn_consumable(
         .insert(LockedAxes::ROTATION_LOCKED)
         .insert(Velocity::from(consumable_data.initial_motion.clone()))
         .insert(Transform {
-            translation: position.extend(0.0),
+            translation: position.extend(consumable_data.z_level),
             scale: Vec3::new(
                 game_parameters.sprite_scale,
                 game_parameters.sprite_scale,
