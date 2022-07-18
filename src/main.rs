@@ -16,6 +16,7 @@ mod arena;
 mod background;
 mod collision;
 mod game;
+mod game_over;
 mod loot;
 mod main_menu;
 mod misc;
@@ -161,6 +162,16 @@ fn main() {
     );
 
     app.add_system_set(
+        SystemSet::on_enter(states::AppStates::GameOver)
+            .with_system(game_over::setup_game_over_system),
+    );
+
+    app.add_system_set(
+        SystemSet::on_exit(states::AppStates::GameOver)
+            .with_system(game_over::clear_game_over_system),
+    );
+
+    app.add_system_set(
         SystemSet::on_enter(states::AppStates::MainMenu)
             .with_system(main_menu::setup_main_menu_system),
     );
@@ -227,7 +238,8 @@ fn main() {
             .with_system(player::player_fire_weapon_system)
             .with_system(spawnable::spawn_effect_system) // event generated in projectile execute behavior, consumable execute behavior
             .with_system(spawnable::spawn_consumable_system) // event generated in mob execute behavior
-            .with_system(states::open_pause_menu_system),
+            .with_system(states::open_pause_menu_system)
+            .with_system(player::player_death_system),
     );
 
     // plugins to use only in debug mode

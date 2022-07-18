@@ -9,5 +9,5 @@ pub use self::{
     components::PlayerComponent,
     resources::{Character, CharactersResource},
     spawn::spawn_player_system,
-    systems::{player_fire_weapon_system, player_movement_system},
+    systems::{player_death_system, player_fire_weapon_system, player_movement_system},
 };
