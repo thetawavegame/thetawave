@@ -17,6 +17,7 @@ pub enum ConsumableBehavior {
 }
 
 pub fn consumable_execute_behavior_system(
+    mut commands: Commands,
     mut consumable_query: Query<(
         Entity,
         &Transform,
@@ -46,6 +47,7 @@ pub fn consumable_execute_behavior_system(
             match behavior {
                 ConsumableBehavior::ApplyEffectsOnImpact => {
                     apply_effects_on_impact(
+                        &mut commands,
                         entity,
                         consumable_transform,
                         &mut spawnable_component,
@@ -106,6 +108,7 @@ fn attract_to_player(
 }
 
 fn apply_effects_on_impact(
+    commands: &mut Commands,
     entity: Entity,
     transform: &Transform,
     spawnable_component: &mut SpawnableComponent,
@@ -123,7 +126,7 @@ fn apply_effects_on_impact(
         {
             if entity == *consumable_entity {
                 // despawn consumable
-                spawnable_component.should_despawn = true;
+                commands.entity(entity).despawn_recursive();
 
                 // TODO: spawn effect
                 spawn_effect_event_writer.send(SpawnEffectEvent {

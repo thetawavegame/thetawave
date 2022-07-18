@@ -146,6 +146,7 @@ pub fn mob_execute_behavior_system(
                 }
                 MobBehavior::ExplodeOnImpact => {
                     explode_on_impact(
+                        &mut commands,
                         entity,
                         &mut spawnable_component,
                         &collision_events_vec,
@@ -170,7 +171,6 @@ pub fn mob_execute_behavior_system(
                 }
                 MobBehavior::DieAtZeroHealth => {
                     if mob_component.health.is_dead() {
-                        spawnable_component.should_despawn = true;
                         // spawn mob explosion
                         spawn_effect_event_writer.send(SpawnEffectEvent {
                             effect_type: EffectType::MobExplosion,
@@ -183,6 +183,9 @@ pub fn mob_execute_behavior_system(
                             &mut spawn_consumable_event_writer,
                             mob_transform.translation.xy(),
                         );
+
+                        // despawn mob
+                        commands.entity(entity).despawn_recursive();
                     }
                 }
             }
@@ -261,6 +264,7 @@ fn deal_damage_to_player_on_impact(
 
 /// Explode spawnable on impact
 fn explode_on_impact(
+    commands: &mut Commands,
     entity: Entity,
     spawnable_component: &mut SpawnableComponent,
     collision_events: &[&SortedCollisionEvent],
@@ -278,13 +282,13 @@ fn explode_on_impact(
             } => {
                 // remove faction check to allow allied mobs to harm players
                 if entity == *mob_entity {
-                    // despawn mob
-                    spawnable_component.should_despawn = true;
                     // spawn mob explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::MobExplosion,
                         position: transform.translation.xy(),
                     });
+                    // despawn mob
+                    commands.entity(entity).despawn_recursive();
                     continue;
                 }
             }
@@ -297,13 +301,13 @@ fn explode_on_impact(
                 mob_damage_2: _,
             } => {
                 if entity == *mob_entity_1 {
-                    // despawn mob
-                    spawnable_component.should_despawn = true;
                     // spawn mob explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::MobExplosion,
                         position: transform.translation.xy(),
                     });
+                    // despawn mob
+                    commands.entity(entity).despawn_recursive();
                     continue;
                 }
             }

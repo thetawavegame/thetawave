@@ -168,7 +168,6 @@ pub fn spawn_mob(
         angular_deceleration: mob_data.angular_deceleration,
         angular_speed: mob_data.angular_speed,
         behaviors: mob_data.spawnable_behaviors.clone(),
-        should_despawn: false,
     })
     .insert(ActiveEvents::COLLISION_EVENTS)
     .insert(Name::new(mob_data.mob_type.to_string()));

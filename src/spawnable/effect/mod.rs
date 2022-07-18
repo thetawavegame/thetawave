@@ -87,7 +87,6 @@ pub fn spawn_effect(
             angular_deceleration: 0.0,
             angular_speed: 0.0,
             behaviors: vec![],
-            should_despawn: false,
         })
         .insert(RigidBody::Fixed)
         .insert_bundle(TransformBundle::from_transform(Transform {

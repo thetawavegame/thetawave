@@ -129,7 +129,6 @@ pub fn spawn_projectile(
             angular_deceleration: 0.0,
             angular_speed: game_parameters.max_speed,
             behaviors: projectile_data.spawnable_behaviors.clone(),
-            should_despawn: false,
         })
         .insert(ActiveEvents::COLLISION_EVENTS)
         /*

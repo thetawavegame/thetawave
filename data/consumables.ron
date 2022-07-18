@@ -75,7 +75,7 @@
         deceleration: (0.5, 1.0),
         speed: (0.0, 110.0),
         initial_motion: (
-            random_linvel: Some(((-150, 50),(150, 150))),
+            random_linvel: Some(((-120, 50),(120, 120))),
             random_angvel: Some((-5.0, 5.0)),
         ),
         texture: (

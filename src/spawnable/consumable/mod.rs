@@ -129,7 +129,6 @@ pub fn spawn_consumable(
             angular_deceleration: 0.0,
             angular_speed: 0.0,
             behaviors: consumable_data.spawnable_behaviors.clone(),
-            should_despawn: false,
         })
         .insert(ActiveEvents::COLLISION_EVENTS)
         .insert(Name::new(consumable_data.consumable_type.to_string()));

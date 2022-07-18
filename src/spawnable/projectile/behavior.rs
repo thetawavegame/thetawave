@@ -21,6 +21,7 @@ pub enum ProjectileBehavior {
 
 /// Manages executing behaviors of mobs
 pub fn projectile_execute_behavior_system(
+    mut commands: Commands,
     mut projectile_query: Query<(
         Entity,
         &Transform,
@@ -44,6 +45,7 @@ pub fn projectile_execute_behavior_system(
         for behavior in &mut projectile_component.behaviors {
             match behavior {
                 ProjectileBehavior::ExplodeOnImpact => explode_on_impact(
+                    &mut commands,
                     entity,
                     projectile_transform,
                     &mut spawnable_component,
@@ -58,9 +60,6 @@ pub fn projectile_execute_behavior_system(
                 } => {
                     *current_time += time.delta_seconds();
                     if current_time > despawn_time {
-                        spawnable_component.should_despawn = true;
-                        // TODO: spawn fizzle out animation
-
                         spawn_effect_event_writer.send(SpawnEffectEvent {
                             effect_type: EffectType::AllyBlastDespawn,
                             position: Vec2::new(
@@ -68,6 +67,8 @@ pub fn projectile_execute_behavior_system(
                                 projectile_transform.translation.y,
                             ),
                         });
+
+                        commands.entity(entity).despawn_recursive();
                     }
                 }
             }
@@ -77,6 +78,7 @@ pub fn projectile_execute_behavior_system(
 
 /// Explode projectile on impact
 fn explode_on_impact(
+    commands: &mut Commands,
     entity: Entity,
     transform: &Transform,
     spawnable_component: &mut SpawnableComponent,
@@ -99,8 +101,6 @@ fn explode_on_impact(
                         Faction::Neutral | Faction::Enemy
                     )
                 {
-                    // despawn blast
-                    spawnable_component.should_despawn = true;
                     // spawn explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::AllyBlastExplosion,
@@ -112,6 +112,10 @@ fn explode_on_impact(
                             player_component.health.take_damage(*projectile_damage);
                         }
                     }
+
+                    // despawn blast
+                    commands.entity(entity).despawn_recursive();
+
                     continue;
                 }
             }
@@ -130,8 +134,6 @@ fn explode_on_impact(
                         Faction::Neutral => matches!(projectile_faction, Faction::Neutral),
                     }
                 {
-                    // despawn blast
-                    spawnable_component.should_despawn = true;
                     // spawn explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::AllyBlastExplosion,
@@ -143,6 +145,8 @@ fn explode_on_impact(
                             mob_component.health.take_damage(*projectile_damage);
                         }
                     }
+                    // despawn blast
+                    commands.entity(entity).despawn_recursive();
                     continue;
                 }
             }

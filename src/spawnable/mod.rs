@@ -52,8 +52,6 @@ pub struct SpawnableComponent {
     pub angular_speed: f32,
     /// List of behaviors that are performed
     pub behaviors: Vec<SpawnableBehavior>,
-    /// Flag to despawn next frame
-    pub should_despawn: bool,
 }
 
 /// Initial motion that entity is spawned in with
@@ -213,18 +211,6 @@ pub fn despawn_timer_system(
     for (entity, mut despawn_timer) in despawn_timer_query.iter_mut() {
         despawn_timer.despawn_timer.tick(time.delta());
         if despawn_timer.despawn_timer.just_finished() {
-            commands.entity(entity).despawn_recursive();
-        }
-    }
-}
-
-/// Despawn spawnables that are flagged with 'should_despawn'
-pub fn despawn_spawnable_system(
-    mut commands: Commands,
-    spawnable_query: Query<(Entity, &SpawnableComponent)>,
-) {
-    for (entity, spawnable_component) in spawnable_query.iter() {
-        if spawnable_component.should_despawn {
             commands.entity(entity).despawn_recursive();
         }
     }
