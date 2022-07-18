@@ -13,13 +13,15 @@ pub struct LevelUI;
 #[derive(Component)]
 pub struct FPSUI;
 
-/// Initialize all ui
-pub fn setup_ui(mut commands: Commands, asset_server: ResMut<AssetServer>) {
-    // setup font
-    let font = asset_server.load("fonts/SpaceMadness.ttf");
-
+pub fn setup_ui_camera_system(mut commands: Commands) {
     // spawn camera for viewing ui
     commands.spawn_bundle(UiCameraBundle::default());
+}
+
+/// Initialize all ui
+pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetServer>) {
+    // setup font
+    let font = asset_server.load("fonts/SpaceMadness.ttf");
 
     // spawn player health ui
     commands

@@ -38,3 +38,15 @@ pub fn close_pause_menu_system(
         rapier_config.query_pipeline_active = true;
     }
 }
+
+pub fn start_game_system(
+    mut keyboard_input: ResMut<Input<KeyCode>>,
+    mut app_state: ResMut<State<AppStates>>,
+) {
+    let enter = keyboard_input.just_released(KeyCode::Return);
+
+    if enter {
+        app_state.set(AppStates::Game).unwrap();
+        keyboard_input.release(KeyCode::Return);
+    }
+}

@@ -17,6 +17,7 @@ mod background;
 mod collision;
 mod game;
 mod loot;
+mod main_menu;
 mod misc;
 mod options;
 mod player;
@@ -58,7 +59,7 @@ fn main() {
     let mut app = App::new();
 
     // add states
-    app.add_state(states::AppStates::Game); // start game in the main menu state
+    app.add_state(states::AppStates::MainMenu); // start game in the main menu state
 
     // add default plugins
     app.add_plugins(DefaultPlugins);
@@ -140,7 +141,9 @@ fn main() {
         .add_event::<spawnable::SpawnConsumableEvent>()
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
             PHYSICS_SCALE,
-        ));
+        ))
+        .add_startup_system(ui::setup_ui_camera_system)
+        .add_system(main_menu::flashing_prompt_system);
 
     // game startup systems (perhaps exchange with app.add_startup_system_set)
     app.add_system_set(
@@ -154,7 +157,21 @@ fn main() {
                     .label("spawn_player")
                     .after("init"),
             )
-            .with_system(ui::setup_ui.after("spawn_player")),
+            .with_system(ui::setup_game_ui_system.after("spawn_player")),
+    );
+
+    app.add_system_set(
+        SystemSet::on_enter(states::AppStates::MainMenu)
+            .with_system(main_menu::setup_main_menu_system),
+    );
+
+    app.add_system_set(
+        SystemSet::on_update(states::AppStates::MainMenu).with_system(states::start_game_system),
+    );
+
+    app.add_system_set(
+        SystemSet::on_exit(states::AppStates::MainMenu)
+            .with_system(main_menu::clear_main_menu_system),
     );
 
     app.add_system_set(
