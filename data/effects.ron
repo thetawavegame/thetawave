@@ -4,7 +4,7 @@
 		effect_behaviors: [DespawnAfterAnimation],
 		texture: (
 			path: "texture/ally_blast_explosion_spritesheet.png",
-			dimensions: (10, 10),
+			dimensions: (12, 12),
 			cols: 7,
 			rows: 1,
 			frame_duration: .1,
@@ -16,7 +16,7 @@
 		effect_behaviors: [DespawnAfterAnimation],
 		texture: (
 			path: "texture/ally_blast_despawn_spritesheet.png",
-			dimensions: (8, 8),
+			dimensions: (10, 10),
 			cols: 6,
 			rows: 1,
 			frame_duration: .1,
@@ -28,7 +28,7 @@
 		effect_behaviors: [DespawnAfterAnimation],
 		texture: (
 			path: "texture/mob_explosion_spritesheet.png",
-			dimensions: (24, 24),
+			dimensions: (26, 26),
 			cols: 10,
 			rows: 1,
 			frame_duration: .1,
