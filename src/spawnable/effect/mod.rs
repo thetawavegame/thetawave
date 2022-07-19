@@ -1,6 +1,7 @@
 use crate::{
     animation::{AnimationComponent, TextureData},
     game::GameParametersResource,
+    states::{AppStateComponent, AppStates},
 };
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
@@ -99,5 +100,6 @@ pub fn spawn_effect(
             ),
             ..Default::default()
         }))
+        .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new(effect_data.effect_type.to_string()));
 }

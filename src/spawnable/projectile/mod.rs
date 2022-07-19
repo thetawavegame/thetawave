@@ -9,6 +9,7 @@ use crate::{
     game::GameParametersResource,
     spawnable::InitialMotion,
     spawnable::{ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType},
+    states::{AppStateComponent, AppStates},
 };
 
 mod behavior;
@@ -132,5 +133,6 @@ pub fn spawn_projectile(
             behaviors: projectile_data.spawnable_behaviors.clone(),
         })
         .insert(ActiveEvents::COLLISION_EVENTS)
+        .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new(projectile_data.projectile_type.to_string()));
 }

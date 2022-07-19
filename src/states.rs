@@ -7,7 +7,12 @@ pub enum AppStates {
     PauseMenu,
     Game,
     GameOver,
+    Victory,
 }
+
+// used for tagging entities that are part of the game state
+#[derive(Component)]
+pub struct AppStateComponent(pub AppStates);
 
 pub fn open_pause_menu_system(
     mut keyboard_input: ResMut<Input<KeyCode>>,

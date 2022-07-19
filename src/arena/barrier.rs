@@ -1,4 +1,7 @@
-use crate::{HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP};
+use crate::{
+    states::{AppStateComponent, AppStates},
+    HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
+};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
@@ -27,6 +30,7 @@ fn spawn_barrier(commands: &mut Commands, position: Vec2, width: f32, height: f3
         .insert(Restitution::new(1.0))
         .insert(Friction::new(0.0))
         .insert(ArenaBarrierComponent)
+        .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new("Barrier"));
 }
 
@@ -45,5 +49,6 @@ fn spawn_spawnables_pass_barrier(commands: &mut Commands, position: Vec2, width:
             memberships: HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
             filters: u32::MAX ^ SPAWNABLE_COL_GROUP_MEMBERSHIP,
         })
+        .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new("Spawnables-Pass Barrier"));
 }

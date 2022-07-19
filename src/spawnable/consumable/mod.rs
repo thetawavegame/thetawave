@@ -9,6 +9,7 @@ use crate::{
     spawnable::{
         ConsumableType, InitialMotion, SpawnableBehavior, SpawnableComponent, SpawnableType,
     },
+    states::{AppStateComponent, AppStates},
 };
 
 mod behavior;
@@ -132,5 +133,6 @@ pub fn spawn_consumable(
             behaviors: consumable_data.spawnable_behaviors.clone(),
         })
         .insert(ActiveEvents::COLLISION_EVENTS)
+        .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new(consumable_data.consumable_type.to_string()));
 }

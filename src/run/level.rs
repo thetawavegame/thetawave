@@ -2,7 +2,10 @@ use bevy::prelude::*;
 use serde::Deserialize;
 use std::{collections::HashMap, time::Duration};
 
-use crate::{arena::EnemyReachedBottomGateEvent, misc::Health, tools::weighted_rng};
+use crate::{
+    arena::EnemyReachedBottomGateEvent, game_over::EndGameTransitionResource, misc::Health,
+    states::AppStates, tools::weighted_rng,
+};
 
 use super::formation;
 
@@ -100,7 +103,11 @@ impl Level {
         match &mut self.objective {
             ObjectiveType::Defense(health) => {
                 for event in enemy_reached_bottom.iter() {
-                    health.take_damage(event.0);
+                    if event.0 > 0.0 {
+                        health.take_damage(event.0);
+                    } else {
+                        health.heal(-event.0);
+                    }
                 }
             }
         }
@@ -109,7 +116,12 @@ impl Level {
             if phase_timer.tick(delta).just_finished() {
                 if let Some(timeline_idx) = self.timeline_idx {
                     // sets level to next phase in timeline
-                    self.timeline_idx = Some(timeline_idx + 1);
+
+                    if self.timeline.phases.len() > timeline_idx + 1 {
+                        self.timeline_idx = Some(timeline_idx + 1);
+                    } else {
+                        level_completed.send(LevelCompletedEvent);
+                    }
                 } else {
                     // sets level to first phase in timeline
                     self.timeline_idx = Some(0);
@@ -179,11 +191,14 @@ impl Level {
                     self.phase_timer = Some(Timer::from_seconds(time, false));
                 }
             }
-        } else {
+        }
+        /*
+        else {
             // setup next level
             // send event to iterate run resources level index
             level_completed.send(LevelCompletedEvent);
         }
+        */
     }
 
     fn get_current_phase(&self) -> Option<&LevelPhase> {
@@ -220,8 +235,9 @@ pub fn level_system(
     mut enemy_reached_bottom: EventReader<EnemyReachedBottomGateEvent>,
     formation_pools: Res<formation::FormationPoolsResource>,
     time: Res<Time>,
+    end_game_trans_resource: Res<EndGameTransitionResource>,
 ) {
-    if run_resource.is_ready() {
+    if run_resource.is_ready() && !end_game_trans_resource.start {
         run_resource.tick(
             time.delta(),
             &mut spawn_formation,
@@ -236,9 +252,9 @@ pub fn level_system(
 pub fn next_level_system(
     mut level_completed: EventReader<LevelCompletedEvent>,
     mut run_resource: ResMut<super::RunResource>,
+    mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
 ) {
     for _level_completed in level_completed.iter() {
-        run_resource.level_idx += 1;
-        // TODO: check if at the last level and end the game
+        end_game_trans_resource.start(AppStates::Victory);
     }
 }

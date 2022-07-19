@@ -1,6 +1,11 @@
 use bevy::prelude::*;
 
-use crate::{player::PlayerComponent, run::RunResource};
+use crate::{
+    game_over::EndGameTransitionResource,
+    player::PlayerComponent,
+    run::RunResource,
+    states::{AppStateComponent, AppStates},
+};
 
 /// Tag for player health ui
 #[derive(Component)]
@@ -47,6 +52,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
             ),
             ..TextBundle::default()
         })
+        .insert(AppStateComponent(AppStates::Game))
         .insert(HealthUI);
 
     // spawn level ui
@@ -73,35 +79,39 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
             ),
             ..TextBundle::default()
         })
+        .insert(AppStateComponent(AppStates::Game))
         .insert(LevelUI);
+}
 
-    // debug ui
-    if cfg!(debug_assertions) {
-        commands
-            .spawn_bundle(TextBundle {
-                style: Style {
-                    size: Size::default(),
-                    position: Rect {
-                        left: Val::Percent(90.0),
-                        bottom: Val::Percent(5.0),
-                        ..Rect::default()
-                    },
-                    position_type: PositionType::Absolute,
-                    ..Style::default()
+pub fn setup_fps_ui_system(mut commands: Commands, asset_server: ResMut<AssetServer>) {
+    // setup font
+    let font = asset_server.load("fonts/SpaceMadness.ttf");
+
+    commands
+        .spawn_bundle(TextBundle {
+            style: Style {
+                size: Size::default(),
+                position: Rect {
+                    left: Val::Percent(90.0),
+                    bottom: Val::Percent(5.0),
+                    ..Rect::default()
                 },
-                text: Text::with_section(
-                    "fps: ",
-                    TextStyle {
-                        font,
-                        font_size: 18.0,
-                        color: Color::WHITE,
-                    },
-                    TextAlignment::default(),
-                ),
-                ..Default::default()
-            })
-            .insert(FPSUI);
-    }
+                position_type: PositionType::Absolute,
+                ..Style::default()
+            },
+            text: Text::with_section(
+                "fps: ",
+                TextStyle {
+                    font,
+                    font_size: 18.0,
+                    color: Color::WHITE,
+                },
+                TextAlignment::default(),
+            ),
+            ..Default::default()
+        })
+        .insert(Name::new("FPS UI"))
+        .insert(FPSUI);
 }
 
 #[allow(clippy::type_complexity)]
@@ -113,6 +123,7 @@ pub fn update_ui(
     )>,
     player_query: Query<&PlayerComponent>,
     run_resource: Res<RunResource>,
+    end_game_trans_resource: Res<EndGameTransitionResource>,
 ) {
     // update player health ui
     for mut text_component in ui_queries.p0().iter_mut() {
@@ -127,23 +138,24 @@ pub fn update_ui(
         }
         continue;
     }
-
     // update level ui
-    for mut text_component in ui_queries.p1().iter_mut() {
-        text_component.sections[0].value = format!(
-            "Phase Type: {}\nPhase Number: {}\nObjective:{}",
-            run_resource.levels[run_resource.level_idx].get_phase_name(),
-            run_resource.levels[run_resource.level_idx].get_phase_number(),
-            match &run_resource.levels[run_resource.level_idx].objective {
-                crate::run::ObjectiveType::Defense(health) => {
-                    format!(
-                        "\n    Defense: {}/{}",
-                        health.get_health(),
-                        health.get_max_health()
-                    )
+    if let Some(level) = &run_resource.level {
+        for mut text_component in ui_queries.p1().iter_mut() {
+            text_component.sections[0].value = format!(
+                "Phase Type: {}\nPhase Number: {}\nObjective:{}",
+                level.get_phase_name(),
+                level.get_phase_number(),
+                match &level.objective {
+                    crate::run::ObjectiveType::Defense(health) => {
+                        format!(
+                            "\n    Defense: {}/{}",
+                            health.get_health(),
+                            health.get_max_health()
+                        )
+                    }
                 }
-            }
-        );
-        continue;
+            );
+            continue;
+        }
     }
 }

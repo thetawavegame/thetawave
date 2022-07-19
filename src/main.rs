@@ -3,8 +3,11 @@ use bevy::{pbr::AmbientLight, prelude::*};
 use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_rapier2d::prelude::*;
 use ron::de::from_bytes;
+use spawnable::SpawnableComponent;
 use std::collections::HashMap;
 use ui::FPSUI;
+
+use states::{AppStateComponent, AppStates};
 
 pub const PHYSICS_SCALE: f32 = 10.0;
 pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: u32 = 0b0010;
@@ -28,6 +31,7 @@ mod spawnable;
 mod states;
 mod tools;
 mod ui;
+mod victory;
 
 // Don't generate a display config for wasm
 #[cfg(target_arch = "wasm32")]
@@ -134,6 +138,9 @@ fn main() {
             color: Color::WHITE,
             brightness: 0.1,
         })
+        .insert_resource(game_over::EndGameTransitionResource::new(
+            2.0, 3.0, 2.5, 0.5, 0.5, 30.0,
+        ))
         .add_event::<collision::SortedCollisionEvent>()
         .add_event::<run::SpawnFormationEvent>()
         .add_event::<run::LevelCompletedEvent>()
@@ -145,6 +152,11 @@ fn main() {
         ))
         .add_startup_system(ui::setup_ui_camera_system)
         .add_system(main_menu::flashing_prompt_system);
+
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        app.add_plugin(bevy_framepace::FramepacePlugin::default());
+    }
 
     // game startup systems (perhaps exchange with app.add_startup_system_set)
     app.add_system_set(
@@ -162,13 +174,30 @@ fn main() {
     );
 
     app.add_system_set(
+        SystemSet::on_update(states::AppStates::GameOver)
+            .with_system(game_over::game_over_fade_in_system),
+    );
+
+    app.add_system_set(
         SystemSet::on_enter(states::AppStates::GameOver)
             .with_system(game_over::setup_game_over_system),
     );
 
     app.add_system_set(
-        SystemSet::on_exit(states::AppStates::GameOver)
-            .with_system(game_over::clear_game_over_system),
+        SystemSet::on_exit(states::AppStates::GameOver).with_system(clear_state_system),
+    );
+
+    app.add_system_set(
+        SystemSet::on_update(states::AppStates::Victory)
+            .with_system(victory::victory_fade_in_system),
+    );
+
+    app.add_system_set(
+        SystemSet::on_enter(states::AppStates::Victory).with_system(victory::setup_victory_system),
+    );
+
+    app.add_system_set(
+        SystemSet::on_exit(states::AppStates::Victory).with_system(clear_state_system),
     );
 
     app.add_system_set(
@@ -181,8 +210,7 @@ fn main() {
     );
 
     app.add_system_set(
-        SystemSet::on_exit(states::AppStates::MainMenu)
-            .with_system(main_menu::clear_main_menu_system),
+        SystemSet::on_exit(states::AppStates::MainMenu).with_system(clear_state_system),
     );
 
     app.add_system_set(
@@ -194,7 +222,6 @@ fn main() {
         SystemSet::on_update(states::AppStates::Game)
             .with_system(player::player_movement_system)
             .with_system(scanner::scanner_system)
-            .with_system(ui::update_ui)
             .with_system(options::toggle_fullscreen_system)
             .with_system(options::toggle_zoom_system)
             .with_system(arena::despawn_gates_system)
@@ -234,24 +261,40 @@ fn main() {
             )
             .with_system(run::level_system.label("level"))
             .with_system(run::spawn_formation_system.after("level"))
-            .with_system(run::next_level_system.after("level"))
+            .with_system(run::next_level_system.label("next_level").after("level"))
             .with_system(player::player_fire_weapon_system)
             .with_system(spawnable::spawn_effect_system) // event generated in projectile execute behavior, consumable execute behavior
             .with_system(spawnable::spawn_consumable_system) // event generated in mob execute behavior
             .with_system(states::open_pause_menu_system)
-            .with_system(player::player_death_system),
+            .with_system(player::player_death_system)
+            .with_system(ui::update_ui.after("next_level"))
+            .with_system(game_over::fade_out_system),
     );
+
+    app.add_system_set(SystemSet::on_exit(states::AppStates::Game).with_system(clear_state_system));
 
     // plugins to use only in debug mode
     if cfg!(debug_assertions) {
         app.add_plugin(WorldInspectorPlugin::new())
             .add_plugin(RapierDebugRenderPlugin::default())
-            .add_plugin(FrameTimeDiagnosticsPlugin::default());
-
-        app.add_system_set(SystemSet::on_update(states::AppStates::Game).with_system(fps_system));
+            .add_plugin(FrameTimeDiagnosticsPlugin::default())
+            .add_startup_system(ui::setup_fps_ui_system)
+            .add_system(fps_system);
     }
 
     app.run();
+}
+
+fn clear_state_system(
+    mut commands: Commands,
+    mut despawn_entities_query: Query<(Entity, &states::AppStateComponent)>,
+    app_state: Res<State<states::AppStates>>,
+) {
+    for (entity, entity_app_state) in despawn_entities_query.iter_mut() {
+        if matches!(app_state.current(), entity_app_state) {
+            commands.entity(entity).despawn_recursive();
+        }
+    }
 }
 
 /// Initialize values for the game
@@ -272,7 +315,9 @@ fn setup_game(
     // setup cameras
     let mut camera_2d = OrthographicCameraBundle::new_2d();
     camera_2d.transform = Transform::from_xyz(0.0, 0.0, game_parameters.camera_z);
-    commands.spawn_bundle(camera_2d);
+    commands
+        .spawn_bundle(camera_2d)
+        .insert(AppStateComponent(AppStates::Game));
 
     let camera_3d = PerspectiveCameraBundle {
         transform: Transform::from_xyz(0.0, 0.0, game_parameters.camera_z)
@@ -283,7 +328,24 @@ fn setup_game(
         },
         ..Default::default()
     };
-    commands.spawn_bundle(camera_3d);
+    commands
+        .spawn_bundle(camera_3d)
+        .insert(AppStateComponent(AppStates::Game));
+
+    // spawn game fade entity
+    commands
+        .spawn_bundle(SpriteBundle {
+            sprite: Sprite {
+                color: Color::rgba(0.0, 0.0, 0.0, 0.0),
+                custom_size: Some(Vec2::new(16000.0, 9000.0)),
+                ..default()
+            },
+            transform: Transform::from_xyz(0.0, 0.0, 100.0),
+            ..default()
+        })
+        .insert(game_over::GameFadeComponent)
+        .insert(AppStateComponent(AppStates::Game))
+        .insert(Name::new("Game Fade"));
 
     // setup rapier
     rapier_config.gravity = Vec2::ZERO;
@@ -387,7 +449,7 @@ fn setup_game(
     mobs.texture_atlas_handle = mob_texture_atlas_dict;
 
     // create run resource
-    run_resource.create_levels(&levels_resource);
+    run_resource.create_level(&levels_resource);
 }
 
 fn fps_system(diagnostics: Res<Diagnostics>, mut query: Query<&mut Text, With<FPSUI>>) {

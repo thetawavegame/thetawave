@@ -4,6 +4,7 @@ use bevy_rapier2d::prelude::*;
 use crate::{
     game::GameParametersResource,
     player::{CharactersResource, PlayerComponent},
+    states::{AppStateComponent, AppStates},
 };
 
 /// Spawns player into the game
@@ -46,5 +47,6 @@ pub fn spawn_player_system(
             ..Default::default()
         })
         .insert(PlayerComponent::from(character))
+        .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new("Player"));
 }

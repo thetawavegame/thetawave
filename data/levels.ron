@@ -3,7 +3,7 @@
 		initial_delay: 5.0, 
 		objective: Defense((
 			max_health: 200.0,
-			health: 100.0,
+			health: 200.0,
 			armor: 0,
 		)),
 		timeline: (

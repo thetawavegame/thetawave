@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+use crate::states::{AppStateComponent, AppStates};
+
 #[derive(Component)]
 pub struct MainMenuUI;
 
@@ -17,6 +19,7 @@ pub fn setup_main_menu_system(mut commands: Commands, asset_server: Res<AssetSer
             },
             ..Default::default()
         })
+        .insert(AppStateComponent(AppStates::MainMenu))
         .insert(MainMenuUI)
         .with_children(|parent| {
             parent
@@ -52,15 +55,6 @@ pub fn setup_main_menu_system(mut commands: Commands, asset_server: Res<AssetSer
                         });
                 });
         });
-}
-
-pub fn clear_main_menu_system(
-    mut commands: Commands,
-    main_menu_query: Query<Entity, With<MainMenuUI>>,
-) {
-    for entity in main_menu_query.iter() {
-        commands.entity(entity).despawn_recursive();
-    }
 }
 
 pub fn flashing_prompt_system(

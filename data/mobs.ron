@@ -111,7 +111,7 @@
 		angular_speed: 0.0,
 		attack_damage: 0.0,
 		collision_damage: 5.0,
-		defense_damage: 0.0,
+		defense_damage: -10.0,
 		initial_motion: (),
 		collider_dimensions: (5.0, 10.0),
 		z_level: 6.0,
