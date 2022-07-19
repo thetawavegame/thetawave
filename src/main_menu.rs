@@ -6,7 +6,7 @@ use crate::states::{AppStateComponent, AppStates};
 pub struct MainMenuUI;
 
 #[derive(Component)]
-pub struct FlashingPromptComponent {
+pub struct BouncingPromptComponent {
     pub flash_timer: Timer,
 }
 
@@ -17,6 +17,7 @@ pub fn setup_main_menu_system(mut commands: Commands, asset_server: Res<AssetSer
                 size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
                 ..Default::default()
             },
+            visibility: Visibility { is_visible: false },
             ..Default::default()
         })
         .insert(AppStateComponent(AppStates::MainMenu))
@@ -50,15 +51,15 @@ pub fn setup_main_menu_system(mut commands: Commands, asset_server: Res<AssetSer
                             },
                             ..Default::default()
                         })
-                        .insert(FlashingPromptComponent {
+                        .insert(BouncingPromptComponent {
                             flash_timer: Timer::from_seconds(2.0, true),
                         });
                 });
         });
 }
 
-pub fn flashing_prompt_system(
-    mut flashing_prompt_query: Query<(&mut Transform, &mut FlashingPromptComponent)>,
+pub fn bouncing_prompt_system(
+    mut flashing_prompt_query: Query<(&mut Transform, &mut BouncingPromptComponent)>,
     time: Res<Time>,
 ) {
     for (mut transform, mut prompt) in flashing_prompt_query.iter_mut() {

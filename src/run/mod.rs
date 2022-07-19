@@ -1,7 +1,9 @@
 use bevy::prelude::*;
 use std::time::Duration;
 
-use crate::{arena::EnemyReachedBottomGateEvent, game_over::EndGameTransitionResource};
+use crate::{
+    arena::EnemyReachedBottomGateEvent, game_over::EndGameTransitionResource, states::AppStates,
+};
 
 mod formation;
 mod level;
@@ -64,5 +66,17 @@ impl RunResource {
                 formation_pools,
             );
         }
+    }
+}
+
+pub fn reset_run_system(
+    mut keyboard_input: ResMut<Input<KeyCode>>,
+    mut app_state: ResMut<State<AppStates>>,
+) {
+    let reset = keyboard_input.just_released(KeyCode::R);
+
+    if reset {
+        app_state.set(AppStates::MainMenu).unwrap();
+        keyboard_input.reset(KeyCode::R);
     }
 }

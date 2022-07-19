@@ -2,6 +2,7 @@ use bevy::diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin};
 use bevy::{pbr::AmbientLight, prelude::*};
 use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_rapier2d::prelude::*;
+use game_over::EndGameTransitionResource;
 use ron::de::from_bytes;
 use spawnable::SpawnableComponent;
 use std::collections::HashMap;
@@ -24,6 +25,7 @@ mod loot;
 mod main_menu;
 mod misc;
 mod options;
+mod pause_menu;
 mod player;
 mod run;
 mod scanner;
@@ -151,7 +153,7 @@ fn main() {
             PHYSICS_SCALE,
         ))
         .add_startup_system(ui::setup_ui_camera_system)
-        .add_system(main_menu::flashing_prompt_system);
+        .add_system(main_menu::bouncing_prompt_system);
 
     #[cfg(not(target_arch = "wasm32"))]
     {
@@ -174,8 +176,18 @@ fn main() {
     );
 
     app.add_system_set(
+        SystemSet::on_enter(states::AppStates::PauseMenu)
+            .with_system(pause_menu::setup_pause_system),
+    );
+
+    app.add_system_set(
+        SystemSet::on_exit(states::AppStates::PauseMenu).with_system(clear_state_system),
+    );
+
+    app.add_system_set(
         SystemSet::on_update(states::AppStates::GameOver)
-            .with_system(game_over::game_over_fade_in_system),
+            .with_system(game_over::game_over_fade_in_system)
+            .with_system(run::reset_run_system),
     );
 
     app.add_system_set(
@@ -189,7 +201,8 @@ fn main() {
 
     app.add_system_set(
         SystemSet::on_update(states::AppStates::Victory)
-            .with_system(victory::victory_fade_in_system),
+            .with_system(victory::victory_fade_in_system)
+            .with_system(run::reset_run_system),
     );
 
     app.add_system_set(
@@ -202,7 +215,8 @@ fn main() {
 
     app.add_system_set(
         SystemSet::on_enter(states::AppStates::MainMenu)
-            .with_system(main_menu::setup_main_menu_system),
+            .with_system(main_menu::setup_main_menu_system)
+            .with_system(clear_game_state_system),
     );
 
     app.add_system_set(
@@ -215,7 +229,8 @@ fn main() {
 
     app.add_system_set(
         SystemSet::on_update(states::AppStates::PauseMenu)
-            .with_system(states::close_pause_menu_system),
+            .with_system(states::close_pause_menu_system)
+            .with_system(run::reset_run_system),
     );
 
     app.add_system_set(
@@ -268,7 +283,8 @@ fn main() {
             .with_system(states::open_pause_menu_system)
             .with_system(player::player_death_system)
             .with_system(ui::update_ui.after("next_level"))
-            .with_system(game_over::fade_out_system),
+            .with_system(game_over::fade_out_system)
+            .with_system(run::reset_run_system),
     );
 
     app.add_system_set(SystemSet::on_exit(states::AppStates::Game).with_system(clear_state_system));
@@ -291,7 +307,18 @@ fn clear_state_system(
     app_state: Res<State<states::AppStates>>,
 ) {
     for (entity, entity_app_state) in despawn_entities_query.iter_mut() {
-        if matches!(app_state.current(), entity_app_state) {
+        if *app_state.current() == entity_app_state.0 {
+            commands.entity(entity).despawn_recursive();
+        }
+    }
+}
+
+fn clear_game_state_system(
+    mut commands: Commands,
+    mut despawn_entities_query: Query<(Entity, &states::AppStateComponent)>,
+) {
+    for (entity, entity_app_state) in despawn_entities_query.iter_mut() {
+        if entity_app_state.0 == AppStates::Game {
             commands.entity(entity).despawn_recursive();
         }
     }
@@ -309,6 +336,7 @@ fn setup_game(
     mut consumables: ResMut<spawnable::ConsumableResource>,
     mut rapier_config: ResMut<RapierConfiguration>,
     mut run_resource: ResMut<run::RunResource>,
+    mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
     levels_resource: Res<run::LevelsResource>,
     game_parameters: Res<game::GameParametersResource>,
 ) {
@@ -332,6 +360,9 @@ fn setup_game(
         .spawn_bundle(camera_3d)
         .insert(AppStateComponent(AppStates::Game));
 
+    *end_game_trans_resource = EndGameTransitionResource::new(2.0, 3.0, 2.5, 0.5, 0.5, 30.0);
+    rapier_config.physics_pipeline_active = true;
+    rapier_config.query_pipeline_active = true;
     // spawn game fade entity
     commands
         .spawn_bundle(SpriteBundle {

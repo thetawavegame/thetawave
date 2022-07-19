@@ -188,7 +188,7 @@ pub enum EffectType {
     AllyBlastDespawn,
     MobExplosion,
     ConsumableDespawn,
-    //EnemyBlastExplosion,
+    EnemyBlastExplosion,
     //PoisonBlastExplosion,
     //CriticalBlastExplosion,
     //MobExplosion,

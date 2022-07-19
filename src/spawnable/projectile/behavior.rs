@@ -103,7 +103,7 @@ fn explode_on_impact(
                 {
                     // spawn explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
-                        effect_type: EffectType::AllyBlastExplosion,
+                        effect_type: EffectType::EnemyBlastExplosion,
                         position: transform.translation.xy(),
                     });
                     // deal damage to player
@@ -134,11 +134,24 @@ fn explode_on_impact(
                         Faction::Neutral => matches!(projectile_faction, Faction::Neutral),
                     }
                 {
-                    // spawn explosion
-                    spawn_effect_event_writer.send(SpawnEffectEvent {
-                        effect_type: EffectType::AllyBlastExplosion,
-                        position: transform.translation.xy(),
-                    });
+                    match projectile_faction {
+                        Faction::Ally => {
+                            // spawn explosion
+                            spawn_effect_event_writer.send(SpawnEffectEvent {
+                                effect_type: EffectType::AllyBlastExplosion,
+                                position: transform.translation.xy(),
+                            });
+                        }
+                        Faction::Enemy => {
+                            // spawn explosion
+                            spawn_effect_event_writer.send(SpawnEffectEvent {
+                                effect_type: EffectType::EnemyBlastExplosion,
+                                position: transform.translation.xy(),
+                            });
+                        }
+                        Faction::Neutral => {}
+                    }
+
                     // deal damage to mob
                     for (mob_entity_q, mut mob_component) in mob_query.iter_mut() {
                         if *mob_entity == mob_entity_q {
