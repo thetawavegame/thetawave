@@ -2,9 +2,11 @@ use crate::{
     collision::SortedCollisionEvent,
     run::{ObjectiveType, RunResource},
     spawnable::{EffectType, Faction, PlayerComponent, SpawnEffectEvent, SpawnableComponent},
+    SoundEffectsAudioChannel,
 };
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
+use bevy_kira_audio::AudioChannel;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 
@@ -29,6 +31,8 @@ pub fn consumable_execute_behavior_system(
     mut collision_events: EventReader<SortedCollisionEvent>,
     mut run_resource: ResMut<RunResource>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
+    asset_server: Res<AssetServer>,
+    audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
 ) {
     let mut collision_events_vec = vec![];
     for collision_event in collision_events.iter() {
@@ -56,6 +60,8 @@ pub fn consumable_execute_behavior_system(
                         &consumable_component.consumable_effects,
                         &mut run_resource,
                         &mut spawn_effect_event_writer,
+                        &asset_server,
+                        &audio_channel,
                     );
                 }
                 ConsumableBehavior::AttractToPlayer => {
@@ -117,6 +123,8 @@ fn apply_effects_on_impact(
     consumable_effects: &Vec<ConsumableEffect>,
     run_resource: &mut RunResource,
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
+    asset_server: &AssetServer,
+    audio_channel: &AudioChannel<SoundEffectsAudioChannel>,
 ) {
     for collision_event in collision_events.iter() {
         if let SortedCollisionEvent::PlayerToConsumableIntersection {
@@ -132,11 +140,14 @@ fn apply_effects_on_impact(
                 spawn_effect_event_writer.send(SpawnEffectEvent {
                     effect_type: EffectType::ConsumableDespawn,
                     position: transform.translation.xy(),
+                    scale: Vec2::ZERO,
+                    rotation: 0.0,
                 });
 
                 //apply effect to player
                 for (player_entity_q, mut player_component, _) in player_query.iter_mut() {
                     if *player_entity == player_entity_q {
+                        audio_channel.play(asset_server.load("sounds/consumable_pickup.wav"));
                         for consumable_effect in consumable_effects {
                             match consumable_effect {
                                 ConsumableEffect::GainHealth(health) => {

@@ -1,8 +1,10 @@
 use bevy::prelude::*;
+use bevy_kira_audio::AudioChannel;
 use std::time::Duration;
 
 use crate::{
     arena::EnemyReachedBottomGateEvent, game_over::EndGameTransitionResource, states::AppStates,
+    MenuAudioChannel,
 };
 
 mod formation;
@@ -56,6 +58,7 @@ impl RunResource {
         level_completed: &mut EventWriter<level::LevelCompletedEvent>,
         enemy_reached_bottom: &mut EventReader<EnemyReachedBottomGateEvent>,
         formation_pools: &formation::FormationPoolsResource,
+        end_game_trans_resource: &mut EndGameTransitionResource,
     ) {
         if let Some(level) = &mut self.level {
             level.tick(
@@ -64,6 +67,7 @@ impl RunResource {
                 level_completed,
                 enemy_reached_bottom,
                 formation_pools,
+                end_game_trans_resource,
             );
         }
     }
@@ -72,11 +76,14 @@ impl RunResource {
 pub fn reset_run_system(
     mut keyboard_input: ResMut<Input<KeyCode>>,
     mut app_state: ResMut<State<AppStates>>,
+    asset_server: Res<AssetServer>,
+    audio_channel: Res<AudioChannel<MenuAudioChannel>>,
 ) {
     let reset = keyboard_input.just_released(KeyCode::R);
 
     if reset {
         app_state.set(AppStates::MainMenu).unwrap();
+        audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
         keyboard_input.reset(KeyCode::R);
     }
 }

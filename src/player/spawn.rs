@@ -48,5 +48,6 @@ pub fn spawn_player_system(
         })
         .insert(PlayerComponent::from(character))
         .insert(AppStateComponent(AppStates::Game))
+        .insert(ActiveEvents::COLLISION_EVENTS)
         .insert(Name::new("Player"));
 }

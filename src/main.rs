@@ -1,6 +1,7 @@
 use bevy::diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin};
 use bevy::{pbr::AmbientLight, prelude::*};
 use bevy_inspector_egui::WorldInspectorPlugin;
+use bevy_kira_audio::{Audio, AudioApp, AudioChannel, AudioPlugin};
 use bevy_rapier2d::prelude::*;
 use game_over::EndGameTransitionResource;
 use ron::de::from_bytes;
@@ -59,6 +60,11 @@ fn get_display_config() -> options::DisplayConfig {
     from_str::<options::DisplayConfig>(&read_to_string(config_path.join("display.ron")).unwrap())
         .unwrap()
 }
+
+// audio channels
+pub struct BackgroundMusicAudioChannel;
+pub struct MenuAudioChannel;
+pub struct SoundEffectsAudioChannel;
 
 fn main() {
     let display_config = get_display_config();
@@ -149,10 +155,15 @@ fn main() {
         .add_event::<arena::EnemyReachedBottomGateEvent>()
         .add_event::<spawnable::SpawnEffectEvent>()
         .add_event::<spawnable::SpawnConsumableEvent>()
+        .add_plugin(AudioPlugin)
+        .add_audio_channel::<BackgroundMusicAudioChannel>()
+        .add_audio_channel::<MenuAudioChannel>()
+        .add_audio_channel::<SoundEffectsAudioChannel>()
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
             PHYSICS_SCALE,
         ))
         .add_startup_system(ui::setup_ui_camera_system)
+        .add_startup_system(start_background_audio_system)
         .add_system(main_menu::bouncing_prompt_system);
 
     #[cfg(not(target_arch = "wasm32"))]
@@ -299,6 +310,13 @@ fn main() {
     }
 
     app.run();
+}
+
+fn start_background_audio_system(
+    asset_server: Res<AssetServer>,
+    audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
+) {
+    audio_channel.play_looped(asset_server.load("sounds/deflector_soundtrack.mp3"));
 }
 
 fn clear_state_system(

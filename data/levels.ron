@@ -2,15 +2,15 @@
 	EarthOrbit: (
 		initial_delay: 5.0, 
 		objective: Defense((
-			max_health: 200.0,
-			health: 200.0,
+			max_health: 100.0,
+			health: 100.0,
 			armor: 0,
 		)),
 		timeline: (
 			phases: [
 				(
 					phase_type: FormationSpawn(
-						time: 20.0,
+						time: 45.0,
 						formation_pool: Easy,
 						initial_delay: 1.0,	 			
 					)
@@ -20,8 +20,8 @@
 				),
 				(
 					phase_type: FormationSpawn(
-						time: 30.0,
-						formation_pool: Asteroids,
+						time: 45.0,
+						formation_pool: Hard,
 						initial_delay: 1.0,	 			
 					)
 				),

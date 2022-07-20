@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 bevy = "0.7.0"
-bevy_rapier2d = {version = "0.14.1", features = ["simd-stable"] }
+bevy_rapier2d = { version = "0.14.1", features = ["simd-stable"] }
 bevy-inspector-egui = "0.11.0"
 serde = "1.0.127"
 ron = "0.6.4"
@@ -13,6 +13,7 @@ rand = "0.8.4"
 strum = "0.21.0"
 strum_macros = "0.21"
 console_error_panic_hook = "0.1.7"
+bevy_kira_audio = { version = "0.10.0", features = ["mp3", "wav"] }
 
 # bevy_framespace currently does not support wasm
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]

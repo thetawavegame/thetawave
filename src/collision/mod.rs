@@ -4,8 +4,10 @@ use crate::{
     spawnable::{
         ConsumableComponent, Faction, MobComponent, MobType, ProjectileComponent, ProjectileType,
     },
+    SoundEffectsAudioChannel,
 };
 use bevy::prelude::*;
+use bevy_kira_audio::AudioChannel;
 use bevy_rapier2d::{prelude::*, rapier::prelude::CollisionEventFlags};
 
 /// Types of collisions
@@ -183,6 +185,8 @@ pub fn contact_collision_system(
     player_query: Query<(Entity, &PlayerComponent)>,
     mob_query: Query<(Entity, &MobComponent)>,
     barrier_query: Query<Entity, With<ArenaBarrierComponent>>,
+    asset_server: Res<AssetServer>,
+    audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
 ) {
     'collision_events: for contact_event in collision_events.iter() {
         if let CollisionEvent::Stopped(collider1_entity, collider2_entity, _) = contact_event {
@@ -207,6 +211,7 @@ pub fn contact_collision_system(
                 if let Some(colliding_entities) = colliding_entities {
                     for (mob_entity, mob_component) in mob_query.iter() {
                         if colliding_entities.secondary == mob_entity {
+                            audio_channel.play(asset_server.load("sounds/collision.wav"));
                             collision_event_writer.send(SortedCollisionEvent::PlayerToMobContact {
                                 player_entity: colliding_entities.primary,
                                 mob_entity: colliding_entities.secondary,
@@ -218,6 +223,14 @@ pub fn contact_collision_system(
                                 player_damage: player_component.collision_damage,
                                 mob_damage: mob_component.collision_damage,
                             });
+                            continue 'collision_events;
+                        }
+                    }
+
+                    // play bounce sound when player collides with barrier
+                    for barrier_entity in barrier_query.iter() {
+                        if colliding_entities.secondary == barrier_entity {
+                            audio_channel.play(asset_server.load("sounds/barrier_bounce.wav"));
                             continue 'collision_events;
                         }
                     }
@@ -246,6 +259,7 @@ pub fn contact_collision_system(
                     // check if mob collided with other mob
                     for (mob_entity_2, mob_component_2) in mob_query.iter() {
                         if colliding_entities.secondary == mob_entity_2 {
+                            audio_channel.play(asset_server.load("sounds/collision.wav"));
                             collision_event_writer.send(SortedCollisionEvent::MobToMobContact {
                                 mob_entity_1: colliding_entities.primary,
                                 mob_faction_1: match mob_component_1.mob_type {
@@ -284,6 +298,7 @@ pub fn contact_collision_system(
 
                     for barrier_entity in barrier_query.iter() {
                         if colliding_entities.secondary == barrier_entity {
+                            audio_channel.play(asset_server.load("sounds/barrier_bounce.wav"));
                             collision_event_writer.send(
                                 SortedCollisionEvent::MobToBarrierContact {
                                     mob_entity: colliding_entities.primary,

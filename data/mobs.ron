@@ -170,8 +170,8 @@
 		z_level: 5.0,
 		consumable_drops: Standard,
 		health: (
-			max_health: 20.0,
-			health: 20.0,
+			max_health: 60.0,
+			health: 60.0,
 			armor: 0,
 		),	
 		texture: (
@@ -205,7 +205,7 @@
 		angular_deceleration: 0.0,
 		angular_speed: 1.8,
 		attack_damage: 0.0,
-		collision_damage: 18.0,
+		collision_damage: 30.0,
 		defense_damage: 0.0,
 		initial_motion: (),
 		collider_dimensions: (1.5, 4.0),
@@ -270,8 +270,8 @@
 		z_level: 5.0,
 		consumable_drops: Standard,
 		health: (
-			max_health: 40.0,
-			health: 40.0,
+			max_health: 20.0,
+			health: 20.0,
 			armor: 0,
 		),	
 		texture: (
@@ -327,8 +327,8 @@
 		z_level: 5.0,
 		consumable_drops: Standard,
 		health: (
-			max_health: 40.0,
-			health: 40.0,
+			max_health: 20.0,
+			health: 20.0,
 			armor: 0,
 		),	
 		texture: (

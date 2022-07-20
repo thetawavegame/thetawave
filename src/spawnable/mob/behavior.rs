@@ -1,5 +1,6 @@
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
+use bevy_kira_audio::AudioChannel;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 
@@ -11,6 +12,7 @@ use crate::{
         spawn_projectile, EffectType, InitialMotion, MobType, PlayerComponent, ProjectileResource,
         ProjectileType, SpawnConsumableEvent, SpawnEffectEvent, SpawnableComponent,
     },
+    SoundEffectsAudioChannel,
 };
 
 /// Types of behaviors that can be performed by mobs
@@ -70,6 +72,8 @@ pub fn mob_execute_behavior_system(
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     mut spawn_consumable_event_writer: EventWriter<SpawnConsumableEvent>,
     loot_drops_resource: Res<LootDropsResource>,
+    asset_server: Res<AssetServer>,
+    audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
 ) {
     // Get all contact events first (can't be read more than once within a system)
     let mut collision_events_vec = vec![];
@@ -106,6 +110,7 @@ pub fn mob_execute_behavior_system(
 
                             //spawn_blast
                             // TODO: change to event for spawning projectiles
+                            audio_channel.play(asset_server.load("sounds/enemy_fire_blast.wav"));
                             spawn_projectile(
                                 &data.projectile_type,
                                 &projectile_resource,
@@ -152,6 +157,8 @@ pub fn mob_execute_behavior_system(
                         &collision_events_vec,
                         &mut spawn_effect_event_writer,
                         mob_transform,
+                        &asset_server,
+                        &audio_channel,
                     );
                 }
                 MobBehavior::DealDamageToPlayerOnImpact => {
@@ -171,10 +178,14 @@ pub fn mob_execute_behavior_system(
                 }
                 MobBehavior::DieAtZeroHealth => {
                     if mob_component.health.is_dead() {
+                        audio_channel.play(asset_server.load("sounds/mob_explosion.wav"));
+
                         // spawn mob explosion
                         spawn_effect_event_writer.send(SpawnEffectEvent {
                             effect_type: EffectType::MobExplosion,
                             position: mob_transform.translation.xy(),
+                            scale: Vec2::ZERO,
+                            rotation: 0.0,
                         });
 
                         // drop loot
@@ -270,6 +281,8 @@ fn explode_on_impact(
     collision_events: &[&SortedCollisionEvent],
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
     transform: &Transform,
+    asset_server: &AssetServer,
+    audio_channel: &AudioChannel<SoundEffectsAudioChannel>,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
@@ -280,12 +293,15 @@ fn explode_on_impact(
                 player_damage: _,
                 mob_damage: _,
             } => {
+                audio_channel.play(asset_server.load("sounds/mob_explosion.wav"));
                 // remove faction check to allow allied mobs to harm players
                 if entity == *mob_entity {
                     // spawn mob explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::MobExplosion,
                         position: transform.translation.xy(),
+                        scale: Vec2::ZERO,
+                        rotation: 0.0,
                     });
                     // despawn mob
                     commands.entity(entity).despawn_recursive();
@@ -300,11 +316,14 @@ fn explode_on_impact(
                 mob_faction_2: _,
                 mob_damage_2: _,
             } => {
+                audio_channel.play(asset_server.load("sounds/mob_explosion.wav"));
                 if entity == *mob_entity_1 {
                     // spawn mob explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::MobExplosion,
                         position: transform.translation.xy(),
+                        scale: Vec2::ZERO,
+                        rotation: 0.0,
                     });
                     // despawn mob
                     commands.entity(entity).despawn_recursive();

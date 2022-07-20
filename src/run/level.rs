@@ -98,6 +98,7 @@ impl Level {
         level_completed: &mut EventWriter<LevelCompletedEvent>,
         enemy_reached_bottom: &mut EventReader<EnemyReachedBottomGateEvent>,
         formation_pools: &formation::FormationPoolsResource,
+        end_game_trans_resource: &mut EndGameTransitionResource,
     ) {
         #[allow(clippy::single_match)]
         match &mut self.objective {
@@ -107,6 +108,9 @@ impl Level {
                         health.take_damage(event.0);
                     } else {
                         health.heal(-event.0);
+                    }
+                    if health.is_dead() {
+                        end_game_trans_resource.start(AppStates::GameOver);
                     }
                 }
             }
@@ -235,7 +239,7 @@ pub fn level_system(
     mut enemy_reached_bottom: EventReader<EnemyReachedBottomGateEvent>,
     formation_pools: Res<formation::FormationPoolsResource>,
     time: Res<Time>,
-    end_game_trans_resource: Res<EndGameTransitionResource>,
+    mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
 ) {
     if run_resource.is_ready() && !end_game_trans_resource.start {
         run_resource.tick(
@@ -244,6 +248,7 @@ pub fn level_system(
             &mut level_completed,
             &mut enemy_reached_bottom,
             &formation_pools,
+            &mut end_game_trans_resource,
         );
     }
 }

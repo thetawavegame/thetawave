@@ -1,10 +1,12 @@
 use bevy::prelude::*;
+use bevy_kira_audio::AudioChannel;
 use bevy_rapier2d::prelude::*;
 
 use crate::{
     game::GameParametersResource,
     player::PlayerComponent,
     spawnable::{spawn_projectile, InitialMotion, ProjectileResource},
+    SoundEffectsAudioChannel,
 };
 
 /// Manages the players firing weapons
@@ -15,6 +17,8 @@ pub fn player_fire_weapon_system(
     time: Res<Time>,
     projectile_resource: Res<ProjectileResource>,
     mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
 ) {
     for (mut player_component, rb_vels, transform) in player_query.iter_mut() {
         let left_mouse = keyboard_input.pressed(MouseButton::Left);
@@ -48,6 +52,8 @@ pub fn player_fire_weapon_system(
                 &mut commands,
                 &game_parameters,
             );
+
+            audio_channel.play(asset_server.load("sounds/player_fire_blast.wav"));
 
             player_component.fire_timer.reset();
         }
