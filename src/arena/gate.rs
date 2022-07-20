@@ -1,5 +1,10 @@
-use crate::spawnable::{MobComponent, SpawnableComponent};
+use crate::{
+    spawnable::{MobComponent, SpawnableComponent},
+    states::{AppStateComponent, AppStates},
+    SoundEffectsAudioChannel,
+};
 use bevy::prelude::*;
+use bevy_kira_audio::AudioChannel;
 use bevy_rapier2d::{prelude::*, rapier::prelude::CollisionEventFlags};
 
 /// Despawn gate tag
@@ -8,7 +13,7 @@ pub struct DespawnGateComponent;
 
 /// Spawn gates for despawning entities
 pub fn spawn_despawn_gates_system(mut commands: Commands) {
-    spawn_despawn_gate(&mut commands, Vec2::new(0.0, -450.0), 1000.0, 50.0);
+    spawn_despawn_gate(&mut commands, Vec2::new(0.0, -500.0), 1000.0, 50.0);
 }
 
 /// Spawn a despawn gate
@@ -22,6 +27,7 @@ fn spawn_despawn_gate(commands: &mut Commands, position: Vec2, width: f32, heigh
         .insert(Collider::cuboid(width / 2.0, height / 2.0))
         .insert(Sensor(true))
         .insert(DespawnGateComponent)
+        .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new("Despawn Gate"));
 }
 
@@ -33,6 +39,8 @@ pub fn despawn_gates_system(
     spawnable_query: Query<Entity, With<SpawnableComponent>>,
     mob_query: Query<(Entity, &MobComponent)>,
     mut enemy_bottom_event: EventWriter<EnemyReachedBottomGateEvent>,
+    asset_server: Res<AssetServer>,
+    audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
 ) {
     'event_loop: for collision_event in collision_events.iter() {
         for despawn_gate_entity in despawn_gate_query.iter() {
@@ -60,6 +68,11 @@ pub fn despawn_gates_system(
                         if mob_entity == *other_entity {
                             enemy_bottom_event
                                 .send(EnemyReachedBottomGateEvent(mob_component.defense_damage));
+                            if mob_component.defense_damage > 0.0 {
+                                audio_channel.play(asset_server.load("sounds/defense_damage.wav"));
+                            } else if mob_component.defense_damage < -0.5 {
+                                audio_channel.play(asset_server.load("sounds/defense_heal.wav"));
+                            }
                         }
                     }
                 }

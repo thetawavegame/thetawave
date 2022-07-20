@@ -4,6 +4,7 @@
 		spawnable_behaviors: [],
 		projectile_behaviors: [ExplodeOnImpact],
 		collider_dimensions: (1.5, 1.5),
+		z_level: 20.0,
 		texture: (
 			path: "texture/enemy_blast_spritesheet.png",
 			dimensions: (4.0, 4.0),
@@ -18,6 +19,7 @@
 		spawnable_behaviors: [],
 		projectile_behaviors: [ExplodeOnImpact],
 		collider_dimensions: (1.5, 1.5),
+		z_level: 20.0,
 		texture: (
 			path: "texture/neutral_blast_spritesheet.png",
 			dimensions: (4.0, 4.0),
@@ -32,6 +34,7 @@
 		spawnable_behaviors: [],
 		projectile_behaviors: [ExplodeOnImpact],
 		collider_dimensions: (1.5, 1.5),
+		z_level: 19.0,
 		texture: (
 			path: "texture/ally_blast_spritesheet.png",
 			dimensions: (4.0, 4.0),

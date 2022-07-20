@@ -1,6 +1,7 @@
 use crate::{
     animation::{AnimationComponent, TextureData},
     game::GameParametersResource,
+    states::{AppStateComponent, AppStates},
 };
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
@@ -23,6 +24,7 @@ pub struct EffectData {
     pub effect_type: super::EffectType,
     pub texture: TextureData,
     pub effect_behaviors: Vec<behavior::EffectBehavior>,
+    pub z_level: f32,
 }
 
 pub struct EffectsResource {
@@ -33,6 +35,8 @@ pub struct EffectsResource {
 pub struct SpawnEffectEvent {
     pub effect_type: EffectType,
     pub position: Vec2,
+    pub scale: Vec2,
+    pub rotation: f32,
 }
 
 pub fn spawn_effect_system(
@@ -46,6 +50,8 @@ pub fn spawn_effect_system(
             &event.effect_type,
             &effects_resource,
             event.position,
+            event.scale,
+            event.rotation,
             &mut commands,
             &game_parameters,
         );
@@ -56,6 +62,8 @@ pub fn spawn_effect(
     effect_type: &EffectType,
     effects_resource: &EffectsResource,
     position: Vec2,
+    scale: Vec2,
+    rotation: f32,
     commands: &mut Commands,
     game_parameters: &GameParametersResource,
 ) {
@@ -87,17 +95,18 @@ pub fn spawn_effect(
             angular_deceleration: 0.0,
             angular_speed: 0.0,
             behaviors: vec![],
-            should_despawn: false,
         })
         .insert(RigidBody::Fixed)
         .insert_bundle(TransformBundle::from_transform(Transform {
-            translation: position.extend(0.0),
+            translation: position.extend(effect_data.z_level),
+            rotation: Quat::from_rotation_z(rotation),
             scale: Vec3::new(
-                game_parameters.sprite_scale,
-                game_parameters.sprite_scale,
+                game_parameters.sprite_scale + scale.x,
+                game_parameters.sprite_scale + scale.y,
                 1.0,
             ),
             ..Default::default()
         }))
+        .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new(effect_data.effect_type.to_string()));
 }

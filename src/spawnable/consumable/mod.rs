@@ -9,6 +9,7 @@ use crate::{
     spawnable::{
         ConsumableType, InitialMotion, SpawnableBehavior, SpawnableComponent, SpawnableType,
     },
+    states::{AppStateComponent, AppStates},
 };
 
 mod behavior;
@@ -64,6 +65,7 @@ pub struct ConsumableData {
     pub speed: Vec2,
     pub acceleration: Vec2,
     pub deceleration: Vec2,
+    pub z_level: f32,
 }
 
 pub struct ConsumableResource {
@@ -105,7 +107,7 @@ pub fn spawn_consumable(
         .insert(LockedAxes::ROTATION_LOCKED)
         .insert(Velocity::from(consumable_data.initial_motion.clone()))
         .insert(Transform {
-            translation: position.extend(0.0),
+            translation: position.extend(consumable_data.z_level),
             scale: Vec3::new(
                 game_parameters.sprite_scale,
                 game_parameters.sprite_scale,
@@ -129,8 +131,8 @@ pub fn spawn_consumable(
             angular_deceleration: 0.0,
             angular_speed: 0.0,
             behaviors: consumable_data.spawnable_behaviors.clone(),
-            should_despawn: false,
         })
         .insert(ActiveEvents::COLLISION_EVENTS)
+        .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new(consumable_data.consumable_type.to_string()));
 }

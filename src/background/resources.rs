@@ -1,4 +1,5 @@
 use crate::background::PlanetComponent;
+use crate::states::{AppStateComponent, AppStates};
 use bevy::prelude::Commands;
 use bevy::prelude::*;
 use serde::Deserialize;
@@ -57,6 +58,7 @@ impl PlanetData {
             .insert(PlanetComponent {
                 rotation_speed: self.rotation_speed,
             })
+            .insert(AppStateComponent(AppStates::Game))
             .insert(Name::new("Planet"));
 
         // spawn light entity
@@ -72,6 +74,7 @@ impl PlanetData {
                     transform,
                     ..Default::default()
                 })
+                .insert(AppStateComponent(AppStates::Game))
                 .insert(Name::new("Planet Light"));
         }
     }

@@ -1,10 +1,15 @@
 use bevy::diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin};
 use bevy::{pbr::AmbientLight, prelude::*};
 use bevy_inspector_egui::WorldInspectorPlugin;
+use bevy_kira_audio::{Audio, AudioApp, AudioChannel, AudioPlugin};
 use bevy_rapier2d::prelude::*;
+use game_over::EndGameTransitionResource;
 use ron::de::from_bytes;
+use spawnable::SpawnableComponent;
 use std::collections::HashMap;
 use ui::FPSUI;
+
+use states::{AppStateComponent, AppStates};
 
 pub const PHYSICS_SCALE: f32 = 10.0;
 pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: u32 = 0b0010;
@@ -16,15 +21,20 @@ mod arena;
 mod background;
 mod collision;
 mod game;
+mod game_over;
 mod loot;
+mod main_menu;
 mod misc;
 mod options;
+mod pause_menu;
 mod player;
 mod run;
 mod scanner;
 mod spawnable;
+mod states;
 mod tools;
 mod ui;
+mod victory;
 
 // Don't generate a display config for wasm
 #[cfg(target_arch = "wasm32")]
@@ -51,17 +61,25 @@ fn get_display_config() -> options::DisplayConfig {
         .unwrap()
 }
 
+// audio channels
+pub struct BackgroundMusicAudioChannel;
+pub struct MenuAudioChannel;
+pub struct SoundEffectsAudioChannel;
+
 fn main() {
     let display_config = get_display_config();
 
     let mut app = App::new();
 
+    // add states
+    app.add_state(states::AppStates::MainMenu); // start game in the main menu state
+
+    // add default plugins
+    app.add_plugins(DefaultPlugins);
+
+    // insert resources for all game states
     app.insert_resource(WindowDescriptor::from(display_config))
         .insert_resource(ClearColor(Color::BLACK))
-        .insert_resource(AmbientLight {
-            color: Color::WHITE,
-            brightness: 0.1,
-        })
         .insert_resource(
             from_bytes::<loot::LootDropsResource>(include_bytes!("../data/loot_drops.ron"))
                 .unwrap(),
@@ -124,99 +142,204 @@ fn main() {
             ))
             .unwrap(),
         )
+        .insert_resource(AmbientLight {
+            color: Color::WHITE,
+            brightness: 0.1,
+        })
+        .insert_resource(game_over::EndGameTransitionResource::new(
+            2.0, 3.0, 2.5, 0.5, 0.5, 30.0,
+        ))
         .add_event::<collision::SortedCollisionEvent>()
         .add_event::<run::SpawnFormationEvent>()
         .add_event::<run::LevelCompletedEvent>()
         .add_event::<arena::EnemyReachedBottomGateEvent>()
         .add_event::<spawnable::SpawnEffectEvent>()
         .add_event::<spawnable::SpawnConsumableEvent>()
-        .add_plugins(DefaultPlugins)
+        .add_plugin(AudioPlugin)
+        .add_audio_channel::<BackgroundMusicAudioChannel>()
+        .add_audio_channel::<MenuAudioChannel>()
+        .add_audio_channel::<SoundEffectsAudioChannel>()
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
             PHYSICS_SCALE,
         ))
-        .add_startup_system(setup_game.label("init"))
-        .add_startup_system(arena::spawn_barriers_system.after("init"))
-        .add_startup_system(arena::spawn_despawn_gates_system.after("init"))
-        .add_startup_system(background::create_background_system.after("init"))
-        .add_startup_system(
-            player::spawn_player_system
-                .label("spawn_player")
-                .after("init"),
-        )
-        .add_startup_system(ui::setup_ui.after("spawn_player"))
-        .add_system_to_stage(CoreStage::First, run::level_system.label("level"))
-        .add_system_to_stage(CoreStage::First, run::spawn_formation_system.after("level"))
-        .add_system_to_stage(CoreStage::First, run::next_level_system.after("level"))
-        .add_system(player::player_movement_system)
-        .add_system_to_stage(CoreStage::First, player::player_fire_weapon_system)
-        .add_system_to_stage(
-            CoreStage::PostUpdate,
-            spawnable::spawnable_set_target_behavior_system.label("set_target_behavior"),
-        )
-        .add_system_to_stage(
-            CoreStage::PostUpdate,
-            spawnable::spawnable_execute_behavior_system.after("set_target_behavior"),
-        )
-        .add_system_to_stage(
-            CoreStage::PostUpdate,
-            spawnable::mob_execute_behavior_system
-                .after("set_target_behavior")
-                .after("intersection_collision")
-                .after("contact_collision"),
-        )
-        .add_system_to_stage(
-            CoreStage::PostUpdate,
-            spawnable::projectile_execute_behavior_system
-                .after("set_target_behavior")
-                .after("intersection_collision")
-                .after("contact_collision")
-                .label("projectile_execute_behavior"),
-        )
-        .add_system_to_stage(
-            CoreStage::PostUpdate,
-            spawnable::effect_execute_behavior_system
-                .after("set_target_behavior")
-                .after("intersection_collision")
-                .after("contact_collision")
-                .label("effect_execute_behavior"),
-        )
-        .add_system_to_stage(
-            CoreStage::PostUpdate,
-            spawnable::consumable_execute_behavior_system
-                .after("set_target_behavior")
-                .after("intersection_collision")
-                .after("contact_collision")
-                .label("consumable_execute_behavior"),
-        )
-        .add_system_to_stage(CoreStage::First, spawnable::spawn_effect_system) // event generated in projectile execute behavior
-        .add_system_to_stage(CoreStage::First, spawnable::spawn_consumable_system) // event generated in mob execute behavior
-        .add_system_to_stage(
-            CoreStage::PostUpdate,
-            collision::intersection_collision_system.label("intersection_collision"),
-        )
-        .add_system_to_stage(
-            CoreStage::PostUpdate,
-            collision::contact_collision_system.label("contact_collision"),
-        )
-        .add_system(scanner::scanner_system)
-        .add_system(ui::update_ui)
-        .add_system(spawnable::despawn_spawnable_system)
-        .add_system(options::toggle_fullscreen_system)
-        .add_system(options::toggle_zoom_system)
-        .add_system(arena::despawn_gates_system)
-        .add_system(animation::animate_sprite_system)
-        .add_system(background::rotate_planet_system)
-        .add_system(spawnable::despawn_timer_system);
+        .add_startup_system(ui::setup_ui_camera_system)
+        .add_startup_system(start_background_audio_system)
+        .add_system(main_menu::bouncing_prompt_system);
+
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        app.add_plugin(bevy_framepace::FramepacePlugin::default());
+    }
+
+    // game startup systems (perhaps exchange with app.add_startup_system_set)
+    app.add_system_set(
+        SystemSet::on_enter(states::AppStates::Game)
+            .with_system(setup_game.label("init"))
+            .with_system(arena::spawn_barriers_system.after("init"))
+            .with_system(arena::spawn_despawn_gates_system.after("init"))
+            .with_system(background::create_background_system.after("init"))
+            .with_system(
+                player::spawn_player_system
+                    .label("spawn_player")
+                    .after("init"),
+            )
+            .with_system(ui::setup_game_ui_system.after("spawn_player")),
+    );
+
+    app.add_system_set(
+        SystemSet::on_enter(states::AppStates::PauseMenu)
+            .with_system(pause_menu::setup_pause_system),
+    );
+
+    app.add_system_set(
+        SystemSet::on_exit(states::AppStates::PauseMenu).with_system(clear_state_system),
+    );
+
+    app.add_system_set(
+        SystemSet::on_update(states::AppStates::GameOver)
+            .with_system(game_over::game_over_fade_in_system)
+            .with_system(run::reset_run_system),
+    );
+
+    app.add_system_set(
+        SystemSet::on_enter(states::AppStates::GameOver)
+            .with_system(game_over::setup_game_over_system),
+    );
+
+    app.add_system_set(
+        SystemSet::on_exit(states::AppStates::GameOver).with_system(clear_state_system),
+    );
+
+    app.add_system_set(
+        SystemSet::on_update(states::AppStates::Victory)
+            .with_system(victory::victory_fade_in_system)
+            .with_system(run::reset_run_system),
+    );
+
+    app.add_system_set(
+        SystemSet::on_enter(states::AppStates::Victory).with_system(victory::setup_victory_system),
+    );
+
+    app.add_system_set(
+        SystemSet::on_exit(states::AppStates::Victory).with_system(clear_state_system),
+    );
+
+    app.add_system_set(
+        SystemSet::on_enter(states::AppStates::MainMenu)
+            .with_system(main_menu::setup_main_menu_system)
+            .with_system(clear_game_state_system),
+    );
+
+    app.add_system_set(
+        SystemSet::on_update(states::AppStates::MainMenu).with_system(states::start_game_system),
+    );
+
+    app.add_system_set(
+        SystemSet::on_exit(states::AppStates::MainMenu).with_system(clear_state_system),
+    );
+
+    app.add_system_set(
+        SystemSet::on_update(states::AppStates::PauseMenu)
+            .with_system(states::close_pause_menu_system)
+            .with_system(run::reset_run_system),
+    );
+
+    app.add_system_set(
+        SystemSet::on_update(states::AppStates::Game)
+            .with_system(player::player_movement_system)
+            .with_system(scanner::scanner_system)
+            .with_system(options::toggle_fullscreen_system)
+            .with_system(options::toggle_zoom_system)
+            .with_system(arena::despawn_gates_system)
+            .with_system(animation::animate_sprite_system)
+            .with_system(background::rotate_planet_system)
+            .with_system(spawnable::despawn_timer_system)
+            .with_system(
+                spawnable::spawnable_set_target_behavior_system.label("set_target_behavior"),
+            )
+            .with_system(collision::intersection_collision_system.label("intersection_collision"))
+            .with_system(collision::contact_collision_system.label("contact_collision"))
+            .with_system(spawnable::spawnable_execute_behavior_system.after("set_target_behavior"))
+            .with_system(
+                spawnable::mob_execute_behavior_system
+                    .after("set_target_behavior")
+                    .after("intersection_collision")
+                    .after("contact_collision"),
+            )
+            .with_system(
+                spawnable::projectile_execute_behavior_system
+                    .after("set_target_behavior")
+                    .after("intersection_collision")
+                    .after("contact_collision")
+                    .label("projectile_execute_behavior"),
+            )
+            .with_system(
+                spawnable::effect_execute_behavior_system
+                    .after("set_target_behavior")
+                    .after("intersection_collision")
+                    .after("contact_collision"),
+            )
+            .with_system(
+                spawnable::consumable_execute_behavior_system
+                    .after("set_target_behavior")
+                    .after("intersection_collision")
+                    .after("contact_collision"),
+            )
+            .with_system(run::level_system.label("level"))
+            .with_system(run::spawn_formation_system.after("level"))
+            .with_system(run::next_level_system.label("next_level").after("level"))
+            .with_system(player::player_fire_weapon_system)
+            .with_system(spawnable::spawn_effect_system) // event generated in projectile execute behavior, consumable execute behavior
+            .with_system(spawnable::spawn_consumable_system) // event generated in mob execute behavior
+            .with_system(states::open_pause_menu_system)
+            .with_system(player::player_death_system)
+            .with_system(ui::update_ui.after("next_level"))
+            .with_system(game_over::fade_out_system)
+            .with_system(run::reset_run_system),
+    );
+
+    app.add_system_set(SystemSet::on_exit(states::AppStates::Game).with_system(clear_state_system));
 
     // plugins to use only in debug mode
     if cfg!(debug_assertions) {
         app.add_plugin(WorldInspectorPlugin::new())
             .add_plugin(RapierDebugRenderPlugin::default())
             .add_plugin(FrameTimeDiagnosticsPlugin::default())
+            .add_startup_system(ui::setup_fps_ui_system)
             .add_system(fps_system);
     }
 
     app.run();
+}
+
+fn start_background_audio_system(
+    asset_server: Res<AssetServer>,
+    audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
+) {
+    audio_channel.play_looped(asset_server.load("sounds/deflector_soundtrack.mp3"));
+}
+
+fn clear_state_system(
+    mut commands: Commands,
+    mut despawn_entities_query: Query<(Entity, &states::AppStateComponent)>,
+    app_state: Res<State<states::AppStates>>,
+) {
+    for (entity, entity_app_state) in despawn_entities_query.iter_mut() {
+        if *app_state.current() == entity_app_state.0 {
+            commands.entity(entity).despawn_recursive();
+        }
+    }
+}
+
+fn clear_game_state_system(
+    mut commands: Commands,
+    mut despawn_entities_query: Query<(Entity, &states::AppStateComponent)>,
+) {
+    for (entity, entity_app_state) in despawn_entities_query.iter_mut() {
+        if entity_app_state.0 == AppStates::Game {
+            commands.entity(entity).despawn_recursive();
+        }
+    }
 }
 
 /// Initialize values for the game
@@ -231,13 +354,16 @@ fn setup_game(
     mut consumables: ResMut<spawnable::ConsumableResource>,
     mut rapier_config: ResMut<RapierConfiguration>,
     mut run_resource: ResMut<run::RunResource>,
+    mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
     levels_resource: Res<run::LevelsResource>,
     game_parameters: Res<game::GameParametersResource>,
 ) {
     // setup cameras
     let mut camera_2d = OrthographicCameraBundle::new_2d();
     camera_2d.transform = Transform::from_xyz(0.0, 0.0, game_parameters.camera_z);
-    commands.spawn_bundle(camera_2d);
+    commands
+        .spawn_bundle(camera_2d)
+        .insert(AppStateComponent(AppStates::Game));
 
     let camera_3d = PerspectiveCameraBundle {
         transform: Transform::from_xyz(0.0, 0.0, game_parameters.camera_z)
@@ -248,7 +374,27 @@ fn setup_game(
         },
         ..Default::default()
     };
-    commands.spawn_bundle(camera_3d);
+    commands
+        .spawn_bundle(camera_3d)
+        .insert(AppStateComponent(AppStates::Game));
+
+    *end_game_trans_resource = EndGameTransitionResource::new(2.0, 3.0, 2.5, 0.5, 0.5, 30.0);
+    rapier_config.physics_pipeline_active = true;
+    rapier_config.query_pipeline_active = true;
+    // spawn game fade entity
+    commands
+        .spawn_bundle(SpriteBundle {
+            sprite: Sprite {
+                color: Color::rgba(0.0, 0.0, 0.0, 0.0),
+                custom_size: Some(Vec2::new(16000.0, 9000.0)),
+                ..default()
+            },
+            transform: Transform::from_xyz(0.0, 0.0, 100.0),
+            ..default()
+        })
+        .insert(game_over::GameFadeComponent)
+        .insert(AppStateComponent(AppStates::Game))
+        .insert(Name::new("Game Fade"));
 
     // setup rapier
     rapier_config.gravity = Vec2::ZERO;
@@ -352,7 +498,7 @@ fn setup_game(
     mobs.texture_atlas_handle = mob_texture_atlas_dict;
 
     // create run resource
-    run_resource.create_levels(&levels_resource);
+    run_resource.create_level(&levels_resource);
 }
 
 fn fps_system(diagnostics: Res<Diagnostics>, mut query: Query<&mut Text, With<FPSUI>>) {

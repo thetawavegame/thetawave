@@ -9,6 +9,7 @@ use crate::{
     game::GameParametersResource,
     spawnable::InitialMotion,
     spawnable::{ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType},
+    states::{AppStateComponent, AppStates},
 };
 
 mod behavior;
@@ -39,6 +40,7 @@ pub struct ProjectileData {
     pub collider_dimensions: Vec2,
     /// Texture
     pub texture: TextureData,
+    pub z_level: f32,
 }
 
 /// Stores data about mob entities
@@ -105,7 +107,7 @@ pub fn spawn_projectile(
             },
         })
         .insert(Transform {
-            translation: position.extend(0.0),
+            translation: position.extend(projectile_data.z_level),
             scale: Vec3::new(
                 game_parameters.sprite_scale,
                 game_parameters.sprite_scale,
@@ -129,13 +131,8 @@ pub fn spawn_projectile(
             angular_deceleration: 0.0,
             angular_speed: game_parameters.max_speed,
             behaviors: projectile_data.spawnable_behaviors.clone(),
-            should_despawn: false,
         })
         .insert(ActiveEvents::COLLISION_EVENTS)
-        /*
-        .insert(DespawnTimerComponent {
-            despawn_timer: Timer::from_seconds(despawn_time, false),
-        })
-        */
+        .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new(projectile_data.projectile_type.to_string()));
 }

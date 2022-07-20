@@ -10,6 +10,7 @@ use crate::{
     loot::ConsumableDropListType,
     misc::Health,
     spawnable::{InitialMotion, MobType, SpawnableBehavior, SpawnableComponent, SpawnableType},
+    states::{AppStateComponent, AppStates},
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 
@@ -72,6 +73,7 @@ pub struct MobData {
     pub defense_damage: f32,
     pub health: Health,
     pub consumable_drops: ConsumableDropListType,
+    pub z_level: f32,
 }
 
 /// Data describing thrusters
@@ -114,7 +116,7 @@ pub fn spawn_mob(
     mob.insert_bundle(SpriteSheetBundle {
         texture_atlas: texture_atlas_handle,
         transform: Transform {
-            translation: position.extend(0.0),
+            translation: position.extend(mob_data.z_level),
             scale: Vec3::new(
                 game_parameters.sprite_scale,
                 game_parameters.sprite_scale,
@@ -168,9 +170,9 @@ pub fn spawn_mob(
         angular_deceleration: mob_data.angular_deceleration,
         angular_speed: mob_data.angular_speed,
         behaviors: mob_data.spawnable_behaviors.clone(),
-        should_despawn: false,
     })
     .insert(ActiveEvents::COLLISION_EVENTS)
+    .insert(AppStateComponent(AppStates::Game))
     .insert(Name::new(mob_data.mob_type.to_string()));
 
     // spawn thruster as child if mob has thruster

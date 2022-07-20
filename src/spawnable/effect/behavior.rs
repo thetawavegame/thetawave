@@ -10,7 +10,9 @@ pub enum EffectBehavior {
 }
 
 pub fn effect_execute_behavior_system(
+    mut commands: Commands,
     mut effect_query: Query<(
+        Entity,
         &mut SpawnableComponent,
         &super::EffectComponent,
         &TextureAtlasSprite,
@@ -18,7 +20,7 @@ pub fn effect_execute_behavior_system(
     )>,
     texture_atlases: Res<Assets<TextureAtlas>>,
 ) {
-    for (mut spawnable_component, effect_component, sprite, texture_atlas_handle) in
+    for (entity, mut spawnable_component, effect_component, sprite, texture_atlas_handle) in
         effect_query.iter_mut()
     {
         let behaviors = effect_component.behaviors.clone();
@@ -27,7 +29,7 @@ pub fn effect_execute_behavior_system(
                 EffectBehavior::DespawnAfterAnimation => {
                     let texture_atlas = texture_atlases.get(texture_atlas_handle).unwrap();
                     if sprite.index as usize == texture_atlas.textures.len() - 1 {
-                        spawnable_component.should_despawn = true;
+                        commands.entity(entity).despawn_recursive();
                     }
                 }
             }

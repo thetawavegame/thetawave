@@ -14,6 +14,7 @@
 		defense_damage: 10.0,
 		initial_motion: (),
 		collider_dimensions: (5.0, 5.0),
+		z_level: 5.0,
 		consumable_drops: Standard,
 		health: (
 			max_health: 20.0,
@@ -22,7 +23,7 @@
 		),
 		texture: (
 			path: "texture/drone_spritesheet.png",
-			dimensions: (18.0, 18.0),
+			dimensions: (20.0, 20.0),
 			cols: 3,
 			rows: 1,
 			frame_duration: 0.25,
@@ -32,7 +33,7 @@
 			y_offset: 11.0,
 			texture: (
 				path: "texture/drone_thrusters_spritesheet.png",
-				dimensions: (12.0, 8.0),
+				dimensions: (14.0, 10.0),
 				cols: 3,
 				rows: 1,
 				frame_duration: 0.15,
@@ -71,6 +72,7 @@
 		defense_damage: 10.0,
 		initial_motion: (),
 		collider_dimensions: (5.0, 5.0),
+		z_level: 5.0,
 		consumable_drops: Standard,
 		health: (
 			max_health: 20.0,
@@ -79,7 +81,7 @@
 		),
 		texture: (
 			path: "texture/pawn_spritesheet.png",
-			dimensions: (18.0, 18.0),
+			dimensions: (20.0, 20.0),
 			cols: 3,
 			rows: 1,
 			frame_duration: 0.25,
@@ -89,7 +91,7 @@
 			y_offset: 11.0,
 			texture: (
 				path: "texture/pawn_thrusters_spritesheet.png",
-				dimensions: (12.0, 8.0),
+				dimensions: (14.0, 10.0),
 				cols: 3,
 				rows: 1,
 				frame_duration: 0.15,
@@ -109,9 +111,10 @@
 		angular_speed: 0.0,
 		attack_damage: 0.0,
 		collision_damage: 5.0,
-		defense_damage: 0.0,
+		defense_damage: -10.0,
 		initial_motion: (),
 		collider_dimensions: (5.0, 10.0),
+		z_level: 6.0,
 		consumable_drops: Standard,
 		health: (
 			max_health: 20.0,
@@ -120,7 +123,7 @@
 		),
 		texture: (
 			path: "texture/hauler_spritesheet.png",
-			dimensions: (22.0, 36.0),
+			dimensions: (24.0, 38.0),
 			cols: 3,
 			rows: 1,
 			frame_duration: 0.25,
@@ -130,7 +133,7 @@
 			y_offset: 18.0,
 			texture: (
 				path: "texture/hauler_thrusters_spritesheet.png",
-				dimensions: (22.0, 9.0),
+				dimensions: (24.0, 11.0),
 				cols: 3,
 				rows: 1,
 				frame_duration: 0.15,
@@ -164,15 +167,16 @@
 		defense_damage: 25.0,
 		initial_motion: (),
 		collider_dimensions: (6.0, 8.0),
+		z_level: 5.0,
 		consumable_drops: Standard,
 		health: (
-			max_health: 20.0,
-			health: 20.0,
+			max_health: 60.0,
+			health: 60.0,
 			armor: 0,
 		),	
 		texture: (
 			path: "texture/missile_launcher_spritesheet.png",
-			dimensions: (21.0, 26.0),
+			dimensions: (23.0, 28.0),
 			cols: 3,
 			rows: 1,
 			frame_duration: 0.25,
@@ -182,7 +186,7 @@
 			y_offset: 13.0,
 			texture: (
 				path: "texture/missile_launcher_thrusters_spritesheet.png",
-				dimensions: (15.0, 5.0),
+				dimensions: (17.0, 7.0),
 				cols: 3,
 				rows: 1,
 				frame_duration: 0.15,
@@ -201,10 +205,11 @@
 		angular_deceleration: 0.0,
 		angular_speed: 1.8,
 		attack_damage: 0.0,
-		collision_damage: 18.0,
+		collision_damage: 30.0,
 		defense_damage: 0.0,
 		initial_motion: (),
 		collider_dimensions: (1.5, 4.0),
+		z_level: 5.0,
 		consumable_drops: Nothing,
 		health: (
 			max_health: 20.0,
@@ -213,7 +218,7 @@
 		),	
 		texture: (
 			path: "texture/missile_spritesheet.png",
-			dimensions: (11.0, 17.0),
+			dimensions: (13.0, 19.0),
 			cols: 4,
 			rows: 1,
 			frame_duration: 0.1,
@@ -223,7 +228,7 @@
 			y_offset: 9.0,
 			texture: (
 				path: "texture/missile_thrusters_spritesheet.png",
-				dimensions: (11.0, 7.0),
+				dimensions: (13.0, 9.0),
 				cols: 4,
 				rows: 1,
 				frame_duration: 0.15,
@@ -262,15 +267,16 @@
 		defense_damage: 15.0,
 		initial_motion: (),
 		collider_dimensions: (7.0, 2.0),
+		z_level: 5.0,
 		consumable_drops: Standard,
 		health: (
-			max_health: 40.0,
-			health: 40.0,
+			max_health: 20.0,
+			health: 20.0,
 			armor: 0,
 		),	
 		texture: (
 			path: "texture/strafer_spritesheet.png",
-			dimensions: (24.0, 12.0),
+			dimensions: (26.0, 14.0),
 			cols: 3,
 			rows: 1,
 			frame_duration: 0.25,
@@ -280,7 +286,7 @@
 			y_offset: 7.0,
 			texture: (
 				path: "texture/strafer_thrusters_spritesheet.png",
-				dimensions: (22.0, 9.0),
+				dimensions: (24.0, 11.0),
 				cols: 3,
 				rows: 1,
 				frame_duration: 0.15,
@@ -318,15 +324,16 @@
 		defense_damage: 15.0,
 		initial_motion: (),
 		collider_dimensions: (7.0, 2.0),
+		z_level: 5.0,
 		consumable_drops: Standard,
 		health: (
-			max_health: 40.0,
-			health: 40.0,
+			max_health: 20.0,
+			health: 20.0,
 			armor: 0,
 		),	
 		texture: (
 			path: "texture/strafer_spritesheet.png",
-			dimensions: (24.0, 12.0),
+			dimensions: (26.0, 14.0),
 			cols: 3,
 			rows: 1,
 			frame_duration: 0.25,
@@ -336,7 +343,7 @@
 			y_offset: 7.0,
 			texture: (
 				path: "texture/strafer_thrusters_spritesheet.png",
-				dimensions: (22.0, 9.0),
+				dimensions: (24.0, 11.0),
 				cols: 3,
 				rows: 1,
 				frame_duration: 0.15,
@@ -357,6 +364,7 @@
 		attack_damage: 0.0,
 		collision_damage: 7.0,
 		defense_damage: 0.0,
+		z_level: 4.0,
 		consumable_drops: MoneyAsteroid,
 		initial_motion: (
 			random_angvel: Some((-1.0, 1.0)),

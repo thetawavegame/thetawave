@@ -2,9 +2,23 @@
 	AllyBlastExplosion: (
 		effect_type: AllyBlastExplosion,
 		effect_behaviors: [DespawnAfterAnimation],
+		z_level: 10.0,
 		texture: (
 			path: "texture/ally_blast_explosion_spritesheet.png",
-			dimensions: (10, 10),
+			dimensions: (12, 12),
+			cols: 7,
+			rows: 1,
+			frame_duration: .1,
+			animation_direction: Forward,
+		),
+	),
+	EnemyBlastExplosion: (
+		effect_type: EnemyBlastExplosion,
+		effect_behaviors: [DespawnAfterAnimation],
+		z_level: 10.5,
+		texture: (
+			path: "texture/enemy_blast_explosion_spritesheet.png",
+			dimensions: (12, 12),
 			cols: 7,
 			rows: 1,
 			frame_duration: .1,
@@ -14,9 +28,23 @@
 	AllyBlastDespawn: (
 		effect_type: AllyBlastDespawn,
 		effect_behaviors: [DespawnAfterAnimation],
+		z_level: 9.0,
 		texture: (
 			path: "texture/ally_blast_despawn_spritesheet.png",
-			dimensions: (8, 8),
+			dimensions: (10, 10),
+			cols: 6,
+			rows: 1,
+			frame_duration: .1,
+			animation_direction: Forward,
+		),
+	),
+	EnemyBlastDespawn: (
+		effect_type: EnemyBlastDespawn,
+		effect_behaviors: [DespawnAfterAnimation],
+		z_level: 9.0,
+		texture: (
+			path: "texture/enemy_blast_despawn_spritesheet.png",
+			dimensions: (10, 10),
 			cols: 6,
 			rows: 1,
 			frame_duration: .1,
@@ -26,9 +54,10 @@
 	MobExplosion: (
 		effect_type: MobExplosion,
 		effect_behaviors: [DespawnAfterAnimation],
+		z_level: -5.0,
 		texture: (
 			path: "texture/mob_explosion_spritesheet.png",
-			dimensions: (24, 24),
+			dimensions: (26, 26),
 			cols: 10,
 			rows: 1,
 			frame_duration: .1,
@@ -38,6 +67,7 @@
 	ConsumableDespawn: (
 		effect_type: ConsumableDespawn,
 		effect_behaviors: [DespawnAfterAnimation],
+		z_level: 9.0,
 		texture: (
 			path: "texture/consumable_despawn_spritesheet.png",
 			dimensions: (9, 9),
@@ -45,6 +75,19 @@
 			rows: 1,
 			frame_duration: .05,
 			animation_direction: Forward,
+		),
+	),
+	BarrierGlow: (
+		effect_type: BarrierGlow,
+		effect_behaviors: [],
+		z_level: 25.0,
+		texture: (
+			path: "texture/barrier_glow_spritesheet.png",
+			dimensions: (102, 17),
+			cols: 3,
+			rows: 1,
+			frame_duration: .2,
+			animation_direction: PingPong(Forward),
 		),
 	),
 }

@@ -10,6 +10,7 @@ pub type FormationPool = Vec<Formation>;
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum FormationPoolType {
     Easy,
+    Hard,
     Asteroids,
 }
 
@@ -38,6 +39,7 @@ impl Formation {
     pub fn spawn_formation(
         &self,
         mobs: &spawnable::MobsResource,
+        consumables: &spawnable::ConsumableResource,
         commands: &mut Commands,
         game_parameters: &game::GameParametersResource,
     ) {
@@ -52,6 +54,15 @@ impl Formation {
                     commands,
                     game_parameters,
                 ),
+                spawnable::SpawnableType::Consumable(consumable_type) => {
+                    spawnable::spawn_consumable(
+                        consumable_type,
+                        consumables,
+                        formation_spawnable.position,
+                        commands,
+                        game_parameters,
+                    )
+                }
                 _ => {}
             }
         }
@@ -69,11 +80,12 @@ pub fn spawn_formation_system(
     mut commands: Commands,
     mut event_reader: EventReader<SpawnFormationEvent>,
     mobs: Res<spawnable::MobsResource>,
+    consumables: Res<spawnable::ConsumableResource>,
     game_parameters: Res<game::GameParametersResource>,
 ) {
     for event in event_reader.iter() {
         event
             .formation
-            .spawn_formation(&mobs, &mut commands, &game_parameters);
+            .spawn_formation(&mobs, &consumables, &mut commands, &game_parameters);
     }
 }

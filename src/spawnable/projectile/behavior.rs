@@ -1,11 +1,14 @@
 use crate::{
     collision::SortedCollisionEvent,
     spawnable::{
-        EffectType, Faction, MobComponent, PlayerComponent, SpawnEffectEvent, SpawnableComponent,
+        EffectType, Faction, MobComponent, PlayerComponent, ProjectileType, SpawnEffectEvent,
+        SpawnableComponent,
     },
+    SoundEffectsAudioChannel,
 };
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
+use bevy_kira_audio::AudioChannel;
 //use bevy_rapier2d::prelude::{RigidBodyPosition, RigidBodyPositionComponent};
 use serde::Deserialize;
 
@@ -21,6 +24,7 @@ pub enum ProjectileBehavior {
 
 /// Manages executing behaviors of mobs
 pub fn projectile_execute_behavior_system(
+    mut commands: Commands,
     mut projectile_query: Query<(
         Entity,
         &Transform,
@@ -32,6 +36,8 @@ pub fn projectile_execute_behavior_system(
     mut collision_events: EventReader<SortedCollisionEvent>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     time: Res<Time>,
+    asset_server: Res<AssetServer>,
+    audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
 ) {
     let mut collision_events_vec = vec![];
     for collision_event in collision_events.iter() {
@@ -41,9 +47,11 @@ pub fn projectile_execute_behavior_system(
     for (entity, projectile_transform, mut spawnable_component, mut projectile_component) in
         projectile_query.iter_mut()
     {
+        let projectile_type = projectile_component.projectile_type.clone();
         for behavior in &mut projectile_component.behaviors {
             match behavior {
                 ProjectileBehavior::ExplodeOnImpact => explode_on_impact(
+                    &mut commands,
                     entity,
                     projectile_transform,
                     &mut spawnable_component,
@@ -51,6 +59,8 @@ pub fn projectile_execute_behavior_system(
                     &mut spawn_effect_event_writer,
                     &mut player_query,
                     &mut mob_query,
+                    &asset_server,
+                    &audio_channel,
                 ),
                 ProjectileBehavior::TimedDespawn {
                     despawn_time,
@@ -58,16 +68,36 @@ pub fn projectile_execute_behavior_system(
                 } => {
                     *current_time += time.delta_seconds();
                     if current_time > despawn_time {
-                        spawnable_component.should_despawn = true;
-                        // TODO: spawn fizzle out animation
+                        match &projectile_type {
+                            ProjectileType::Blast(faction) => match faction {
+                                Faction::Enemy => {
+                                    spawn_effect_event_writer.send(SpawnEffectEvent {
+                                        effect_type: EffectType::EnemyBlastDespawn,
+                                        position: Vec2::new(
+                                            projectile_transform.translation.x,
+                                            projectile_transform.translation.y,
+                                        ),
+                                        scale: Vec2::ZERO,
+                                        rotation: 0.0,
+                                    });
+                                }
+                                Faction::Ally => {
+                                    spawn_effect_event_writer.send(SpawnEffectEvent {
+                                        effect_type: EffectType::AllyBlastDespawn,
+                                        position: Vec2::new(
+                                            projectile_transform.translation.x,
+                                            projectile_transform.translation.y,
+                                        ),
+                                        scale: Vec2::ZERO,
+                                        rotation: 0.0,
+                                    });
+                                }
+                                _ => {}
+                            },
+                            _ => {}
+                        }
 
-                        spawn_effect_event_writer.send(SpawnEffectEvent {
-                            effect_type: EffectType::AllyBlastDespawn,
-                            position: Vec2::new(
-                                projectile_transform.translation.x,
-                                projectile_transform.translation.y,
-                            ),
-                        });
+                        commands.entity(entity).despawn_recursive();
                     }
                 }
             }
@@ -77,6 +107,7 @@ pub fn projectile_execute_behavior_system(
 
 /// Explode projectile on impact
 fn explode_on_impact(
+    commands: &mut Commands,
     entity: Entity,
     transform: &Transform,
     spawnable_component: &mut SpawnableComponent,
@@ -84,6 +115,8 @@ fn explode_on_impact(
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
     player_query: &mut Query<(Entity, &mut PlayerComponent)>,
     mob_query: &mut Query<(Entity, &mut MobComponent)>,
+    asset_server: &AssetServer,
+    audio_channel: &AudioChannel<SoundEffectsAudioChannel>,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
@@ -93,18 +126,20 @@ fn explode_on_impact(
                 projectile_faction,
                 projectile_damage,
             } => {
+                audio_channel.play(asset_server.load("sounds/player_hit.wav"));
+
                 if entity == *projectile_entity
                     && matches!(
                         projectile_faction.clone(),
                         Faction::Neutral | Faction::Enemy
                     )
                 {
-                    // despawn blast
-                    spawnable_component.should_despawn = true;
                     // spawn explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
-                        effect_type: EffectType::AllyBlastExplosion,
+                        effect_type: EffectType::EnemyBlastExplosion,
                         position: transform.translation.xy(),
+                        scale: Vec2::ZERO,
+                        rotation: 0.0,
                     });
                     // deal damage to player
                     for (player_entity_q, mut player_component) in player_query.iter_mut() {
@@ -112,6 +147,10 @@ fn explode_on_impact(
                             player_component.health.take_damage(*projectile_damage);
                         }
                     }
+
+                    // despawn blast
+                    commands.entity(entity).despawn_recursive();
+
                     continue;
                 }
             }
@@ -123,6 +162,8 @@ fn explode_on_impact(
                 projectile_faction,
                 projectile_damage,
             } => {
+                audio_channel.play(asset_server.load("sounds/mob_hit.wav"));
+
                 if entity == *projectile_entity
                     && !match mob_faction {
                         Faction::Ally => matches!(projectile_faction, Faction::Ally),
@@ -130,19 +171,36 @@ fn explode_on_impact(
                         Faction::Neutral => matches!(projectile_faction, Faction::Neutral),
                     }
                 {
-                    // despawn blast
-                    spawnable_component.should_despawn = true;
-                    // spawn explosion
-                    spawn_effect_event_writer.send(SpawnEffectEvent {
-                        effect_type: EffectType::AllyBlastExplosion,
-                        position: transform.translation.xy(),
-                    });
+                    match projectile_faction {
+                        Faction::Ally => {
+                            // spawn explosion
+                            spawn_effect_event_writer.send(SpawnEffectEvent {
+                                effect_type: EffectType::AllyBlastExplosion,
+                                position: transform.translation.xy(),
+                                scale: Vec2::ZERO,
+                                rotation: 0.0,
+                            });
+                        }
+                        Faction::Enemy => {
+                            // spawn explosion
+                            spawn_effect_event_writer.send(SpawnEffectEvent {
+                                effect_type: EffectType::EnemyBlastExplosion,
+                                position: transform.translation.xy(),
+                                scale: Vec2::ZERO,
+                                rotation: 0.0,
+                            });
+                        }
+                        Faction::Neutral => {}
+                    }
+
                     // deal damage to mob
                     for (mob_entity_q, mut mob_component) in mob_query.iter_mut() {
                         if *mob_entity == mob_entity_q {
                             mob_component.health.take_damage(*projectile_damage);
                         }
                     }
+                    // despawn blast
+                    commands.entity(entity).despawn_recursive();
                     continue;
                 }
             }
