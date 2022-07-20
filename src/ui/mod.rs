@@ -129,7 +129,7 @@ pub fn update_ui(
     for mut text_component in ui_queries.p0().iter_mut() {
         for player_component in player_query.iter() {
             text_component.sections[0].value = format!(
-                "Health: {}/{}\nArmor: {}\nMoney: {}",
+                "Health: {}/{}\nArmor: {}\nPower: {}",
                 player_component.health.get_health(),
                 player_component.health.get_max_health(),
                 player_component.health.get_armor(),

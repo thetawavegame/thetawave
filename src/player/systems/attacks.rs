@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use bevy::prelude::*;
 use bevy_kira_audio::AudioChannel;
 use bevy_rapier2d::prelude::*;
@@ -55,7 +57,9 @@ pub fn player_fire_weapon_system(
 
             audio_channel.play(asset_server.load("sounds/player_fire_blast.wav"));
 
+            let new_period = Duration::from_secs_f32(player_component.fire_period);
             player_component.fire_timer.reset();
+            player_component.fire_timer.set_duration(new_period);
         }
     }
 }

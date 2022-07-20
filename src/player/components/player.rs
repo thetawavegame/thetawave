@@ -25,6 +25,8 @@ pub struct PlayerComponent {
     pub projectile_offset_position: Vec2,
     /// Tracks time between firing blasts
     pub fire_timer: Timer,
+
+    pub fire_period: f32,
     /// Health of the player
     pub health: Health,
     /// Amount of damage dealt per attack
@@ -52,6 +54,7 @@ impl From<&Character> for PlayerComponent {
             projectile_velocity: character.projectile_velocity,
             projectile_offset_position: character.projectile_offset_position,
             fire_timer: Timer::from_seconds(character.fire_period, false),
+            fire_period: character.fire_period,
             health: character.health.clone(),
             attack_damage: character.attack_damage,
             collision_damage: character.collision_damage,

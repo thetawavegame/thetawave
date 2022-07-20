@@ -21,7 +21,7 @@
 			collision_damage: 10.0,
 			attraction_distance: 120.0,
 			attraction_acceleration: 3.0,
-			money: 3,
+			money: 0,
 		)
 	}
 )
