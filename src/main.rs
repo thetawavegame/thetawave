@@ -164,7 +164,9 @@ fn main() {
         ))
         .add_startup_system(ui::setup_ui_camera_system)
         .add_startup_system(start_background_audio_system)
-        .add_system(main_menu::bouncing_prompt_system);
+        .add_startup_system(set_audio_volume_system)
+        .add_system(main_menu::bouncing_prompt_system)
+        .add_system_to_stage(CoreStage::Last, ui::position_stat_bar_label_system);
 
     #[cfg(not(target_arch = "wasm32"))]
     {
@@ -318,6 +320,16 @@ fn start_background_audio_system(
     audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
 ) {
     audio_channel.play_looped(asset_server.load("sounds/deflector_soundtrack.mp3"));
+}
+
+fn set_audio_volume_system(
+    background_audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
+    menu_audio_channel: Res<AudioChannel<MenuAudioChannel>>,
+    effects_audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
+) {
+    background_audio_channel.set_volume(0.05);
+    menu_audio_channel.set_volume(0.05);
+    effects_audio_channel.set_volume(0.05);
 }
 
 fn clear_state_system(
