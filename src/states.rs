@@ -18,13 +18,20 @@ pub enum AppStates {
 pub struct AppStateComponent(pub AppStates);
 
 pub fn open_pause_menu_system(
+    gamepads: Res<Gamepads>,
+    mut gamepad_input: ResMut<Input<GamepadButton>>,
     mut keyboard_input: ResMut<Input<KeyCode>>,
     mut app_state: ResMut<State<AppStates>>,
     mut rapier_config: ResMut<RapierConfiguration>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<MenuAudioChannel>>,
 ) {
-    let esc = keyboard_input.just_released(KeyCode::Escape);
+    let gamepad = gamepads.iter().next().clone();
+    let mut esc = keyboard_input.just_released(KeyCode::Escape);
+
+    if let Some(gamepad) = gamepad {
+        esc |= gamepad_input.just_released(GamepadButton(*gamepad, GamepadButtonType::Start));
+    }
 
     if esc {
         app_state.push(AppStates::PauseMenu).unwrap();
@@ -32,17 +39,27 @@ pub fn open_pause_menu_system(
         keyboard_input.reset(KeyCode::Escape);
         rapier_config.physics_pipeline_active = false;
         rapier_config.query_pipeline_active = false;
+        if let Some(gamepad) = gamepad {
+            gamepad_input.reset(GamepadButton(*gamepad, GamepadButtonType::Start));
+        }
     }
 }
 
 pub fn close_pause_menu_system(
+    gamepads: Res<Gamepads>,
+    mut gamepad_input: ResMut<Input<GamepadButton>>,
     mut keyboard_input: ResMut<Input<KeyCode>>,
     mut app_state: ResMut<State<AppStates>>,
     mut rapier_config: ResMut<RapierConfiguration>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<MenuAudioChannel>>,
 ) {
-    let esc = keyboard_input.just_released(KeyCode::Escape);
+    let gamepad = gamepads.iter().next().clone();
+    let mut esc = keyboard_input.just_released(KeyCode::Escape);
+
+    if let Some(gamepad) = gamepad {
+        esc |= gamepad_input.just_released(GamepadButton(*gamepad, GamepadButtonType::Start));
+    }
 
     if esc {
         app_state.pop().unwrap();
@@ -50,20 +67,33 @@ pub fn close_pause_menu_system(
         keyboard_input.reset(KeyCode::Escape);
         rapier_config.physics_pipeline_active = true;
         rapier_config.query_pipeline_active = true;
+        if let Some(gamepad) = gamepad {
+            gamepad_input.reset(GamepadButton(*gamepad, GamepadButtonType::Start));
+        }
     }
 }
 
 pub fn start_game_system(
+    gamepads: Res<Gamepads>,
+    mut gamepad_input: ResMut<Input<GamepadButton>>,
     mut keyboard_input: ResMut<Input<KeyCode>>,
     mut app_state: ResMut<State<AppStates>>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<MenuAudioChannel>>,
 ) {
-    let enter = keyboard_input.just_released(KeyCode::Return);
+    let gamepad = gamepads.iter().next().clone();
+    let mut enter = keyboard_input.just_released(KeyCode::Return);
+
+    if let Some(gamepad) = gamepad {
+        enter |= gamepad_input.just_released(GamepadButton(*gamepad, GamepadButtonType::South));
+    }
 
     if enter {
         app_state.set(AppStates::Game).unwrap();
         audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
         keyboard_input.release(KeyCode::Return);
+        if let Some(gamepad) = gamepad {
+            gamepad_input.reset(GamepadButton(*gamepad, GamepadButtonType::South));
+        }
     }
 }

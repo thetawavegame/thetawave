@@ -3,6 +3,7 @@ use bevy::{pbr::AmbientLight, prelude::*};
 use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_kira_audio::{Audio, AudioApp, AudioChannel, AudioPlugin};
 use bevy_rapier2d::prelude::*;
+use bevy_rust_arcade::RustArcadePlugin;
 use game_over::EndGameTransitionResource;
 use ron::de::from_bytes;
 use spawnable::SpawnableComponent;
@@ -166,7 +167,8 @@ fn main() {
         .add_startup_system(start_background_audio_system)
         .add_startup_system(set_audio_volume_system)
         .add_system(main_menu::bouncing_prompt_system)
-        .add_system_to_stage(CoreStage::Last, ui::position_stat_bar_label_system);
+        .add_system_to_stage(CoreStage::Last, ui::position_stat_bar_label_system)
+        .add_plugin(RustArcadePlugin);
 
     #[cfg(not(target_arch = "wasm32"))]
     {

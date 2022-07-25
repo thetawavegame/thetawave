@@ -13,6 +13,8 @@ use crate::{
 
 /// Manages the players firing weapons
 pub fn player_fire_weapon_system(
+    gamepads: Res<Gamepads>,
+    gamepad_input: Res<Input<GamepadButton>>,
     keyboard_input: Res<Input<MouseButton>>,
     game_parameters: Res<GameParametersResource>,
     mut player_query: Query<(&mut PlayerComponent, &Velocity, &Transform)>,
@@ -22,8 +24,13 @@ pub fn player_fire_weapon_system(
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
 ) {
+    let gamepad = gamepads.iter().next().clone();
     for (mut player_component, rb_vels, transform) in player_query.iter_mut() {
-        let left_mouse = keyboard_input.pressed(MouseButton::Left);
+        let mut left_mouse = keyboard_input.pressed(MouseButton::Left);
+
+        if let Some(gamepad) = gamepad {
+            left_mouse |= gamepad_input.pressed(GamepadButton(*gamepad, GamepadButtonType::South));
+        }
 
         // tick down fire timer
         player_component.fire_timer.tick(time.delta());
