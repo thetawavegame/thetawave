@@ -26,10 +26,9 @@ pub fn open_pause_menu_system(
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<MenuAudioChannel>>,
 ) {
-    let gamepad = gamepads.iter().next().clone();
     let mut esc = keyboard_input.just_released(KeyCode::Escape);
 
-    if let Some(gamepad) = gamepad {
+    for gamepad in gamepads.iter() {
         esc |= gamepad_input.just_released(GamepadButton(*gamepad, GamepadButtonType::Start));
     }
 
@@ -39,7 +38,7 @@ pub fn open_pause_menu_system(
         keyboard_input.reset(KeyCode::Escape);
         rapier_config.physics_pipeline_active = false;
         rapier_config.query_pipeline_active = false;
-        if let Some(gamepad) = gamepad {
+        for gamepad in gamepads.iter() {
             gamepad_input.reset(GamepadButton(*gamepad, GamepadButtonType::Start));
         }
     }
@@ -54,10 +53,9 @@ pub fn close_pause_menu_system(
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<MenuAudioChannel>>,
 ) {
-    let gamepad = gamepads.iter().next().clone();
     let mut esc = keyboard_input.just_released(KeyCode::Escape);
 
-    if let Some(gamepad) = gamepad {
+    for gamepad in gamepads.iter() {
         esc |= gamepad_input.just_released(GamepadButton(*gamepad, GamepadButtonType::Start));
     }
 
@@ -67,7 +65,7 @@ pub fn close_pause_menu_system(
         keyboard_input.reset(KeyCode::Escape);
         rapier_config.physics_pipeline_active = true;
         rapier_config.query_pipeline_active = true;
-        if let Some(gamepad) = gamepad {
+        for gamepad in gamepads.iter() {
             gamepad_input.reset(GamepadButton(*gamepad, GamepadButtonType::Start));
         }
     }
@@ -81,10 +79,9 @@ pub fn start_game_system(
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<MenuAudioChannel>>,
 ) {
-    let gamepad = gamepads.iter().next().clone();
     let mut enter = keyboard_input.just_released(KeyCode::Return);
 
-    if let Some(gamepad) = gamepad {
+    for gamepad in gamepads.iter() {
         enter |= gamepad_input.just_released(GamepadButton(*gamepad, GamepadButtonType::South));
     }
 
@@ -92,7 +89,7 @@ pub fn start_game_system(
         app_state.set(AppStates::Game).unwrap();
         audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
         keyboard_input.release(KeyCode::Return);
-        if let Some(gamepad) = gamepad {
+        for gamepad in gamepads.iter() {
             gamepad_input.reset(GamepadButton(*gamepad, GamepadButtonType::South));
         }
     }

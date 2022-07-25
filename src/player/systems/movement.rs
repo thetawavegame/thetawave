@@ -11,7 +11,6 @@ pub fn player_movement_system(
     game_parameters: Res<GameParametersResource>,
     mut player_info: Query<(&PlayerComponent, &mut Velocity)>,
 ) {
-    let gamepad = gamepads.iter().next().clone();
     for (player, mut vel) in player_info.iter_mut() {
         // get key presses
         let mut up = keyboard_input.pressed(KeyCode::W);
@@ -19,7 +18,7 @@ pub fn player_movement_system(
         let mut left = keyboard_input.pressed(KeyCode::A);
         let mut right = keyboard_input.pressed(KeyCode::D);
 
-        if let Some(gamepad) = gamepad {
+        for gamepad in gamepads.iter() {
             up |= gamepad_input.pressed(GamepadButton(*gamepad, GamepadButtonType::DPadUp));
             down |= gamepad_input.pressed(GamepadButton(*gamepad, GamepadButtonType::DPadDown));
             left |= gamepad_input.pressed(GamepadButton(*gamepad, GamepadButtonType::DPadLeft));

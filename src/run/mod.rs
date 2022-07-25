@@ -81,10 +81,9 @@ pub fn reset_run_system(
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<MenuAudioChannel>>,
 ) {
-    let gamepad = gamepads.iter().next().clone();
     let mut reset = keyboard_input.just_released(KeyCode::R);
 
-    if let Some(gamepad) = gamepad {
+    for gamepad in gamepads.iter() {
         reset |= gamepad_input.just_released(GamepadButton(*gamepad, GamepadButtonType::Select));
     }
 
@@ -92,7 +91,7 @@ pub fn reset_run_system(
         app_state.set(AppStates::MainMenu).unwrap();
         audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
         keyboard_input.reset(KeyCode::R);
-        if let Some(gamepad) = gamepad {
+        for gamepad in gamepads.iter() {
             gamepad_input.reset(GamepadButton(*gamepad, GamepadButtonType::Select));
         }
     }

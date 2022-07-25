@@ -24,12 +24,12 @@ pub fn player_fire_weapon_system(
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
 ) {
-    let gamepad = gamepads.iter().next().clone();
+    //let gamepad = gamepads.iter().next().clone();
     for (mut player_component, rb_vels, transform) in player_query.iter_mut() {
         let mut left_mouse = keyboard_input.pressed(MouseButton::Left);
 
-        if let Some(gamepad) = gamepad {
-            left_mouse |= gamepad_input.pressed(GamepadButton(*gamepad, GamepadButtonType::South));
+        for gamepad in gamepads.iter() {
+            left_mouse |= gamepad_input.pressed(GamepadButton(*gamepad, GamepadButtonType::East));
         }
 
         // tick down fire timer
