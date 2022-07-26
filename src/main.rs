@@ -1,4 +1,5 @@
 use bevy::diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin};
+use bevy::window::WindowMode;
 use bevy::{pbr::AmbientLight, prelude::*};
 use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_kira_audio::{Audio, AudioApp, AudioChannel, AudioPlugin};
@@ -75,11 +76,12 @@ fn main() {
     // add states
     app.add_state(states::AppStates::MainMenu); // start game in the main menu state
 
-    // add default plugins
-    app.add_plugins(DefaultPlugins);
+    
 
     // insert resources for all game states
-    app.insert_resource(WindowDescriptor::from(display_config))
+    app
+    .insert_resource(WindowDescriptor::from(display_config))
+    .add_plugins(DefaultPlugins)
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(
             from_bytes::<loot::LootDropsResource>(include_bytes!("../data/loot_drops.ron"))
@@ -252,7 +254,7 @@ fn main() {
         SystemSet::on_update(states::AppStates::Game)
             .with_system(player::player_movement_system)
             .with_system(scanner::scanner_system)
-            .with_system(options::toggle_fullscreen_system)
+            //.with_system(options::toggle_fullscreen_system)
             .with_system(options::toggle_zoom_system)
             .with_system(arena::despawn_gates_system)
             .with_system(animation::animate_sprite_system)

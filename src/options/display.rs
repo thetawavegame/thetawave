@@ -20,7 +20,7 @@ impl From<DisplayConfig> for WindowDescriptor {
             width: display_config.width,
             height: display_config.height,
             mode: if display_config.fullscreen {
-                WindowMode::BorderlessFullscreen
+                WindowMode::SizedFullscreen
             } else {
                 WindowMode::Windowed
             },
