@@ -3,7 +3,7 @@ use bevy_kira_audio::AudioChannel;
 use std::time::Duration;
 
 use crate::{
-    arena::EnemyReachedBottomGateEvent, game_over::EndGameTransitionResource, states::AppStates,
+    arena::EnemyReachedBottomGateEvent, states::AppStates, ui::EndGameTransitionResource,
     MenuAudioChannel,
 };
 

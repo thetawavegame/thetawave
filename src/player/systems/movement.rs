@@ -1,7 +1,9 @@
 use crate::{game::GameParametersResource, player::PlayerComponent};
-use bevy::{input::gamepad, prelude::*};
+use bevy::{
+    input::{gamepad, keyboard},
+    prelude::*,
+};
 use bevy_rapier2d::prelude::*;
-use bevy_rust_arcade::{ArcadeInput, ArcadeInputEvent};
 
 /// Move player by modifying velocity with input
 pub fn player_movement_system(
@@ -13,10 +15,11 @@ pub fn player_movement_system(
 ) {
     for (player, mut vel) in player_info.iter_mut() {
         // get key presses
-        let mut up = keyboard_input.pressed(KeyCode::W);
-        let mut down = keyboard_input.pressed(KeyCode::S);
-        let mut left = keyboard_input.pressed(KeyCode::A);
-        let mut right = keyboard_input.pressed(KeyCode::D);
+        let mut up = keyboard_input.pressed(KeyCode::W) || keyboard_input.pressed(KeyCode::Up);
+        let mut down = keyboard_input.pressed(KeyCode::S) || keyboard_input.pressed(KeyCode::Down);
+        let mut left = keyboard_input.pressed(KeyCode::A) || keyboard_input.pressed(KeyCode::Left);
+        let mut right =
+            keyboard_input.pressed(KeyCode::D) || keyboard_input.pressed(KeyCode::Right);
 
         for gamepad in gamepads.iter() {
             up |= gamepad_input.pressed(GamepadButton(*gamepad, GamepadButtonType::DPadUp));

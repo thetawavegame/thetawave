@@ -1,11 +1,11 @@
 (
 	characters: {
 		"juggernaut": (
-			acceleration: (10.0, 14.0),
-			deceleration: (1.2, 1.2),
-			speed: (200.0, 250.0),
-			collider_dimensions: (3.0 , 5.0),
-			collider_density: 2.5,
+			acceleration: (14.0, 14.0),
+			deceleration: (2.0, 2.0),
+			speed: (250.0, 250.0),
+			collider_dimensions: (2.0 , 4.0),
+			collider_density: 2.0,
 			sprite_path: "player.png",
 			projectile_type: Blast(Ally),
 			projectile_despawn_time: 0.75,

@@ -3,10 +3,24 @@ use std::time::Duration;
 use bevy::prelude::*;
 
 use crate::{
-    game_over::EndGameTransitionResource,
     player::PlayerComponent,
     run::RunResource,
     states::{AppStateComponent, AppStates},
+};
+
+mod game_over;
+mod main_menu;
+mod pause_menu;
+mod victory;
+
+pub use self::{
+    game_over::{
+        fade_out_system, game_over_fade_in_system, setup_game_over_system,
+        EndGameTransitionResource, GameFadeComponent,
+    },
+    main_menu::{bouncing_prompt_system, setup_main_menu_system, BouncingPromptComponent},
+    pause_menu::setup_pause_system,
+    victory::{setup_victory_system, victory_fade_in_system},
 };
 
 /// Tag for player health ui
@@ -38,38 +52,6 @@ pub fn setup_ui_camera_system(mut commands: Commands) {
 
 /// Initialize all ui
 pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetServer>) {
-    // setup font
-    //let font = asset_server.load("fonts/SpaceMadness.ttf");
-
-    /*
-    // spawn player health ui
-    commands
-        .spawn_bundle(TextBundle {
-            style: Style {
-                size: Size::default(),
-                position: Rect {
-                    left: Val::Percent(86.0),
-                    bottom: Val::Percent(90.0),
-                    ..Rect::default()
-                },
-                position_type: PositionType::Absolute,
-                ..Style::default()
-            },
-            text: Text::with_section(
-                "Health: 0/0\nArmor: 0\nPower: 0",
-                TextStyle {
-                    font: font.clone(),
-                    font_size: 16.0,
-                    color: Color::WHITE,
-                },
-                TextAlignment::default(),
-            ),
-            ..TextBundle::default()
-        })
-        .insert(AppStateComponent(AppStates::Game))
-        .insert(HealthUI);
-        */
-
     commands
         .spawn_bundle(NodeBundle {
             style: Style {
@@ -220,35 +202,6 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
         })
         .insert(AppStateComponent(AppStates::Game))
         .insert(StatBarLabel);
-
-    // spawn level ui
-    /*
-    commands
-        .spawn_bundle(TextBundle {
-            style: Style {
-                size: Size::default(),
-                position: Rect {
-                    left: Val::Percent(86.0),
-                    bottom: Val::Percent(80.0),
-                    ..Rect::default()
-                },
-                position_type: PositionType::Absolute,
-                ..Style::default()
-            },
-            text: Text::with_section(
-                "Phase Type: None\nPhase Number: None\nObjective: None",
-                TextStyle {
-                    font: font.clone(),
-                    font_size: 12.0,
-                    color: Color::WHITE,
-                },
-                TextAlignment::default(),
-            ),
-            ..TextBundle::default()
-        })
-        .insert(AppStateComponent(AppStates::Game))
-        .insert(LevelUI);
-        */
 }
 
 pub fn setup_fps_ui_system(mut commands: Commands, asset_server: ResMut<AssetServer>) {
@@ -294,7 +247,6 @@ pub fn update_ui(
     player_query: Query<&PlayerComponent>,
     run_resource: Res<RunResource>,
     time: Res<Time>,
-    end_game_trans_resource: Res<EndGameTransitionResource>,
 ) {
     // update player health ui
 
@@ -339,53 +291,8 @@ pub fn update_ui(
             ui_color
                 .0
                 .set_a((0.5 * (power_glow.0.elapsed_secs() * std::f32::consts::PI).sin()) + 0.5);
-            /*
-            style_component.size.height = Val::Px(
-                200.0
-                    * (player_component.health.get_health()
-                        / player_component.health.get_max_health()),
-            )
-            */
         }
     }
-
-    /*
-    for mut text_component in ui_queries.p0().iter_mut() {
-        for player_component in player_query.iter() {
-            text_component.sections[0].value = format!(
-                "Health: {}/{}\nArmor: {}\nPower: {}",
-                player_component.health.get_health(),
-                player_component.health.get_max_health(),
-                player_component.health.get_armor(),
-                player_component.money,
-            );
-        }
-        continue;
-    }
-    */
-
-    // update level ui
-    /*
-    if let Some(level) = &run_resource.level {
-        for mut text_component in ui_queries.p1().iter_mut() {
-            text_component.sections[0].value = format!(
-                "Phase Type: {}\nPhase Number: {}\nObjective:{}",
-                level.get_phase_name(),
-                level.get_phase_number(),
-                match &level.objective {
-                    crate::run::ObjectiveType::Defense(health) => {
-                        format!(
-                            "\n    Defense: {}/{}",
-                            health.get_health(),
-                            health.get_max_health()
-                        )
-                    }
-                }
-            );
-            continue;
-        }
-    }
-    */
 }
 
 pub fn position_stat_bar_label_system(

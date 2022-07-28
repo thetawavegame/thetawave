@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use bevy::prelude::*;
+use bevy::{app::AppExit, prelude::*};
 use bevy_kira_audio::AudioChannel;
 use bevy_rapier2d::prelude::*;
 
@@ -15,7 +15,8 @@ use crate::{
 pub fn player_fire_weapon_system(
     gamepads: Res<Gamepads>,
     gamepad_input: Res<Input<GamepadButton>>,
-    keyboard_input: Res<Input<MouseButton>>,
+    mouse_input: Res<Input<MouseButton>>,
+    keyboard_input: Res<Input<KeyCode>>,
     game_parameters: Res<GameParametersResource>,
     mut player_query: Query<(&mut PlayerComponent, &Velocity, &Transform)>,
     time: Res<Time>,
@@ -26,7 +27,8 @@ pub fn player_fire_weapon_system(
 ) {
     //let gamepad = gamepads.iter().next().clone();
     for (mut player_component, rb_vels, transform) in player_query.iter_mut() {
-        let mut left_mouse = keyboard_input.pressed(MouseButton::Left);
+        let mut left_mouse =
+            mouse_input.pressed(MouseButton::Left) || keyboard_input.pressed(KeyCode::Space);
 
         for gamepad in gamepads.iter() {
             left_mouse |= gamepad_input.pressed(GamepadButton(*gamepad, GamepadButtonType::East));

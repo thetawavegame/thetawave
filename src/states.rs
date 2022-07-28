@@ -79,7 +79,8 @@ pub fn start_game_system(
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<MenuAudioChannel>>,
 ) {
-    let mut enter = keyboard_input.just_released(KeyCode::Return);
+    let mut enter = keyboard_input.just_released(KeyCode::Return)
+        || keyboard_input.just_released(KeyCode::Space);
 
     for gamepad in gamepads.iter() {
         enter |= gamepad_input.just_released(GamepadButton(*gamepad, GamepadButtonType::South));
@@ -88,7 +89,8 @@ pub fn start_game_system(
     if enter {
         app_state.set(AppStates::Game).unwrap();
         audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
-        keyboard_input.release(KeyCode::Return);
+        keyboard_input.reset(KeyCode::Return);
+        keyboard_input.reset(KeyCode::Space);
         for gamepad in gamepads.iter() {
             gamepad_input.reset(GamepadButton(*gamepad, GamepadButtonType::South));
         }

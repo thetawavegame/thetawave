@@ -54,6 +54,27 @@ pub fn setup_main_menu_system(mut commands: Commands, asset_server: Res<AssetSer
                         .insert(BouncingPromptComponent {
                             flash_timer: Timer::from_seconds(2.0, true),
                         });
+
+                    parent
+                        .spawn_bundle(ImageBundle {
+                            image: asset_server
+                                .load("texture/exit_game_prompt_keyboard.png")
+                                .into(),
+                            style: Style {
+                                size: Size::new(Val::Px(400.0), Val::Px(100.0)),
+                                margin: Rect {
+                                    left: Val::Auto,
+                                    right: Val::Auto,
+                                    top: Val::Percent(20.0),
+                                    ..Default::default()
+                                },
+                                ..Default::default()
+                            },
+                            ..Default::default()
+                        })
+                        .insert(BouncingPromptComponent {
+                            flash_timer: Timer::from_seconds(2.0, true),
+                        });
                 });
         });
 }

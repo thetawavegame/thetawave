@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 
 use crate::{
-    main_menu::BouncingPromptComponent,
     states::{AppStateComponent, AppStates},
+    ui::BouncingPromptComponent,
 };
 
 #[derive(Component)]

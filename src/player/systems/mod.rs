@@ -3,9 +3,9 @@
 mod attacks;
 mod movement;
 
-use crate::game_over::EndGameTransitionResource;
 use crate::spawnable::{EffectType, SpawnEffectEvent};
 use crate::states::AppStates;
+use crate::ui::EndGameTransitionResource;
 use crate::SoundEffectsAudioChannel;
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;

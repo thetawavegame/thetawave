@@ -42,10 +42,13 @@ pub fn spawn_player_system(
         .insert(Collider::cuboid(collider_size_hx, collider_size_hy))
         .insert(Velocity::default())
         .insert(Restitution::new(1.0))
+        .insert(ColliderMassProperties::Density(character.collider_density))
+        /*
         .insert(MassProperties {
             mass: character.collider_density,
             ..Default::default()
         })
+        */
         .insert(PlayerComponent::from(character))
         .insert(AppStateComponent(AppStates::Game))
         .insert(ActiveEvents::COLLISION_EVENTS)

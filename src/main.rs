@@ -1,14 +1,14 @@
+use bevy::app::AppExit;
 use bevy::diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin};
 use bevy::window::WindowMode;
 use bevy::{pbr::AmbientLight, prelude::*};
 use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_kira_audio::{Audio, AudioApp, AudioChannel, AudioPlugin};
 use bevy_rapier2d::prelude::*;
-use bevy_rust_arcade::RustArcadePlugin;
-use game_over::EndGameTransitionResource;
 use ron::de::from_bytes;
 use spawnable::SpawnableComponent;
 use std::collections::HashMap;
+use ui::EndGameTransitionResource;
 use ui::FPSUI;
 
 use states::{AppStateComponent, AppStates};
@@ -23,12 +23,9 @@ mod arena;
 mod background;
 mod collision;
 mod game;
-mod game_over;
 mod loot;
-mod main_menu;
 mod misc;
 mod options;
-mod pause_menu;
 mod player;
 mod run;
 mod scanner;
@@ -36,7 +33,6 @@ mod spawnable;
 mod states;
 mod tools;
 mod ui;
-mod victory;
 
 // Don't generate a display config for wasm
 #[cfg(target_arch = "wasm32")]
@@ -76,12 +72,9 @@ fn main() {
     // add states
     app.add_state(states::AppStates::MainMenu); // start game in the main menu state
 
-    
-
     // insert resources for all game states
-    app
-    .insert_resource(WindowDescriptor::from(display_config))
-    .add_plugins(DefaultPlugins)
+    app.insert_resource(WindowDescriptor::from(display_config))
+        .add_plugins(DefaultPlugins)
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(
             from_bytes::<loot::LootDropsResource>(include_bytes!("../data/loot_drops.ron"))
@@ -149,7 +142,7 @@ fn main() {
             color: Color::WHITE,
             brightness: 0.1,
         })
-        .insert_resource(game_over::EndGameTransitionResource::new(
+        .insert_resource(ui::EndGameTransitionResource::new(
             2.0, 3.0, 2.5, 0.5, 0.5, 30.0,
         ))
         .add_event::<collision::SortedCollisionEvent>()
@@ -168,9 +161,9 @@ fn main() {
         .add_startup_system(ui::setup_ui_camera_system)
         .add_startup_system(start_background_audio_system)
         .add_startup_system(set_audio_volume_system)
-        .add_system(main_menu::bouncing_prompt_system)
-        .add_system_to_stage(CoreStage::Last, ui::position_stat_bar_label_system)
-        .add_plugin(RustArcadePlugin);
+        .add_system(ui::bouncing_prompt_system)
+        .add_system(options::toggle_fullscreen_system)
+        .add_system_to_stage(CoreStage::Last, ui::position_stat_bar_label_system);
 
     #[cfg(not(target_arch = "wasm32"))]
     {
@@ -193,8 +186,7 @@ fn main() {
     );
 
     app.add_system_set(
-        SystemSet::on_enter(states::AppStates::PauseMenu)
-            .with_system(pause_menu::setup_pause_system),
+        SystemSet::on_enter(states::AppStates::PauseMenu).with_system(ui::setup_pause_system),
     );
 
     app.add_system_set(
@@ -203,13 +195,13 @@ fn main() {
 
     app.add_system_set(
         SystemSet::on_update(states::AppStates::GameOver)
-            .with_system(game_over::game_over_fade_in_system)
-            .with_system(run::reset_run_system),
+            .with_system(ui::game_over_fade_in_system)
+            .with_system(run::reset_run_system)
+            .with_system(quit_game_system),
     );
 
     app.add_system_set(
-        SystemSet::on_enter(states::AppStates::GameOver)
-            .with_system(game_over::setup_game_over_system),
+        SystemSet::on_enter(states::AppStates::GameOver).with_system(ui::setup_game_over_system),
     );
 
     app.add_system_set(
@@ -218,12 +210,13 @@ fn main() {
 
     app.add_system_set(
         SystemSet::on_update(states::AppStates::Victory)
-            .with_system(victory::victory_fade_in_system)
-            .with_system(run::reset_run_system),
+            .with_system(ui::victory_fade_in_system)
+            .with_system(run::reset_run_system)
+            .with_system(quit_game_system),
     );
 
     app.add_system_set(
-        SystemSet::on_enter(states::AppStates::Victory).with_system(victory::setup_victory_system),
+        SystemSet::on_enter(states::AppStates::Victory).with_system(ui::setup_victory_system),
     );
 
     app.add_system_set(
@@ -232,12 +225,14 @@ fn main() {
 
     app.add_system_set(
         SystemSet::on_enter(states::AppStates::MainMenu)
-            .with_system(main_menu::setup_main_menu_system)
+            .with_system(ui::setup_main_menu_system)
             .with_system(clear_game_state_system),
     );
 
     app.add_system_set(
-        SystemSet::on_update(states::AppStates::MainMenu).with_system(states::start_game_system),
+        SystemSet::on_update(states::AppStates::MainMenu)
+            .with_system(states::start_game_system)
+            .with_system(quit_game_system),
     );
 
     app.add_system_set(
@@ -254,7 +249,6 @@ fn main() {
         SystemSet::on_update(states::AppStates::Game)
             .with_system(player::player_movement_system)
             .with_system(scanner::scanner_system)
-            //.with_system(options::toggle_fullscreen_system)
             .with_system(options::toggle_zoom_system)
             .with_system(arena::despawn_gates_system)
             .with_system(animation::animate_sprite_system)
@@ -300,7 +294,7 @@ fn main() {
             .with_system(states::open_pause_menu_system)
             .with_system(player::player_death_system)
             .with_system(ui::update_ui.after("next_level"))
-            .with_system(game_over::fade_out_system)
+            .with_system(ui::fade_out_system)
             .with_system(run::reset_run_system)
             .with_system(player::player_scale_fire_rate_system),
     );
@@ -409,7 +403,7 @@ fn setup_game(
             transform: Transform::from_xyz(0.0, 0.0, 100.0),
             ..default()
         })
-        .insert(game_over::GameFadeComponent)
+        .insert(ui::GameFadeComponent)
         .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new("Game Fade"));
 
@@ -526,4 +520,15 @@ fn fps_system(diagnostics: Res<Diagnostics>, mut query: Query<&mut Text, With<FP
             text.sections[0].value = format!("fps: {:.2}", average);
         }
     };
+}
+
+pub fn quit_game_system(
+    keyboard_input: Res<Input<KeyCode>>,
+    mut app_exit_events: EventWriter<AppExit>,
+) {
+    let quit_input = keyboard_input.just_released(KeyCode::Escape);
+
+    if quit_input {
+        app_exit_events.send(AppExit);
+    }
 }

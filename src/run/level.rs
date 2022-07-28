@@ -3,8 +3,8 @@ use serde::Deserialize;
 use std::{collections::HashMap, time::Duration};
 
 use crate::{
-    arena::EnemyReachedBottomGateEvent, game_over::EndGameTransitionResource, misc::Health,
-    states::AppStates, tools::weighted_rng,
+    arena::EnemyReachedBottomGateEvent, misc::Health, states::AppStates, tools::weighted_rng,
+    ui::EndGameTransitionResource,
 };
 
 use super::formation;
