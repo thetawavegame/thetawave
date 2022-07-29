@@ -522,10 +522,16 @@ fn fps_system(diagnostics: Res<Diagnostics>, mut query: Query<&mut Text, With<FP
 }
 
 pub fn quit_game_system(
+    gamepads: Res<Gamepads>,
+    mut gamepad_input: ResMut<Input<GamepadButton>>,
     keyboard_input: Res<Input<KeyCode>>,
     mut app_exit_events: EventWriter<AppExit>,
 ) {
-    let quit_input = keyboard_input.just_released(KeyCode::Escape);
+    let mut quit_input = keyboard_input.just_released(KeyCode::Escape);
+
+    for gamepad in gamepads.iter() {
+        quit_input |= gamepad_input.just_released(GamepadButton(*gamepad, GamepadButtonType::Start));
+    }
 
     if quit_input {
         app_exit_events.send(AppExit);

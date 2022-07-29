@@ -92,7 +92,7 @@ pub fn reset_run_system(
         audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
         keyboard_input.reset(KeyCode::R);
         for gamepad in gamepads.iter() {
-            gamepad_input.reset(GamepadButton(*gamepad, GamepadButtonType::Select));
+            gamepad_input.reset(GamepadButton(*gamepad, GamepadButtonType::East));
         }
     }
 }

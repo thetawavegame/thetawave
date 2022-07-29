@@ -83,7 +83,7 @@ pub fn start_game_system(
         || keyboard_input.just_released(KeyCode::Space);
 
     for gamepad in gamepads.iter() {
-        enter |= gamepad_input.just_released(GamepadButton(*gamepad, GamepadButtonType::South));
+        enter |= gamepad_input.just_released(GamepadButton(*gamepad, GamepadButtonType::East));
     }
 
     if enter {
@@ -92,7 +92,7 @@ pub fn start_game_system(
         keyboard_input.reset(KeyCode::Return);
         keyboard_input.reset(KeyCode::Space);
         for gamepad in gamepads.iter() {
-            gamepad_input.reset(GamepadButton(*gamepad, GamepadButtonType::South));
+            gamepad_input.reset(GamepadButton(*gamepad, GamepadButtonType::East));
         }
     }
 }
