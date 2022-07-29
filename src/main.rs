@@ -295,7 +295,6 @@ fn main() {
             .with_system(player::player_death_system)
             .with_system(ui::update_ui.after("next_level"))
             .with_system(ui::fade_out_system)
-            .with_system(run::reset_run_system)
             .with_system(player::player_scale_fire_rate_system),
     );
 

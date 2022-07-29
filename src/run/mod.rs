@@ -84,7 +84,7 @@ pub fn reset_run_system(
     let mut reset = keyboard_input.just_released(KeyCode::R);
 
     for gamepad in gamepads.iter() {
-        reset |= gamepad_input.just_released(GamepadButton(*gamepad, GamepadButtonType::Select));
+        reset |= gamepad_input.just_released(GamepadButton(*gamepad, GamepadButtonType::East));
     }
 
     if reset {

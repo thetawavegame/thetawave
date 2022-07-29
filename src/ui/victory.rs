@@ -114,7 +114,9 @@ pub fn setup_victory_system(mut commands: Commands, asset_server: Res<AssetServe
         .with_children(|parent| {
             parent
                 .spawn_bundle(ImageBundle {
-                    image: asset_server.load("texture/victory_background.png").into(), // not using assetsmanager as we don't load everything on the main menu
+                    image: asset_server
+                        .load("texture/victory_background_54.png")
+                        .into(), // not using assetsmanager as we don't load everything on the main menu
                     style: Style {
                         size: Size::new(Val::Percent(100.), Val::Percent(100.)),
                         align_items: AlignItems::Center,
@@ -128,7 +130,7 @@ pub fn setup_victory_system(mut commands: Commands, asset_server: Res<AssetServe
                     parent
                         .spawn_bundle(ImageBundle {
                             image: asset_server
-                                .load("texture/restart_game_prompt_keyboard.png")
+                                .load("texture/restart_game_prompt_controller.png")
                                 .into(),
                             style: Style {
                                 size: Size::new(Val::Px(400.0), Val::Px(100.0)),
@@ -149,7 +151,7 @@ pub fn setup_victory_system(mut commands: Commands, asset_server: Res<AssetServe
                     parent
                         .spawn_bundle(ImageBundle {
                             image: asset_server
-                                .load("texture/exit_game_prompt_keyboard.png")
+                                .load("texture/exit_game_prompt_controller.png")
                                 .into(),
                             style: Style {
                                 size: Size::new(Val::Px(400.0), Val::Px(100.0)),
