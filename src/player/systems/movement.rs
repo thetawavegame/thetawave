@@ -1,19 +1,32 @@
 use crate::{game::GameParametersResource, player::PlayerComponent};
-use bevy::prelude::*;
+use bevy::{
+    input::{gamepad, keyboard},
+    prelude::*,
+};
 use bevy_rapier2d::prelude::*;
 
 /// Move player by modifying velocity with input
 pub fn player_movement_system(
+    gamepads: Res<Gamepads>,
+    gamepad_input: Res<Input<GamepadButton>>,
     keyboard_input: Res<Input<KeyCode>>,
     game_parameters: Res<GameParametersResource>,
     mut player_info: Query<(&PlayerComponent, &mut Velocity)>,
 ) {
     for (player, mut vel) in player_info.iter_mut() {
         // get key presses
-        let up = keyboard_input.pressed(KeyCode::W);
-        let down = keyboard_input.pressed(KeyCode::S);
-        let left = keyboard_input.pressed(KeyCode::A);
-        let right = keyboard_input.pressed(KeyCode::D);
+        let mut up = keyboard_input.pressed(KeyCode::W) || keyboard_input.pressed(KeyCode::Up);
+        let mut down = keyboard_input.pressed(KeyCode::S) || keyboard_input.pressed(KeyCode::Down);
+        let mut left = keyboard_input.pressed(KeyCode::A) || keyboard_input.pressed(KeyCode::Left);
+        let mut right =
+            keyboard_input.pressed(KeyCode::D) || keyboard_input.pressed(KeyCode::Right);
+
+        for gamepad in gamepads.iter() {
+            up |= gamepad_input.pressed(GamepadButton(*gamepad, GamepadButtonType::DPadUp));
+            down |= gamepad_input.pressed(GamepadButton(*gamepad, GamepadButtonType::DPadDown));
+            left |= gamepad_input.pressed(GamepadButton(*gamepad, GamepadButtonType::DPadLeft));
+            right |= gamepad_input.pressed(GamepadButton(*gamepad, GamepadButtonType::DPadRight));
+        }
 
         // convert to axis multipliers
         let x_axis = -(left as i8) + right as i8;

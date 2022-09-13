@@ -1,4 +1,6 @@
-use bevy::prelude::*;
+use std::time::Duration;
+
+use bevy::{app::AppExit, prelude::*};
 use bevy_kira_audio::AudioChannel;
 use bevy_rapier2d::prelude::*;
 
@@ -11,7 +13,10 @@ use crate::{
 
 /// Manages the players firing weapons
 pub fn player_fire_weapon_system(
-    keyboard_input: Res<Input<MouseButton>>,
+    gamepads: Res<Gamepads>,
+    gamepad_input: Res<Input<GamepadButton>>,
+    mouse_input: Res<Input<MouseButton>>,
+    keyboard_input: Res<Input<KeyCode>>,
     game_parameters: Res<GameParametersResource>,
     mut player_query: Query<(&mut PlayerComponent, &Velocity, &Transform)>,
     time: Res<Time>,
@@ -20,8 +25,14 @@ pub fn player_fire_weapon_system(
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
 ) {
+    //let gamepad = gamepads.iter().next().clone();
     for (mut player_component, rb_vels, transform) in player_query.iter_mut() {
-        let left_mouse = keyboard_input.pressed(MouseButton::Left);
+        let mut left_mouse =
+            mouse_input.pressed(MouseButton::Left) || keyboard_input.pressed(KeyCode::Space);
+
+        for gamepad in gamepads.iter() {
+            left_mouse |= gamepad_input.pressed(GamepadButton(*gamepad, GamepadButtonType::East));
+        }
 
         // tick down fire timer
         player_component.fire_timer.tick(time.delta());
@@ -55,7 +66,9 @@ pub fn player_fire_weapon_system(
 
             audio_channel.play(asset_server.load("sounds/player_fire_blast.wav"));
 
+            let new_period = Duration::from_secs_f32(player_component.fire_period);
             player_component.fire_timer.reset();
+            player_component.fire_timer.set_duration(new_period);
         }
     }
 }

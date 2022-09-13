@@ -3,9 +3,9 @@
 mod attacks;
 mod movement;
 
-use crate::game_over::EndGameTransitionResource;
 use crate::spawnable::{EffectType, SpawnEffectEvent};
 use crate::states::AppStates;
+use crate::ui::EndGameTransitionResource;
 use crate::SoundEffectsAudioChannel;
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
@@ -36,5 +36,11 @@ pub fn player_death_system(
             audio_channel.play(asset_server.load("sounds/player_explosion.wav"));
             end_game_trans_resource.start(AppStates::GameOver);
         }
+    }
+}
+
+pub fn player_scale_fire_rate_system(mut player_query: Query<&mut PlayerComponent>) {
+    for mut player in player_query.iter_mut() {
+        player.fire_period = 1.0 / (2.0 * ((player.money as f32) + 4.0).ln());
     }
 }

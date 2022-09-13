@@ -19,8 +19,9 @@ impl From<DisplayConfig> for WindowDescriptor {
             title: "Thetawave".to_string(),
             width: display_config.width,
             height: display_config.height,
+            cursor_visible: false,
             mode: if display_config.fullscreen {
-                WindowMode::BorderlessFullscreen
+                WindowMode::SizedFullscreen
             } else {
                 WindowMode::Windowed
             },
