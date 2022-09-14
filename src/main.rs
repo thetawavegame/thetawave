@@ -1,4 +1,5 @@
 use bevy::app::AppExit;
+use bevy::core_pipeline::clear_color::ClearColorConfig;
 use bevy::diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin};
 use bevy::render::camera::Projection;
 use bevy::render::texture::ImageSettings;
@@ -374,8 +375,22 @@ fn setup_game(
 ) {
     // setup cameras
     // 2d camera for sprites
-    let mut camera_2d = Camera2dBundle::default();
-    camera_2d.transform = Transform::from_xyz(0.0, 0.0, game_parameters.camera_z);
+    //let mut camera_2d = Camera2dBundle::default();
+    //camera_2d.transform = Transform::from_xyz(0.0, 0.0, game_parameters.camera_z);
+
+    let camera_2d = Camera2dBundle {
+        transform: Transform::from_xyz(0.0, 0.0, game_parameters.camera_z),
+        camera_2d: Camera2d {
+            clear_color: ClearColorConfig::None,
+            ..default()
+        },
+        camera: Camera {
+            priority: 1,
+            ..default()
+        },
+        ..default()
+    };
+
     commands
         .spawn_bundle(camera_2d)
         .insert(AppStateComponent(AppStates::Game));
@@ -388,10 +403,7 @@ fn setup_game(
             far: 10000.0,
             ..Default::default()
         }),
-        camera: Camera {
-            priority: 1,
-            ..default()
-        },
+        camera: Camera { ..default() },
         ..Default::default()
     };
     commands
