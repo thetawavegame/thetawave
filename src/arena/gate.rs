@@ -4,7 +4,7 @@ use crate::{
     SoundEffectsAudioChannel,
 };
 use bevy::prelude::*;
-use bevy_kira_audio::AudioChannel;
+use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::{prelude::*, rapier::prelude::CollisionEventFlags};
 
 /// Despawn gate tag
@@ -25,7 +25,7 @@ fn spawn_despawn_gate(commands: &mut Commands, position: Vec2, width: f32, heigh
         ))
         //.insert(Transform::from_translation(position.extend(0.0)))
         .insert(Collider::cuboid(width / 2.0, height / 2.0))
-        .insert(Sensor(true))
+        .insert(Sensor)
         .insert(DespawnGateComponent)
         .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new("Despawn Gate"));

@@ -134,7 +134,7 @@ pub fn setup_victory_system(mut commands: Commands, asset_server: Res<AssetServe
                                 .into(),
                             style: Style {
                                 size: Size::new(Val::Px(400.0), Val::Px(100.0)),
-                                margin: Rect {
+                                margin: UiRect {
                                     left: Val::Auto,
                                     right: Val::Auto,
                                     top: Val::Percent(20.0),
@@ -155,7 +155,7 @@ pub fn setup_victory_system(mut commands: Commands, asset_server: Res<AssetServe
                                 .into(),
                             style: Style {
                                 size: Size::new(Val::Px(400.0), Val::Px(100.0)),
-                                margin: Rect {
+                                margin: UiRect {
                                     left: Val::Auto,
                                     right: Val::Auto,
                                     top: Val::Percent(20.0),

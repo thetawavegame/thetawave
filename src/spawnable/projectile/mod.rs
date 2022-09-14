@@ -116,7 +116,7 @@ pub fn spawn_projectile(
             ..Default::default()
         })
         .insert(Collider::cuboid(collider_size_hx, collider_size_hy))
-        .insert(Sensor(true))
+        .insert(Sensor)
         .insert(ProjectileComponent {
             projectile_type: projectile_data.projectile_type.clone(),
             behaviors: projectile_behaviors,

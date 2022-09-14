@@ -8,7 +8,7 @@ use crate::{
 };
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
-use bevy_kira_audio::AudioChannel;
+use bevy_kira_audio::prelude::*;
 //use bevy_rapier2d::prelude::{RigidBodyPosition, RigidBodyPositionComponent};
 use serde::Deserialize;
 

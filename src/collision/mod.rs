@@ -7,7 +7,7 @@ use crate::{
     SoundEffectsAudioChannel,
 };
 use bevy::prelude::*;
-use bevy_kira_audio::AudioChannel;
+use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::{prelude::*, rapier::prelude::CollisionEventFlags};
 
 /// Types of collisions

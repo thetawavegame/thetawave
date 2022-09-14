@@ -116,7 +116,7 @@ pub fn spawn_consumable(
             ..Default::default()
         })
         .insert(Collider::cuboid(collider_size_hx, collider_size_hy))
-        .insert(Sensor(true))
+        .insert(Sensor)
         .insert(ConsumableComponent {
             consumable_type: consumable_data.consumable_type.clone(),
             consumable_effects: consumable_data.consumable_effects.clone(),

@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use bevy::{app::AppExit, prelude::*};
-use bevy_kira_audio::AudioChannel;
+use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 use crate::{
@@ -31,7 +31,10 @@ pub fn player_fire_weapon_system(
             mouse_input.pressed(MouseButton::Left) || keyboard_input.pressed(KeyCode::Space);
 
         for gamepad in gamepads.iter() {
-            left_mouse |= gamepad_input.pressed(GamepadButton(*gamepad, GamepadButtonType::East));
+            left_mouse |= gamepad_input.pressed(GamepadButton {
+                gamepad: *gamepad,
+                button_type: GamepadButtonType::East,
+            });
         }
 
         // tick down fire timer

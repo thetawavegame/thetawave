@@ -1,9 +1,11 @@
 use bevy::app::AppExit;
 use bevy::diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin};
+use bevy::render::camera::Projection;
+use bevy::render::texture::ImageSettings;
 use bevy::window::WindowMode;
 use bevy::{pbr::AmbientLight, prelude::*};
 use bevy_inspector_egui::WorldInspectorPlugin;
-use bevy_kira_audio::{Audio, AudioApp, AudioChannel, AudioPlugin};
+use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 use ron::de::from_bytes;
 use spawnable::SpawnableComponent;
@@ -74,6 +76,7 @@ fn main() {
 
     // insert resources for all game states
     app.insert_resource(WindowDescriptor::from(display_config))
+        .insert_resource(ImageSettings::default_nearest())
         .add_plugins(DefaultPlugins)
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(
@@ -158,7 +161,6 @@ fn main() {
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
             PHYSICS_SCALE,
         ))
-        .add_startup_system(ui::setup_ui_camera_system)
         .add_startup_system(start_background_audio_system)
         .add_startup_system(set_audio_volume_system)
         .add_system(ui::bouncing_prompt_system)
@@ -167,7 +169,7 @@ fn main() {
 
     #[cfg(not(target_arch = "wasm32"))]
     {
-        app.add_plugin(bevy_framepace::FramepacePlugin::default());
+        app.add_plugin(bevy_framepace::FramepacePlugin);
     }
 
     // game startup systems (perhaps exchange with app.add_startup_system_set)
@@ -316,7 +318,9 @@ fn start_background_audio_system(
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
 ) {
-    audio_channel.play_looped(asset_server.load("sounds/deflector_soundtrack.mp3"));
+    audio_channel
+        .play(asset_server.load("sounds/deflector_soundtrack.mp3"))
+        .looped();
 }
 
 fn set_audio_volume_system(
@@ -369,18 +373,24 @@ fn setup_game(
     game_parameters: Res<game::GameParametersResource>,
 ) {
     // setup cameras
-    let mut camera_2d = OrthographicCameraBundle::new_2d();
+    // 2d camera for sprites
+    let mut camera_2d = Camera2dBundle::default();
     camera_2d.transform = Transform::from_xyz(0.0, 0.0, game_parameters.camera_z);
     commands
         .spawn_bundle(camera_2d)
         .insert(AppStateComponent(AppStates::Game));
 
-    let camera_3d = PerspectiveCameraBundle {
+    // 3d cemate for background objects
+    let camera_3d = Camera3dBundle {
         transform: Transform::from_xyz(0.0, 0.0, game_parameters.camera_z)
             .looking_at(Vec3::ZERO, Vec3::Y),
-        perspective_projection: PerspectiveProjection {
+        projection: Projection::Perspective(PerspectiveProjection {
             far: 10000.0,
             ..Default::default()
+        }),
+        camera: Camera {
+            priority: 1,
+            ..default()
         },
         ..Default::default()
     };
@@ -530,7 +540,10 @@ pub fn quit_game_system(
     let mut quit_input = keyboard_input.just_released(KeyCode::Escape);
 
     for gamepad in gamepads.iter() {
-        quit_input |= gamepad_input.just_released(GamepadButton(*gamepad, GamepadButtonType::Start));
+        quit_input |= gamepad_input.just_released(GamepadButton {
+            gamepad: *gamepad,
+            button_type: GamepadButtonType::Start,
+        });
     }
 
     if quit_input {
