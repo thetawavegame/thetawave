@@ -403,7 +403,6 @@ fn setup_game(
             far: 10000.0,
             ..Default::default()
         }),
-        camera: Camera { ..default() },
         ..Default::default()
     };
     commands

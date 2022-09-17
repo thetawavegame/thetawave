@@ -111,7 +111,7 @@ pub fn spawn_projectile(
             scale: Vec3::new(
                 game_parameters.sprite_scale,
                 game_parameters.sprite_scale,
-                0.0,
+                1.0,
             ),
             ..Default::default()
         })
