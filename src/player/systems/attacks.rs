@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use bevy::{app::AppExit, prelude::*};
+use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 
@@ -12,6 +12,7 @@ use crate::{
 };
 
 /// Manages the players firing weapons
+#[allow(clippy::too_many_arguments)]
 pub fn player_fire_weapon_system(
     gamepads: Res<Gamepads>,
     gamepad_input: Res<Input<GamepadButton>>,
@@ -25,7 +26,6 @@ pub fn player_fire_weapon_system(
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
 ) {
-    //let gamepad = gamepads.iter().next().clone();
     for (mut player_component, rb_vels, transform) in player_query.iter_mut() {
         let mut left_mouse =
             mouse_input.pressed(MouseButton::Left) || keyboard_input.pressed(KeyCode::Space);

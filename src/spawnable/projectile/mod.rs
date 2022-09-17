@@ -51,8 +51,8 @@ pub struct ProjectileResource {
     pub texture_atlas_handle: HashMap<ProjectileType, Handle<TextureAtlas>>,
 }
 
+/// Spawn a projectile entity
 #[allow(clippy::too_many_arguments)]
-/// Spawn a mob entity
 pub fn spawn_projectile(
     projectile_type: &ProjectileType,
     projectile_resource: &ProjectileResource,
@@ -63,7 +63,7 @@ pub fn spawn_projectile(
     commands: &mut Commands,
     game_parameters: &GameParametersResource,
 ) {
-    // Get data from mob resource
+    // Get data from projectile resource
     let projectile_data = &projectile_resource.projectiles[projectile_type];
     let texture_atlas_handle =
         projectile_resource.texture_atlas_handle[projectile_type].clone_weak();
@@ -74,7 +74,7 @@ pub fn spawn_projectile(
     let collider_size_hy =
         projectile_data.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
 
-    // create mob entity
+    // create projectile entity
     let mut projectile = commands.spawn();
 
     let mut projectile_behaviors = projectile_data.projectile_behaviors.clone();

@@ -150,7 +150,7 @@ pub fn setup_game_over_system(mut commands: Commands, asset_server: Res<AssetSer
                 size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
                 ..Default::default()
             },
-            visibility: Visibility { is_visible: false },
+            color: Color::rgba(0.0, 0.0, 0.0, 0.0).into(),
             ..Default::default()
         })
         .insert(AppStateComponent(AppStates::GameOver))

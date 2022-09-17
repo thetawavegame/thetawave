@@ -1,8 +1,5 @@
 use crate::{game::GameParametersResource, player::PlayerComponent};
-use bevy::{
-    input::{gamepad, keyboard},
-    prelude::*,
-};
+use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 /// Move player by modifying velocity with input

@@ -17,7 +17,7 @@ pub fn setup_main_menu_system(mut commands: Commands, asset_server: Res<AssetSer
                 size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
                 ..Default::default()
             },
-            visibility: Visibility { is_visible: false },
+            visibility: Visibility { is_visible: true },
             ..Default::default()
         })
         .insert(AppStateComponent(AppStates::MainMenu))

@@ -162,6 +162,7 @@ fn main() {
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
             PHYSICS_SCALE,
         ))
+        .add_startup_system(setup_cameras_system)
         .add_startup_system(start_background_audio_system)
         .add_startup_system(set_audio_volume_system)
         .add_system(ui::bouncing_prompt_system)
@@ -357,6 +358,41 @@ fn clear_game_state_system(
     }
 }
 
+fn setup_cameras_system(
+    mut commands: Commands,
+    game_parameters: Res<game::GameParametersResource>,
+) {
+    // setup cameras
+    // 2d camera for sprites
+
+    let camera_2d = Camera2dBundle {
+        transform: Transform::from_xyz(0.0, 0.0, game_parameters.camera_z),
+        camera_2d: Camera2d {
+            clear_color: ClearColorConfig::None,
+            ..default()
+        },
+        camera: Camera {
+            priority: 1,
+            ..default()
+        },
+        ..default()
+    };
+
+    commands.spawn_bundle(camera_2d);
+
+    // 3d cemate for background objects
+    let camera_3d = Camera3dBundle {
+        transform: Transform::from_xyz(0.0, 0.0, game_parameters.camera_z)
+            .looking_at(Vec3::ZERO, Vec3::Y),
+        projection: Projection::Perspective(PerspectiveProjection {
+            far: 10000.0,
+            ..Default::default()
+        }),
+        ..Default::default()
+    };
+    commands.spawn_bundle(camera_3d);
+}
+
 /// Initialize values for the game
 #[allow(clippy::too_many_arguments)]
 fn setup_game(
@@ -373,42 +409,6 @@ fn setup_game(
     levels_resource: Res<run::LevelsResource>,
     game_parameters: Res<game::GameParametersResource>,
 ) {
-    // setup cameras
-    // 2d camera for sprites
-    //let mut camera_2d = Camera2dBundle::default();
-    //camera_2d.transform = Transform::from_xyz(0.0, 0.0, game_parameters.camera_z);
-
-    let camera_2d = Camera2dBundle {
-        transform: Transform::from_xyz(0.0, 0.0, game_parameters.camera_z),
-        camera_2d: Camera2d {
-            clear_color: ClearColorConfig::None,
-            ..default()
-        },
-        camera: Camera {
-            priority: 1,
-            ..default()
-        },
-        ..default()
-    };
-
-    commands
-        .spawn_bundle(camera_2d)
-        .insert(AppStateComponent(AppStates::Game));
-
-    // 3d cemate for background objects
-    let camera_3d = Camera3dBundle {
-        transform: Transform::from_xyz(0.0, 0.0, game_parameters.camera_z)
-            .looking_at(Vec3::ZERO, Vec3::Y),
-        projection: Projection::Perspective(PerspectiveProjection {
-            far: 10000.0,
-            ..Default::default()
-        }),
-        ..Default::default()
-    };
-    commands
-        .spawn_bundle(camera_3d)
-        .insert(AppStateComponent(AppStates::Game));
-
     *end_game_trans_resource = EndGameTransitionResource::new(2.0, 3.0, 2.5, 0.5, 0.5, 30.0);
     rapier_config.physics_pipeline_active = true;
     rapier_config.query_pipeline_active = true;

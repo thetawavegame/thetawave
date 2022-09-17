@@ -274,6 +274,7 @@ fn deal_damage_to_player_on_impact(
 }
 
 /// Explode spawnable on impact
+#[allow(clippy::too_many_arguments)]
 fn explode_on_impact(
     commands: &mut Commands,
     entity: Entity,

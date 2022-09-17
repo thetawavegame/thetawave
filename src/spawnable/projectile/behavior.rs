@@ -23,6 +23,7 @@ pub enum ProjectileBehavior {
 }
 
 /// Manages executing behaviors of mobs
+#[allow(clippy::too_many_arguments)]
 pub fn projectile_execute_behavior_system(
     mut commands: Commands,
     mut projectile_query: Query<(
@@ -106,6 +107,7 @@ pub fn projectile_execute_behavior_system(
 }
 
 /// Explode projectile on impact
+#[allow(clippy::too_many_arguments)]
 fn explode_on_impact(
     commands: &mut Commands,
     entity: Entity,
