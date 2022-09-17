@@ -1,5 +1,5 @@
 use crate::game::GameParametersResource;
-use bevy::{prelude::*, render::camera::Camera2d, window::WindowMode};
+use bevy::{prelude::*, window::WindowMode};
 use serde::Deserialize;
 
 /// Display settings of the window

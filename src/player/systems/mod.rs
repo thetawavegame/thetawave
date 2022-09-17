@@ -9,7 +9,7 @@ use crate::ui::EndGameTransitionResource;
 use crate::SoundEffectsAudioChannel;
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
-use bevy_kira_audio::AudioChannel;
+use bevy_kira_audio::prelude::*;
 
 pub use self::attacks::player_fire_weapon_system;
 pub use self::movement::player_movement_system;

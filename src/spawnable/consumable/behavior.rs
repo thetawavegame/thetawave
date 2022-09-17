@@ -6,7 +6,7 @@ use crate::{
 };
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
-use bevy_kira_audio::AudioChannel;
+use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 
@@ -18,6 +18,7 @@ pub enum ConsumableBehavior {
     AttractToPlayer,
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn consumable_execute_behavior_system(
     mut commands: Commands,
     mut consumable_query: Query<(
@@ -113,6 +114,7 @@ fn attract_to_player(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn apply_effects_on_impact(
     commands: &mut Commands,
     entity: Entity,
@@ -136,7 +138,6 @@ fn apply_effects_on_impact(
                 // despawn consumable
                 commands.entity(entity).despawn_recursive();
 
-                // TODO: spawn effect
                 spawn_effect_event_writer.send(SpawnEffectEvent {
                     effect_type: EffectType::ConsumableDespawn,
                     position: transform.translation.xy(),

@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_kira_audio::AudioChannel;
+use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 use crate::MenuAudioChannel;
@@ -29,7 +29,10 @@ pub fn open_pause_menu_system(
     let mut esc = keyboard_input.just_released(KeyCode::Escape);
 
     for gamepad in gamepads.iter() {
-        esc |= gamepad_input.just_released(GamepadButton(*gamepad, GamepadButtonType::Start));
+        esc |= gamepad_input.just_released(GamepadButton {
+            gamepad: *gamepad,
+            button_type: GamepadButtonType::Start,
+        });
     }
 
     if esc {
@@ -39,7 +42,10 @@ pub fn open_pause_menu_system(
         rapier_config.physics_pipeline_active = false;
         rapier_config.query_pipeline_active = false;
         for gamepad in gamepads.iter() {
-            gamepad_input.reset(GamepadButton(*gamepad, GamepadButtonType::Start));
+            gamepad_input.reset(GamepadButton {
+                gamepad: *gamepad,
+                button_type: GamepadButtonType::Start,
+            });
         }
     }
 }
@@ -56,7 +62,10 @@ pub fn close_pause_menu_system(
     let mut esc = keyboard_input.just_released(KeyCode::Escape);
 
     for gamepad in gamepads.iter() {
-        esc |= gamepad_input.just_released(GamepadButton(*gamepad, GamepadButtonType::Start));
+        esc |= gamepad_input.just_released(GamepadButton {
+            gamepad: *gamepad,
+            button_type: GamepadButtonType::Start,
+        });
     }
 
     if esc {
@@ -66,7 +75,10 @@ pub fn close_pause_menu_system(
         rapier_config.physics_pipeline_active = true;
         rapier_config.query_pipeline_active = true;
         for gamepad in gamepads.iter() {
-            gamepad_input.reset(GamepadButton(*gamepad, GamepadButtonType::Start));
+            gamepad_input.reset(GamepadButton {
+                gamepad: *gamepad,
+                button_type: GamepadButtonType::Start,
+            });
         }
     }
 }
@@ -83,7 +95,10 @@ pub fn start_game_system(
         || keyboard_input.just_released(KeyCode::Space);
 
     for gamepad in gamepads.iter() {
-        enter |= gamepad_input.just_released(GamepadButton(*gamepad, GamepadButtonType::East));
+        enter |= gamepad_input.just_released(GamepadButton {
+            gamepad: *gamepad,
+            button_type: GamepadButtonType::East,
+        });
     }
 
     if enter {
@@ -92,7 +107,10 @@ pub fn start_game_system(
         keyboard_input.reset(KeyCode::Return);
         keyboard_input.reset(KeyCode::Space);
         for gamepad in gamepads.iter() {
-            gamepad_input.reset(GamepadButton(*gamepad, GamepadButtonType::East));
+            gamepad_input.reset(GamepadButton {
+                gamepad: *gamepad,
+                button_type: GamepadButtonType::East,
+            });
         }
     }
 }

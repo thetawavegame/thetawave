@@ -1,6 +1,6 @@
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
-use bevy_kira_audio::AudioChannel;
+use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 
@@ -274,6 +274,7 @@ fn deal_damage_to_player_on_impact(
 }
 
 /// Explode spawnable on impact
+#[allow(clippy::too_many_arguments)]
 fn explode_on_impact(
     commands: &mut Commands,
     entity: Entity,

@@ -59,6 +59,8 @@ impl PlanetData {
                 rotation_speed: self.rotation_speed,
             })
             .insert(AppStateComponent(AppStates::Game))
+            .insert(Visibility::default())
+            .insert(ComputedVisibility::default())
             .insert(Name::new("Planet"));
 
         // spawn light entity

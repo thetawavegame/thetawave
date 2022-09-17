@@ -111,12 +111,12 @@ pub fn spawn_consumable(
             scale: Vec3::new(
                 game_parameters.sprite_scale,
                 game_parameters.sprite_scale,
-                0.0,
+                1.0,
             ),
             ..Default::default()
         })
         .insert(Collider::cuboid(collider_size_hx, collider_size_hy))
-        .insert(Sensor(true))
+        .insert(Sensor)
         .insert(ConsumableComponent {
             consumable_type: consumable_data.consumable_type.clone(),
             consumable_effects: consumable_data.consumable_effects.clone(),

@@ -45,11 +45,6 @@ pub struct FPSUI;
 #[derive(Component)]
 pub struct StatBarLabel;
 
-pub fn setup_ui_camera_system(mut commands: Commands) {
-    // spawn camera for viewing ui
-    commands.spawn_bundle(UiCameraBundle::default());
-}
-
 /// Initialize all ui
 pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetServer>) {
     commands
@@ -59,10 +54,10 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
                     width: Val::Px(15.0),
                     height: Val::Px(200.0),
                 },
-                position: Rect {
+                position: UiRect {
                     left: Val::Percent(92.5),
                     bottom: Val::Percent(70.0),
-                    ..Rect::default()
+                    ..UiRect::default()
                 },
                 position_type: PositionType::Absolute,
                 ..Style::default()
@@ -77,7 +72,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
         .spawn_bundle(ImageBundle {
             image: asset_server.load("texture/health_bar_label.png").into(),
             style: Style {
-                position: Rect {
+                position: UiRect {
                     left: Val::Percent(92.5),
                     bottom: Val::Percent(74.5),
                     ..default()
@@ -95,7 +90,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
             image: asset_server.load("texture/armor_spritesheet.png").into(),
             style: Style {
                 size: Size::new(Val::Px(12.0), Val::Px(12.0)),
-                position: Rect {
+                position: UiRect {
                     left: Val::Percent(92.5),
                     bottom: Val::Percent(69.0),
                     ..default()
@@ -118,10 +113,10 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
                     width: Val::Px(15.0),
                     height: Val::Px(200.0),
                 },
-                position: Rect {
+                position: UiRect {
                     left: Val::Percent(95.5),
                     bottom: Val::Percent(70.0),
-                    ..Rect::default()
+                    ..UiRect::default()
                 },
                 position_type: PositionType::Absolute,
                 ..Style::default()
@@ -136,7 +131,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
         .spawn_bundle(ImageBundle {
             image: asset_server.load("texture/defense_bar_label.png").into(),
             style: Style {
-                position: Rect {
+                position: UiRect {
                     left: Val::Percent(95.5),
                     bottom: Val::Percent(73.0),
                     ..default()
@@ -153,7 +148,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
         .spawn_bundle(ImageBundle {
             image: asset_server.load("texture/power_container.png").into(),
             style: Style {
-                position: Rect {
+                position: UiRect {
                     left: Val::Percent(93.5),
                     bottom: Val::Percent(55.0),
                     ..default()
@@ -171,7 +166,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
         .spawn_bundle(ImageBundle {
             image: asset_server.load("texture/power_glow.png").into(),
             style: Style {
-                position: Rect {
+                position: UiRect {
                     left: Val::Percent(93.5),
                     bottom: Val::Percent(55.0),
                     ..default()
@@ -189,7 +184,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
         .spawn_bundle(ImageBundle {
             image: asset_server.load("texture/power_label.png").into(),
             style: Style {
-                position: Rect {
+                position: UiRect {
                     left: Val::Percent(92.5),
                     bottom: Val::Percent(49.0),
                     ..default()
@@ -212,22 +207,21 @@ pub fn setup_fps_ui_system(mut commands: Commands, asset_server: ResMut<AssetSer
         .spawn_bundle(TextBundle {
             style: Style {
                 size: Size::default(),
-                position: Rect {
+                position: UiRect {
                     left: Val::Percent(90.0),
                     bottom: Val::Percent(5.0),
-                    ..Rect::default()
+                    ..UiRect::default()
                 },
                 position_type: PositionType::Absolute,
                 ..Style::default()
             },
-            text: Text::with_section(
+            text: Text::from_section(
                 "fps: ",
                 TextStyle {
                     font,
                     font_size: 18.0,
                     color: Color::WHITE,
                 },
-                TextAlignment::default(),
             ),
             ..Default::default()
         })
@@ -299,6 +293,6 @@ pub fn position_stat_bar_label_system(
     mut stat_bar_query: Query<&mut GlobalTransform, With<StatBarLabel>>,
 ) {
     for mut stat_bar_transform in stat_bar_query.iter_mut() {
-        stat_bar_transform.translation.z = 1.0;
+        stat_bar_transform.translation_mut().z = 1.0;
     }
 }

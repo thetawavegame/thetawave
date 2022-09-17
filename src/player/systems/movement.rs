@@ -1,8 +1,5 @@
 use crate::{game::GameParametersResource, player::PlayerComponent};
-use bevy::{
-    input::{gamepad, keyboard},
-    prelude::*,
-};
+use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 /// Move player by modifying velocity with input
@@ -22,10 +19,22 @@ pub fn player_movement_system(
             keyboard_input.pressed(KeyCode::D) || keyboard_input.pressed(KeyCode::Right);
 
         for gamepad in gamepads.iter() {
-            up |= gamepad_input.pressed(GamepadButton(*gamepad, GamepadButtonType::DPadUp));
-            down |= gamepad_input.pressed(GamepadButton(*gamepad, GamepadButtonType::DPadDown));
-            left |= gamepad_input.pressed(GamepadButton(*gamepad, GamepadButtonType::DPadLeft));
-            right |= gamepad_input.pressed(GamepadButton(*gamepad, GamepadButtonType::DPadRight));
+            up |= gamepad_input.pressed(GamepadButton {
+                gamepad: *gamepad,
+                button_type: GamepadButtonType::DPadUp,
+            });
+            down |= gamepad_input.pressed(GamepadButton {
+                gamepad: *gamepad,
+                button_type: GamepadButtonType::DPadDown,
+            });
+            left |= gamepad_input.pressed(GamepadButton {
+                gamepad: *gamepad,
+                button_type: GamepadButtonType::DPadLeft,
+            });
+            right |= gamepad_input.pressed(GamepadButton {
+                gamepad: *gamepad,
+                button_type: GamepadButtonType::DPadRight,
+            });
         }
 
         // convert to axis multipliers

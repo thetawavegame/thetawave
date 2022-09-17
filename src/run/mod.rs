@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_kira_audio::AudioChannel;
+use bevy_kira_audio::prelude::*;
 use std::time::Duration;
 
 use crate::{
@@ -84,7 +84,10 @@ pub fn reset_run_system(
     let mut reset = keyboard_input.just_released(KeyCode::R);
 
     for gamepad in gamepads.iter() {
-        reset |= gamepad_input.just_released(GamepadButton(*gamepad, GamepadButtonType::East));
+        reset |= gamepad_input.just_released(GamepadButton {
+            gamepad: *gamepad,
+            button_type: GamepadButtonType::East,
+        });
     }
 
     if reset {
@@ -92,7 +95,10 @@ pub fn reset_run_system(
         audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
         keyboard_input.reset(KeyCode::R);
         for gamepad in gamepads.iter() {
-            gamepad_input.reset(GamepadButton(*gamepad, GamepadButtonType::East));
+            gamepad_input.reset(GamepadButton {
+                gamepad: *gamepad,
+                button_type: GamepadButtonType::East,
+            });
         }
     }
 }

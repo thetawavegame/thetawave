@@ -7,7 +7,7 @@ use crate::{
     SoundEffectsAudioChannel,
 };
 use bevy::prelude::*;
-use bevy_kira_audio::AudioChannel;
+use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::{prelude::*, rapier::prelude::CollisionEventFlags};
 
 /// Types of collisions
@@ -68,9 +68,6 @@ pub fn intersection_collision_system(
     projectile_query: Query<(Entity, &ProjectileComponent)>,
 ) {
     'collision_events: for collision_event in collision_events.iter() {
-        //let collider1_entity = intersection_event.collider1.entity();
-        //let collider2_entity = intersection_event.collider2.entity();
-
         if let CollisionEvent::Started(
             collider1_entity,
             collider2_entity,
