@@ -41,7 +41,7 @@ pub struct LevelData {
 
 pub struct LevelCompletedEvent;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Level {
     timeline_idx: Option<usize>,
     /// Timeline
@@ -54,7 +54,7 @@ pub struct Level {
     pub objective: ObjectiveType,
 }
 
-#[derive(Clone, Deserialize)]
+#[derive(Clone, Deserialize, Debug)]
 pub enum ObjectiveType {
     Defense(Health),
 }
@@ -210,17 +210,17 @@ impl Level {
     }
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct LevelTimeline {
     pub phases: Vec<LevelPhase>,
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct LevelPhase {
     pub phase_type: LevelPhaseType,
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, Debug)]
 pub enum LevelPhaseType {
     FormationSpawn {
         time: f32,

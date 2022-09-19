@@ -5,7 +5,8 @@ use bevy::render::camera::Projection;
 use bevy::render::texture::ImageSettings;
 use bevy::window::WindowMode;
 use bevy::{pbr::AmbientLight, prelude::*};
-use bevy_inspector_egui::WorldInspectorPlugin;
+use bevy_egui::EguiPlugin;
+use bevy_inspector_egui::{WorldInspectorParams, WorldInspectorPlugin};
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 use ron::de::from_bytes;
@@ -156,6 +157,7 @@ fn main() {
         .add_event::<spawnable::SpawnEffectEvent>()
         .add_event::<spawnable::SpawnConsumableEvent>()
         .add_plugin(AudioPlugin)
+        .add_plugin(EguiPlugin)
         .add_audio_channel::<BackgroundMusicAudioChannel>()
         .add_audio_channel::<MenuAudioChannel>()
         .add_audio_channel::<SoundEffectsAudioChannel>()
@@ -302,11 +304,18 @@ fn main() {
             .with_system(player::player_scale_fire_rate_system),
     );
 
+    if cfg!(debug_assertions) {
+        app.add_system_set(
+            SystemSet::on_update(states::AppStates::Game).with_system(ui::game_debug_ui),
+        );
+    }
+
     app.add_system_set(SystemSet::on_exit(states::AppStates::Game).with_system(clear_state_system));
 
     // plugins to use only in debug mode
     if cfg!(debug_assertions) {
-        app.add_plugin(WorldInspectorPlugin::new())
+        app
+            //.add_plugin(WorldInspectorPlugin::new())
             .add_plugin(RapierDebugRenderPlugin::default())
             .add_plugin(FrameTimeDiagnosticsPlugin::default())
             .add_startup_system(ui::setup_fps_ui_system)
