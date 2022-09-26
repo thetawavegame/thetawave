@@ -96,6 +96,7 @@ pub fn spawn_effect(
             angular_speed: 0.0,
             behaviors: vec![],
         })
+        .insert(LockedAxes::default())
         .insert(RigidBody::Fixed)
         .insert_bundle(TransformBundle::from_transform(Transform {
             translation: position.extend(effect_data.z_level),

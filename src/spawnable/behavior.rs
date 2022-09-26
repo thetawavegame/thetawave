@@ -26,6 +26,7 @@ pub fn spawnable_execute_behavior_system(
     game_parameters: Res<GameParametersResource>,
     mut spawnable_query: Query<(Entity, &mut SpawnableComponent, &mut Velocity, &Transform)>,
     mut collision_events: EventReader<SortedCollisionEvent>,
+    time: Res<Time>,
 ) {
     let mut collision_events_vec = vec![];
     for collision_event in collision_events.iter() {

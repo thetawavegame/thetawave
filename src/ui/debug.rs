@@ -18,13 +18,20 @@ pub fn game_debug_ui(mut egui_context: ResMut<EguiContext>, run_resource: Res<Ru
                     ui.monospace(format!("{:?}", level.objective));
                 });
                 ui.horizontal(|ui| {
-                    ui.label("Phase");
+                    ui.label(format!("Phase[{}]", level.get_phase_number()));
                     ui.monospace(format!(
-                        "{}[{}] {}/{}",
+                        "{} {}/{}",
                         level.get_phase_name(),
-                        level.get_phase_number(),
-                        level.phase_timer.as_ref().unwrap().elapsed_secs() as usize,
-                        level.phase_timer.as_ref().unwrap().duration().as_secs() as usize,
+                        if let Some(phase_timer) = &level.phase_timer {
+                            phase_timer.elapsed_secs() as usize
+                        } else {
+                            0
+                        },
+                        if let Some(phase_timer) = &level.phase_timer {
+                            phase_timer.duration().as_secs() as usize
+                        } else {
+                            0
+                        },
                     ));
                 });
             }

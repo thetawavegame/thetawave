@@ -6,10 +6,16 @@ use serde::Deserialize;
 use strum_macros::Display;
 
 mod behavior;
+mod boss;
 mod consumable;
 mod effect;
 mod mob;
 mod projectile;
+
+pub use self::boss::{
+    spawn_boss, spawn_boss_system, BossType, RepeaterPart, RepeaterPartsData, RepeaterResource,
+    SpawnBossEvent,
+};
 
 pub use self::mob::{
     mob_execute_behavior_system, spawn_mob, MobBehavior, MobComponent, MobData, MobsResource,
@@ -98,6 +104,12 @@ pub enum SpawnableType {
     Item(ItemType),
     Effect(EffectType),
     Mob(MobType),
+    BossPart(BossPartType),
+}
+
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+pub enum BossPartType {
+    Repeater(RepeaterPart),
 }
 
 /// Type that encompasses all weapon projectiles
@@ -131,12 +143,14 @@ pub enum EnemyType {
     StraferLeft,
     MissileLauncher,
     Missile,
+    /*
     RepeaterBody,
     RepeaterHead,
     RepeaterLeftShoulder,
     RepeaterRightShoulder,
     RepeaterLeftArm,
     RepeaterRightArm,
+    */
 }
 
 /// Type that encompasses all spawnable ally mobs

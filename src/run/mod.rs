@@ -3,8 +3,8 @@ use bevy_kira_audio::prelude::*;
 use std::time::Duration;
 
 use crate::{
-    arena::EnemyReachedBottomGateEvent, states::AppStates, ui::EndGameTransitionResource,
-    MenuAudioChannel,
+    arena::EnemyReachedBottomGateEvent, spawnable, states::AppStates,
+    ui::EndGameTransitionResource, MenuAudioChannel,
 };
 
 mod formation;
@@ -14,8 +14,8 @@ use self::level::LevelType;
 pub use self::{
     formation::{spawn_formation_system, FormationPoolsResource, SpawnFormationEvent},
     level::{
-        level_system, next_level_system, LevelCompletedEvent, LevelsResource, LevelsResourceData,
-        ObjectiveType,
+        level_system, next_level_system, setup_first_level, LevelCompletedEvent, LevelsResource,
+        LevelsResourceData, ObjectiveType,
     },
 };
 
@@ -55,6 +55,7 @@ impl RunResource {
         &mut self,
         delta: Duration,
         spawn_formation: &mut EventWriter<formation::SpawnFormationEvent>,
+        spawn_boss: &mut EventWriter<spawnable::SpawnBossEvent>,
         level_completed: &mut EventWriter<level::LevelCompletedEvent>,
         enemy_reached_bottom: &mut EventReader<EnemyReachedBottomGateEvent>,
         formation_pools: &formation::FormationPoolsResource,
@@ -64,6 +65,7 @@ impl RunResource {
             level.tick(
                 delta,
                 spawn_formation,
+                spawn_boss,
                 level_completed,
                 enemy_reached_bottom,
                 formation_pools,

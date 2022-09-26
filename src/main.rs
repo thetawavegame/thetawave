@@ -10,7 +10,7 @@ use bevy_inspector_egui::{WorldInspectorParams, WorldInspectorPlugin};
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 use ron::de::from_bytes;
-use spawnable::SpawnableComponent;
+use spawnable::{RepeaterPart, RepeaterPartsData, SpawnableComponent};
 use std::collections::HashMap;
 use ui::EndGameTransitionResource;
 use ui::FPSUI;
@@ -114,6 +114,13 @@ fn main() {
             .unwrap(),
             texture_atlas_handle: HashMap::new(),
         })
+        .insert_resource(spawnable::RepeaterResource {
+            repeater_parts: from_bytes::<RepeaterPartsData>(include_bytes!(
+                "../data/bosses/repeater.ron"
+            ))
+            .unwrap(),
+            texture_atlas_handle: HashMap::new(),
+        })
         .insert_resource(spawnable::EffectsResource {
             effects: from_bytes::<HashMap<spawnable::EffectType, spawnable::EffectData>>(
                 include_bytes!("../data/effects.ron"),
@@ -156,6 +163,7 @@ fn main() {
         .add_event::<arena::EnemyReachedBottomGateEvent>()
         .add_event::<spawnable::SpawnEffectEvent>()
         .add_event::<spawnable::SpawnConsumableEvent>()
+        .add_event::<spawnable::SpawnBossEvent>()
         .add_plugin(AudioPlugin)
         .add_plugin(EguiPlugin)
         .add_audio_channel::<BackgroundMusicAudioChannel>()
@@ -179,6 +187,7 @@ fn main() {
     // game startup systems (perhaps exchange with app.add_startup_system_set)
     app.add_system_set(
         SystemSet::on_enter(states::AppStates::Game)
+            .with_system(run::setup_first_level.after("init"))
             .with_system(setup_game.label("init"))
             .with_system(arena::spawn_barriers_system.after("init"))
             .with_system(arena::spawn_despawn_gates_system.after("init"))
@@ -293,6 +302,7 @@ fn main() {
             )
             .with_system(run::level_system.label("level"))
             .with_system(run::spawn_formation_system.after("level"))
+            .with_system(spawnable::spawn_boss_system.after("level"))
             .with_system(run::next_level_system.label("next_level").after("level"))
             .with_system(player::player_fire_weapon_system)
             .with_system(spawnable::spawn_effect_system) // event generated in projectile execute behavior, consumable execute behavior
@@ -314,8 +324,7 @@ fn main() {
 
     // plugins to use only in debug mode
     if cfg!(debug_assertions) {
-        app
-            //.add_plugin(WorldInspectorPlugin::new())
+        app.add_plugin(WorldInspectorPlugin::new())
             .add_plugin(RapierDebugRenderPlugin::default())
             .add_plugin(FrameTimeDiagnosticsPlugin::default())
             .add_startup_system(ui::setup_fps_ui_system)
@@ -409,6 +418,7 @@ fn setup_game(
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut mobs: ResMut<spawnable::MobsResource>,
+    mut repeater: ResMut<spawnable::RepeaterResource>,
     mut projectiles: ResMut<spawnable::ProjectileResource>,
     mut effects: ResMut<spawnable::EffectsResource>,
     mut consumables: ResMut<spawnable::ConsumableResource>,
@@ -470,6 +480,99 @@ fn setup_game(
             (texture_atlases.add(mob_atlas), thruster_atlas_handle),
         );
     }
+
+    // load repeater boss assets
+    let mut repeater_texture_atlas_dict = HashMap::new();
+    let texture_handle = asset_server.load(&repeater.repeater_parts.body.texture.path[..]);
+    let body_atlas = TextureAtlas::from_grid(
+        texture_handle,
+        repeater.repeater_parts.body.texture.dimensions,
+        repeater.repeater_parts.body.texture.cols,
+        repeater.repeater_parts.body.texture.rows,
+    );
+    repeater_texture_atlas_dict.insert(RepeaterPart::Body, texture_atlases.add(body_atlas));
+
+    let texture_handle = asset_server.load(&repeater.repeater_parts.head.texture.path[..]);
+    let head_atlas = TextureAtlas::from_grid(
+        texture_handle,
+        repeater.repeater_parts.head.texture.dimensions,
+        repeater.repeater_parts.head.texture.cols,
+        repeater.repeater_parts.head.texture.rows,
+    );
+    repeater_texture_atlas_dict.insert(RepeaterPart::Head, texture_atlases.add(head_atlas));
+
+    let texture_handle = asset_server.load(&repeater.repeater_parts.rshould.texture.path[..]);
+    let rshould_atlas = TextureAtlas::from_grid(
+        texture_handle,
+        repeater.repeater_parts.rshould.texture.dimensions,
+        repeater.repeater_parts.rshould.texture.cols,
+        repeater.repeater_parts.rshould.texture.rows,
+    );
+    repeater_texture_atlas_dict.insert(
+        RepeaterPart::RightShoulder,
+        texture_atlases.add(rshould_atlas),
+    );
+
+    let texture_handle = asset_server.load(&repeater.repeater_parts.lshould.texture.path[..]);
+    let lshould_atlas = TextureAtlas::from_grid(
+        texture_handle,
+        repeater.repeater_parts.lshould.texture.dimensions,
+        repeater.repeater_parts.lshould.texture.cols,
+        repeater.repeater_parts.lshould.texture.rows,
+    );
+    repeater_texture_atlas_dict.insert(
+        RepeaterPart::LeftShoulder,
+        texture_atlases.add(lshould_atlas),
+    );
+
+    let texture_handle = asset_server.load(&repeater.repeater_parts.rarm.texture.path[..]);
+    let rarm_atlas = TextureAtlas::from_grid(
+        texture_handle,
+        repeater.repeater_parts.rarm.texture.dimensions,
+        repeater.repeater_parts.rarm.texture.cols,
+        repeater.repeater_parts.rarm.texture.rows,
+    );
+    repeater_texture_atlas_dict.insert(RepeaterPart::RightArm, texture_atlases.add(rarm_atlas));
+
+    let texture_handle = asset_server.load(&repeater.repeater_parts.larm.texture.path[..]);
+    let larm_atlas = TextureAtlas::from_grid(
+        texture_handle,
+        repeater.repeater_parts.larm.texture.dimensions,
+        repeater.repeater_parts.larm.texture.cols,
+        repeater.repeater_parts.larm.texture.rows,
+    );
+    repeater_texture_atlas_dict.insert(RepeaterPart::LeftArm, texture_atlases.add(larm_atlas));
+    /*
+    for (repeater_part, mob_data) in mobs.mobs.iter() {
+        // mob texture
+        let texture_handle = asset_server.load(&mob_data.texture.path[..]);
+        let mob_atlas = TextureAtlas::from_grid(
+            texture_handle,
+            mob_data.texture.dimensions,
+            mob_data.texture.cols,
+            mob_data.texture.rows,
+        );
+
+        // thruster texture
+        let thruster_atlas_handle = if let Some(thruster_data) = &mob_data.thruster {
+            let thruster_texture_handle = asset_server.load(&thruster_data.texture.path[..]);
+            Some(texture_atlases.add(TextureAtlas::from_grid(
+                thruster_texture_handle,
+                thruster_data.texture.dimensions,
+                thruster_data.texture.cols,
+                thruster_data.texture.rows,
+            )))
+        } else {
+            None
+        };
+
+        // add mob and thruster texture handles to the dictionary
+        mob_texture_atlas_dict.insert(
+            mob_type.clone(),
+            (texture_atlases.add(mob_atlas), thruster_atlas_handle),
+        );
+    }
+        */
 
     // load projectile assets
     let mut projectile_texture_atlas_dict = HashMap::new();
@@ -536,6 +639,9 @@ fn setup_game(
 
     // add texture atlas dict to the mobs resource
     mobs.texture_atlas_handle = mob_texture_atlas_dict;
+
+    // add texture atlas dict to the repeater resource
+    repeater.texture_atlas_handle = repeater_texture_atlas_dict;
 
     // create run resource
     run_resource.create_level(&levels_resource);
