@@ -7,6 +7,7 @@ use crate::{game, spawnable};
 pub type FormationPoolsResource = HashMap<FormationPoolType, FormationPool>;
 pub type FormationPool = Vec<Formation>;
 
+/// Types of formation pools, describes a set of enemy formations to spawn in phase
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum FormationPoolType {
     Easy,

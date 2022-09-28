@@ -160,10 +160,11 @@ fn main() {
         .add_event::<collision::SortedCollisionEvent>()
         .add_event::<run::SpawnFormationEvent>()
         .add_event::<run::LevelCompletedEvent>()
-        .add_event::<arena::EnemyReachedBottomGateEvent>()
+        .add_event::<arena::MobReachedBottomGateEvent>()
         .add_event::<spawnable::SpawnEffectEvent>()
         .add_event::<spawnable::SpawnConsumableEvent>()
         .add_event::<spawnable::SpawnBossEvent>()
+        .add_event::<spawnable::SpawnProjectileEvent>()
         .add_plugin(AudioPlugin)
         .add_plugin(EguiPlugin)
         .add_audio_channel::<BackgroundMusicAudioChannel>()
@@ -306,6 +307,7 @@ fn main() {
             .with_system(run::next_level_system.label("next_level").after("level"))
             .with_system(player::player_fire_weapon_system)
             .with_system(spawnable::spawn_effect_system) // event generated in projectile execute behavior, consumable execute behavior
+            .with_system(spawnable::spawn_projectile_system)
             .with_system(spawnable::spawn_consumable_system) // event generated in mob execute behavior
             .with_system(states::open_pause_menu_system)
             .with_system(player::player_death_system)

@@ -22,8 +22,7 @@ impl Health {
         self.health <= 0.0
     }
 
-    /// Take damage
-    /// Remove armor first if available
+    /// Take damage (remove armor first if available)
     pub fn take_damage(&mut self, damage: f32) {
         if self.armor == 0 {
             self.health -= damage;
@@ -64,7 +63,6 @@ impl Health {
     }
 
     /// Set maximum health to value
-    /// Constrain current health to be <= value
     pub fn set_max_health(&mut self, max_health: f32) {
         if max_health <= 0.0 {
             panic!("Attempted to set maximum health to value less than or equal to 0.0!");
@@ -78,7 +76,6 @@ impl Health {
     }
 
     /// Add to health
-    /// Stay under maximum health
     pub fn heal(&mut self, health: f32) {
         if health < 0.0 {
             panic!("Attempted to heal by negative value. Use take_damage function instead?");

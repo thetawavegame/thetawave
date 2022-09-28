@@ -53,10 +53,15 @@ pub fn animate_sprite_system(
     )>,
 ) {
     for (mut animation, mut sprite, texture_atlas_handle) in query.iter_mut() {
+        // tick the animation timer
         animation.timer.tick(time.delta());
+
+        // check if frame has completed
         if animation.timer.finished() {
+            // get the texture atlas
             let texture_atlas = texture_atlases.get(texture_atlas_handle).unwrap();
 
+            // update animation based on the animation direction
             match &animation.direction {
                 AnimationDirection::None => {}
                 AnimationDirection::Forward => {

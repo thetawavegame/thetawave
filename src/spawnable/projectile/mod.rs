@@ -16,6 +16,14 @@ mod behavior;
 
 pub use self::behavior::{projectile_execute_behavior_system, ProjectileBehavior};
 
+pub struct SpawnProjectileEvent {
+    pub projectile_type: ProjectileType,
+    pub position: Vec2,
+    pub damage: f32,
+    pub despawn_time: f32,
+    pub initial_motion: InitialMotion,
+}
+
 /// Core component for projectiles
 #[derive(Component)]
 pub struct ProjectileComponent {
@@ -49,6 +57,26 @@ pub struct ProjectileResource {
     pub projectiles: HashMap<ProjectileType, ProjectileData>,
     /// Mob types mapped to their texture and optional thruster texture
     pub texture_atlas_handle: HashMap<ProjectileType, Handle<TextureAtlas>>,
+}
+
+pub fn spawn_projectile_system(
+    mut commands: Commands,
+    mut event_reader: EventReader<SpawnProjectileEvent>,
+    projectile_resource: Res<ProjectileResource>,
+    game_parameters: Res<GameParametersResource>,
+) {
+    for event in event_reader.iter() {
+        spawn_projectile(
+            &event.projectile_type,
+            &projectile_resource,
+            event.position,
+            event.damage,
+            event.despawn_time,
+            event.initial_motion.clone(),
+            &mut commands,
+            &game_parameters,
+        );
+    }
 }
 
 /// Spawn a projectile entity

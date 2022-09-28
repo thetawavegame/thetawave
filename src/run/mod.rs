@@ -3,8 +3,8 @@ use bevy_kira_audio::prelude::*;
 use std::time::Duration;
 
 use crate::{
-    arena::EnemyReachedBottomGateEvent, spawnable, states::AppStates,
-    ui::EndGameTransitionResource, MenuAudioChannel,
+    arena::MobReachedBottomGateEvent, spawnable, states::AppStates, ui::EndGameTransitionResource,
+    MenuAudioChannel,
 };
 
 mod formation;
@@ -57,7 +57,7 @@ impl RunResource {
         spawn_formation: &mut EventWriter<formation::SpawnFormationEvent>,
         spawn_boss: &mut EventWriter<spawnable::SpawnBossEvent>,
         level_completed: &mut EventWriter<level::LevelCompletedEvent>,
-        enemy_reached_bottom: &mut EventReader<EnemyReachedBottomGateEvent>,
+        mob_reached_bottom: &mut EventReader<MobReachedBottomGateEvent>,
         formation_pools: &formation::FormationPoolsResource,
         end_game_trans_resource: &mut EndGameTransitionResource,
     ) {
@@ -67,7 +67,7 @@ impl RunResource {
                 spawn_formation,
                 spawn_boss,
                 level_completed,
-                enemy_reached_bottom,
+                mob_reached_bottom,
                 formation_pools,
                 end_game_trans_resource,
             );

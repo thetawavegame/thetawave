@@ -14,6 +14,7 @@ pub fn spawn_player_system(
     asset_server: Res<AssetServer>,
     game_parameters: Res<GameParametersResource>,
 ) {
+    // TODO: get chosen character from a character selector when implemented
     // choose a character
     let character = &characters.characters["juggernaut"];
 

@@ -3,7 +3,7 @@ use serde::Deserialize;
 use std::{collections::HashMap, time::Duration};
 
 use crate::{
-    arena::EnemyReachedBottomGateEvent,
+    arena::MobReachedBottomGateEvent,
     misc::Health,
     spawnable::{self, BossType},
     states::AppStates,
@@ -100,14 +100,14 @@ impl Level {
         spawn_formation: &mut EventWriter<formation::SpawnFormationEvent>,
         spawn_boss: &mut EventWriter<spawnable::SpawnBossEvent>,
         level_completed: &mut EventWriter<LevelCompletedEvent>,
-        enemy_reached_bottom: &mut EventReader<EnemyReachedBottomGateEvent>,
+        mob_reached_bottom: &mut EventReader<MobReachedBottomGateEvent>,
         formation_pools: &formation::FormationPoolsResource,
         end_game_trans_resource: &mut EndGameTransitionResource,
     ) {
         #[allow(clippy::single_match)]
         match &mut self.objective {
             ObjectiveType::Defense(health) => {
-                for event in enemy_reached_bottom.iter() {
+                for event in mob_reached_bottom.iter() {
                     if event.0 > 0.0 {
                         health.take_damage(event.0);
                     } else {
@@ -277,7 +277,7 @@ pub fn level_system(
     mut spawn_formation: EventWriter<formation::SpawnFormationEvent>,
     mut spawn_boss: EventWriter<spawnable::SpawnBossEvent>,
     mut level_completed: EventWriter<LevelCompletedEvent>,
-    mut enemy_reached_bottom: EventReader<EnemyReachedBottomGateEvent>,
+    mut mob_reached_bottom: EventReader<MobReachedBottomGateEvent>,
     formation_pools: Res<formation::FormationPoolsResource>,
     time: Res<Time>,
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
@@ -288,7 +288,7 @@ pub fn level_system(
             &mut spawn_formation,
             &mut spawn_boss,
             &mut level_completed,
-            &mut enemy_reached_bottom,
+            &mut mob_reached_bottom,
             &formation_pools,
             &mut end_game_trans_resource,
         );
