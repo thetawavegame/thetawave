@@ -10,7 +10,7 @@ use bevy_inspector_egui::{WorldInspectorParams, WorldInspectorPlugin};
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 use ron::de::from_bytes;
-use spawnable::{RepeaterPart, RepeaterPartsData, SpawnableComponent};
+use spawnable::{RepeaterPart, RepeaterPartsData, SpawnMobEvent, SpawnableComponent};
 use std::collections::HashMap;
 use ui::EndGameTransitionResource;
 use ui::FPSUI;
@@ -165,6 +165,7 @@ fn main() {
         .add_event::<spawnable::SpawnConsumableEvent>()
         .add_event::<spawnable::SpawnBossEvent>()
         .add_event::<spawnable::SpawnProjectileEvent>()
+        .add_event::<spawnable::SpawnMobEvent>()
         .add_plugin(AudioPlugin)
         .add_plugin(EguiPlugin)
         .add_audio_channel::<BackgroundMusicAudioChannel>()
@@ -309,6 +310,7 @@ fn main() {
             .with_system(spawnable::spawn_effect_system) // event generated in projectile execute behavior, consumable execute behavior
             .with_system(spawnable::spawn_projectile_system)
             .with_system(spawnable::spawn_consumable_system) // event generated in mob execute behavior
+            .with_system(spawnable::spawn_mob_system) // event generated in mob execute behavior
             .with_system(states::open_pause_menu_system)
             .with_system(player::player_death_system)
             .with_system(ui::update_ui.after("next_level"))

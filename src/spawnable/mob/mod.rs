@@ -76,6 +76,28 @@ pub struct MobData {
     pub z_level: f32,
 }
 
+pub struct SpawnMobEvent {
+    pub mob_type: MobType,
+    pub position: Vec2,
+}
+
+pub fn spawn_mob_system(
+    mut commands: Commands,
+    mut event_reader: EventReader<SpawnMobEvent>,
+    mob_resource: Res<MobsResource>,
+    game_parameters: Res<GameParametersResource>,
+) {
+    for event in event_reader.iter() {
+        spawn_mob(
+            &event.mob_type,
+            &mob_resource,
+            event.position,
+            &mut commands,
+            &game_parameters,
+        );
+    }
+}
+
 /// Data describing thrusters
 #[derive(Deserialize)]
 pub struct ThrusterData {

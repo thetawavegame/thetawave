@@ -18,7 +18,8 @@ pub use self::boss::{
 };
 
 pub use self::mob::{
-    mob_execute_behavior_system, spawn_mob, MobBehavior, MobComponent, MobData, MobsResource,
+    mob_execute_behavior_system, spawn_mob, spawn_mob_system, MobBehavior, MobComponent, MobData,
+    MobsResource, SpawnMobEvent,
 };
 pub use self::projectile::{
     projectile_execute_behavior_system, spawn_projectile, spawn_projectile_system,

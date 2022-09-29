@@ -2,7 +2,10 @@ use bevy::prelude::*;
 use serde::Deserialize;
 use std::collections::HashMap;
 
-use crate::{game, spawnable};
+use crate::{
+    game,
+    spawnable::{self, SpawnConsumableEvent, SpawnMobEvent},
+};
 
 pub type FormationPoolsResource = HashMap<FormationPoolType, FormationPool>;
 pub type FormationPool = Vec<Formation>;
@@ -39,30 +42,23 @@ impl Formation {
     /// Spawn all spawnables in the formation at once
     pub fn spawn_formation(
         &self,
-        mobs: &spawnable::MobsResource,
-        consumables: &spawnable::ConsumableResource,
-        commands: &mut Commands,
-        game_parameters: &game::GameParametersResource,
+        spawn_consumable: &mut EventWriter<SpawnConsumableEvent>,
+        spawn_mob: &mut EventWriter<SpawnMobEvent>,
     ) {
         for formation_spawnable in self.formation_spawnables.iter() {
             // TODO: add cases for items, consumables, etc, as they are added
             // spawn enemy
             match &formation_spawnable.spawnable_type {
-                spawnable::SpawnableType::Mob(mob_type) => spawnable::spawn_mob(
-                    mob_type,
-                    mobs,
-                    formation_spawnable.position,
-                    commands,
-                    game_parameters,
-                ),
+                spawnable::SpawnableType::Mob(mob_type) => spawn_mob.send(SpawnMobEvent {
+                    mob_type: mob_type.clone(),
+                    position: formation_spawnable.position,
+                }),
+
                 spawnable::SpawnableType::Consumable(consumable_type) => {
-                    spawnable::spawn_consumable(
-                        consumable_type,
-                        consumables,
-                        formation_spawnable.position,
-                        commands,
-                        game_parameters,
-                    )
+                    spawn_consumable.send(SpawnConsumableEvent {
+                        consumable_type: consumable_type.clone(),
+                        position: formation_spawnable.position,
+                    });
                 }
                 _ => {}
             }
@@ -78,15 +74,13 @@ pub struct SpawnFormationEvent {
 
 /// Manages spawning of formations
 pub fn spawn_formation_system(
-    mut commands: Commands,
-    mut event_reader: EventReader<SpawnFormationEvent>,
-    mobs: Res<spawnable::MobsResource>,
-    consumables: Res<spawnable::ConsumableResource>,
-    game_parameters: Res<game::GameParametersResource>,
+    mut spawn_formation: EventReader<SpawnFormationEvent>,
+    mut spawn_consumable: EventWriter<SpawnConsumableEvent>,
+    mut spawn_mob: EventWriter<SpawnMobEvent>,
 ) {
-    for event in event_reader.iter() {
+    for event in spawn_formation.iter() {
         event
             .formation
-            .spawn_formation(&mobs, &consumables, &mut commands, &game_parameters);
+            .spawn_formation(&mut spawn_consumable, &mut spawn_mob);
     }
 }
