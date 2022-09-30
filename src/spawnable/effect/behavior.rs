@@ -3,12 +3,13 @@ use serde::Deserialize;
 
 use crate::spawnable::SpawnableComponent;
 
-/// Types of behaviors that can be performed by mobs
+/// Types of behaviors that can be performed by effects
 #[derive(Deserialize, Clone)]
 pub enum EffectBehavior {
     DespawnAfterAnimation,
 }
 
+/// Execute behaviors specific to events
 pub fn effect_execute_behavior_system(
     mut commands: Commands,
     mut effect_query: Query<(

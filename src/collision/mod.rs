@@ -58,7 +58,7 @@ pub struct CollidingEntities {
     secondary: Entity,
 }
 
-/// Creates events from intersection collisions
+/// Creates events from intersection (sensor) collisions
 pub fn intersection_collision_system(
     mut collision_event_writer: EventWriter<SortedCollisionEvent>,
     mut collision_events: EventReader<CollisionEvent>,
@@ -67,6 +67,7 @@ pub fn intersection_collision_system(
     mob_query: Query<(Entity, &MobComponent)>,
     projectile_query: Query<(Entity, &ProjectileComponent)>,
 ) {
+    // loop through all collision events
     'collision_events: for collision_event in collision_events.iter() {
         if let CollisionEvent::Started(
             collider1_entity,
@@ -185,11 +186,12 @@ pub fn contact_collision_system(
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
 ) {
+    // loop through all collision events
     'collision_events: for contact_event in collision_events.iter() {
         if let CollisionEvent::Stopped(collider1_entity, collider2_entity, _) = contact_event {
             //check if player was collided with
             for (player_entity, player_component) in player_query.iter() {
-                // first entity is player second, is the other colliding entity
+                // first entity is the player, the second is the other colliding entity
                 let colliding_entities: Option<CollidingEntities> =
                     if player_entity == *collider1_entity {
                         Some(CollidingEntities {
@@ -205,7 +207,9 @@ pub fn contact_collision_system(
                         None
                     };
 
+                // check if colliding entities were found
                 if let Some(colliding_entities) = colliding_entities {
+                    // check if player collided with a mob
                     for (mob_entity, mob_component) in mob_query.iter() {
                         if colliding_entities.secondary == mob_entity {
                             audio_channel.play(asset_server.load("sounds/collision.wav"));
@@ -224,9 +228,11 @@ pub fn contact_collision_system(
                         }
                     }
 
-                    // play bounce sound when player collides with barrier
+                    // check if player collided with a barrier
                     for barrier_entity in barrier_query.iter() {
+                        // check if secondary entity is a barrier
                         if colliding_entities.secondary == barrier_entity {
+                            // play the barrier bounce sound
                             audio_channel.play(asset_server.load("sounds/barrier_bounce.wav"));
                             continue 'collision_events;
                         }
@@ -234,9 +240,9 @@ pub fn contact_collision_system(
                 }
             }
 
-            // check if mob was collided with
+            // check if mob was in collision
             for (mob_entity_1, mob_component_1) in mob_query.iter() {
-                // first entity is player second, is the other colliding entity
+                // first entity is the mob, the second entity is the other colliding entity
                 let colliding_entities: Option<CollidingEntities> =
                     if mob_entity_1 == *collider1_entity {
                         Some(CollidingEntities {
@@ -252,11 +258,16 @@ pub fn contact_collision_system(
                         None
                     };
 
+                // check if colliding entities were found
                 if let Some(colliding_entities) = colliding_entities {
                     // check if mob collided with other mob
                     for (mob_entity_2, mob_component_2) in mob_query.iter() {
+                        // check if secondary entity is another mob
                         if colliding_entities.secondary == mob_entity_2 {
+                            // play collision sound
                             audio_channel.play(asset_server.load("sounds/collision.wav"));
+
+                            // send two sorted collision events, swapping the position of the mobs in the struct
                             collision_event_writer.send(SortedCollisionEvent::MobToMobContact {
                                 mob_entity_1: colliding_entities.primary,
                                 mob_faction_1: match mob_component_1.mob_type {
@@ -293,15 +304,19 @@ pub fn contact_collision_system(
                         }
                     }
 
+                    // check if mob collided with barrier
                     for barrier_entity in barrier_query.iter() {
+                        // check if secondary entity is a barrier
                         if colliding_entities.secondary == barrier_entity {
-                            audio_channel.play(asset_server.load("sounds/barrier_bounce.wav"));
+                            // send a sorted collision event
                             collision_event_writer.send(
                                 SortedCollisionEvent::MobToBarrierContact {
                                     mob_entity: colliding_entities.primary,
                                     barrier_entity,
                                 },
                             );
+                            // play the barrier bounce sound
+                            audio_channel.play(asset_server.load("sounds/barrier_bounce.wav"));
                             continue 'collision_events;
                         }
                     }

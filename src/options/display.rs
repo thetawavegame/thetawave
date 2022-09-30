@@ -19,7 +19,7 @@ impl From<DisplayConfig> for WindowDescriptor {
             title: "Thetawave".to_string(),
             width: display_config.width,
             height: display_config.height,
-            cursor_visible: false,
+            cursor_visible: true,
             mode: if display_config.fullscreen {
                 WindowMode::SizedFullscreen
             } else {
@@ -30,11 +30,15 @@ impl From<DisplayConfig> for WindowDescriptor {
     }
 }
 
+// TODO: fix this function, doesn't toggle back to windowed correctly
 /// Toggles the window between full screen and windowed on key press
 pub fn toggle_fullscreen_system(keyboard_input: Res<Input<KeyCode>>, mut windows: ResMut<Windows>) {
+    // get primary window
     let window = windows.get_primary_mut().unwrap();
+    // get input for toggling full screen
     let fullscreen_input = keyboard_input.just_released(KeyCode::F);
 
+    // set window mode to the mode it's not in
     if fullscreen_input {
         let new_mode = match window.mode() {
             WindowMode::BorderlessFullscreen { .. } => {
@@ -58,9 +62,11 @@ pub fn toggle_zoom_system(
     mut camera_query: Query<&mut OrthographicProjection, With<Camera2d>>,
     game_parameters: Res<GameParametersResource>,
 ) {
-    let fullscreen_input = keyboard_input.just_released(KeyCode::V);
+    // get input for toggling zoom
+    let zoom_input = keyboard_input.just_released(KeyCode::V);
 
-    if fullscreen_input {
+    // toggle zoom to opposite scale
+    if zoom_input {
         for mut proj in camera_query.iter_mut() {
             if proj.scale == 1.0 {
                 proj.scale = game_parameters.camera_zoom_out_scale;

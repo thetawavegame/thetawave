@@ -38,10 +38,11 @@ pub fn despawn_gates_system(
     despawn_gate_query: Query<Entity, With<DespawnGateComponent>>,
     spawnable_query: Query<Entity, With<SpawnableComponent>>,
     mob_query: Query<(Entity, &MobComponent)>,
-    mut enemy_bottom_event: EventWriter<EnemyReachedBottomGateEvent>,
+    mut enemy_bottom_event: EventWriter<MobReachedBottomGateEvent>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
 ) {
+    // loop through all collision events
     'event_loop: for collision_event in collision_events.iter() {
         for despawn_gate_entity in despawn_gate_query.iter() {
             if let CollisionEvent::Started(
@@ -50,24 +51,32 @@ pub fn despawn_gates_system(
                 CollisionEventFlags::SENSOR,
             ) = collision_event
             {
+                // identify what is the gate entity, and what is the other entity
                 let other_entity = if despawn_gate_entity == *collider1_entity {
                     collider2_entity
                 } else if despawn_gate_entity == *collider2_entity {
                     collider1_entity
                 } else {
+                    // continue to next collision event if gate entity is not one of the entities
                     continue 'event_loop;
                 };
 
+                // verify the other entity is a spawnable
                 if spawnable_query
                     .iter()
                     .any(|spawnable_entity| spawnable_entity == *other_entity)
                 {
+                    // despawn the spawnable entity
                     commands.entity(*other_entity).despawn_recursive();
 
+                    // check if the other entity is a mob
                     for (mob_entity, mob_component) in mob_query.iter() {
                         if mob_entity == *other_entity {
+                            // send event for mob reaching bottom of arena
                             enemy_bottom_event
-                                .send(EnemyReachedBottomGateEvent(mob_component.defense_damage));
+                                .send(MobReachedBottomGateEvent(mob_component.defense_damage));
+
+                            // play sound based on if defense was increased or decreased
                             if mob_component.defense_damage > 0.0 {
                                 audio_channel.play(asset_server.load("sounds/defense_damage.wav"));
                             } else if mob_component.defense_damage < -0.5 {
@@ -81,4 +90,5 @@ pub fn despawn_gates_system(
     }
 }
 
-pub struct EnemyReachedBottomGateEvent(pub f32);
+// Event for sending damage dealt from mob reaching bottom of arena
+pub struct MobReachedBottomGateEvent(pub f32);

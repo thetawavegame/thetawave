@@ -16,6 +16,7 @@ mod behavior;
 
 pub use self::behavior::{consumable_execute_behavior_system, ConsumableBehavior};
 
+/// All the different consumable effects
 #[derive(Deserialize, Clone)]
 pub enum ConsumableEffect {
     GainHealth(f32),
@@ -24,18 +25,26 @@ pub enum ConsumableEffect {
     GainMoney(usize),
 }
 
+/// Core component for a consumable
 #[derive(Component)]
 pub struct ConsumableComponent {
+    /// Type of the consumable
     pub consumable_type: ConsumableType,
+    /// Collection of the consumable effects
     pub consumable_effects: Vec<ConsumableEffect>,
+    /// Consumable specific behaviors
     pub behaviors: Vec<ConsumableBehavior>,
 }
 
+/// Event for spawning a consumable
 pub struct SpawnConsumableEvent {
+    /// Type of the consumable to spawn
     pub consumable_type: ConsumableType,
+    /// Position of the consumable to spawn
     pub position: Vec2,
 }
 
+/// Handles spawning of consumables according to read events
 pub fn spawn_consumable_system(
     mut commands: Commands,
     mut event_reader: EventReader<SpawnConsumableEvent>,
@@ -53,26 +62,42 @@ pub fn spawn_consumable_system(
     }
 }
 
+/// Data describing consumables
 #[derive(Deserialize)]
 pub struct ConsumableData {
+    /// Type of the consumable
     pub consumable_type: ConsumableType,
+    /// Dimensions of the collider
     pub collider_dimensions: Vec2,
+    /// Spawnable generic behaviors
     pub spawnable_behaviors: Vec<SpawnableBehavior>,
+    /// Texture of the consumable
     pub texture: TextureData,
+    /// Initial motion of the consuimable
     pub initial_motion: InitialMotion,
+    /// Effects of picking up the consumable
     pub consumable_effects: Vec<ConsumableEffect>,
+    /// Consumable specific behaviors
     pub consumable_behaviors: Vec<ConsumableBehavior>,
+    /// Maximum speed
     pub speed: Vec2,
+    /// Acceleration stat
     pub acceleration: Vec2,
+    /// Deceleration stat
     pub deceleration: Vec2,
+    /// z value of the transform
     pub z_level: f32,
 }
 
+/// Consumable resource stores data about all consumables
 pub struct ConsumableResource {
+    /// Maps consumable types to data
     pub consumables: HashMap<ConsumableType, ConsumableData>,
+    /// Map of cosumable types to textures
     pub texture_atlas_handle: HashMap<ConsumableType, Handle<TextureAtlas>>,
 }
 
+/// Spawn a consumable by type
 pub fn spawn_consumable(
     consumable_type: &ConsumableType,
     consumable_resource: &ConsumableResource,
@@ -94,6 +119,7 @@ pub fn spawn_consumable(
     // Create consumable entity
     let mut consumable = commands.spawn();
 
+    // spawn the consumable
     consumable
         .insert_bundle(SpriteSheetBundle {
             texture_atlas: texture_atlas_handle,

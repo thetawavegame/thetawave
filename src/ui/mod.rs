@@ -8,12 +8,14 @@ use crate::{
     states::{AppStateComponent, AppStates},
 };
 
+mod debug;
 mod game_over;
 mod main_menu;
 mod pause_menu;
 mod victory;
 
 pub use self::{
+    debug::game_debug_ui,
     game_over::{
         fade_out_system, game_over_fade_in_system, setup_game_over_system,
         EndGameTransitionResource, GameFadeComponent,

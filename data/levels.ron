@@ -1,6 +1,5 @@
 {
 	EarthOrbit: (
-		initial_delay: 5.0, 
 		objective: Defense((
 			max_health: 100.0,
 			health: 100.0,
@@ -23,6 +22,31 @@
 						time: 45.0,
 						formation_pool: Hard,
 						initial_delay: 1.0,	 			
+					)
+				),
+				(
+					phase_type: Boss(
+						boss_type: Repeater,
+        				initial_delay: 5.0,
+        				is_defeated: false,			
+					)
+				),
+			],
+		),
+	),
+	TestLevel: (
+		objective: Defense((
+			max_health: 100.0,
+			health: 100.0,
+			armor: 0,
+		)),
+		timeline: (
+			phases: [
+				(
+					phase_type: Boss(
+						boss_type: Repeater,
+        				initial_delay: 5.0,
+        				is_defeated: false,			
 					)
 				),
 			],
