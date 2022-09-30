@@ -93,6 +93,7 @@ pub struct RepeaterArmData {
     pub z_level: f32,
 }
 
+// TODO: create function specific to spawning repeater
 pub fn spawn_repeater(
     mob_resource: &MobsResource,
     position: Vec2,
@@ -101,6 +102,8 @@ pub fn spawn_repeater(
 ) {
 }
 
+// TODO: use boss type to spawn different kinds of bosses`
+/// Spawn boss from give boss type
 pub fn spawn_boss(
     boss_type: &BossType,
     repeater_resource: &RepeaterResource,
@@ -108,17 +111,6 @@ pub fn spawn_boss(
     commands: &mut Commands,
     game_parameters: &GameParametersResource,
 ) {
-    // parts of boss
-    // TODO: get from repeater resource
-    /*
-    let body_type = &MobType::Enemy(EnemyType::RepeaterBody);
-    let head_type = &MobType::Enemy(EnemyType::RepeaterHead);
-    let right_shoulder_type = &MobType::Enemy(EnemyType::RepeaterRightShoulder);
-    let left_shoulder_type = &MobType::Enemy(EnemyType::RepeaterLeftShoulder);
-    let right_arm_type = &MobType::Enemy(EnemyType::RepeaterRightArm);
-    let left_arm_type = &MobType::Enemy(EnemyType::RepeaterLeftArm);
-    */
-
     // Get data from mob resource
     let body_data = &repeater_resource.repeater_parts.body;
     let body_texture_atlas_handle =

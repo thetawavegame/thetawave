@@ -19,11 +19,14 @@ pub use self::{
     },
 };
 
+// TODO: set to a progression of levels
+/// Right now just set to one level
 pub type RunResourceData = level::LevelType;
 
 pub struct RunResource {
-    //pub level_idx: usize,
+    /// Type of the level
     pub level_type: LevelType,
+    /// Level struct itself
     pub level: Option<level::Level>,
 }
 
@@ -37,6 +40,7 @@ impl From<RunResourceData> for RunResource {
 }
 
 impl RunResource {
+    /// Create the level from the level type
     pub fn create_level(&mut self, levels_resource: &level::LevelsResource) {
         self.level = Some(
             levels_resource
@@ -47,10 +51,13 @@ impl RunResource {
         );
     }
 
+    /// Returns true if the level is ready to start
     pub fn is_ready(&self) -> bool {
         self.level.is_some()
     }
 
+    /// Progress the run, right noew just ticks the level
+    #[allow(clippy::too_many_arguments)]
     pub fn tick(
         &mut self,
         delta: Duration,
@@ -75,6 +82,7 @@ impl RunResource {
     }
 }
 
+/// Restarts the run reseting all of the values in the game
 pub fn reset_run_system(
     gamepads: Res<Gamepads>,
     mut gamepad_input: ResMut<Input<GamepadButton>>,
@@ -83,6 +91,7 @@ pub fn reset_run_system(
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<MenuAudioChannel>>,
 ) {
+    // get input
     let mut reset = keyboard_input.just_released(KeyCode::R);
 
     for gamepad in gamepads.iter() {
@@ -92,9 +101,15 @@ pub fn reset_run_system(
         });
     }
 
+    // if reset input provided reset th run
     if reset {
+        // go to the main menu state
         app_state.set(AppStates::MainMenu).unwrap();
+
+        // play menu input sound
         audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
+
+        // reset the input
         keyboard_input.reset(KeyCode::R);
         for gamepad in gamepads.iter() {
             gamepad_input.reset(GamepadButton {

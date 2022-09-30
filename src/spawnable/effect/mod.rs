@@ -13,32 +13,49 @@ use super::EffectType;
 mod behavior;
 pub use self::behavior::effect_execute_behavior_system;
 
+/// Core component of effect
 #[derive(Component)]
 pub struct EffectComponent {
+    /// Type of the effect
     pub effect_type: super::EffectType,
+    /// Behaviors specific to effects
     pub behaviors: Vec<behavior::EffectBehavior>,
 }
 
+/// Data describing attributes of effects
 #[derive(Deserialize)]
 pub struct EffectData {
+    /// Type of the effect
     pub effect_type: super::EffectType,
+    /// Sprite texture
     pub texture: TextureData,
+    /// Behaviors specific to effects
     pub effect_behaviors: Vec<behavior::EffectBehavior>,
+    /// Z level of transform
     pub z_level: f32,
 }
 
+/// Resource to store data and textures of effects
 pub struct EffectsResource {
+    /// Maps effect types to data
     pub effects: HashMap<EffectType, EffectData>,
+    /// Maps effect types to textures
     pub texture_atlas_handle: HashMap<EffectType, Handle<TextureAtlas>>,
 }
 
+/// Event for spawning effect
 pub struct SpawnEffectEvent {
+    /// Type of the effect
     pub effect_type: EffectType,
+    /// Position of the effect to spawn
     pub position: Vec2,
+    /// Scale of the effect to spawn
     pub scale: Vec2,
+    /// Rotation of the effect to spawn
     pub rotation: f32,
 }
 
+/// Handles spawning of effects from events
 pub fn spawn_effect_system(
     mut commands: Commands,
     mut event_reader: EventReader<SpawnEffectEvent>,
@@ -58,6 +75,7 @@ pub fn spawn_effect_system(
     }
 }
 
+/// Spawn effect from effect type
 pub fn spawn_effect(
     effect_type: &EffectType,
     effects_resource: &EffectsResource,
@@ -71,6 +89,7 @@ pub fn spawn_effect(
     let effect_data = &effects_resource.effects[effect_type];
     let texture_atlas_handle = effects_resource.texture_atlas_handle[effect_type].clone_weak();
 
+    // spawn the effect
     let mut effect = commands.spawn();
 
     effect

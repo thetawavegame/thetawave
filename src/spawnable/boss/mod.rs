@@ -14,11 +14,15 @@ pub enum BossType {
     Repeater,
 }
 
+/// Event for spawning a boss
 pub struct SpawnBossEvent {
+    // type representing a kind of boss
     pub boss_type: BossType,
+    // position of the boss to be spawned
     pub position: Vec2,
 }
 
+/// Read spawn boss events and spawn bosses accordingly
 pub fn spawn_boss_system(
     mut commands: Commands,
     repeater_resource: Res<RepeaterResource>,

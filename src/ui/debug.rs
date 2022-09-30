@@ -3,6 +3,7 @@ use bevy_egui::{egui, EguiContext};
 
 use crate::run::RunResource;
 
+/// Shows information about the run
 pub fn game_debug_ui(mut egui_context: ResMut<EguiContext>, run_resource: Res<RunResource>) {
     egui::Window::new("Run Tracker")
         .default_pos([550.0, 16.0])

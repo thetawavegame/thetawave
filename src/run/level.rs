@@ -13,10 +13,13 @@ use crate::{
 
 use super::formation;
 
+/// Structure stored in data file to describe level
 pub type LevelsResourceData = HashMap<LevelType, LevelData>;
 
+/// Resource for storing defined predefined levels
 #[derive(Clone)]
 pub struct LevelsResource {
+    /// Leveltypes maped to levels
     pub levels: HashMap<LevelType, Level>,
 }
 
@@ -31,20 +34,26 @@ impl From<LevelsResourceData> for LevelsResource {
     }
 }
 
+/// Names of levels that are used to be mapped to level structs
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum LevelType {
     EarthOrbit,
     TestLevel,
 }
 
+/// Data used to initialize levels
 #[derive(Deserialize)]
 pub struct LevelData {
+    /// timeline of the phases of the level
     pub timeline: LevelTimeline,
+    /// objective of the level (besides surviving)
     pub objective: ObjectiveType,
 }
 
+/// Event to alert when level has been completed
 pub struct LevelCompletedEvent;
 
+/// Struct to manage a level
 #[derive(Clone, Debug)]
 pub struct Level {
     timeline_idx: usize,
@@ -58,6 +67,7 @@ pub struct Level {
     pub objective: ObjectiveType,
 }
 
+/// Types of objectives for a level
 #[derive(Clone, Deserialize, Debug)]
 pub enum ObjectiveType {
     Defense(Health),
@@ -76,24 +86,24 @@ impl From<LevelData> for Level {
 }
 
 impl Level {
+    /// Get a string name of the phase
     pub fn get_phase_name(&self) -> String {
-        return match &self.timeline.phases[self.timeline_idx].phase_type {
+        match &self.timeline.phases[self.timeline_idx].phase_type {
             LevelPhaseType::FormationSpawn { formation_pool, .. } => {
                 format!("FormationSpawn({:?})", formation_pool)
             }
             LevelPhaseType::Break { .. } => "Break".to_string(),
             LevelPhaseType::Boss { boss_type, .. } => format!("Boss[{:?}]", boss_type),
-        };
-
-        "None".to_string()
+        }
     }
 
+    /// Get the index of the current phase
     pub fn get_phase_number(&self) -> String {
-        return self.timeline_idx.to_string();
-
-        "None".to_string()
+        self.timeline_idx.to_string()
     }
 
+    /// Tick the level - manage the objective and phase
+    #[allow(clippy::too_many_arguments)]
     pub fn tick(
         &mut self,
         delta: Duration,
@@ -104,15 +114,20 @@ impl Level {
         formation_pools: &formation::FormationPoolsResource,
         end_game_trans_resource: &mut EndGameTransitionResource,
     ) {
+        // handle each of the objective types
         #[allow(clippy::single_match)]
         match &mut self.objective {
             ObjectiveType::Defense(health) => {
+                // iterate through all the mobs that have reached the bottom
                 for event in mob_reached_bottom.iter() {
+                    // heal or take damage based on the damage amount
                     if event.0 > 0.0 {
                         health.take_damage(event.0);
                     } else {
                         health.heal(-event.0);
                     }
+
+                    // end the game if defense dies
                     if health.is_dead() {
                         end_game_trans_resource.start(AppStates::GameOver);
                     }
@@ -120,17 +135,18 @@ impl Level {
             }
         }
 
+        // check if the current phase if valid and handle the phase
         if let Some(current_phase) = self.get_current_phase() {
-            // do stuff specific to phase type
+            // handle the phase based on the type
             match &current_phase.phase_type {
                 LevelPhaseType::FormationSpawn {
-                    time,
-                    initial_delay,
+                    time: _,
+                    initial_delay: _,
                     formation_pool,
                 } => {
-                    // this is bad code. fix it
                     let event_formation_pool = formation_pool.clone();
-                    // use spawn timer to spawn from formation pool when ready
+
+                    // tick spawn timer and spawn from formation pool when finished
                     if self
                         .spawn_timer
                         .as_mut()
@@ -138,14 +154,16 @@ impl Level {
                         .tick(delta)
                         .just_finished()
                     {
-                        // send spawn formation event
+                        // get weights of each of the formations in the formation pool
                         let weights = formation_pools[&event_formation_pool]
                             .iter()
                             .map(|x| x.weight)
                             .collect();
 
+                        // get random formation index based on the weights
                         let random_idx = weighted_rng(weights);
 
+                        // set spawn timer duration to the period of the selected formation
                         self.spawn_timer
                             .as_mut()
                             .unwrap()
@@ -153,6 +171,7 @@ impl Level {
                                 formation_pools[&event_formation_pool][random_idx].period,
                             ));
 
+                        // spawn the spawnables from the selected formation
                         spawn_formation.send(formation::SpawnFormationEvent {
                             formation: formation_pools[&event_formation_pool][random_idx].clone(),
                         });
@@ -160,11 +179,12 @@ impl Level {
                 }
                 LevelPhaseType::Boss {
                     boss_type,
-                    initial_delay,
-                    is_defeated,
+                    initial_delay: _,
+                    is_defeated: _,
                 } => {
                     let boss_type = boss_type.clone();
 
+                    // spawn the boss after the spawn timer has finished
                     if self
                         .spawn_timer
                         .as_mut()
@@ -172,7 +192,7 @@ impl Level {
                         .tick(delta)
                         .just_finished()
                     {
-                        info!("spawn boss");
+                        // spawn the boss
                         spawn_boss.send(spawnable::SpawnBossEvent {
                             boss_type,
                             position: Vec2::new(0.0, 100.0),
@@ -186,13 +206,14 @@ impl Level {
             if let Some(phase_timer) = &mut self.phase_timer {
                 // check of the phase just ended
                 if phase_timer.tick(delta).just_finished() {
-                    // set level to nect phase in timeline
+                    // set level to next phase in timeline
                     if self.timeline.phases.len() > self.timeline_idx + 1 {
-                        self.timeline_idx = self.timeline_idx + 1;
+                        self.timeline_idx += 1;
                     } else {
-                        // level completed
+                        // send level completed event when level is completed
                         level_completed.send(LevelCompletedEvent);
                     }
+                    // setup the next phase
                     self.setup_next_phase();
                 } else {
                     // continue with the current phase
@@ -204,10 +225,13 @@ impl Level {
         }
     }
 
+    /// Setup the next phase of the level
     fn setup_next_phase(&mut self) {
+        // get the current phase (phase should already be set to the next phase)
         let current_phase = self.get_current_phase();
+
         if let Some(current_phase) = current_phase {
-            // setup next phase
+            // perform setup based on the phase type
             match current_phase.phase_type.clone() {
                 LevelPhaseType::FormationSpawn {
                     time,
@@ -231,30 +255,29 @@ impl Level {
                 }
             }
         }
-        /*
-        else {
-            // setup next level
-            // send event to iterate run resources level index
-            level_completed.send(LevelCompletedEvent);
-        }
-        */
     }
 
+    /// Get the current phase of the level
     fn get_current_phase(&self) -> Option<&LevelPhase> {
         self.timeline.phases.get(self.timeline_idx)
     }
 }
 
+/// Level timeline for carrying phases of the level
 #[derive(Deserialize, Clone, Debug)]
 pub struct LevelTimeline {
+    /// level phases
     pub phases: Vec<LevelPhase>,
 }
 
+/// A defined section of the level
 #[derive(Deserialize, Clone, Debug)]
 pub struct LevelPhase {
+    /// phase type
     pub phase_type: LevelPhaseType,
 }
 
+/// Describes a distinct portion of the level
 #[derive(Deserialize, Clone, Debug)]
 pub enum LevelPhaseType {
     FormationSpawn {
@@ -272,6 +295,8 @@ pub enum LevelPhaseType {
     },
 }
 
+/// Handles the progression of the level
+#[allow(clippy::too_many_arguments)]
 pub fn level_system(
     mut run_resource: ResMut<super::RunResource>,
     mut spawn_formation: EventWriter<formation::SpawnFormationEvent>,
@@ -282,6 +307,7 @@ pub fn level_system(
     time: Res<Time>,
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
 ) {
+    // tick the run if ready and the game isn't over
     if run_resource.is_ready() && !end_game_trans_resource.start {
         run_resource.tick(
             time.delta(),
@@ -298,7 +324,6 @@ pub fn level_system(
 /// Progress to the next level when current level is completed
 pub fn next_level_system(
     mut level_completed: EventReader<LevelCompletedEvent>,
-    mut run_resource: ResMut<super::RunResource>,
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
 ) {
     // TODO: add case for going to next level, instead of instantly winning after one level
@@ -307,14 +332,14 @@ pub fn next_level_system(
     }
 }
 
-// setup first level of the game using values from the first level (phase timer spawn timer, etc)
+/// Setup first level of the game using values from the first level (phase timer spawn timer, etc)
 pub fn setup_first_level(mut run_resource: ResMut<super::RunResource>) {
     if let Some(level) = &mut run_resource.level {
         match &level.timeline.phases[0].phase_type {
             LevelPhaseType::FormationSpawn {
                 time,
                 initial_delay,
-                formation_pool,
+                formation_pool: _,
             } => {
                 level.spawn_timer = Some(Timer::from_seconds(*initial_delay, true));
                 level.phase_timer = Some(Timer::from_seconds(*time, false));
@@ -324,9 +349,9 @@ pub fn setup_first_level(mut run_resource: ResMut<super::RunResource>) {
                 level.phase_timer = Some(Timer::from_seconds(*time, false));
             }
             LevelPhaseType::Boss {
-                boss_type,
+                boss_type: _,
                 initial_delay,
-                is_defeated,
+                is_defeated: _,
             } => {
                 level.spawn_timer = Some(Timer::from_seconds(*initial_delay, false));
                 level.phase_timer = None;

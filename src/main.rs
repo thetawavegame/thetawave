@@ -546,37 +546,6 @@ fn setup_game(
         repeater.repeater_parts.larm.texture.rows,
     );
     repeater_texture_atlas_dict.insert(RepeaterPart::LeftArm, texture_atlases.add(larm_atlas));
-    /*
-    for (repeater_part, mob_data) in mobs.mobs.iter() {
-        // mob texture
-        let texture_handle = asset_server.load(&mob_data.texture.path[..]);
-        let mob_atlas = TextureAtlas::from_grid(
-            texture_handle,
-            mob_data.texture.dimensions,
-            mob_data.texture.cols,
-            mob_data.texture.rows,
-        );
-
-        // thruster texture
-        let thruster_atlas_handle = if let Some(thruster_data) = &mob_data.thruster {
-            let thruster_texture_handle = asset_server.load(&thruster_data.texture.path[..]);
-            Some(texture_atlases.add(TextureAtlas::from_grid(
-                thruster_texture_handle,
-                thruster_data.texture.dimensions,
-                thruster_data.texture.cols,
-                thruster_data.texture.rows,
-            )))
-        } else {
-            None
-        };
-
-        // add mob and thruster texture handles to the dictionary
-        mob_texture_atlas_dict.insert(
-            mob_type.clone(),
-            (texture_atlases.add(mob_atlas), thruster_atlas_handle),
-        );
-    }
-        */
 
     // load projectile assets
     let mut projectile_texture_atlas_dict = HashMap::new();

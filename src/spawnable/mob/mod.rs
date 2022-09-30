@@ -32,8 +32,11 @@ pub struct MobComponent {
     pub attack_damage: f32,
     /// Damage dealt to other factions on collision
     pub collision_damage: f32,
+    /// Damage dealt to defense objective, after reaching bottom of arena
     pub defense_damage: f32,
+    /// Health of the mob
     pub health: Health,
+    /// List of consumable drops
     pub consumable_drops: ConsumableDropListType,
 }
 
@@ -70,17 +73,25 @@ pub struct MobData {
     pub attack_damage: f32,
     /// Damage dealt to other factions on collision
     pub collision_damage: f32,
+    /// Damage dealt to defense objective, after reaching bottom of arena
     pub defense_damage: f32,
+    /// Health of the mob
     pub health: Health,
+    /// List of consumable drops
     pub consumable_drops: ConsumableDropListType,
+    /// Z level of the mobs transform
     pub z_level: f32,
 }
 
+/// Event for spawning mobs
 pub struct SpawnMobEvent {
+    /// Type of mob to spawn
     pub mob_type: MobType,
+    /// Position to spawn mob
     pub position: Vec2,
 }
 
+/// Spawns mobs from events
 pub fn spawn_mob_system(
     mut commands: Commands,
     mut event_reader: EventReader<SpawnMobEvent>,

@@ -144,14 +144,6 @@ pub enum EnemyType {
     StraferLeft,
     MissileLauncher,
     Missile,
-    /*
-    RepeaterBody,
-    RepeaterHead,
-    RepeaterLeftShoulder,
-    RepeaterRightShoulder,
-    RepeaterLeftArm,
-    RepeaterRightArm,
-    */
 }
 
 /// Type that encompasses all spawnable ally mobs

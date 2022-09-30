@@ -16,11 +16,17 @@ mod behavior;
 
 pub use self::behavior::{projectile_execute_behavior_system, ProjectileBehavior};
 
+/// Event for spawning projectiles
 pub struct SpawnProjectileEvent {
+    /// Type of projectile to spawn
     pub projectile_type: ProjectileType,
+    /// Position to spawn
     pub position: Vec2,
+    /// Damage of projectile
     pub damage: f32,
+    /// Time until projectile despawns
     pub despawn_time: f32,
+    /// Initial motion of the projectile
     pub initial_motion: InitialMotion,
 }
 
@@ -48,6 +54,7 @@ pub struct ProjectileData {
     pub collider_dimensions: Vec2,
     /// Texture
     pub texture: TextureData,
+    /// Z level of transform of projectile
     pub z_level: f32,
 }
 
@@ -59,6 +66,7 @@ pub struct ProjectileResource {
     pub texture_atlas_handle: HashMap<ProjectileType, Handle<TextureAtlas>>,
 }
 
+/// Spawns projectiles from events
 pub fn spawn_projectile_system(
     mut commands: Commands,
     mut event_reader: EventReader<SpawnProjectileEvent>,

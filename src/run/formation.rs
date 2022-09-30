@@ -2,12 +2,12 @@ use bevy::prelude::*;
 use serde::Deserialize;
 use std::collections::HashMap;
 
-use crate::{
-    game,
-    spawnable::{self, SpawnConsumableEvent, SpawnMobEvent},
-};
+use crate::spawnable::{self, SpawnConsumableEvent, SpawnMobEvent};
 
+/// Resource for storing collections of formations of spawnables
 pub type FormationPoolsResource = HashMap<FormationPoolType, FormationPool>;
+
+/// Collection of formations that can be chosen to be spawned
 pub type FormationPool = Vec<Formation>;
 
 /// Types of formation pools, describes a set of enemy formations to spawn in phase
@@ -45,9 +45,10 @@ impl Formation {
         spawn_consumable: &mut EventWriter<SpawnConsumableEvent>,
         spawn_mob: &mut EventWriter<SpawnMobEvent>,
     ) {
+        // iterate through all spawnables in the formation and spawn at given position
         for formation_spawnable in self.formation_spawnables.iter() {
             // TODO: add cases for items, consumables, etc, as they are added
-            // spawn enemy
+            // call the appropriate spawn function for the spawnable
             match &formation_spawnable.spawnable_type {
                 spawnable::SpawnableType::Mob(mob_type) => spawn_mob.send(SpawnMobEvent {
                     mob_type: mob_type.clone(),

@@ -1,7 +1,7 @@
 use crate::{
     collision::SortedCollisionEvent,
     run::{ObjectiveType, RunResource},
-    spawnable::{EffectType, Faction, PlayerComponent, SpawnEffectEvent, SpawnableComponent},
+    spawnable::{EffectType, PlayerComponent, SpawnEffectEvent, SpawnableComponent},
     SoundEffectsAudioChannel,
 };
 use bevy::math::Vec3Swizzles;
@@ -12,12 +12,14 @@ use serde::Deserialize;
 
 use super::ConsumableEffect;
 
+/// Behaviors specific to consumables
 #[derive(Deserialize, Clone)]
 pub enum ConsumableBehavior {
     ApplyEffectsOnImpact,
     AttractToPlayer,
 }
 
+/// Execute consumable behaviors on all consumable entities
 #[allow(clippy::too_many_arguments)]
 pub fn consumable_execute_behavior_system(
     mut commands: Commands,
@@ -35,11 +37,13 @@ pub fn consumable_execute_behavior_system(
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
 ) {
+    // put all collision events in a vector first (so that they can be looked at multiple times)
     let mut collision_events_vec = vec![];
     for collision_event in collision_events.iter() {
         collision_events_vec.push(collision_event);
     }
 
+    // iterate through all consumable entities
     for (
         entity,
         consumable_transform,
@@ -48,6 +52,7 @@ pub fn consumable_execute_behavior_system(
         consumable_component,
     ) in consumable_query.iter_mut()
     {
+        // perform each behavior
         for behavior in &consumable_component.behaviors {
             match behavior {
                 ConsumableBehavior::ApplyEffectsOnImpact => {
@@ -73,6 +78,7 @@ pub fn consumable_execute_behavior_system(
     }
 }
 
+/// Behavior that moves the consumable closer to the player
 fn attract_to_player(
     velocity: &mut Velocity,
     consumable_transform: &Transform,
@@ -81,13 +87,17 @@ fn attract_to_player(
     // get position and attraction distance of closest player
     let mut closest_player_pos: Option<(Vec2, f32)> = None;
 
-    for (_, mut player_component, player_transform) in player_query.iter_mut() {
+    // set the position to be attracted to, to that of the closest player
+    for (_, player_component, player_transform) in player_query.iter_mut() {
+        // get distance between the player and the consumable
         let distance = player_transform
             .translation
             .xy()
             .distance(consumable_transform.translation.xy());
 
+        // if the distance is less than the player's attraction stat
         if distance < player_component.attraction_distance {
+            // set it closer player
             match closest_player_pos {
                 Some((pos, _)) => {
                     if distance < consumable_transform.translation.xy().distance(pos) {
@@ -107,6 +117,7 @@ fn attract_to_player(
         }
     }
 
+    // accelerate the consumabe in the direction of the closest player
     if let Some((player_pos, accel)) = closest_player_pos {
         let direction = (player_pos - consumable_transform.translation.xy()).normalize();
         velocity.linvel.x += accel * direction.x;
@@ -114,6 +125,7 @@ fn attract_to_player(
     }
 }
 
+/// Apply effects to the player on collistion
 #[allow(clippy::too_many_arguments)]
 fn apply_effects_on_impact(
     commands: &mut Commands,
@@ -138,6 +150,7 @@ fn apply_effects_on_impact(
                 // despawn consumable
                 commands.entity(entity).despawn_recursive();
 
+                // spawn the consumable despawn effeect
                 spawn_effect_event_writer.send(SpawnEffectEvent {
                     effect_type: EffectType::ConsumableDespawn,
                     position: transform.translation.xy(),
@@ -148,7 +161,10 @@ fn apply_effects_on_impact(
                 //apply effect to player
                 for (player_entity_q, mut player_component, _) in player_query.iter_mut() {
                     if *player_entity == player_entity_q {
+                        // play consumable pickup sound
                         audio_channel.play(asset_server.load("sounds/consumable_pickup.wav"));
+
+                        // apply the effects to the player
                         for consumable_effect in consumable_effects {
                             match consumable_effect {
                                 ConsumableEffect::GainHealth(health) => {
