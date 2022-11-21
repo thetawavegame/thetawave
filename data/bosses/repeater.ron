@@ -1,9 +1,11 @@
 (
+    core: (
+        acceleration: (2.0, 2.0),
+        deceleration: (2.0, 2.0),
+        speed: (50.0, 50.0),
+    ),
     body: (
         boss_part_type: Repeater(Body),
-        acceleration: (0.0, 0.0),
-        deceleration: (0.0, 0.0),
-        speed: (0.0, 0.0),
         collider_dimensions: (5.0, 5.0),
         texture: (
 			path: "texture/repeater_body_spritesheet.png",

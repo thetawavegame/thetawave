@@ -195,7 +195,7 @@ impl Level {
                         // spawn the boss
                         spawn_boss.send(spawnable::SpawnBossEvent {
                             boss_type,
-                            position: Vec2::new(0.0, 100.0),
+                            position: Vec2::new(0.0, 1750.0),
                         })
                     }
                 }

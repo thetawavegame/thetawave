@@ -9,7 +9,7 @@ pub enum EffectBehavior {
     DespawnAfterAnimation,
 }
 
-/// Execute behaviors specific to events
+/// Execute behaviors specific to effects
 pub fn effect_execute_behavior_system(
     mut commands: Commands,
     mut effect_query: Query<(

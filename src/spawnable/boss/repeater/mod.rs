@@ -8,7 +8,8 @@ use serde::Deserialize;
 use strum_macros::Display;
 
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
-pub enum RepeaterPart {
+pub enum RepeaterPartType {
+    Core,
     Head,
     Body,
     RightShoulder,
@@ -21,20 +22,30 @@ use crate::{
     animation::{AnimationComponent, TextureData},
     game::GameParametersResource,
     misc::Health,
-    spawnable::{BossPartType, EnemyType, MobType, SpawnableComponent, SpawnableType},
+    spawnable::{
+        boss::BossPartComponent, BossPartType, EnemyType, MobType, SpawnableBehavior,
+        SpawnableComponent, SpawnableType,
+    },
     states::{AppStateComponent, AppStates},
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 
 use super::{BossType, MobComponent, MobsResource};
 
+#[derive(Component)]
+pub struct RepeaterPartComponent;
+
+#[derive(Component)]
+pub struct RepeaterCoreComponent;
+
 pub struct RepeaterResource {
     pub repeater_parts: RepeaterPartsData,
-    pub texture_atlas_handle: HashMap<RepeaterPart, Handle<TextureAtlas>>,
+    pub texture_atlas_handle: HashMap<RepeaterPartType, Handle<TextureAtlas>>,
 }
 
 #[derive(Deserialize)]
 pub struct RepeaterPartsData {
+    pub core: RepeaterCoreData,
     pub body: RepeaterBodyData,
     pub head: RepeaterHeadData,
     pub rshould: RepeaterShoulderData,
@@ -44,11 +55,15 @@ pub struct RepeaterPartsData {
 }
 
 #[derive(Deserialize)]
-pub struct RepeaterBodyData {
-    pub boss_part_type: BossPartType,
+pub struct RepeaterCoreData {
     pub acceleration: Vec2,
     pub deceleration: Vec2,
     pub speed: Vec2,
+}
+
+#[derive(Deserialize)]
+pub struct RepeaterBodyData {
+    pub boss_part_type: BossPartType,
     pub collider_dimensions: Vec2,
     pub texture: TextureData,
     pub collision_damage: f32,
@@ -93,19 +108,11 @@ pub struct RepeaterArmData {
     pub z_level: f32,
 }
 
-// TODO: create function specific to spawning repeater
-pub fn spawn_repeater(
-    mob_resource: &MobsResource,
-    position: Vec2,
-    commands: &mut Commands,
-    game_parameters: &GameParametersResource,
-) {
-}
+#[derive(Component)]
+pub struct AxesLockedTimerComponent(Timer);
 
-// TODO: use boss type to spawn different kinds of bosses`
 /// Spawn boss from give boss type
-pub fn spawn_boss(
-    boss_type: &BossType,
+pub fn spawn_repeater_boss(
     repeater_resource: &RepeaterResource,
     position: Vec2,
     commands: &mut Commands,
@@ -114,27 +121,29 @@ pub fn spawn_boss(
     // Get data from mob resource
     let body_data = &repeater_resource.repeater_parts.body;
     let body_texture_atlas_handle =
-        repeater_resource.texture_atlas_handle[&RepeaterPart::Body].clone_weak();
+        repeater_resource.texture_atlas_handle[&RepeaterPartType::Body].clone_weak();
 
     let head_data = &repeater_resource.repeater_parts.head;
     let head_texture_atlas_handle =
-        repeater_resource.texture_atlas_handle[&RepeaterPart::Head].clone_weak();
+        repeater_resource.texture_atlas_handle[&RepeaterPartType::Head].clone_weak();
 
     let rshould_data = &repeater_resource.repeater_parts.rshould;
     let rshould_texture_atlas_handle =
-        repeater_resource.texture_atlas_handle[&RepeaterPart::RightShoulder].clone_weak();
+        repeater_resource.texture_atlas_handle[&RepeaterPartType::RightShoulder].clone_weak();
 
     let lshould_data = &repeater_resource.repeater_parts.lshould;
     let lshould_texture_atlas_handle =
-        repeater_resource.texture_atlas_handle[&RepeaterPart::LeftShoulder].clone_weak();
+        repeater_resource.texture_atlas_handle[&RepeaterPartType::LeftShoulder].clone_weak();
 
     let rarm_data = &repeater_resource.repeater_parts.rarm;
     let rarm_texture_atlas_handle =
-        repeater_resource.texture_atlas_handle[&RepeaterPart::RightArm].clone_weak();
+        repeater_resource.texture_atlas_handle[&RepeaterPartType::RightArm].clone_weak();
 
     let larm_data = &repeater_resource.repeater_parts.larm;
     let larm_texture_atlas_handle =
-        repeater_resource.texture_atlas_handle[&RepeaterPart::LeftArm].clone_weak();
+        repeater_resource.texture_atlas_handle[&RepeaterPartType::LeftArm].clone_weak();
+
+    let core_data = &repeater_resource.repeater_parts.core;
 
     // scale collider to align with the sprite
     let body_collider_size_hx =
@@ -167,7 +176,7 @@ pub fn spawn_boss(
     let larm_collider_size_hy =
         larm_data.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
 
-    // right shoulder joint
+    // create joints
     let right_shoulder_joint = RevoluteJointBuilder::new()
         .local_anchor1(Vec2::new(80.0, 115.0))
         .local_anchor2(Vec2::new(-60.0, 50.0))
@@ -188,11 +197,10 @@ pub fn spawn_boss(
         .local_anchor2(Vec2::new(-30.0, 110.0))
         .motor_velocity(0.0, 1.0);
 
-    // create mob entity
-    //let mut mob = commands.spawn();
-
-    let mob = commands
+    // create core entity
+    let repeater_core = commands
         .spawn()
+        .insert(RepeaterCoreComponent)
         .insert(RigidBody::Dynamic)
         .insert_bundle(TransformBundle {
             local: Transform {
@@ -201,15 +209,30 @@ pub fn spawn_boss(
             },
             ..default()
         })
+        .insert(Velocity::default())
         .insert(LockedAxes::ROTATION_LOCKED)
         .insert(AppStateComponent(AppStates::Game))
         .insert(Visibility::default())
         .insert(ComputedVisibility::default())
+        .insert(SpawnableComponent {
+            spawnable_type: SpawnableType::Boss(BossType::Repeater),
+            acceleration: core_data.acceleration,
+            deceleration: core_data.deceleration,
+            speed: core_data.speed,
+            angular_acceleration: 0.0,
+            angular_deceleration: 0.0,
+            angular_speed: 0.0,
+            behaviors: [SpawnableBehavior::MoveDown].to_vec(),
+        })
         .insert(Name::new("Repeater Core"))
         .with_children(|parent| {
             // head
             parent
                 .spawn()
+                .insert(RepeaterPartComponent)
+                .insert(BossPartComponent {
+                    health: head_data.health.clone(),
+                })
                 .insert_bundle(SpriteSheetBundle {
                     texture_atlas: head_texture_atlas_handle,
                     transform: Transform {
@@ -257,6 +280,10 @@ pub fn spawn_boss(
             // body
             parent
                 .spawn()
+                .insert(RepeaterPartComponent)
+                .insert(BossPartComponent {
+                    health: body_data.health.clone(),
+                })
                 .insert_bundle(SpriteSheetBundle {
                     texture_atlas: body_texture_atlas_handle,
                     transform: Transform {
@@ -281,9 +308,9 @@ pub fn spawn_boss(
                 ))
                 .insert(SpawnableComponent {
                     spawnable_type: SpawnableType::BossPart(body_data.boss_part_type.clone()),
-                    acceleration: body_data.acceleration,
-                    deceleration: body_data.deceleration,
-                    speed: body_data.speed,
+                    acceleration: Vec2::ZERO,
+                    deceleration: Vec2::ZERO,
+                    speed: Vec2::ZERO,
                     angular_acceleration: 0.0,
                     angular_deceleration: 0.0,
                     angular_speed: 0.0,
@@ -307,9 +334,10 @@ pub fn spawn_boss(
 
     let upper_right_arm = commands
         .spawn()
+        .insert(RepeaterPartComponent)
         .insert(RigidBody::Dynamic)
         .insert(AppStateComponent(AppStates::Game))
-        .insert(ImpulseJoint::new(mob, right_shoulder_joint))
+        .insert(ImpulseJoint::new(repeater_core, right_shoulder_joint))
         .insert_bundle(SpriteSheetBundle {
             texture_atlas: rshould_texture_atlas_handle,
             transform: Transform {
@@ -328,7 +356,8 @@ pub fn spawn_boss(
             timer: Timer::from_seconds(rshould_data.texture.frame_duration, true),
             direction: rshould_data.texture.animation_direction.clone(),
         })
-        //.insert(LockedAxes::ROTATION_LOCKED)
+        .insert(AxesLockedTimerComponent(Timer::from_seconds(2.0, false)))
+        .insert(LockedAxes::ROTATION_LOCKED)
         .insert(Name::new(rshould_data.boss_part_type.to_string()))
         .with_children(|parent| {
             parent
@@ -344,6 +373,9 @@ pub fn spawn_boss(
                         ..default()
                     },
                     ..default()
+                })
+                .insert(BossPartComponent {
+                    health: rshould_data.health.clone(),
                 })
                 .insert(ActiveEvents::COLLISION_EVENTS)
                 .insert(Friction::new(1.0))
@@ -371,6 +403,7 @@ pub fn spawn_boss(
     // right arm
     commands
         .spawn()
+        .insert(RepeaterPartComponent)
         .insert(RigidBody::Dynamic)
         .insert(AppStateComponent(AppStates::Game))
         .insert(ImpulseJoint::new(upper_right_arm, right_elbow_joint))
@@ -392,7 +425,8 @@ pub fn spawn_boss(
             timer: Timer::from_seconds(rarm_data.texture.frame_duration, true),
             direction: rarm_data.texture.animation_direction.clone(),
         })
-        //.insert(LockedAxes::ROTATION_LOCKED)
+        .insert(AxesLockedTimerComponent(Timer::from_seconds(2.0, false)))
+        .insert(LockedAxes::ROTATION_LOCKED)
         .insert(Name::new(rarm_data.boss_part_type.to_string()))
         .with_children(|parent| {
             parent
@@ -408,6 +442,9 @@ pub fn spawn_boss(
                         ..default()
                     },
                     ..default()
+                })
+                .insert(BossPartComponent {
+                    health: rarm_data.health.clone(),
                 })
                 .insert(ActiveEvents::COLLISION_EVENTS)
                 .insert(Friction::new(1.0))
@@ -435,9 +472,10 @@ pub fn spawn_boss(
 
     let upper_left_arm = commands
         .spawn()
+        .insert(RepeaterPartComponent)
         .insert(RigidBody::Dynamic)
         .insert(AppStateComponent(AppStates::Game))
-        .insert(ImpulseJoint::new(mob, left_shoulder_joint))
+        .insert(ImpulseJoint::new(repeater_core, left_shoulder_joint))
         .insert_bundle(SpriteSheetBundle {
             texture_atlas: lshould_texture_atlas_handle,
             transform: Transform {
@@ -456,7 +494,8 @@ pub fn spawn_boss(
             timer: Timer::from_seconds(lshould_data.texture.frame_duration, true),
             direction: lshould_data.texture.animation_direction.clone(),
         })
-        //.insert(LockedAxes::ROTATION_LOCKED)
+        .insert(AxesLockedTimerComponent(Timer::from_seconds(2.0, false)))
+        .insert(LockedAxes::ROTATION_LOCKED)
         .insert(Name::new(lshould_data.boss_part_type.to_string()))
         .with_children(|parent| {
             parent
@@ -472,6 +511,9 @@ pub fn spawn_boss(
                         ..default()
                     },
                     ..default()
+                })
+                .insert(BossPartComponent {
+                    health: lshould_data.health.clone(),
                 })
                 .insert(ActiveEvents::COLLISION_EVENTS)
                 .insert(Friction::new(1.0))
@@ -499,6 +541,7 @@ pub fn spawn_boss(
     // left arm
     commands
         .spawn()
+        .insert(RepeaterPartComponent)
         .insert(RigidBody::Dynamic)
         .insert(AppStateComponent(AppStates::Game))
         .insert(ImpulseJoint::new(upper_left_arm, left_elbow_joint))
@@ -520,7 +563,8 @@ pub fn spawn_boss(
             timer: Timer::from_seconds(larm_data.texture.frame_duration, true),
             direction: larm_data.texture.animation_direction.clone(),
         })
-        //.insert(LockedAxes::ROTATION_LOCKED)
+        .insert(AxesLockedTimerComponent(Timer::from_seconds(2.0, false)))
+        .insert(LockedAxes::ROTATION_LOCKED)
         .insert(Name::new(larm_data.boss_part_type.to_string()))
         .with_children(|parent| {
             parent
@@ -536,6 +580,9 @@ pub fn spawn_boss(
                         ..default()
                     },
                     ..default()
+                })
+                .insert(BossPartComponent {
+                    health: larm_data.health.clone(),
                 })
                 .insert(ActiveEvents::COLLISION_EVENTS)
                 .insert(Friction::new(1.0))
@@ -558,4 +605,27 @@ pub fn spawn_boss(
                     behaviors: [].to_vec(),
                 });
         });
+}
+
+pub fn repeater_behavior_system(
+    mut spawnable_query: Query<(
+        &RepeaterPartComponent,
+        &mut LockedAxes,
+        &mut AxesLockedTimerComponent,
+    )>,
+    mut repeater_core_query: Query<(&RepeaterCoreComponent, &mut Transform)>,
+    time: Res<Time>,
+) {
+    for (_, mut locked_axes, mut axes_locked_timer) in spawnable_query.iter_mut() {
+        // unlock rotation of parts after timer is up
+        if axes_locked_timer.0.tick(time.delta()).just_finished() {
+            locked_axes.set(LockedAxes::ROTATION_LOCKED, false);
+        }
+    }
+
+    for (_, transform) in repeater_core_query.iter_mut() {
+        if transform.translation.y > 100.0 {
+            // move down
+        }
+    }
 }

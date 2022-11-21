@@ -13,8 +13,8 @@ mod mob;
 mod projectile;
 
 pub use self::boss::{
-    spawn_boss, spawn_boss_system, BossType, RepeaterPart, RepeaterPartsData, RepeaterResource,
-    SpawnBossEvent,
+    repeater_behavior_system, spawn_boss_system, spawn_repeater_boss, BossPartComponent,
+    RepeaterPartType, RepeaterPartsData, RepeaterResource, SpawnBossEvent,
 };
 
 pub use self::mob::{
@@ -106,11 +106,17 @@ pub enum SpawnableType {
     Effect(EffectType),
     Mob(MobType),
     BossPart(BossPartType),
+    Boss(BossType),
+}
+
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+pub enum BossType {
+    Repeater,
 }
 
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum BossPartType {
-    Repeater(RepeaterPart),
+    Repeater(RepeaterPartType),
 }
 
 /// Type that encompasses all weapon projectiles
