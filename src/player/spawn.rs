@@ -24,8 +24,8 @@ pub fn spawn_player_system(
 
     // spawn the player
     commands
-        .spawn()
-        .insert_bundle(SpriteBundle {
+        .spawn_empty()
+        .insert(SpriteBundle {
             texture: asset_server.load(format!("texture/{}", character.sprite_path).as_str()),
             ..Default::default()
         })

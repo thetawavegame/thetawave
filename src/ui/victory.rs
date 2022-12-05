@@ -40,7 +40,7 @@ pub fn victory_fade_out_system(
 pub fn victory_fade_in_system(
     time: Res<Time>,
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
-    mut victory_fade_query: Query<&mut UiColor, With<VictoryFadeComponent>>,
+    mut victory_fade_query: Query<&mut BackgroundColor, With<VictoryFadeComponent>>,
 ) {
     end_game_trans_resource.fade_in_timer.tick(time.delta());
 
@@ -61,19 +61,19 @@ pub fn victory_fade_in_system(
 
 pub fn setup_victory_system(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
-        .spawn_bundle(NodeBundle {
+        .spawn(NodeBundle {
             style: Style {
                 size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
                 ..Default::default()
             },
-            color: Color::rgba(0.0, 0.0, 0.0, 0.0).into(),
+            background_color: Color::rgba(0.0, 0.0, 0.0, 0.0).into(),
             ..Default::default()
         })
         .insert(AppStateComponent(AppStates::Victory))
         .insert(VictoryUI)
         .with_children(|parent| {
             parent
-                .spawn_bundle(ImageBundle {
+                .spawn(ImageBundle {
                     image: asset_server
                         .load("texture/victory_background_54.png")
                         .into(), // not using assetsmanager as we don't load everything on the main menu
@@ -82,13 +82,13 @@ pub fn setup_victory_system(mut commands: Commands, asset_server: Res<AssetServe
                         align_items: AlignItems::Center,
                         ..Default::default()
                     },
-                    color: Color::rgba(1.0, 1.0, 1.0, 0.0).into(),
+                    background_color: Color::rgba(1.0, 1.0, 1.0, 0.0).into(),
                     ..default()
                 })
                 .insert(VictoryFadeComponent)
                 .with_children(|parent| {
                     parent
-                        .spawn_bundle(ImageBundle {
+                        .spawn(ImageBundle {
                             image: asset_server
                                 .load("texture/restart_game_prompt_controller.png")
                                 .into(),
@@ -105,11 +105,11 @@ pub fn setup_victory_system(mut commands: Commands, asset_server: Res<AssetServe
                             ..Default::default()
                         })
                         .insert(BouncingPromptComponent {
-                            flash_timer: Timer::from_seconds(2.0, true),
+                            flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
                         });
 
                     parent
-                        .spawn_bundle(ImageBundle {
+                        .spawn(ImageBundle {
                             image: asset_server
                                 .load("texture/exit_game_prompt_controller.png")
                                 .into(),
@@ -126,7 +126,7 @@ pub fn setup_victory_system(mut commands: Commands, asset_server: Res<AssetServe
                             ..Default::default()
                         })
                         .insert(BouncingPromptComponent {
-                            flash_timer: Timer::from_seconds(2.0, true),
+                            flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
                         });
                 });
         });

@@ -47,7 +47,7 @@ pub struct Character {
 }
 
 /// Manages all characters
-#[derive(Deserialize)]
+#[derive(Resource, Deserialize)]
 pub struct CharactersResource {
     /// Names mapped to characters for all characters
     pub characters: HashMap<String, Character>,

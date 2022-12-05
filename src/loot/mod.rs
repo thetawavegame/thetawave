@@ -7,7 +7,7 @@ use strum_macros::Display;
 use crate::spawnable::{ConsumableType, SpawnConsumableEvent};
 
 /// Describes probability profiles for dropping consumables and items
-#[derive(Deserialize)]
+#[derive(Resource, Deserialize)]
 pub struct LootDropsResource {
     // Lists of consumable drops maped to types
     pub consumable_drops: HashMap<ConsumableDropListType, Vec<ConsumableLootDrop>>,

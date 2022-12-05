@@ -36,6 +36,7 @@ pub struct EffectData {
 }
 
 /// Resource to store data and textures of effects
+#[derive(Resource)]
 pub struct EffectsResource {
     /// Maps effect types to data
     pub effects: HashMap<EffectType, EffectData>,
@@ -90,15 +91,15 @@ pub fn spawn_effect(
     let texture_atlas_handle = effects_resource.texture_atlas_handle[effect_type].clone_weak();
 
     // spawn the effect
-    let mut effect = commands.spawn();
+    let mut effect = commands.spawn_empty();
 
     effect
-        .insert_bundle(SpriteSheetBundle {
+        .insert(SpriteSheetBundle {
             texture_atlas: texture_atlas_handle,
             ..Default::default()
         })
         .insert(AnimationComponent {
-            timer: Timer::from_seconds(effect_data.texture.frame_duration, true),
+            timer: Timer::from_seconds(effect_data.texture.frame_duration, TimerMode::Repeating),
             direction: effect_data.texture.animation_direction.clone(),
         })
         .insert(EffectComponent {
@@ -117,7 +118,7 @@ pub fn spawn_effect(
         })
         .insert(LockedAxes::default())
         .insert(RigidBody::Fixed)
-        .insert_bundle(TransformBundle::from_transform(Transform {
+        .insert(TransformBundle::from_transform(Transform {
             translation: position.extend(effect_data.z_level),
             rotation: Quat::from_rotation_z(rotation),
             scale: Vec3::new(

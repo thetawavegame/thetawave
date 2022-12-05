@@ -2,12 +2,12 @@ use bevy::app::AppExit;
 use bevy::core_pipeline::clear_color::ClearColorConfig;
 use bevy::diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin};
 use bevy::render::camera::Projection;
-use bevy::render::texture::ImageSettings;
 use bevy::window::WindowMode;
 use bevy::{pbr::AmbientLight, prelude::*};
 use bevy_egui::EguiPlugin;
 use bevy_inspector_egui::{WorldInspectorParams, WorldInspectorPlugin};
 use bevy_kira_audio::prelude::*;
+use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
 use ron::de::from_bytes;
 use spawnable::{RepeaterPartType, RepeaterPartsData, SpawnMobEvent, SpawnableComponent};
@@ -18,9 +18,9 @@ use ui::FPSUI;
 use states::{AppStateComponent, AppStates};
 
 pub const PHYSICS_SCALE: f32 = 10.0;
-pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: u32 = 0b0010;
-pub const HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP: u32 = 0b0100;
-pub const VERTICAL_BARRIER_COL_GROUP_MEMBERSHIP: u32 = 0b1000;
+pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_1;
+pub const HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_2;
+pub const VERTICAL_BARRIER_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_3;
 
 mod animation;
 mod arena;
@@ -64,8 +64,11 @@ fn get_display_config() -> options::DisplayConfig {
 }
 
 // audio channels
+#[derive(Resource)]
 pub struct BackgroundMusicAudioChannel;
+#[derive(Resource)]
 pub struct MenuAudioChannel;
+#[derive(Resource)]
 pub struct SoundEffectsAudioChannel;
 
 fn main() {
@@ -77,109 +80,104 @@ fn main() {
     app.add_state(states::AppStates::MainMenu); // start game in the main menu state
 
     // insert resources for all game states
-    app.insert_resource(WindowDescriptor::from(display_config))
-        .insert_resource(ImageSettings::default_nearest())
-        .add_plugins(DefaultPlugins)
-        .insert_resource(ClearColor(Color::BLACK))
-        .insert_resource(
-            from_bytes::<loot::LootDropsResource>(include_bytes!("../data/loot_drops.ron"))
-                .unwrap(),
-        )
-        .insert_resource(
-            from_bytes::<player::CharactersResource>(include_bytes!("../data/characters.ron"))
-                .unwrap(),
-        )
-        .insert_resource(
-            from_bytes::<run::FormationPoolsResource>(include_bytes!(
-                "../data/formation_pools.ron"
-            ))
+    app.add_plugins(
+        DefaultPlugins
+            .set(WindowPlugin {
+                window: WindowDescriptor::from(display_config),
+                ..default()
+            })
+            .set(ImagePlugin::default_nearest()),
+    )
+    .insert_resource(ClearColor(Color::BLACK))
+    .insert_resource(
+        from_bytes::<loot::LootDropsResource>(include_bytes!("../data/loot_drops.ron")).unwrap(),
+    )
+    .insert_resource(
+        from_bytes::<player::CharactersResource>(include_bytes!("../data/characters.ron")).unwrap(),
+    )
+    .insert_resource(
+        from_bytes::<run::FormationPoolsResource>(include_bytes!("../data/formation_pools.ron"))
             .unwrap(),
-        )
-        .insert_resource(
-            from_bytes::<game::GameParametersResource>(include_bytes!(
-                "../data/game_parameters.ron"
-            ))
+    )
+    .insert_resource(
+        from_bytes::<game::GameParametersResource>(include_bytes!("../data/game_parameters.ron"))
             .unwrap(),
-        )
-        .insert_resource(run::RunResource::from(
-            from_bytes::<run::RunResourceData>(include_bytes!("../data/run.ron")).unwrap(),
+    )
+    .insert_resource(run::RunResource::from(
+        from_bytes::<run::RunResourceData>(include_bytes!("../data/run.ron")).unwrap(),
+    ))
+    .insert_resource(run::LevelsResource::from(
+        from_bytes::<run::LevelsResourceData>(include_bytes!("../data/levels.ron")).unwrap(),
+    ))
+    .insert_resource(spawnable::MobsResource {
+        mobs: from_bytes::<HashMap<spawnable::MobType, spawnable::MobData>>(include_bytes!(
+            "../data/mobs.ron"
         ))
-        .insert_resource(run::LevelsResource::from(
-            from_bytes::<run::LevelsResourceData>(include_bytes!("../data/levels.ron")).unwrap(),
+        .unwrap(),
+        texture_atlas_handle: HashMap::new(),
+    })
+    .insert_resource(spawnable::RepeaterResource {
+        repeater_parts: from_bytes::<RepeaterPartsData>(include_bytes!(
+            "../data/bosses/repeater.ron"
         ))
-        .insert_resource(spawnable::MobsResource {
-            mobs: from_bytes::<HashMap<spawnable::MobType, spawnable::MobData>>(include_bytes!(
-                "../data/mobs.ron"
-            ))
-            .unwrap(),
-            texture_atlas_handle: HashMap::new(),
-        })
-        .insert_resource(spawnable::RepeaterResource {
-            repeater_parts: from_bytes::<RepeaterPartsData>(include_bytes!(
-                "../data/bosses/repeater.ron"
-            ))
-            .unwrap(),
-            texture_atlas_handle: HashMap::new(),
-        })
-        .insert_resource(spawnable::EffectsResource {
-            effects: from_bytes::<HashMap<spawnable::EffectType, spawnable::EffectData>>(
-                include_bytes!("../data/effects.ron"),
-            )
-            .unwrap(),
-            texture_atlas_handle: HashMap::new(),
-        })
-        .insert_resource(spawnable::ProjectileResource {
-            projectiles:
-                from_bytes::<HashMap<spawnable::ProjectileType, spawnable::ProjectileData>>(
-                    include_bytes!("../data/projectiles.ron"),
-                )
-                .unwrap(),
-            texture_atlas_handle: HashMap::new(),
-        })
-        .insert_resource(spawnable::ConsumableResource {
-            consumables:
-                from_bytes::<HashMap<spawnable::ConsumableType, spawnable::ConsumableData>>(
-                    include_bytes!("../data/consumables.ron"),
-                )
-                .unwrap(),
-            texture_atlas_handle: HashMap::new(),
-        })
-        .insert_resource(
-            from_bytes::<background::BackgroundsResource>(include_bytes!(
-                "../data/backgrounds.ron"
-            ))
-            .unwrap(),
+        .unwrap(),
+        texture_atlas_handle: HashMap::new(),
+    })
+    .insert_resource(spawnable::EffectsResource {
+        effects: from_bytes::<HashMap<spawnable::EffectType, spawnable::EffectData>>(
+            include_bytes!("../data/effects.ron"),
         )
-        .insert_resource(AmbientLight {
-            color: Color::WHITE,
-            brightness: 0.1,
-        })
-        .insert_resource(ui::EndGameTransitionResource::new(
-            2.0, 3.0, 2.5, 0.5, 0.5, 30.0,
-        ))
-        .add_event::<collision::SortedCollisionEvent>()
-        .add_event::<run::SpawnFormationEvent>()
-        .add_event::<run::LevelCompletedEvent>()
-        .add_event::<arena::MobReachedBottomGateEvent>()
-        .add_event::<spawnable::SpawnEffectEvent>()
-        .add_event::<spawnable::SpawnConsumableEvent>()
-        .add_event::<spawnable::SpawnBossEvent>()
-        .add_event::<spawnable::SpawnProjectileEvent>()
-        .add_event::<spawnable::SpawnMobEvent>()
-        .add_plugin(AudioPlugin)
-        .add_plugin(EguiPlugin)
-        .add_audio_channel::<BackgroundMusicAudioChannel>()
-        .add_audio_channel::<MenuAudioChannel>()
-        .add_audio_channel::<SoundEffectsAudioChannel>()
-        .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
-            PHYSICS_SCALE,
-        ))
-        .add_startup_system(setup_cameras_system)
-        .add_startup_system(start_background_audio_system)
-        .add_startup_system(set_audio_volume_system)
-        .add_system(ui::bouncing_prompt_system)
-        .add_system(options::toggle_fullscreen_system)
-        .add_system_to_stage(CoreStage::Last, ui::position_stat_bar_label_system);
+        .unwrap(),
+        texture_atlas_handle: HashMap::new(),
+    })
+    .insert_resource(spawnable::ProjectileResource {
+        projectiles: from_bytes::<HashMap<spawnable::ProjectileType, spawnable::ProjectileData>>(
+            include_bytes!("../data/projectiles.ron"),
+        )
+        .unwrap(),
+        texture_atlas_handle: HashMap::new(),
+    })
+    .insert_resource(spawnable::ConsumableResource {
+        consumables: from_bytes::<HashMap<spawnable::ConsumableType, spawnable::ConsumableData>>(
+            include_bytes!("../data/consumables.ron"),
+        )
+        .unwrap(),
+        texture_atlas_handle: HashMap::new(),
+    })
+    .insert_resource(
+        from_bytes::<background::BackgroundsResource>(include_bytes!("../data/backgrounds.ron"))
+            .unwrap(),
+    )
+    .insert_resource(AmbientLight {
+        color: Color::WHITE,
+        brightness: 0.1,
+    })
+    .insert_resource(ui::EndGameTransitionResource::new(
+        2.0, 3.0, 2.5, 0.5, 0.5, 30.0,
+    ))
+    .add_event::<collision::SortedCollisionEvent>()
+    .add_event::<run::SpawnFormationEvent>()
+    .add_event::<run::LevelCompletedEvent>()
+    .add_event::<arena::MobReachedBottomGateEvent>()
+    .add_event::<spawnable::SpawnEffectEvent>()
+    .add_event::<spawnable::SpawnConsumableEvent>()
+    .add_event::<spawnable::SpawnBossEvent>()
+    .add_event::<spawnable::SpawnProjectileEvent>()
+    .add_event::<spawnable::SpawnMobEvent>()
+    .add_plugin(AudioPlugin)
+    .add_plugin(EguiPlugin)
+    .add_audio_channel::<BackgroundMusicAudioChannel>()
+    .add_audio_channel::<MenuAudioChannel>()
+    .add_audio_channel::<SoundEffectsAudioChannel>()
+    .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
+        PHYSICS_SCALE,
+    ))
+    .add_startup_system(setup_cameras_system)
+    .add_startup_system(start_background_audio_system)
+    .add_startup_system(set_audio_volume_system)
+    .add_system(ui::bouncing_prompt_system)
+    .add_system(options::toggle_fullscreen_system)
+    .add_system_to_stage(CoreStage::Last, ui::position_stat_bar_label_system);
 
     #[cfg(not(target_arch = "wasm32"))]
     {
@@ -464,6 +462,8 @@ fn setup_game(
             mob_data.texture.dimensions,
             mob_data.texture.cols,
             mob_data.texture.rows,
+            None,
+            None,
         );
 
         // thruster texture
@@ -474,6 +474,8 @@ fn setup_game(
                 thruster_data.texture.dimensions,
                 thruster_data.texture.cols,
                 thruster_data.texture.rows,
+                None,
+                None,
             )))
         } else {
             None
@@ -494,6 +496,8 @@ fn setup_game(
         repeater.repeater_parts.body.texture.dimensions,
         repeater.repeater_parts.body.texture.cols,
         repeater.repeater_parts.body.texture.rows,
+        None,
+        None,
     );
     repeater_texture_atlas_dict.insert(RepeaterPartType::Body, texture_atlases.add(body_atlas));
 
@@ -503,6 +507,8 @@ fn setup_game(
         repeater.repeater_parts.head.texture.dimensions,
         repeater.repeater_parts.head.texture.cols,
         repeater.repeater_parts.head.texture.rows,
+        None,
+        None,
     );
     repeater_texture_atlas_dict.insert(RepeaterPartType::Head, texture_atlases.add(head_atlas));
 
@@ -512,6 +518,8 @@ fn setup_game(
         repeater.repeater_parts.rshould.texture.dimensions,
         repeater.repeater_parts.rshould.texture.cols,
         repeater.repeater_parts.rshould.texture.rows,
+        None,
+        None,
     );
     repeater_texture_atlas_dict.insert(
         RepeaterPartType::RightShoulder,
@@ -524,6 +532,8 @@ fn setup_game(
         repeater.repeater_parts.lshould.texture.dimensions,
         repeater.repeater_parts.lshould.texture.cols,
         repeater.repeater_parts.lshould.texture.rows,
+        None,
+        None,
     );
     repeater_texture_atlas_dict.insert(
         RepeaterPartType::LeftShoulder,
@@ -536,6 +546,8 @@ fn setup_game(
         repeater.repeater_parts.rarm.texture.dimensions,
         repeater.repeater_parts.rarm.texture.cols,
         repeater.repeater_parts.rarm.texture.rows,
+        None,
+        None,
     );
     repeater_texture_atlas_dict.insert(RepeaterPartType::RightArm, texture_atlases.add(rarm_atlas));
 
@@ -545,6 +557,8 @@ fn setup_game(
         repeater.repeater_parts.larm.texture.dimensions,
         repeater.repeater_parts.larm.texture.cols,
         repeater.repeater_parts.larm.texture.rows,
+        None,
+        None,
     );
     repeater_texture_atlas_dict.insert(RepeaterPartType::LeftArm, texture_atlases.add(larm_atlas));
 
@@ -558,6 +572,8 @@ fn setup_game(
             projectile_data.texture.dimensions,
             projectile_data.texture.cols,
             projectile_data.texture.rows,
+            None,
+            None,
         );
 
         // add projectile texture handle to dictionary
@@ -577,6 +593,8 @@ fn setup_game(
             effect_data.texture.dimensions,
             effect_data.texture.cols,
             effect_data.texture.rows,
+            None,
+            None,
         );
 
         // add effect texture handle to dictionary
@@ -593,6 +611,8 @@ fn setup_game(
             consumable_data.texture.dimensions,
             consumable_data.texture.cols,
             consumable_data.texture.rows,
+            None,
+            None,
         );
 
         // add consumable texture handle to dictionary
@@ -641,7 +661,7 @@ pub fn quit_game_system(
 
     for gamepad in gamepads.iter() {
         quit_input |= gamepad_input.just_released(GamepadButton {
-            gamepad: *gamepad,
+            gamepad,
             button_type: GamepadButtonType::Start,
         });
     }

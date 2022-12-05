@@ -19,8 +19,8 @@ pub fn spawn_despawn_gates_system(mut commands: Commands) {
 /// Spawn a despawn gate
 fn spawn_despawn_gate(commands: &mut Commands, position: Vec2, width: f32, height: f32) {
     commands
-        .spawn()
-        .insert_bundle(TransformBundle::from_transform(
+        .spawn_empty()
+        .insert(TransformBundle::from_transform(
             Transform::from_translation(position.extend(0.0)),
         ))
         .insert(Collider::cuboid(width / 2.0, height / 2.0))

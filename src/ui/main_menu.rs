@@ -12,7 +12,7 @@ pub struct BouncingPromptComponent {
 
 pub fn setup_main_menu_system(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
-        .spawn_bundle(NodeBundle {
+        .spawn(NodeBundle {
             style: Style {
                 size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
                 ..Default::default()
@@ -24,7 +24,7 @@ pub fn setup_main_menu_system(mut commands: Commands, asset_server: Res<AssetSer
         .insert(MainMenuUI)
         .with_children(|parent| {
             parent
-                .spawn_bundle(ImageBundle {
+                .spawn(ImageBundle {
                     image: asset_server
                         .load("texture/main_menu_background_54.png")
                         .into(), // not using assetsmanager as we don't load everything on the main menu
@@ -37,7 +37,7 @@ pub fn setup_main_menu_system(mut commands: Commands, asset_server: Res<AssetSer
                 })
                 .with_children(|parent| {
                     parent
-                        .spawn_bundle(ImageBundle {
+                        .spawn(ImageBundle {
                             image: asset_server
                                 .load("texture/start_game_prompt_controller.png")
                                 .into(),
@@ -54,11 +54,11 @@ pub fn setup_main_menu_system(mut commands: Commands, asset_server: Res<AssetSer
                             ..Default::default()
                         })
                         .insert(BouncingPromptComponent {
-                            flash_timer: Timer::from_seconds(2.0, true),
+                            flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
                         });
 
                     parent
-                        .spawn_bundle(ImageBundle {
+                        .spawn(ImageBundle {
                             image: asset_server
                                 .load("texture/exit_game_prompt_controller.png")
                                 .into(),
@@ -75,7 +75,7 @@ pub fn setup_main_menu_system(mut commands: Commands, asset_server: Res<AssetSer
                             ..Default::default()
                         })
                         .insert(BouncingPromptComponent {
-                            flash_timer: Timer::from_seconds(2.0, true),
+                            flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
                         });
                 });
         });

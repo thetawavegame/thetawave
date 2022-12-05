@@ -1,586 +1,588 @@
-{
-	Easy: [
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Enemy(StraferRight)),
-					position: (0.0, 650.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(StraferLeft)),
-					position: (0.0, 600.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Pawn)),
-					position: (0.0, 550.0),
-				),
-			],
-			weight: 1.0,
-			period: 7.0,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Enemy(Pawn)),
-					position: (300.0, 650.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Pawn)),
-					position: (200.0, 600.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Pawn)),
-					position: (-300.0, 650.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Pawn)),
-					position: (-200, 600.0),
-				),
-			],
-			weight: 1.0,
-			period: 7.0,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (0.0, 550.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (100.0, 650.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (50.0, 600.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (-100.0, 650.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (-50, 600.0),
-				),
-			],
-			weight: 1.0,
-			period: 7.0,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Enemy(Pawn)),
-					position: (200.0, 600.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Pawn)),
-					position: (250.0, 650.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Pawn)),
-					position: (-200, 600.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Pawn)),
-					position: (-250.0, 650.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (0.0, 550.0),
-				),
-			],
-			weight: 1.0,
-			period: 7.5,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (180.0, 900.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (-180.0, 900.0),
-				),
-				(
-					spawnable_type: Mob(Ally(Hauler)),
-					position: (200.0, 600.0),
-				),
-				(
-					spawnable_type: Mob(Ally(Hauler)),
-					position: (-200.0, 600.0),
-				),
-			],
-			weight: 0.5,
-			period: 6.0,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Consumable(Money5),
-					position: (0.0, 400.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Missile)),
-					position: (0.0, 500.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Missile)),
-					position: (200.0, 600.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Missile)),
-					position: (-200.0, 600.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Missile)),
-					position: (400.0, 700.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Missile)),
-					position: (-400.0, 700.0),
-				),
-			],
-			weight: 0.5,
-			period: 5.5,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Enemy(StraferRight)),
-					position: (200.0, 500.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(StraferRight)),
-					position: (250.0, 550.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(StraferRight)),
-					position: (300.0, 600.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(StraferRight)),
-					position: (350.0, 650.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(StraferLeft)),
-					position: (-200.0, 525.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(StraferLeft)),
-					position: (-250.0, 575.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(StraferLeft)),
-					position: (-300.0, 625.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(StraferLeft)),
-					position: (-350.0, 675.0),
-				),
-			],
-			weight: 1.0,
-			period: 8.0,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Enemy(MissileLauncher)),
-					position: (200.0, 600.0),
-				),
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (0.0, 500.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(MissileLauncher)),
-					position: (-200.0, 600.0),
-				),
-			],
-			weight: 0.2,
-			period: 6.0,
-		),
-	],
-	Hard: [
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Enemy(StraferRight)),
-					position: (0.0, 650.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(StraferLeft)),
-					position: (0.0, 600.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(MissileLauncher)),
-					position: (0.0, 550.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (100.0, 550.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (-100.0, 550.0),
-				),
-			],
-			weight: 1.0,
-			period: 6.5,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Enemy(Pawn)),
-					position: (400.0, 700.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Pawn)),
-					position: (300.0, 650.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Pawn)),
-					position: (200.0, 600.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Pawn)),
-					position: (-400.0, 700.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Pawn)),
-					position: (-300.0, 650.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Pawn)),
-					position: (-200, 600.0),
-				),
-			],
-			weight: 1.0,
-			period: 6.5,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (0.0, 550.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (200.0, 700.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (150.0, 675.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (100.0, 650.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (50.0, 600.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (-200.0, 700.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (-150.0, 675.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (-100.0, 650.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (-50, 600.0),
-				),
-			],
-			weight: 1.0,
-			period: 8.0,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Enemy(Pawn)),
-					position: (200.0, 600.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (200.0, 500.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Pawn)),
-					position: (-200, 600.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (-200.0, 500.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(MissileLauncher)),
-					position: (0.0, 550.0),
-				),
-			],
-			weight: 1.0,
-			period: 7.5,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (220.0, 900.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (180.0, 900.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (-220.0, 900.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Drone)),
-					position: (-180.0, 900.0),
-				),
-				(
-					spawnable_type: Mob(Ally(Hauler)),
-					position: (200.0, 600.0),
-				),
-				(
-					spawnable_type: Mob(Ally(Hauler)),
-					position: (-200.0, 600.0),
-				),
-			],
-			weight: 0.5,
-			period: 5.5,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Enemy(Pawn)),
-					position: (300.0, 700.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Pawn)),
-					position: (-300.0, 700.0),
-				),
-				(
-					spawnable_type: Consumable(Money5),
-					position: (0.0, 400.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(MissileLauncher)),
-					position: (0.0, 550.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Missile)),
-					position: (400.0, 600.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(Missile)),
-					position: (-400.0, 600.0),
-				),
-			],
-			weight: 0.5,
-			period: 7.0,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Enemy(StraferRight)),
-					position: (200.0, 500.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(StraferRight)),
-					position: (250.0, 550.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(StraferRight)),
-					position: (300.0, 600.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(StraferRight)),
-					position: (350.0, 650.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(StraferRight)),
-					position: (400.0, 700.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(StraferLeft)),
-					position: (-200.0, 525.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(StraferLeft)),
-					position: (-250.0, 575.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(StraferLeft)),
-					position: (-300.0, 625.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(StraferLeft)),
-					position: (-350.0, 675.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(StraferLeft)),
-					position: (-400.0, 725.0),
-				),
-			],
-			weight: 1.0,
-			period: 7.5,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (0.0, 500.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(MissileLauncher)),
-					position: (200.0, 600.0),
-				),
-				(
-					spawnable_type: Mob(Enemy(MissileLauncher)),
-					position: (-200.0, 600.0),
-				),
-			],
-			weight: 0.2,
-			period: 5.5,
-		),
-	],
-	Asteroids: [
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (30.0, 430.0),
-				),
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (260.0, 580.0),
-				),
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (-190.0, 520.0),
-				),
-			],
-			weight: 1.0,
-			period: 2.5,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (90.0, 470.0),
-				),
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (10.0, 490.0),
-				),
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (170.0, 570.0),
-				),
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (-310.0, 560.0),
-				),
-			],
-			weight: 1.0,
-			period: 2.5,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (350.0, 450.0),
-				),
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (-430.0, 530.0),
-				),
-			],
-			weight: 1.0,
-			period: 2.5,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (-290.0, 450.0),
-				),
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (-350.0, 590.0),
-				),
-			],
-			weight: 1.0,
-			period: 2.5,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (350.0, 510.0),
-				),
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (410.0, 540.0),
-				),
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (20.0, 450.0),
-				),
-			],
-			weight: 1.0,
-			period: 2.5,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (70.0, 590.0),
-				),
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (-100.0, 440.0),
-				),
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (20.0, 510.0),
-				),
-			],
-			weight: 1.0,
-			period: 2.5,
-		),
-		(
-			formation_spawnables: [
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (60.0, 440.0),
-				),
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (-430.0, 490.0),
-				),
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (-390.0, 560.0),
-				),
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (430.0, 570.0),
-				),
-				(
-					spawnable_type: Mob(Neutral(MoneyAsteroid)),
-					position: (-210.0, 550.0),
-				),
-			],
-			weight: 1.0,
-			period: 2.5,
-		),
-	]
-}
+(	
+	formation_pools: {
+		Easy: [
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(StraferRight)),
+						position: (0.0, 650.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(StraferLeft)),
+						position: (0.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (0.0, 550.0),
+					),
+				],
+				weight: 1.0,
+				period: 7.0,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (300.0, 650.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (200.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-300.0, 650.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-200, 600.0),
+					),
+				],
+				weight: 1.0,
+				period: 7.0,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (0.0, 550.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (100.0, 650.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (50.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (-100.0, 650.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (-50, 600.0),
+					),
+				],
+				weight: 1.0,
+				period: 7.0,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (200.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (250.0, 650.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-200, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-250.0, 650.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (0.0, 550.0),
+					),
+				],
+				weight: 1.0,
+				period: 7.5,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (180.0, 900.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (-180.0, 900.0),
+					),
+					(
+						spawnable_type: Mob(Ally(Hauler)),
+						position: (200.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Ally(Hauler)),
+						position: (-200.0, 600.0),
+					),
+				],
+				weight: 0.5,
+				period: 6.0,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Consumable(Money5),
+						position: (0.0, 400.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Missile)),
+						position: (0.0, 500.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Missile)),
+						position: (200.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Missile)),
+						position: (-200.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Missile)),
+						position: (400.0, 700.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Missile)),
+						position: (-400.0, 700.0),
+					),
+				],
+				weight: 0.5,
+				period: 5.5,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(StraferRight)),
+						position: (200.0, 500.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(StraferRight)),
+						position: (250.0, 550.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(StraferRight)),
+						position: (300.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(StraferRight)),
+						position: (350.0, 650.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(StraferLeft)),
+						position: (-200.0, 525.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(StraferLeft)),
+						position: (-250.0, 575.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(StraferLeft)),
+						position: (-300.0, 625.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(StraferLeft)),
+						position: (-350.0, 675.0),
+					),
+				],
+				weight: 1.0,
+				period: 8.0,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(MissileLauncher)),
+						position: (200.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (0.0, 500.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(MissileLauncher)),
+						position: (-200.0, 600.0),
+					),
+				],
+				weight: 0.2,
+				period: 6.0,
+			),
+		],
+		Hard: [
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(StraferRight)),
+						position: (0.0, 650.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(StraferLeft)),
+						position: (0.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(MissileLauncher)),
+						position: (0.0, 550.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (100.0, 550.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (-100.0, 550.0),
+					),
+				],
+				weight: 1.0,
+				period: 6.5,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (400.0, 700.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (300.0, 650.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (200.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-400.0, 700.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-300.0, 650.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-200, 600.0),
+					),
+				],
+				weight: 1.0,
+				period: 6.5,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (0.0, 550.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (200.0, 700.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (150.0, 675.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (100.0, 650.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (50.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (-200.0, 700.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (-150.0, 675.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (-100.0, 650.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (-50, 600.0),
+					),
+				],
+				weight: 1.0,
+				period: 8.0,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (200.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (200.0, 500.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-200, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (-200.0, 500.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(MissileLauncher)),
+						position: (0.0, 550.0),
+					),
+				],
+				weight: 1.0,
+				period: 7.5,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (220.0, 900.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (180.0, 900.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (-220.0, 900.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (-180.0, 900.0),
+					),
+					(
+						spawnable_type: Mob(Ally(Hauler)),
+						position: (200.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Ally(Hauler)),
+						position: (-200.0, 600.0),
+					),
+				],
+				weight: 0.5,
+				period: 5.5,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (300.0, 700.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-300.0, 700.0),
+					),
+					(
+						spawnable_type: Consumable(Money5),
+						position: (0.0, 400.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(MissileLauncher)),
+						position: (0.0, 550.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Missile)),
+						position: (400.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Missile)),
+						position: (-400.0, 600.0),
+					),
+				],
+				weight: 0.5,
+				period: 7.0,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(StraferRight)),
+						position: (200.0, 500.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(StraferRight)),
+						position: (250.0, 550.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(StraferRight)),
+						position: (300.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(StraferRight)),
+						position: (350.0, 650.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(StraferRight)),
+						position: (400.0, 700.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(StraferLeft)),
+						position: (-200.0, 525.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(StraferLeft)),
+						position: (-250.0, 575.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(StraferLeft)),
+						position: (-300.0, 625.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(StraferLeft)),
+						position: (-350.0, 675.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(StraferLeft)),
+						position: (-400.0, 725.0),
+					),
+				],
+				weight: 1.0,
+				period: 7.5,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (0.0, 500.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(MissileLauncher)),
+						position: (200.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(MissileLauncher)),
+						position: (-200.0, 600.0),
+					),
+				],
+				weight: 0.2,
+				period: 5.5,
+			),
+		],
+		Asteroids: [
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (30.0, 430.0),
+					),
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (260.0, 580.0),
+					),
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (-190.0, 520.0),
+					),
+				],
+				weight: 1.0,
+				period: 2.5,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (90.0, 470.0),
+					),
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (10.0, 490.0),
+					),
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (170.0, 570.0),
+					),
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (-310.0, 560.0),
+					),
+				],
+				weight: 1.0,
+				period: 2.5,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (350.0, 450.0),
+					),
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (-430.0, 530.0),
+					),
+				],
+				weight: 1.0,
+				period: 2.5,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (-290.0, 450.0),
+					),
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (-350.0, 590.0),
+					),
+				],
+				weight: 1.0,
+				period: 2.5,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (350.0, 510.0),
+					),
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (410.0, 540.0),
+					),
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (20.0, 450.0),
+					),
+				],
+				weight: 1.0,
+				period: 2.5,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (70.0, 590.0),
+					),
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (-100.0, 440.0),
+					),
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (20.0, 510.0),
+					),
+				],
+				weight: 1.0,
+				period: 2.5,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (60.0, 440.0),
+					),
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (-430.0, 490.0),
+					),
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (-390.0, 560.0),
+					),
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (430.0, 570.0),
+					),
+					(
+						spawnable_type: Mob(Neutral(MoneyAsteroid)),
+						position: (-210.0, 550.0),
+					),
+				],
+				weight: 1.0,
+				period: 2.5,
+			),
+		]
+	}
+)

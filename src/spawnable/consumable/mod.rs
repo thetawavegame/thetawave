@@ -90,6 +90,7 @@ pub struct ConsumableData {
 }
 
 /// Consumable resource stores data about all consumables
+#[derive(Resource)]
 pub struct ConsumableResource {
     /// Maps consumable types to data
     pub consumables: HashMap<ConsumableType, ConsumableData>,
@@ -117,7 +118,7 @@ pub fn spawn_consumable(
         consumable_data.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
 
     // Create consumable entity
-    let mut consumable = commands.spawn();
+    let mut consumable = commands.spawn_empty();
 
     // spawn the consumable
     consumable
@@ -126,7 +127,10 @@ pub fn spawn_consumable(
             ..Default::default()
         })
         .insert(AnimationComponent {
-            timer: Timer::from_seconds(consumable_data.texture.frame_duration, true),
+            timer: Timer::from_seconds(
+                consumable_data.texture.frame_duration,
+                TimerMode::Repeating,
+            ),
             direction: consumable_data.texture.animation_direction.clone(),
         })
         .insert(RigidBody::Dynamic)

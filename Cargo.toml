@@ -4,21 +4,21 @@ version = "0.1.7"
 edition = "2021"
 
 [dependencies]
-bevy = "0.8.1"
-bevy_rapier2d = { version = "0.16.2", features = ["simd-stable"] }
-bevy-inspector-egui = "0.12.1"
-bevy_egui = "0.16.1"
-serde = "1.0.127"
-ron = "0.6.4"
-rand = "0.8.4"
-strum = "0.21.0"
-strum_macros = "0.21"
+bevy = "0.9.0"
+bevy_rapier2d = { version = "0.19.0", features = ["simd-stable"] }
+bevy-inspector-egui = "0.14.0"
+bevy_egui = "0.17.1"
+serde = "1.0.147"
+ron = "0.8.0"
+rand = "0.8.5"
+strum = "0.24.1"
+strum_macros = "0.24.3"
 console_error_panic_hook = "0.1.7"
-bevy_kira_audio = { version = "0.12.0", features = ["mp3", "wav"] }
+bevy_kira_audio = { version = "0.13.0", features = ["mp3", "wav"] }
 
 # bevy_framespace currently does not support wasm
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-bevy_framepace = "0.7.0"
+bevy_framepace = "0.9.1"
 
 # optimize dev packages as we don't need them in debug version
 [profile.dev.package."*"]

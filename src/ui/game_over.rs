@@ -11,6 +11,7 @@ pub struct GameFadeComponent;
 #[derive(Component)]
 pub struct GameOverFadeComponent;
 
+#[derive(Resource)]
 pub struct EndGameTransitionResource {
     pub fade_out_timer: Timer,
     pub fade_in_timer: Timer,
@@ -32,8 +33,8 @@ impl EndGameTransitionResource {
         max_fps: f32,
     ) -> Self {
         Self {
-            fade_out_timer: Timer::from_seconds(fade_out_seconds, false),
-            fade_in_timer: Timer::from_seconds(fade_in_seconds, false),
+            fade_out_timer: Timer::from_seconds(fade_out_seconds, TimerMode::Once),
+            fade_in_timer: Timer::from_seconds(fade_in_seconds, TimerMode::Once),
             start: false,
             max_fps,
             frame_slowdown_speed,
@@ -124,7 +125,7 @@ pub fn fade_out_system(
 pub fn game_over_fade_in_system(
     time: Res<Time>,
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
-    mut game_over_fade_query: Query<&mut UiColor, With<GameOverFadeComponent>>,
+    mut game_over_fade_query: Query<&mut BackgroundColor, With<GameOverFadeComponent>>,
 ) {
     end_game_trans_resource.fade_in_timer.tick(time.delta());
 
@@ -145,12 +146,12 @@ pub fn game_over_fade_in_system(
 
 pub fn setup_game_over_system(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
-        .spawn_bundle(NodeBundle {
+        .spawn(NodeBundle {
             style: Style {
                 size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
                 ..Default::default()
             },
-            color: Color::rgba(0.0, 0.0, 0.0, 0.0).into(),
+            background_color: Color::rgba(0.0, 0.0, 0.0, 0.0).into(),
             ..Default::default()
         })
         .insert(AppStateComponent(AppStates::GameOver))
@@ -166,13 +167,13 @@ pub fn setup_game_over_system(mut commands: Commands, asset_server: Res<AssetSer
                         align_items: AlignItems::Center,
                         ..Default::default()
                     },
-                    color: Color::rgba(1.0, 1.0, 1.0, 0.0).into(),
+                    background_color: Color::rgba(1.0, 1.0, 1.0, 0.0).into(),
                     ..default()
                 })
                 .insert(GameOverFadeComponent)
                 .with_children(|parent| {
                     parent
-                        .spawn_bundle(ImageBundle {
+                        .spawn(ImageBundle {
                             image: asset_server
                                 .load("texture/restart_game_prompt_controller.png")
                                 .into(),
@@ -189,10 +190,10 @@ pub fn setup_game_over_system(mut commands: Commands, asset_server: Res<AssetSer
                             ..Default::default()
                         })
                         .insert(BouncingPromptComponent {
-                            flash_timer: Timer::from_seconds(2.0, true),
+                            flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
                         });
                     parent
-                        .spawn_bundle(ImageBundle {
+                        .spawn(ImageBundle {
                             image: asset_server
                                 .load("texture/exit_game_prompt_controller.png")
                                 .into(),
@@ -209,7 +210,7 @@ pub fn setup_game_over_system(mut commands: Commands, asset_server: Res<AssetSer
                             ..Default::default()
                         })
                         .insert(BouncingPromptComponent {
-                            flash_timer: Timer::from_seconds(2.0, true),
+                            flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
                         });
                 });
         });

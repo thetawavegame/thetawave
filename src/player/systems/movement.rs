@@ -20,19 +20,19 @@ pub fn player_movement_system(
 
         for gamepad in gamepads.iter() {
             up |= gamepad_input.pressed(GamepadButton {
-                gamepad: *gamepad,
+                gamepad,
                 button_type: GamepadButtonType::DPadUp,
             });
             down |= gamepad_input.pressed(GamepadButton {
-                gamepad: *gamepad,
+                gamepad,
                 button_type: GamepadButtonType::DPadDown,
             });
             left |= gamepad_input.pressed(GamepadButton {
-                gamepad: *gamepad,
+                gamepad,
                 button_type: GamepadButtonType::DPadLeft,
             });
             right |= gamepad_input.pressed(GamepadButton {
-                gamepad: *gamepad,
+                gamepad,
                 button_type: GamepadButtonType::DPadRight,
             });
         }

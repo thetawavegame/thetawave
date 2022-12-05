@@ -17,7 +17,7 @@ use super::formation;
 pub type LevelsResourceData = HashMap<LevelType, LevelData>;
 
 /// Resource for storing defined predefined levels
-#[derive(Clone)]
+#[derive(Clone, Resource)]
 pub struct LevelsResource {
     /// Leveltypes maped to levels
     pub levels: HashMap<LevelType, Level>,
@@ -155,7 +155,7 @@ impl Level {
                         .just_finished()
                     {
                         // get weights of each of the formations in the formation pool
-                        let weights = formation_pools[&event_formation_pool]
+                        let weights = formation_pools.formation_pools[&event_formation_pool]
                             .iter()
                             .map(|x| x.weight)
                             .collect();
@@ -168,12 +168,15 @@ impl Level {
                             .as_mut()
                             .unwrap()
                             .set_duration(Duration::from_secs_f32(
-                                formation_pools[&event_formation_pool][random_idx].period,
+                                formation_pools.formation_pools[&event_formation_pool][random_idx]
+                                    .period,
                             ));
 
                         // spawn the spawnables from the selected formation
                         spawn_formation.send(formation::SpawnFormationEvent {
-                            formation: formation_pools[&event_formation_pool][random_idx].clone(),
+                            formation: formation_pools.formation_pools[&event_formation_pool]
+                                [random_idx]
+                                .clone(),
                         });
                     }
                 }
@@ -238,19 +241,20 @@ impl Level {
                     initial_delay,
                     formation_pool: _,
                 } => {
-                    self.spawn_timer = Some(Timer::from_seconds(initial_delay, true));
-                    self.phase_timer = Some(Timer::from_seconds(time, false));
+                    self.spawn_timer =
+                        Some(Timer::from_seconds(initial_delay, TimerMode::Repeating));
+                    self.phase_timer = Some(Timer::from_seconds(time, TimerMode::Once));
                 }
                 LevelPhaseType::Break { time } => {
                     self.spawn_timer = None;
-                    self.phase_timer = Some(Timer::from_seconds(time, false));
+                    self.phase_timer = Some(Timer::from_seconds(time, TimerMode::Once));
                 }
                 LevelPhaseType::Boss {
                     boss_type: _,
                     initial_delay,
                     is_defeated: _,
                 } => {
-                    self.spawn_timer = Some(Timer::from_seconds(initial_delay, false));
+                    self.spawn_timer = Some(Timer::from_seconds(initial_delay, TimerMode::Once));
                     self.phase_timer = None;
                 }
             }
@@ -341,19 +345,19 @@ pub fn setup_first_level(mut run_resource: ResMut<super::RunResource>) {
                 initial_delay,
                 formation_pool: _,
             } => {
-                level.spawn_timer = Some(Timer::from_seconds(*initial_delay, true));
-                level.phase_timer = Some(Timer::from_seconds(*time, false));
+                level.spawn_timer = Some(Timer::from_seconds(*initial_delay, TimerMode::Repeating));
+                level.phase_timer = Some(Timer::from_seconds(*time, TimerMode::Once));
             }
             LevelPhaseType::Break { time } => {
                 level.spawn_timer = None;
-                level.phase_timer = Some(Timer::from_seconds(*time, false));
+                level.phase_timer = Some(Timer::from_seconds(*time, TimerMode::Once));
             }
             LevelPhaseType::Boss {
                 boss_type: _,
                 initial_delay,
                 is_defeated: _,
             } => {
-                level.spawn_timer = Some(Timer::from_seconds(*initial_delay, false));
+                level.spawn_timer = Some(Timer::from_seconds(*initial_delay, TimerMode::Once));
                 level.phase_timer = None;
             }
         }

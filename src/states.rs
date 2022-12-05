@@ -30,7 +30,7 @@ pub fn open_pause_menu_system(
 
     for gamepad in gamepads.iter() {
         esc |= gamepad_input.just_released(GamepadButton {
-            gamepad: *gamepad,
+            gamepad,
             button_type: GamepadButtonType::Start,
         });
     }
@@ -43,7 +43,7 @@ pub fn open_pause_menu_system(
         rapier_config.query_pipeline_active = false;
         for gamepad in gamepads.iter() {
             gamepad_input.reset(GamepadButton {
-                gamepad: *gamepad,
+                gamepad,
                 button_type: GamepadButtonType::Start,
             });
         }
@@ -63,7 +63,7 @@ pub fn close_pause_menu_system(
 
     for gamepad in gamepads.iter() {
         esc |= gamepad_input.just_released(GamepadButton {
-            gamepad: *gamepad,
+            gamepad,
             button_type: GamepadButtonType::Start,
         });
     }
@@ -76,7 +76,7 @@ pub fn close_pause_menu_system(
         rapier_config.query_pipeline_active = true;
         for gamepad in gamepads.iter() {
             gamepad_input.reset(GamepadButton {
-                gamepad: *gamepad,
+                gamepad,
                 button_type: GamepadButtonType::Start,
             });
         }
@@ -96,7 +96,7 @@ pub fn start_game_system(
 
     for gamepad in gamepads.iter() {
         enter |= gamepad_input.just_released(GamepadButton {
-            gamepad: *gamepad,
+            gamepad,
             button_type: GamepadButtonType::East,
         });
     }
@@ -108,7 +108,7 @@ pub fn start_game_system(
         keyboard_input.reset(KeyCode::Space);
         for gamepad in gamepads.iter() {
             gamepad_input.reset(GamepadButton {
-                gamepad: *gamepad,
+                gamepad,
                 button_type: GamepadButtonType::East,
             });
         }

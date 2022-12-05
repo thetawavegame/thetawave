@@ -23,6 +23,7 @@ pub use self::{
 /// Right now just set to one level
 pub type RunResourceData = level::LevelType;
 
+#[derive(Resource)]
 pub struct RunResource {
     /// Type of the level
     pub level_type: LevelType,
@@ -96,7 +97,7 @@ pub fn reset_run_system(
 
     for gamepad in gamepads.iter() {
         reset |= gamepad_input.just_released(GamepadButton {
-            gamepad: *gamepad,
+            gamepad,
             button_type: GamepadButtonType::East,
         });
     }
@@ -113,7 +114,7 @@ pub fn reset_run_system(
         keyboard_input.reset(KeyCode::R);
         for gamepad in gamepads.iter() {
             gamepad_input.reset(GamepadButton {
-                gamepad: *gamepad,
+                gamepad,
                 button_type: GamepadButtonType::East,
             });
         }

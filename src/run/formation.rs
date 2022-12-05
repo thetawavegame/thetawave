@@ -5,7 +5,10 @@ use std::collections::HashMap;
 use crate::spawnable::{self, SpawnConsumableEvent, SpawnMobEvent};
 
 /// Resource for storing collections of formations of spawnables
-pub type FormationPoolsResource = HashMap<FormationPoolType, FormationPool>;
+#[derive(Resource, Deserialize)]
+pub struct FormationPoolsResource {
+    pub formation_pools: HashMap<FormationPoolType, FormationPool>,
+}
 
 /// Collection of formations that can be chosen to be spawned
 pub type FormationPool = Vec<Formation>;

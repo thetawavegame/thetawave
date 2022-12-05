@@ -59,6 +59,7 @@ pub struct ProjectileData {
 }
 
 /// Stores data about mob entities
+#[derive(Resource)]
 pub struct ProjectileResource {
     /// Projectile types mapped to projectile data
     pub projectiles: HashMap<ProjectileType, ProjectileData>,
@@ -111,7 +112,7 @@ pub fn spawn_projectile(
         projectile_data.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
 
     // create projectile entity
-    let mut projectile = commands.spawn();
+    let mut projectile = commands.spawn_empty();
 
     let mut projectile_behaviors = projectile_data.projectile_behaviors.clone();
     projectile_behaviors.push(ProjectileBehavior::TimedDespawn {
@@ -120,12 +121,15 @@ pub fn spawn_projectile(
     });
 
     projectile
-        .insert_bundle(SpriteSheetBundle {
+        .insert(SpriteSheetBundle {
             texture_atlas: texture_atlas_handle,
             ..Default::default()
         })
         .insert(AnimationComponent {
-            timer: Timer::from_seconds(projectile_data.texture.frame_duration, true),
+            timer: Timer::from_seconds(
+                projectile_data.texture.frame_duration,
+                TimerMode::Repeating,
+            ),
             direction: projectile_data.texture.animation_direction.clone(),
         })
         .insert(RigidBody::Dynamic)

@@ -90,7 +90,8 @@ pub fn mob_execute_behavior_system(
             match behavior {
                 MobBehavior::PeriodicFire(data) => {
                     if mob_component.weapon_timer.is_none() {
-                        mob_component.weapon_timer = Some(Timer::from_seconds(data.period, true));
+                        mob_component.weapon_timer =
+                            Some(Timer::from_seconds(data.period, TimerMode::Repeating));
                     } else if let Some(timer) = &mut mob_component.weapon_timer {
                         timer.tick(time.delta());
                         if timer.just_finished() {
@@ -129,7 +130,7 @@ pub fn mob_execute_behavior_system(
                     // otherwise tick timer and spawn mob on completion
                     if mob_component.mob_spawn_timer.is_none() {
                         mob_component.mob_spawn_timer =
-                            Some(Timer::from_seconds(data.period, true));
+                            Some(Timer::from_seconds(data.period, TimerMode::Repeating));
                     } else if let Some(timer) = &mut mob_component.mob_spawn_timer {
                         timer.tick(time.delta());
                         if timer.just_finished() {

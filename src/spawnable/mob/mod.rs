@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
 use rand::{thread_rng, Rng};
 use serde::Deserialize;
@@ -119,6 +120,7 @@ pub struct ThrusterData {
 }
 
 /// Stores data about mob entities
+#[derive(Resource)]
 pub struct MobsResource {
     /// Mob types mapped to mob data
     pub mobs: HashMap<MobType, MobData>,
@@ -144,9 +146,9 @@ pub fn spawn_mob(
     let collider_size_hy = mob_data.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
 
     // create mob entity
-    let mut mob = commands.spawn();
+    let mut mob = commands.spawn_empty();
 
-    mob.insert_bundle(SpriteSheetBundle {
+    mob.insert(SpriteSheetBundle {
         texture_atlas: texture_atlas_handle,
         transform: Transform {
             translation: position.extend(mob_data.z_level),
@@ -160,7 +162,7 @@ pub fn spawn_mob(
         ..Default::default()
     })
     .insert(AnimationComponent {
-        timer: Timer::from_seconds(mob_data.texture.frame_duration, true),
+        timer: Timer::from_seconds(mob_data.texture.frame_duration, TimerMode::Repeating),
         direction: mob_data.texture.animation_direction.clone(),
     })
     .insert(RigidBody::Dynamic)
@@ -180,8 +182,8 @@ pub fn spawn_mob(
         combine_rule: CoefficientCombineRule::Max,
     })
     .insert(CollisionGroups {
-        memberships: SPAWNABLE_COL_GROUP_MEMBERSHIP,
-        filters: u32::MAX ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
+        memberships: SPAWNABLE_COL_GROUP_MEMBERSHIP.into(),
+        filters: Group::ALL ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
     })
     .insert(MobComponent {
         mob_type: mob_data.mob_type.clone(),
@@ -218,13 +220,16 @@ pub fn spawn_mob(
 
         mob.with_children(|parent| {
             parent
-                .spawn_bundle(SpriteSheetBundle {
+                .spawn(SpriteSheetBundle {
                     texture_atlas: texture_atlas_handle,
                     transform: Transform::from_xyz(0.0, thruster.y_offset, 0.0),
                     ..Default::default()
                 })
                 .insert(AnimationComponent {
-                    timer: Timer::from_seconds(thruster.texture.frame_duration, true),
+                    timer: Timer::from_seconds(
+                        thruster.texture.frame_duration,
+                        TimerMode::Repeating,
+                    ),
                     direction: thruster.texture.animation_direction.clone(),
                 })
                 .insert(Name::new("Thruster"));

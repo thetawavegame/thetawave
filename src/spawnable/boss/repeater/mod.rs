@@ -1,8 +1,8 @@
-use std::collections::HashMap;
-
 use bevy::prelude::*;
+use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::{na::Translation, prelude::*};
 use rand::{thread_rng, Rng};
+use std::collections::HashMap;
 
 use serde::Deserialize;
 use strum_macros::Display;
@@ -38,6 +38,7 @@ pub struct RepeaterPartComponent;
 #[derive(Component)]
 pub struct RepeaterCoreComponent;
 
+#[derive(Resource)]
 pub struct RepeaterResource {
     pub repeater_parts: RepeaterPartsData,
     pub texture_atlas_handle: HashMap<RepeaterPartType, Handle<TextureAtlas>>,
@@ -199,10 +200,10 @@ pub fn spawn_repeater_boss(
 
     // create core entity
     let repeater_core = commands
-        .spawn()
+        .spawn_empty()
         .insert(RepeaterCoreComponent)
         .insert(RigidBody::Dynamic)
-        .insert_bundle(TransformBundle {
+        .insert(TransformBundle {
             local: Transform {
                 translation: Vec3::new(position.x, position.y, 0.0),
                 ..Default::default()
@@ -228,12 +229,12 @@ pub fn spawn_repeater_boss(
         .with_children(|parent| {
             // head
             parent
-                .spawn()
+                .spawn_empty()
                 .insert(RepeaterPartComponent)
                 .insert(BossPartComponent {
                     health: head_data.health.clone(),
                 })
-                .insert_bundle(SpriteSheetBundle {
+                .insert(SpriteSheetBundle {
                     texture_atlas: head_texture_atlas_handle,
                     transform: Transform {
                         //translation: position.extend(head_data.z_level),
@@ -248,7 +249,10 @@ pub fn spawn_repeater_boss(
                     ..Default::default()
                 })
                 .insert(AnimationComponent {
-                    timer: Timer::from_seconds(head_data.texture.frame_duration, true),
+                    timer: Timer::from_seconds(
+                        head_data.texture.frame_duration,
+                        TimerMode::Repeating,
+                    ),
                     direction: head_data.texture.animation_direction.clone(),
                 })
                 .insert(Collider::cuboid(
@@ -272,19 +276,19 @@ pub fn spawn_repeater_boss(
                 })
                 .insert(CollisionGroups {
                     memberships: SPAWNABLE_COL_GROUP_MEMBERSHIP,
-                    filters: u32::MAX ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
+                    filters: Group::ALL ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
                 })
                 .insert(ActiveEvents::COLLISION_EVENTS)
                 .insert(Name::new(head_data.boss_part_type.to_string()));
 
             // body
             parent
-                .spawn()
+                .spawn_empty()
                 .insert(RepeaterPartComponent)
                 .insert(BossPartComponent {
                     health: body_data.health.clone(),
                 })
-                .insert_bundle(SpriteSheetBundle {
+                .insert(SpriteSheetBundle {
                     texture_atlas: body_texture_atlas_handle,
                     transform: Transform {
                         //translation: position.extend(head_data.z_level),
@@ -299,7 +303,10 @@ pub fn spawn_repeater_boss(
                     ..Default::default()
                 })
                 .insert(AnimationComponent {
-                    timer: Timer::from_seconds(body_data.texture.frame_duration, true),
+                    timer: Timer::from_seconds(
+                        body_data.texture.frame_duration,
+                        TimerMode::Repeating,
+                    ),
                     direction: body_data.texture.animation_direction.clone(),
                 })
                 .insert(Collider::cuboid(
@@ -323,7 +330,7 @@ pub fn spawn_repeater_boss(
                 })
                 .insert(CollisionGroups {
                     memberships: SPAWNABLE_COL_GROUP_MEMBERSHIP,
-                    filters: u32::MAX ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
+                    filters: Group::ALL ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
                 })
                 .insert(ActiveEvents::COLLISION_EVENTS)
                 .insert(Name::new(body_data.boss_part_type.to_string()));
@@ -333,12 +340,12 @@ pub fn spawn_repeater_boss(
     //right shoulder
 
     let upper_right_arm = commands
-        .spawn()
+        .spawn_empty()
         .insert(RepeaterPartComponent)
         .insert(RigidBody::Dynamic)
         .insert(AppStateComponent(AppStates::Game))
         .insert(ImpulseJoint::new(repeater_core, right_shoulder_joint))
-        .insert_bundle(SpriteSheetBundle {
+        .insert(SpriteSheetBundle {
             texture_atlas: rshould_texture_atlas_handle,
             transform: Transform {
                 //translation: position.extend(head_data.z_level),
@@ -353,20 +360,23 @@ pub fn spawn_repeater_boss(
             ..Default::default()
         })
         .insert(AnimationComponent {
-            timer: Timer::from_seconds(rshould_data.texture.frame_duration, true),
+            timer: Timer::from_seconds(rshould_data.texture.frame_duration, TimerMode::Repeating),
             direction: rshould_data.texture.animation_direction.clone(),
         })
-        .insert(AxesLockedTimerComponent(Timer::from_seconds(2.0, false)))
+        .insert(AxesLockedTimerComponent(Timer::from_seconds(
+            2.0,
+            TimerMode::Once,
+        )))
         .insert(LockedAxes::ROTATION_LOCKED)
         .insert(Name::new(rshould_data.boss_part_type.to_string()))
         .with_children(|parent| {
             parent
-                .spawn()
+                .spawn_empty()
                 .insert(Collider::cuboid(
                     rshould_collider_size_hx,
                     rshould_collider_size_hy,
                 ))
-                .insert_bundle(TransformBundle {
+                .insert(TransformBundle {
                     local: Transform {
                         rotation: Quat::from_rotation_z(0.78),
                         translation: Vec3::new(10.0, 0.0, 0.0),
@@ -385,7 +395,7 @@ pub fn spawn_repeater_boss(
                 })
                 .insert(CollisionGroups {
                     memberships: SPAWNABLE_COL_GROUP_MEMBERSHIP,
-                    filters: u32::MAX ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
+                    filters: Group::ALL ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
                 })
                 .insert(SpawnableComponent {
                     spawnable_type: SpawnableType::BossPart(rshould_data.boss_part_type.clone()),
@@ -402,12 +412,12 @@ pub fn spawn_repeater_boss(
 
     // right arm
     commands
-        .spawn()
+        .spawn_empty()
         .insert(RepeaterPartComponent)
         .insert(RigidBody::Dynamic)
         .insert(AppStateComponent(AppStates::Game))
         .insert(ImpulseJoint::new(upper_right_arm, right_elbow_joint))
-        .insert_bundle(SpriteSheetBundle {
+        .insert(SpriteSheetBundle {
             texture_atlas: rarm_texture_atlas_handle,
             transform: Transform {
                 //translation: position.extend(head_data.z_level),
@@ -422,20 +432,23 @@ pub fn spawn_repeater_boss(
             ..Default::default()
         })
         .insert(AnimationComponent {
-            timer: Timer::from_seconds(rarm_data.texture.frame_duration, true),
+            timer: Timer::from_seconds(rarm_data.texture.frame_duration, TimerMode::Repeating),
             direction: rarm_data.texture.animation_direction.clone(),
         })
-        .insert(AxesLockedTimerComponent(Timer::from_seconds(2.0, false)))
+        .insert(AxesLockedTimerComponent(Timer::from_seconds(
+            2.0,
+            TimerMode::Once,
+        )))
         .insert(LockedAxes::ROTATION_LOCKED)
         .insert(Name::new(rarm_data.boss_part_type.to_string()))
         .with_children(|parent| {
             parent
-                .spawn()
+                .spawn_empty()
                 .insert(Collider::cuboid(
                     rarm_collider_size_hx,
                     rarm_collider_size_hy,
                 ))
-                .insert_bundle(TransformBundle {
+                .insert(TransformBundle {
                     local: Transform {
                         rotation: Quat::from_rotation_z(0.3),
                         translation: Vec3::new(53.0, 37.0, 0.0),
@@ -454,7 +467,7 @@ pub fn spawn_repeater_boss(
                 })
                 .insert(CollisionGroups {
                     memberships: SPAWNABLE_COL_GROUP_MEMBERSHIP,
-                    filters: u32::MAX ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
+                    filters: Group::ALL ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
                 })
                 .insert(SpawnableComponent {
                     spawnable_type: SpawnableType::BossPart(rarm_data.boss_part_type.clone()),
@@ -471,12 +484,12 @@ pub fn spawn_repeater_boss(
     //left shoulder
 
     let upper_left_arm = commands
-        .spawn()
+        .spawn_empty()
         .insert(RepeaterPartComponent)
         .insert(RigidBody::Dynamic)
         .insert(AppStateComponent(AppStates::Game))
         .insert(ImpulseJoint::new(repeater_core, left_shoulder_joint))
-        .insert_bundle(SpriteSheetBundle {
+        .insert(SpriteSheetBundle {
             texture_atlas: lshould_texture_atlas_handle,
             transform: Transform {
                 //translation: position.extend(head_data.z_level),
@@ -491,20 +504,23 @@ pub fn spawn_repeater_boss(
             ..Default::default()
         })
         .insert(AnimationComponent {
-            timer: Timer::from_seconds(lshould_data.texture.frame_duration, true),
+            timer: Timer::from_seconds(lshould_data.texture.frame_duration, TimerMode::Repeating),
             direction: lshould_data.texture.animation_direction.clone(),
         })
-        .insert(AxesLockedTimerComponent(Timer::from_seconds(2.0, false)))
+        .insert(AxesLockedTimerComponent(Timer::from_seconds(
+            2.0,
+            TimerMode::Once,
+        )))
         .insert(LockedAxes::ROTATION_LOCKED)
         .insert(Name::new(lshould_data.boss_part_type.to_string()))
         .with_children(|parent| {
             parent
-                .spawn()
+                .spawn_empty()
                 .insert(Collider::cuboid(
                     lshould_collider_size_hx,
                     lshould_collider_size_hy,
                 ))
-                .insert_bundle(TransformBundle {
+                .insert(TransformBundle {
                     local: Transform {
                         rotation: Quat::from_rotation_z(-0.78),
                         translation: Vec3::new(-10.0, 0.0, 0.0),
@@ -523,7 +539,7 @@ pub fn spawn_repeater_boss(
                 })
                 .insert(CollisionGroups {
                     memberships: SPAWNABLE_COL_GROUP_MEMBERSHIP,
-                    filters: u32::MAX ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
+                    filters: Group::ALL ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
                 })
                 .insert(SpawnableComponent {
                     spawnable_type: SpawnableType::BossPart(lshould_data.boss_part_type.clone()),
@@ -540,12 +556,12 @@ pub fn spawn_repeater_boss(
 
     // left arm
     commands
-        .spawn()
+        .spawn_empty()
         .insert(RepeaterPartComponent)
         .insert(RigidBody::Dynamic)
         .insert(AppStateComponent(AppStates::Game))
         .insert(ImpulseJoint::new(upper_left_arm, left_elbow_joint))
-        .insert_bundle(SpriteSheetBundle {
+        .insert(SpriteSheetBundle {
             texture_atlas: larm_texture_atlas_handle,
             transform: Transform {
                 //translation: position.extend(head_data.z_level),
@@ -560,20 +576,23 @@ pub fn spawn_repeater_boss(
             ..Default::default()
         })
         .insert(AnimationComponent {
-            timer: Timer::from_seconds(larm_data.texture.frame_duration, true),
+            timer: Timer::from_seconds(larm_data.texture.frame_duration, TimerMode::Repeating),
             direction: larm_data.texture.animation_direction.clone(),
         })
-        .insert(AxesLockedTimerComponent(Timer::from_seconds(2.0, false)))
+        .insert(AxesLockedTimerComponent(Timer::from_seconds(
+            2.0,
+            TimerMode::Once,
+        )))
         .insert(LockedAxes::ROTATION_LOCKED)
         .insert(Name::new(larm_data.boss_part_type.to_string()))
         .with_children(|parent| {
             parent
-                .spawn()
+                .spawn_empty()
                 .insert(Collider::cuboid(
                     larm_collider_size_hx,
                     larm_collider_size_hy,
                 ))
-                .insert_bundle(TransformBundle {
+                .insert(TransformBundle {
                     local: Transform {
                         rotation: Quat::from_rotation_z(-0.3),
                         translation: Vec3::new(-53.0, 37.0, 0.0),
@@ -592,7 +611,7 @@ pub fn spawn_repeater_boss(
                 })
                 .insert(CollisionGroups {
                     memberships: SPAWNABLE_COL_GROUP_MEMBERSHIP,
-                    filters: u32::MAX ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
+                    filters: Group::ALL ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
                 })
                 .insert(SpawnableComponent {
                     spawnable_type: SpawnableType::BossPart(larm_data.boss_part_type.clone()),
