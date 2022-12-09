@@ -20,8 +20,8 @@ pub struct Character {
     pub collider_dimensions: Vec2,
     /// Density of the collider (mass of collider is proportional to its size)
     pub collider_density: f32,
-    /// Sprite sheet path
-    pub sprite_path: String,
+    /// Character type
+    pub character_type: CharacterType,
     /// Projectile type
     pub projectile_type: ProjectileType,
     /// Time until fired projectile despawns
@@ -44,6 +44,11 @@ pub struct Character {
     pub attraction_acceleration: f32,
     /// Amount of money character has collected
     pub money: usize,
+}
+
+#[derive(Deserialize)]
+pub enum CharacterType {
+    Juggernaut,
 }
 
 /// Manages all characters

@@ -4,10 +4,15 @@ version = "0.1.7"
 edition = "2021"
 
 [dependencies]
-bevy = "0.9.0"
+bevy = "0.9.1"
 bevy_rapier2d = { version = "0.19.0", features = ["simd-stable"] }
 bevy-inspector-egui = "0.14.0"
 bevy_egui = "0.17.1"
+bevy_asset_loader = { version = "0.14.1", features = [
+    "2d",
+    "3d",
+    "standard_dynamic_assets",
+] }
 serde = "1.0.147"
 ron = "0.8.0"
 rand = "0.8.5"

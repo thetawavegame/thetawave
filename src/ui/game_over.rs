@@ -158,7 +158,7 @@ pub fn setup_game_over_system(mut commands: Commands, asset_server: Res<AssetSer
         .insert(GameOverUI)
         .with_children(|parent| {
             parent
-                .spawn_bundle(ImageBundle {
+                .spawn(ImageBundle {
                     image: asset_server
                         .load("texture/game_over_background_54.png")
                         .into(), // not using assetsmanager as we don't load everything on the main menu

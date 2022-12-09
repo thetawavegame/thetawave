@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 use bevy_rapier2d::geometry::Group;
-use bevy_rapier2d::{na::Translation, prelude::*};
-use rand::{thread_rng, Rng};
+use bevy_rapier2d::prelude::*;
 use std::collections::HashMap;
 
 use serde::Deserialize;
@@ -23,14 +22,13 @@ use crate::{
     game::GameParametersResource,
     misc::Health,
     spawnable::{
-        boss::BossPartComponent, BossPartType, EnemyType, MobType, SpawnableBehavior,
-        SpawnableComponent, SpawnableType,
+        boss::BossPartComponent, BossPartType, SpawnableBehavior, SpawnableComponent, SpawnableType,
     },
     states::{AppStateComponent, AppStates},
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 
-use super::{BossType, MobComponent, MobsResource};
+use super::BossType;
 
 #[derive(Component)]
 pub struct RepeaterPartComponent;

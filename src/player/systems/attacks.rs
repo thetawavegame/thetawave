@@ -5,9 +5,9 @@ use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 use crate::{
+    audio,
     player::PlayerComponent,
     spawnable::{InitialMotion, SpawnProjectileEvent},
-    SoundEffectsAudioChannel,
 };
 
 // TODO: remove from game
@@ -29,7 +29,7 @@ pub fn player_fire_weapon_system(
     time: Res<Time>,
     mut spawn_projectile: EventWriter<SpawnProjectileEvent>,
     asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
+    audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
 ) {
     for (mut player_component, rb_vels, transform) in player_query.iter_mut() {
         // get input for firing weapons

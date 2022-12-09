@@ -1,10 +1,10 @@
 use crate::{
+    audio,
     collision::SortedCollisionEvent,
     spawnable::{
         BossPartComponent, EffectType, Faction, MobComponent, PlayerComponent, ProjectileType,
         SpawnEffectEvent, SpawnableComponent,
     },
-    SoundEffectsAudioChannel,
 };
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
@@ -38,7 +38,7 @@ pub fn projectile_execute_behavior_system(
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     time: Res<Time>,
     asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
+    audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
 ) {
     // Put all collision events in a vec so they can be read more than once
     let mut collision_events_vec = vec![];
@@ -122,7 +122,7 @@ fn explode_on_impact(
     mob_query: &mut Query<(Entity, &mut MobComponent)>,
     boss_part_query: &mut Query<(Entity, &mut BossPartComponent)>,
     asset_server: &AssetServer,
-    audio_channel: &AudioChannel<SoundEffectsAudioChannel>,
+    audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {

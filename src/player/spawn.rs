@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 use crate::{
+    assets,
     game::GameParametersResource,
     player::{CharactersResource, PlayerComponent},
     states::{AppStateComponent, AppStates},
@@ -11,8 +12,8 @@ use crate::{
 pub fn spawn_player_system(
     mut commands: Commands,
     characters: Res<CharactersResource>,
-    asset_server: Res<AssetServer>,
     game_parameters: Res<GameParametersResource>,
+    player_assets: Res<assets::PlayerAssets>,
 ) {
     // TODO: get chosen character from a character selector when implemented
     // choose a character
@@ -26,7 +27,9 @@ pub fn spawn_player_system(
     commands
         .spawn_empty()
         .insert(SpriteBundle {
-            texture: asset_server.load(format!("texture/{}", character.sprite_path).as_str()),
+            texture: match &character.character_type {
+                Juggernaut => player_assets.juggernaut.clone(),
+            },
             ..Default::default()
         })
         .insert(RigidBody::Dynamic)

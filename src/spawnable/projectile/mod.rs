@@ -5,7 +5,8 @@ use serde::Deserialize;
 use std::{collections::HashMap, string::ToString};
 
 use crate::{
-    animation::{AnimationComponent, TextureData},
+    animation::{AnimationComponent, AnimationDirection, TextureData},
+    assets::ProjectileAssets,
     game::GameParametersResource,
     spawnable::InitialMotion,
     spawnable::{ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType},
@@ -52,8 +53,9 @@ pub struct ProjectileData {
     pub projectile_behaviors: Vec<ProjectileBehavior>,
     /// Dimensions of the projectile's hitbox
     pub collider_dimensions: Vec2,
-    /// Texture
-    pub texture: TextureData,
+    /// Animation (currently loops single animation in specified direction)
+    pub animation: AnimationDirection,
+    pub frame_duration: f32,
     /// Z level of transform of projectile
     pub z_level: f32,
 }
@@ -63,8 +65,6 @@ pub struct ProjectileData {
 pub struct ProjectileResource {
     /// Projectile types mapped to projectile data
     pub projectiles: HashMap<ProjectileType, ProjectileData>,
-    /// Mob types mapped to their texture and optional thruster texture
-    pub texture_atlas_handle: HashMap<ProjectileType, Handle<TextureAtlas>>,
 }
 
 /// Spawns projectiles from events
@@ -72,12 +72,14 @@ pub fn spawn_projectile_system(
     mut commands: Commands,
     mut event_reader: EventReader<SpawnProjectileEvent>,
     projectile_resource: Res<ProjectileResource>,
+    projectile_assets: Res<ProjectileAssets>,
     game_parameters: Res<GameParametersResource>,
 ) {
     for event in event_reader.iter() {
         spawn_projectile(
             &event.projectile_type,
             &projectile_resource,
+            &projectile_assets,
             event.position,
             event.damage,
             event.despawn_time,
@@ -93,6 +95,7 @@ pub fn spawn_projectile_system(
 pub fn spawn_projectile(
     projectile_type: &ProjectileType,
     projectile_resource: &ProjectileResource,
+    projectile_assets: &ProjectileAssets,
     position: Vec2,
     damage: f32,
     despawn_time: f32, // time before despawning
@@ -102,8 +105,6 @@ pub fn spawn_projectile(
 ) {
     // Get data from projectile resource
     let projectile_data = &projectile_resource.projectiles[projectile_type];
-    let texture_atlas_handle =
-        projectile_resource.texture_atlas_handle[projectile_type].clone_weak();
 
     // scale collider to align with the sprite
     let collider_size_hx =
@@ -122,15 +123,12 @@ pub fn spawn_projectile(
 
     projectile
         .insert(SpriteSheetBundle {
-            texture_atlas: texture_atlas_handle,
+            texture_atlas: projectile_assets.get_asset(projectile_type),
             ..Default::default()
         })
         .insert(AnimationComponent {
-            timer: Timer::from_seconds(
-                projectile_data.texture.frame_duration,
-                TimerMode::Repeating,
-            ),
-            direction: projectile_data.texture.animation_direction.clone(),
+            timer: Timer::from_seconds(projectile_data.frame_duration, TimerMode::Repeating),
+            direction: projectile_data.animation.clone(),
         })
         .insert(RigidBody::Dynamic)
         .insert(LockedAxes::ROTATION_LOCKED)

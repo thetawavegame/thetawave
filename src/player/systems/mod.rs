@@ -3,10 +3,10 @@
 mod attacks;
 mod movement;
 
+use crate::audio;
 use crate::spawnable::{EffectType, SpawnEffectEvent};
 use crate::states::AppStates;
 use crate::ui::EndGameTransitionResource;
-use crate::SoundEffectsAudioChannel;
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
@@ -23,7 +23,7 @@ pub fn player_death_system(
     player_query: Query<(Entity, &PlayerComponent, &Transform)>,
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
     asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
+    audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
 ) {
     for (entity, player, transform) in player_query.iter() {
         if player.health.is_dead() {

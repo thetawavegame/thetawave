@@ -1,11 +1,11 @@
 use crate::{
     arena::ArenaBarrierComponent,
+    audio,
     player::PlayerComponent,
     spawnable::{
         BossPartComponent, ConsumableComponent, Faction, MobComponent, MobType,
         ProjectileComponent, ProjectileType,
     },
-    SoundEffectsAudioChannel,
 };
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
@@ -77,7 +77,7 @@ pub fn intersection_collision_system(
 ) {
     // loop through all collision events
     'collision_events: for collision_event in collision_events.iter() {
-        println!("{:?}", collision_event);
+        println!("{collision_event:?}");
         if let CollisionEvent::Started(
             collider1_entity,
             collider2_entity,
@@ -234,7 +234,7 @@ pub fn contact_collision_system(
     mob_query: Query<(Entity, &MobComponent)>,
     barrier_query: Query<Entity, With<ArenaBarrierComponent>>,
     asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
+    audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
 ) {
     // loop through all collision events
     'collision_events: for contact_event in collision_events.iter() {

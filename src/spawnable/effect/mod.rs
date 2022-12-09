@@ -126,7 +126,6 @@ pub fn spawn_effect(
                 game_parameters.sprite_scale + scale.y,
                 1.0,
             ),
-            ..Default::default()
         }))
         .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new(effect_data.effect_type.to_string()));

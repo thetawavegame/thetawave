@@ -33,7 +33,6 @@ pub fn setup_pause_system(mut commands: Commands, asset_server: Res<AssetServer>
                             right: Val::Auto,
                             top: Val::Auto,
                             bottom: Val::Auto,
-                            ..Default::default()
                         },
                         ..Default::default()
                     },

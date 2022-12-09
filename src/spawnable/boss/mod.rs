@@ -1,10 +1,8 @@
 use bevy::prelude::*;
-use serde::Deserialize;
-use strum_macros::Display;
 
 use crate::{game::GameParametersResource, misc::Health};
 
-use super::{BossType, MobComponent, MobsResource};
+use super::BossType;
 
 mod repeater;
 

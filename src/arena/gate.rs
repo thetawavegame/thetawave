@@ -1,7 +1,7 @@
 use crate::{
+    audio,
     spawnable::{MobComponent, SpawnableComponent},
     states::{AppStateComponent, AppStates},
-    SoundEffectsAudioChannel,
 };
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
@@ -40,7 +40,7 @@ pub fn despawn_gates_system(
     mob_query: Query<(Entity, &MobComponent)>,
     mut enemy_bottom_event: EventWriter<MobReachedBottomGateEvent>,
     asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
+    audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
 ) {
     // loop through all collision events
     'event_loop: for collision_event in collision_events.iter() {

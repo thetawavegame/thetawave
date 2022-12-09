@@ -3,8 +3,8 @@ use bevy_kira_audio::prelude::*;
 use std::time::Duration;
 
 use crate::{
-    arena::MobReachedBottomGateEvent, spawnable, states::AppStates, ui::EndGameTransitionResource,
-    MenuAudioChannel,
+    arena::MobReachedBottomGateEvent, audio, spawnable, states::AppStates,
+    ui::EndGameTransitionResource,
 };
 
 mod formation;
@@ -90,7 +90,7 @@ pub fn reset_run_system(
     mut keyboard_input: ResMut<Input<KeyCode>>,
     mut app_state: ResMut<State<AppStates>>,
     asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<MenuAudioChannel>>,
+    audio_channel: Res<AudioChannel<audio::MenuAudioChannel>>,
 ) {
     // get input
     let mut reset = keyboard_input.just_released(KeyCode::R);
@@ -105,7 +105,7 @@ pub fn reset_run_system(
     // if reset input provided reset th run
     if reset {
         // go to the main menu state
-        app_state.set(AppStates::MainMenu).unwrap();
+        app_state.replace(AppStates::MainMenu).unwrap();
 
         // play menu input sound
         audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));

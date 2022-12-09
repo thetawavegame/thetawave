@@ -5,14 +5,15 @@ use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 
 use crate::{
+    audio,
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     loot::LootDropsResource,
     spawnable::{
         spawn_projectile, EffectType, InitialMotion, MobType, PlayerComponent, ProjectileResource,
-        ProjectileType, SpawnConsumableEvent, SpawnEffectEvent, SpawnableComponent,
+        ProjectileType, SpawnConsumableEvent, SpawnEffectEvent, SpawnProjectileEvent,
+        SpawnableComponent,
     },
-    SoundEffectsAudioChannel,
 };
 
 /// Types of behaviors that can be performed by mobs
@@ -71,9 +72,10 @@ pub fn mob_execute_behavior_system(
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     mut spawn_consumable_event_writer: EventWriter<SpawnConsumableEvent>,
+    mut spawn_projectile_event_writer: EventWriter<SpawnProjectileEvent>,
     loot_drops_resource: Res<LootDropsResource>,
     asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
+    audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
 ) {
     // Get all contact events first (can't be read more than once within a system)
     let mut collision_events_vec = vec![];
@@ -110,18 +112,15 @@ pub fn mob_execute_behavior_system(
                             }
 
                             //spawn_blast
-                            // TODO: change to event for spawning projectiles
                             audio_channel.play(asset_server.load("sounds/enemy_fire_blast.wav"));
-                            spawn_projectile(
-                                &data.projectile_type,
-                                &projectile_resource,
+
+                            spawn_projectile_event_writer.send(SpawnProjectileEvent {
+                                projectile_type: data.projectile_type.clone(),
                                 position,
-                                mob_component.attack_damage,
-                                data.despawn_time,
-                                modified_initial_motion,
-                                &mut commands,
-                                &game_parameters,
-                            );
+                                damage: mob_component.attack_damage,
+                                despawn_time: data.despawn_time,
+                                initial_motion: modified_initial_motion,
+                            });
                         }
                     }
                 }
@@ -284,7 +283,7 @@ fn explode_on_impact(
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
     transform: &Transform,
     asset_server: &AssetServer,
-    audio_channel: &AudioChannel<SoundEffectsAudioChannel>,
+    audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {

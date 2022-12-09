@@ -90,10 +90,10 @@ impl Level {
     pub fn get_phase_name(&self) -> String {
         match &self.timeline.phases[self.timeline_idx].phase_type {
             LevelPhaseType::FormationSpawn { formation_pool, .. } => {
-                format!("FormationSpawn({:?})", formation_pool)
+                format!("FormationSpawn({formation_pool:?})")
             }
             LevelPhaseType::Break { .. } => "Break".to_string(),
-            LevelPhaseType::Boss { boss_type, .. } => format!("Boss[{:?}]", boss_type),
+            LevelPhaseType::Boss { boss_type, .. } => format!("Boss[{boss_type:?}]"),
         }
     }
 

@@ -1,6 +1,9 @@
 use std::time::Duration;
 
-use bevy::prelude::*;
+use bevy::{
+    diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin},
+    prelude::*,
+};
 
 use crate::{
     player::PlayerComponent,
@@ -232,6 +235,16 @@ pub fn setup_fps_ui_system(mut commands: Commands, asset_server: ResMut<AssetSer
         })
         .insert(Name::new("FPS UI"))
         .insert(FPSUI);
+}
+
+pub fn fps_system(diagnostics: Res<Diagnostics>, mut query: Query<&mut Text, With<FPSUI>>) {
+    let mut text = query.single_mut();
+
+    if let Some(fps) = diagnostics.get(FrameTimeDiagnosticsPlugin::FPS) {
+        if let Some(average) = fps.average() {
+            text.sections[0].value = format!("fps: {average:.2}");
+        }
+    };
 }
 
 #[allow(clippy::type_complexity)]

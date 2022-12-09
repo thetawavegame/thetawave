@@ -5,14 +5,8 @@
 		projectile_behaviors: [ExplodeOnImpact],
 		collider_dimensions: (1.5, 1.5),
 		z_level: 20.0,
-		texture: (
-			path: "texture/enemy_blast_spritesheet.png",
-			dimensions: (4.0, 4.0),
-			cols: 1,
-			rows: 1,
-			frame_duration: 1.0, // changed from 0.0
-			animation_direction: None,
-		),
+		animation: None,
+		frame_duration: 1.0,
 	),
 	Blast(Neutral): (
 		projectile_type: Blast(Neutral),
@@ -20,14 +14,8 @@
 		projectile_behaviors: [ExplodeOnImpact],
 		collider_dimensions: (1.5, 1.5),
 		z_level: 20.0,
-		texture: (
-			path: "texture/neutral_blast_spritesheet.png",
-			dimensions: (4.0, 4.0),
-			cols: 1,
-			rows: 1,
-			frame_duration: 1.0, // changed from 0.0
-			animation_direction: None,
-		),
+		animation: None,
+		frame_duration: 1.0,
 	),
 	Blast(Ally): (
 		projectile_type: Blast(Ally),
@@ -35,13 +23,7 @@
 		projectile_behaviors: [ExplodeOnImpact],
 		collider_dimensions: (1.5, 1.5),
 		z_level: 19.0,
-		texture: (
-			path: "texture/ally_blast_spritesheet.png",
-			dimensions: (4.0, 4.0),
-			cols: 1,
-			rows: 1,
-			frame_duration: 1.0, // changed from 0.0
-			animation_direction: None,
-		),
+		animation: None,
+		frame_duration: 1.0,
 	)
 }

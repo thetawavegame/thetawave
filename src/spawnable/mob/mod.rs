@@ -182,7 +182,7 @@ pub fn spawn_mob(
         combine_rule: CoefficientCombineRule::Max,
     })
     .insert(CollisionGroups {
-        memberships: SPAWNABLE_COL_GROUP_MEMBERSHIP.into(),
+        memberships: SPAWNABLE_COL_GROUP_MEMBERSHIP,
         filters: Group::ALL ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
     })
     .insert(MobComponent {

@@ -122,7 +122,7 @@ pub fn spawn_consumable(
 
     // spawn the consumable
     consumable
-        .insert_bundle(SpriteSheetBundle {
+        .insert(SpriteSheetBundle {
             texture_atlas: texture_atlas_handle,
             ..Default::default()
         })

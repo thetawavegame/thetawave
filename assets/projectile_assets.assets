@@ -1,0 +1,23 @@
+({
+    "ally_blast": TextureAtlas (
+        path: "texture/ally_blast.png",
+        tile_size_x: 4.,
+        tile_size_y: 4.,
+        columns: 1,
+        rows: 1,
+    ),
+    "enemy_blast": TextureAtlas(
+        path: "texture/enemy_blast.png",
+        tile_size_x: 4.,
+        tile_size_y: 4.,
+        columns: 1,
+        rows: 1,
+    ),
+    "neutral_blast": TextureAtlas(
+        path: "texture/neutral_blast.png",
+        tile_size_x: 4.,
+        tile_size_y: 4.,
+        columns: 1,
+        rows: 1,
+    )
+})

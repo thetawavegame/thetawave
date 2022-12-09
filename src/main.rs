@@ -1,21 +1,17 @@
-use bevy::app::AppExit;
-use bevy::core_pipeline::clear_color::ClearColorConfig;
-use bevy::diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin};
-use bevy::render::camera::Projection;
-use bevy::window::WindowMode;
+use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 use bevy::{pbr::AmbientLight, prelude::*};
+use bevy_asset_loader::prelude::*;
 use bevy_egui::EguiPlugin;
-use bevy_inspector_egui::{WorldInspectorParams, WorldInspectorPlugin};
+use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_kira_audio::prelude::*;
+
 use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
 use ron::de::from_bytes;
-use spawnable::{RepeaterPartType, RepeaterPartsData, SpawnMobEvent, SpawnableComponent};
+use spawnable::{RepeaterPartType, RepeaterPartsData};
+use states::{AppStateComponent, AppStates};
 use std::collections::HashMap;
 use ui::EndGameTransitionResource;
-use ui::FPSUI;
-
-use states::{AppStateComponent, AppStates};
 
 pub const PHYSICS_SCALE: f32 = 10.0;
 pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_1;
@@ -24,7 +20,10 @@ pub const VERTICAL_BARRIER_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_3;
 
 mod animation;
 mod arena;
+mod assets;
+mod audio;
 mod background;
+mod camera;
 mod collision;
 mod game;
 mod loot;
@@ -63,21 +62,10 @@ fn get_display_config() -> options::DisplayConfig {
         .unwrap()
 }
 
-// audio channels
-#[derive(Resource)]
-pub struct BackgroundMusicAudioChannel;
-#[derive(Resource)]
-pub struct MenuAudioChannel;
-#[derive(Resource)]
-pub struct SoundEffectsAudioChannel;
-
 fn main() {
     let display_config = get_display_config();
 
     let mut app = App::new();
-
-    // add states
-    app.add_state(states::AppStates::MainMenu); // start game in the main menu state
 
     // insert resources for all game states
     app.add_plugins(
@@ -135,7 +123,6 @@ fn main() {
             include_bytes!("../data/projectiles.ron"),
         )
         .unwrap(),
-        texture_atlas_handle: HashMap::new(),
     })
     .insert_resource(spawnable::ConsumableResource {
         consumables: from_bytes::<HashMap<spawnable::ConsumableType, spawnable::ConsumableData>>(
@@ -166,15 +153,15 @@ fn main() {
     .add_event::<spawnable::SpawnMobEvent>()
     .add_plugin(AudioPlugin)
     .add_plugin(EguiPlugin)
-    .add_audio_channel::<BackgroundMusicAudioChannel>()
-    .add_audio_channel::<MenuAudioChannel>()
-    .add_audio_channel::<SoundEffectsAudioChannel>()
+    .add_audio_channel::<audio::BackgroundMusicAudioChannel>()
+    .add_audio_channel::<audio::MenuAudioChannel>()
+    .add_audio_channel::<audio::SoundEffectsAudioChannel>()
     .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
         PHYSICS_SCALE,
     ))
-    .add_startup_system(setup_cameras_system)
-    .add_startup_system(start_background_audio_system)
-    .add_startup_system(set_audio_volume_system)
+    .add_startup_system(camera::setup_cameras_system)
+    .add_startup_system(audio::start_background_audio_system)
+    .add_startup_system(audio::set_audio_volume_system)
     .add_system(ui::bouncing_prompt_system)
     .add_system(options::toggle_fullscreen_system)
     .add_system_to_stage(CoreStage::Last, ui::position_stat_bar_label_system);
@@ -184,11 +171,25 @@ fn main() {
         app.add_plugin(bevy_framepace::FramepacePlugin);
     }
 
+    // add states
+    app.add_state(states::AppStates::MainMenu); // start game in the main menu state
+    app.add_loading_state(
+        LoadingState::new(states::AppStates::LoadingGame)
+            .continue_to_state(states::AppStates::Game)
+            .with_dynamic_collections::<StandardDynamicAssetCollection>(vec![
+                "player_assets.assets",
+                "projectile_assets.assets",
+            ])
+            .with_collection::<assets::PlayerAssets>()
+            .with_collection::<assets::ProjectileAssets>(),
+    );
+
     // game startup systems (perhaps exchange with app.add_startup_system_set)
     app.add_system_set(
         SystemSet::on_enter(states::AppStates::Game)
             .with_system(run::setup_first_level.after("init"))
             .with_system(setup_game.label("init"))
+            .with_system(setup_physics.label("init"))
             .with_system(arena::spawn_barriers_system.after("init"))
             .with_system(arena::spawn_despawn_gates_system.after("init"))
             .with_system(background::create_background_system.after("init"))
@@ -205,14 +206,14 @@ fn main() {
     );
 
     app.add_system_set(
-        SystemSet::on_exit(states::AppStates::PauseMenu).with_system(clear_state_system),
+        SystemSet::on_exit(states::AppStates::PauseMenu).with_system(states::clear_state_system),
     );
 
     app.add_system_set(
         SystemSet::on_update(states::AppStates::GameOver)
             .with_system(ui::game_over_fade_in_system)
             .with_system(run::reset_run_system)
-            .with_system(quit_game_system),
+            .with_system(states::quit_game_system),
     );
 
     app.add_system_set(
@@ -220,14 +221,14 @@ fn main() {
     );
 
     app.add_system_set(
-        SystemSet::on_exit(states::AppStates::GameOver).with_system(clear_state_system),
+        SystemSet::on_exit(states::AppStates::GameOver).with_system(states::clear_state_system),
     );
 
     app.add_system_set(
         SystemSet::on_update(states::AppStates::Victory)
             .with_system(ui::victory_fade_in_system)
             .with_system(run::reset_run_system)
-            .with_system(quit_game_system),
+            .with_system(states::quit_game_system),
     );
 
     app.add_system_set(
@@ -235,23 +236,21 @@ fn main() {
     );
 
     app.add_system_set(
-        SystemSet::on_exit(states::AppStates::Victory).with_system(clear_state_system),
+        SystemSet::on_exit(states::AppStates::Victory).with_system(states::clear_state_system),
     );
 
     app.add_system_set(
-        SystemSet::on_enter(states::AppStates::MainMenu)
-            .with_system(ui::setup_main_menu_system)
-            .with_system(clear_game_state_system),
+        SystemSet::on_enter(states::AppStates::MainMenu).with_system(ui::setup_main_menu_system), //.with_system(states::clear_game_state_system),
     );
 
     app.add_system_set(
         SystemSet::on_update(states::AppStates::MainMenu)
             .with_system(states::start_game_system)
-            .with_system(quit_game_system),
+            .with_system(states::quit_game_system),
     );
 
     app.add_system_set(
-        SystemSet::on_exit(states::AppStates::MainMenu).with_system(clear_state_system),
+        SystemSet::on_exit(states::AppStates::MainMenu).with_system(states::clear_state_system),
     );
 
     app.add_system_set(
@@ -323,7 +322,9 @@ fn main() {
         );
     }
 
-    app.add_system_set(SystemSet::on_exit(states::AppStates::Game).with_system(clear_state_system));
+    app.add_system_set(
+        SystemSet::on_exit(states::AppStates::Game).with_system(states::clear_state_system),
+    );
 
     // plugins to use only in debug mode
     if cfg!(debug_assertions) {
@@ -331,87 +332,17 @@ fn main() {
             .add_plugin(RapierDebugRenderPlugin::default())
             .add_plugin(FrameTimeDiagnosticsPlugin::default())
             .add_startup_system(ui::setup_fps_ui_system)
-            .add_system(fps_system);
+            .add_system(ui::fps_system);
     }
 
     app.run();
 }
 
-fn start_background_audio_system(
-    asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
-) {
-    audio_channel
-        .play(asset_server.load("sounds/deflector_soundtrack.mp3"))
-        .looped();
-}
-
-fn set_audio_volume_system(
-    background_audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
-    menu_audio_channel: Res<AudioChannel<MenuAudioChannel>>,
-    effects_audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
-) {
-    background_audio_channel.set_volume(0.05);
-    menu_audio_channel.set_volume(0.05);
-    effects_audio_channel.set_volume(0.70);
-}
-
-fn clear_state_system(
-    mut commands: Commands,
-    mut despawn_entities_query: Query<(Entity, &states::AppStateComponent)>,
-    app_state: Res<State<states::AppStates>>,
-) {
-    for (entity, entity_app_state) in despawn_entities_query.iter_mut() {
-        if *app_state.current() == entity_app_state.0 {
-            commands.entity(entity).despawn_recursive();
-        }
-    }
-}
-
-fn clear_game_state_system(
-    mut commands: Commands,
-    mut despawn_entities_query: Query<(Entity, &states::AppStateComponent)>,
-) {
-    for (entity, entity_app_state) in despawn_entities_query.iter_mut() {
-        if entity_app_state.0 == AppStates::Game {
-            commands.entity(entity).despawn_recursive();
-        }
-    }
-}
-
-fn setup_cameras_system(
-    mut commands: Commands,
-    game_parameters: Res<game::GameParametersResource>,
-) {
-    // setup cameras
-    // 2d camera for sprites
-
-    let camera_2d = Camera2dBundle {
-        transform: Transform::from_xyz(0.0, 0.0, game_parameters.camera_z),
-        camera_2d: Camera2d {
-            clear_color: ClearColorConfig::None,
-            ..default()
-        },
-        camera: Camera {
-            priority: 1,
-            ..default()
-        },
-        ..default()
-    };
-
-    commands.spawn_bundle(camera_2d);
-
-    // 3d cemate for background objects
-    let camera_3d = Camera3dBundle {
-        transform: Transform::from_xyz(0.0, 0.0, game_parameters.camera_z)
-            .looking_at(Vec3::ZERO, Vec3::Y),
-        projection: Projection::Perspective(PerspectiveProjection {
-            far: 10000.0,
-            ..Default::default()
-        }),
-        ..Default::default()
-    };
-    commands.spawn_bundle(camera_3d);
+// setup rapier
+fn setup_physics(mut rapier_config: ResMut<RapierConfiguration>) {
+    rapier_config.physics_pipeline_active = true;
+    rapier_config.query_pipeline_active = true;
+    rapier_config.gravity = Vec2::ZERO;
 }
 
 /// Initialize values for the game
@@ -425,18 +356,16 @@ fn setup_game(
     mut projectiles: ResMut<spawnable::ProjectileResource>,
     mut effects: ResMut<spawnable::EffectsResource>,
     mut consumables: ResMut<spawnable::ConsumableResource>,
-    mut rapier_config: ResMut<RapierConfiguration>,
     mut run_resource: ResMut<run::RunResource>,
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
     levels_resource: Res<run::LevelsResource>,
     game_parameters: Res<game::GameParametersResource>,
 ) {
     *end_game_trans_resource = EndGameTransitionResource::new(2.0, 3.0, 2.5, 0.5, 0.5, 30.0);
-    rapier_config.physics_pipeline_active = true;
-    rapier_config.query_pipeline_active = true;
+
     // spawn game fade entity
     commands
-        .spawn_bundle(SpriteBundle {
+        .spawn(SpriteBundle {
             sprite: Sprite {
                 color: Color::rgba(0.0, 0.0, 0.0, 0.0),
                 custom_size: Some(Vec2::new(16000.0, 9000.0)),
@@ -448,9 +377,6 @@ fn setup_game(
         .insert(ui::GameFadeComponent)
         .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new("Game Fade"));
-
-    // setup rapier
-    rapier_config.gravity = Vec2::ZERO;
 
     // load mob assets
     let mut mob_texture_atlas_dict = HashMap::new();
@@ -562,6 +488,7 @@ fn setup_game(
     );
     repeater_texture_atlas_dict.insert(RepeaterPartType::LeftArm, texture_atlases.add(larm_atlas));
 
+    /*
     // load projectile assets
     let mut projectile_texture_atlas_dict = HashMap::new();
     for (projectile_type, projectile_data) in projectiles.projectiles.iter() {
@@ -582,6 +509,7 @@ fn setup_game(
             texture_atlases.add(projectile_atlas),
         );
     }
+    */
 
     // load effect assets
     let mut effect_texture_atlas_dict = HashMap::new();
@@ -628,9 +556,6 @@ fn setup_game(
     // add texture atlas dict to the effects resource
     effects.texture_atlas_handle = effect_texture_atlas_dict;
 
-    // add texture atlas dict to the projectiles resource
-    projectiles.texture_atlas_handle = projectile_texture_atlas_dict;
-
     // add texture atlas dict to the mobs resource
     mobs.texture_atlas_handle = mob_texture_atlas_dict;
 
@@ -639,34 +564,4 @@ fn setup_game(
 
     // create run resource
     run_resource.create_level(&levels_resource);
-}
-
-fn fps_system(diagnostics: Res<Diagnostics>, mut query: Query<&mut Text, With<FPSUI>>) {
-    let mut text = query.single_mut();
-
-    if let Some(fps) = diagnostics.get(FrameTimeDiagnosticsPlugin::FPS) {
-        if let Some(average) = fps.average() {
-            text.sections[0].value = format!("fps: {:.2}", average);
-        }
-    };
-}
-
-pub fn quit_game_system(
-    gamepads: Res<Gamepads>,
-    mut gamepad_input: ResMut<Input<GamepadButton>>,
-    keyboard_input: Res<Input<KeyCode>>,
-    mut app_exit_events: EventWriter<AppExit>,
-) {
-    let mut quit_input = keyboard_input.just_released(KeyCode::Escape);
-
-    for gamepad in gamepads.iter() {
-        quit_input |= gamepad_input.just_released(GamepadButton {
-            gamepad,
-            button_type: GamepadButtonType::Start,
-        });
-    }
-
-    if quit_input {
-        app_exit_events.send(AppExit);
-    }
 }
