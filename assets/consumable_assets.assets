@@ -1,0 +1,37 @@
+({
+    "health_wrench": TextureAtlas (
+        path: "texture/health_wrench_spritesheet.png",
+        tile_size_x: 12.,
+        tile_size_y: 12.,
+        columns: 1,
+        rows: 1,  
+    ),
+    "defense_wrench": TextureAtlas (
+        path: "texture/defense_wrench_spritesheet.png",
+        tile_size_x: 12.,
+        tile_size_y: 12.,
+        columns: 1,
+        rows: 1,  
+    ),
+    "money5": TextureAtlas (
+        path: "texture/money5_spritesheet.png",
+        tile_size_x: 12.,
+        tile_size_y: 12.,
+        columns: 1,
+        rows: 1,  
+    ),
+    "money1": TextureAtlas (
+        path: "texture/money1_spritesheet.png",
+        tile_size_x: 7.,
+        tile_size_y: 7.,
+        columns: 1,
+        rows: 1,  
+    ),
+    "armor": TextureAtlas (
+        path: "texture/armor_spritesheet.png",
+        tile_size_x: 12.,
+        tile_size_y: 12.,
+        columns: 1,
+        rows: 1,  
+    ),
+})

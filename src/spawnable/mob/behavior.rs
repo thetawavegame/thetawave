@@ -16,6 +16,8 @@ use crate::{
     },
 };
 
+use super::SpawnMobEvent;
+
 /// Types of behaviors that can be performed by mobs
 #[derive(Deserialize, Clone)]
 pub enum MobBehavior {
@@ -73,6 +75,7 @@ pub fn mob_execute_behavior_system(
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     mut spawn_consumable_event_writer: EventWriter<SpawnConsumableEvent>,
     mut spawn_projectile_event_writer: EventWriter<SpawnProjectileEvent>,
+    mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
     loot_drops_resource: Res<LootDropsResource>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
@@ -139,13 +142,10 @@ pub fn mob_execute_behavior_system(
                                 mob_transform.translation.y + data.offset_position.y,
                             );
 
-                            super::spawn_mob(
-                                &data.mob_type,
-                                &mob_resource,
+                            spawn_mob_event_writer.send(SpawnMobEvent {
+                                mob_type: data.mob_type,
                                 position,
-                                &mut commands,
-                                &game_parameters,
-                            )
+                            });
                         }
                     }
                 }

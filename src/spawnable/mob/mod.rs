@@ -6,7 +6,8 @@ use serde::Deserialize;
 use std::{collections::HashMap, string::ToString};
 
 use crate::{
-    animation::{AnimationComponent, TextureData},
+    animation::{AnimationComponent, AnimationData, TextureData},
+    assets::MobAssets,
     game::GameParametersResource,
     loot::ConsumableDropListType,
     misc::Health,
@@ -67,7 +68,7 @@ pub struct MobData {
     /// Dimensions of the mob's hitbox
     pub collider_dimensions: Vec2,
     /// Texture
-    pub texture: TextureData,
+    pub animation: AnimationData,
     /// Optional data describing the thruster
     pub thruster: Option<ThrusterData>,
     /// Damage dealt to other factions through attacks
@@ -97,12 +98,14 @@ pub fn spawn_mob_system(
     mut commands: Commands,
     mut event_reader: EventReader<SpawnMobEvent>,
     mob_resource: Res<MobsResource>,
+    mob_assets: Res<MobAssets>,
     game_parameters: Res<GameParametersResource>,
 ) {
     for event in event_reader.iter() {
         spawn_mob(
             &event.mob_type,
             &mob_resource,
+            &mob_assets,
             event.position,
             &mut commands,
             &game_parameters,
@@ -116,7 +119,7 @@ pub struct ThrusterData {
     /// Y offset from center of entity
     pub y_offset: f32,
     /// Texture
-    pub texture: TextureData,
+    pub animation: AnimationData,
 }
 
 /// Stores data about mob entities
@@ -133,13 +136,13 @@ pub struct MobsResource {
 pub fn spawn_mob(
     mob_type: &MobType,
     mob_resource: &MobsResource,
+    mob_assets: &MobAssets,
     position: Vec2,
     commands: &mut Commands,
     game_parameters: &GameParametersResource,
 ) {
     // Get data from mob resource
     let mob_data = &mob_resource.mobs[mob_type];
-    let texture_atlas_handle = mob_resource.texture_atlas_handle[mob_type].0.clone_weak();
 
     // scale collider to align with the sprite
     let collider_size_hx = mob_data.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
@@ -149,7 +152,7 @@ pub fn spawn_mob(
     let mut mob = commands.spawn_empty();
 
     mob.insert(SpriteSheetBundle {
-        texture_atlas: texture_atlas_handle,
+        texture_atlas: mob_assets.get_mob_asset(mob_type),
         transform: Transform {
             translation: position.extend(mob_data.z_level),
             scale: Vec3::new(
@@ -162,8 +165,8 @@ pub fn spawn_mob(
         ..Default::default()
     })
     .insert(AnimationComponent {
-        timer: Timer::from_seconds(mob_data.texture.frame_duration, TimerMode::Repeating),
-        direction: mob_data.texture.animation_direction.clone(),
+        timer: Timer::from_seconds(mob_data.animation.frame_duration, TimerMode::Repeating),
+        direction: mob_data.animation.direction.clone(),
     })
     .insert(RigidBody::Dynamic)
     .insert(LockedAxes::ROTATION_LOCKED)
@@ -212,25 +215,19 @@ pub fn spawn_mob(
 
     // spawn thruster as child if mob has thruster
     if let Some(thruster) = &mob_data.thruster {
-        let texture_atlas_handle = mob_resource.texture_atlas_handle[mob_type]
-            .1
-            .as_ref()
-            .unwrap()
-            .clone_weak();
-
         mob.with_children(|parent| {
             parent
                 .spawn(SpriteSheetBundle {
-                    texture_atlas: texture_atlas_handle,
+                    texture_atlas: mob_assets.get_thruster_asset(mob_type).unwrap(),
                     transform: Transform::from_xyz(0.0, thruster.y_offset, 0.0),
                     ..Default::default()
                 })
                 .insert(AnimationComponent {
                     timer: Timer::from_seconds(
-                        thruster.texture.frame_duration,
+                        thruster.animation.frame_duration,
                         TimerMode::Repeating,
                     ),
-                    direction: thruster.texture.animation_direction.clone(),
+                    direction: thruster.animation.direction.clone(),
                 })
                 .insert(Name::new("Thruster"));
         });

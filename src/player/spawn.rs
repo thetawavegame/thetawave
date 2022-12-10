@@ -27,9 +27,7 @@ pub fn spawn_player_system(
     commands
         .spawn_empty()
         .insert(SpriteBundle {
-            texture: match &character.character_type {
-                Juggernaut => player_assets.juggernaut.clone(),
-            },
+            texture: player_assets.get_asset(&character.character_type),
             ..Default::default()
         })
         .insert(RigidBody::Dynamic)

@@ -21,24 +21,16 @@
 			health: 30.0,
 			armor: 0,
 		),
-		texture: (
-			path: "texture/drone_spritesheet.png",
-			dimensions: (20.0, 20.0),
-			cols: 3,
-			rows: 1,
+		animation: (
+			direction: PingPong(Forward),
 			frame_duration: 0.25,
-			animation_direction: PingPong(Forward),
 		),
 		thruster: Some((
 			y_offset: 11.0,
-			texture: (
-				path: "texture/drone_thrusters_spritesheet.png",
-				dimensions: (14.0, 10.0),
-				cols: 3,
-				rows: 1,
+			animation: (
+				direction: PingPong(Forward),
 				frame_duration: 0.15,
-				animation_direction: PingPong(Forward),
-			)
+			),
 		)),
 	),
 	Enemy(Pawn): (
@@ -79,24 +71,16 @@
 			health: 20.0,
 			armor: 0,
 		),
-		texture: (
-			path: "texture/pawn_spritesheet.png",
-			dimensions: (20.0, 20.0),
-			cols: 3,
-			rows: 1,
+		animation: (
+			direction: PingPong(Forward),
 			frame_duration: 0.25,
-			animation_direction: PingPong(Forward),
 		),
 		thruster: Some((
 			y_offset: 11.0,
-			texture: (
-				path: "texture/pawn_thrusters_spritesheet.png",
-				dimensions: (14.0, 10.0),
-				cols: 3,
-				rows: 1,
+			animation: (
+				direction: PingPong(Forward),
 				frame_duration: 0.15,
-				animation_direction: PingPong(Forward),
-			)
+			),	
 		)),
 	),
 	Ally(Hauler): (
@@ -121,24 +105,16 @@
 			health: 20.0,
 			armor: 0,
 		),
-		texture: (
-			path: "texture/hauler_spritesheet.png",
-			dimensions: (24.0, 38.0),
-			cols: 3,
-			rows: 1,
+		animation: (
+			direction: PingPong(Forward),
 			frame_duration: 0.25,
-			animation_direction: PingPong(Forward),
 		),
 		thruster: Some((
 			y_offset: 18.0,
-			texture: (
-				path: "texture/hauler_thrusters_spritesheet.png",
-				dimensions: (24.0, 11.0),
-				cols: 3,
-				rows: 1,
+			animation: (
+				direction: PingPong(Forward),
 				frame_duration: 0.15,
-				animation_direction: PingPong(Forward),
-			)
+			),
 		)),
 	),
 	Enemy(MissileLauncher): (
@@ -174,24 +150,16 @@
 			health: 60.0,
 			armor: 0,
 		),	
-		texture: (
-			path: "texture/missile_launcher_spritesheet.png",
-			dimensions: (23.0, 28.0),
-			cols: 3,
-			rows: 1,
+		animation: (
+			direction: PingPong(Forward),
 			frame_duration: 0.25,
-			animation_direction: PingPong(Forward),
 		),
 		thruster: Some((
 			y_offset: 13.0,
-			texture: (
-				path: "texture/missile_launcher_thrusters_spritesheet.png",
-				dimensions: (17.0, 7.0),
-				cols: 3,
-				rows: 1,
+			animation: (
+				direction: PingPong(Forward),
 				frame_duration: 0.15,
-				animation_direction: PingPong(Forward),
-			)
+			),
 		)),
 	),
 	Enemy(Missile): (
@@ -215,25 +183,17 @@
 			max_health: 20.0,
 			health: 20.0,
 			armor: 0,
-		),	
-		texture: (
-			path: "texture/missile_spritesheet.png",
-			dimensions: (13.0, 19.0),
-			cols: 4,
-			rows: 1,
+		),
+		animation: (
+			direction: Forward,
 			frame_duration: 0.1,
-			animation_direction: Forward,
 		),
 		thruster: Some((
 			y_offset: 9.0,
-			texture: (
-				path: "texture/missile_thrusters_spritesheet.png",
-				dimensions: (13.0, 9.0),
-				cols: 4,
-				rows: 1,
+			animation: (
+				direction: Forward,
 				frame_duration: 0.15,
-				animation_direction: Forward,
-			)
+			),
 		)),
 	),
 	Enemy(StraferRight): (
@@ -274,24 +234,16 @@
 			health: 20.0,
 			armor: 0,
 		),	
-		texture: (
-			path: "texture/strafer_spritesheet.png",
-			dimensions: (26.0, 14.0),
-			cols: 3,
-			rows: 1,
+		animation: (
+			direction: PingPong(Forward),
 			frame_duration: 0.25,
-			animation_direction: PingPong(Forward),
 		),
 		thruster: Some((
 			y_offset: 7.0,
-			texture: (
-				path: "texture/strafer_thrusters_spritesheet.png",
-				dimensions: (24.0, 11.0),
-				cols: 3,
-				rows: 1,
+			animation: (
+				direction: PingPong(Forward),
 				frame_duration: 0.15,
-				animation_direction: PingPong(Forward),
-			)
+			),
 		)),
 	),
 	Enemy(StraferLeft): (
@@ -330,25 +282,17 @@
 			max_health: 20.0,
 			health: 20.0,
 			armor: 0,
-		),	
-		texture: (
-			path: "texture/strafer_spritesheet.png",
-			dimensions: (26.0, 14.0),
-			cols: 3,
-			rows: 1,
+		),
+		animation: (
+			direction: PingPong(Forward),
 			frame_duration: 0.25,
-			animation_direction: PingPong(Forward),
 		),
 		thruster: Some((
 			y_offset: 7.0,
-			texture: (
-				path: "texture/strafer_thrusters_spritesheet.png",
-				dimensions: (24.0, 11.0),
-				cols: 3,
-				rows: 1,
+			animation: (
+				direction: PingPong(Forward),
 				frame_duration: 0.15,
-				animation_direction: PingPong(Forward),
-			)
+			),
 		)),
 	),
 	Neutral(MoneyAsteroid): (
@@ -375,13 +319,9 @@
 			health: 50.0,
 			armor: 0,
 		),	
-		texture: (
-			path: "texture/money_asteroid_spritesheet.png",
-			dimensions: (21.0, 21.0),
-			cols: 1,
-			rows: 1,
+		animation: (
+			direction: PingPong(Forward),
 			frame_duration: 0.25,
-			animation_direction: PingPong(Forward),
 		),
 		thruster: None,
 	),

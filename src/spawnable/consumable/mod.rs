@@ -4,7 +4,8 @@ use serde::Deserialize;
 use std::collections::HashMap;
 
 use crate::{
-    animation::{AnimationComponent, TextureData},
+    animation::{AnimationComponent, AnimationData, TextureData},
+    assets::ConsumableAssets,
     game::GameParametersResource,
     spawnable::{
         ConsumableType, InitialMotion, SpawnableBehavior, SpawnableComponent, SpawnableType,
@@ -49,12 +50,14 @@ pub fn spawn_consumable_system(
     mut commands: Commands,
     mut event_reader: EventReader<SpawnConsumableEvent>,
     consumables_resource: Res<ConsumableResource>,
+    consumable_assets: Res<ConsumableAssets>,
     game_parameters: Res<GameParametersResource>,
 ) {
     for event in event_reader.iter() {
         spawn_consumable(
             &event.consumable_type,
             &consumables_resource,
+            &consumable_assets,
             event.position,
             &mut commands,
             &game_parameters,
@@ -72,7 +75,7 @@ pub struct ConsumableData {
     /// Spawnable generic behaviors
     pub spawnable_behaviors: Vec<SpawnableBehavior>,
     /// Texture of the consumable
-    pub texture: TextureData,
+    pub animation: AnimationData,
     /// Initial motion of the consuimable
     pub initial_motion: InitialMotion,
     /// Effects of picking up the consumable
@@ -94,22 +97,19 @@ pub struct ConsumableData {
 pub struct ConsumableResource {
     /// Maps consumable types to data
     pub consumables: HashMap<ConsumableType, ConsumableData>,
-    /// Map of cosumable types to textures
-    pub texture_atlas_handle: HashMap<ConsumableType, Handle<TextureAtlas>>,
 }
 
 /// Spawn a consumable by type
 pub fn spawn_consumable(
     consumable_type: &ConsumableType,
     consumable_resource: &ConsumableResource,
+    consumable_assets: &ConsumableAssets,
     position: Vec2,
     commands: &mut Commands,
     game_parameters: &GameParametersResource,
 ) {
     //Get data from the consumable resource
     let consumable_data = &consumable_resource.consumables[consumable_type];
-    let texture_atlas_handle =
-        consumable_resource.texture_atlas_handle[consumable_type].clone_weak();
 
     // Scale collider to align with the sprite
     let collider_size_hx =
@@ -123,15 +123,15 @@ pub fn spawn_consumable(
     // spawn the consumable
     consumable
         .insert(SpriteSheetBundle {
-            texture_atlas: texture_atlas_handle,
+            texture_atlas: consumable_assets.get_asset(&consumable_type),
             ..Default::default()
         })
         .insert(AnimationComponent {
             timer: Timer::from_seconds(
-                consumable_data.texture.frame_duration,
+                consumable_data.animation.frame_duration,
                 TimerMode::Repeating,
             ),
-            direction: consumable_data.texture.animation_direction.clone(),
+            direction: consumable_data.animation.direction.clone(),
         })
         .insert(RigidBody::Dynamic)
         .insert(LockedAxes::ROTATION_LOCKED)

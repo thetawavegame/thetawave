@@ -5,7 +5,7 @@ use serde::Deserialize;
 use std::{collections::HashMap, string::ToString};
 
 use crate::{
-    animation::{AnimationComponent, AnimationDirection, TextureData},
+    animation::{AnimationComponent, AnimationData, AnimationDirection, TextureData},
     assets::ProjectileAssets,
     game::GameParametersResource,
     spawnable::InitialMotion,
@@ -54,8 +54,7 @@ pub struct ProjectileData {
     /// Dimensions of the projectile's hitbox
     pub collider_dimensions: Vec2,
     /// Animation (currently loops single animation in specified direction)
-    pub animation: AnimationDirection,
-    pub frame_duration: f32,
+    pub animation: AnimationData,
     /// Z level of transform of projectile
     pub z_level: f32,
 }
@@ -127,8 +126,11 @@ pub fn spawn_projectile(
             ..Default::default()
         })
         .insert(AnimationComponent {
-            timer: Timer::from_seconds(projectile_data.frame_duration, TimerMode::Repeating),
-            direction: projectile_data.animation.clone(),
+            timer: Timer::from_seconds(
+                projectile_data.animation.frame_duration,
+                TimerMode::Repeating,
+            ),
+            direction: projectile_data.animation.direction.clone(),
         })
         .insert(RigidBody::Dynamic)
         .insert(LockedAxes::ROTATION_LOCKED)

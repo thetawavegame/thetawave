@@ -129,7 +129,6 @@ fn main() {
             include_bytes!("../data/consumables.ron"),
         )
         .unwrap(),
-        texture_atlas_handle: HashMap::new(),
     })
     .insert_resource(
         from_bytes::<background::BackgroundsResource>(include_bytes!("../data/backgrounds.ron"))
@@ -179,9 +178,15 @@ fn main() {
             .with_dynamic_collections::<StandardDynamicAssetCollection>(vec![
                 "player_assets.assets",
                 "projectile_assets.assets",
+                "mob_assets.assets",
+                "consumable_assets.assets",
+                "effect_assets.assets",
             ])
             .with_collection::<assets::PlayerAssets>()
-            .with_collection::<assets::ProjectileAssets>(),
+            .with_collection::<assets::ProjectileAssets>()
+            .with_collection::<assets::MobAssets>()
+            .with_collection::<assets::ConsumableAssets>()
+            .with_collection::<assets::EffectAssets>(),
     );
 
     // game startup systems (perhaps exchange with app.add_startup_system_set)
@@ -351,15 +356,11 @@ fn setup_game(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
-    mut mobs: ResMut<spawnable::MobsResource>,
     mut repeater: ResMut<spawnable::RepeaterResource>,
-    mut projectiles: ResMut<spawnable::ProjectileResource>,
     mut effects: ResMut<spawnable::EffectsResource>,
-    mut consumables: ResMut<spawnable::ConsumableResource>,
     mut run_resource: ResMut<run::RunResource>,
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
     levels_resource: Res<run::LevelsResource>,
-    game_parameters: Res<game::GameParametersResource>,
 ) {
     *end_game_trans_resource = EndGameTransitionResource::new(2.0, 3.0, 2.5, 0.5, 0.5, 30.0);
 
@@ -377,42 +378,6 @@ fn setup_game(
         .insert(ui::GameFadeComponent)
         .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new("Game Fade"));
-
-    // load mob assets
-    let mut mob_texture_atlas_dict = HashMap::new();
-    for (mob_type, mob_data) in mobs.mobs.iter() {
-        // mob texture
-        let texture_handle = asset_server.load(&mob_data.texture.path[..]);
-        let mob_atlas = TextureAtlas::from_grid(
-            texture_handle,
-            mob_data.texture.dimensions,
-            mob_data.texture.cols,
-            mob_data.texture.rows,
-            None,
-            None,
-        );
-
-        // thruster texture
-        let thruster_atlas_handle = if let Some(thruster_data) = &mob_data.thruster {
-            let thruster_texture_handle = asset_server.load(&thruster_data.texture.path[..]);
-            Some(texture_atlases.add(TextureAtlas::from_grid(
-                thruster_texture_handle,
-                thruster_data.texture.dimensions,
-                thruster_data.texture.cols,
-                thruster_data.texture.rows,
-                None,
-                None,
-            )))
-        } else {
-            None
-        };
-
-        // add mob and thruster texture handles to the dictionary
-        mob_texture_atlas_dict.insert(
-            mob_type.clone(),
-            (texture_atlases.add(mob_atlas), thruster_atlas_handle),
-        );
-    }
 
     // load repeater boss assets
     let mut repeater_texture_atlas_dict = HashMap::new();
@@ -487,77 +452,6 @@ fn setup_game(
         None,
     );
     repeater_texture_atlas_dict.insert(RepeaterPartType::LeftArm, texture_atlases.add(larm_atlas));
-
-    /*
-    // load projectile assets
-    let mut projectile_texture_atlas_dict = HashMap::new();
-    for (projectile_type, projectile_data) in projectiles.projectiles.iter() {
-        // projectile texture
-        let texture_handle = asset_server.load(&projectile_data.texture.path[..]);
-        let projectile_atlas = TextureAtlas::from_grid(
-            texture_handle,
-            projectile_data.texture.dimensions,
-            projectile_data.texture.cols,
-            projectile_data.texture.rows,
-            None,
-            None,
-        );
-
-        // add projectile texture handle to dictionary
-        projectile_texture_atlas_dict.insert(
-            projectile_type.clone(),
-            texture_atlases.add(projectile_atlas),
-        );
-    }
-    */
-
-    // load effect assets
-    let mut effect_texture_atlas_dict = HashMap::new();
-    for (effect_type, effect_data) in effects.effects.iter() {
-        // effect texture
-        let texture_handle = asset_server.load(&effect_data.texture.path[..]);
-        let effect_atlas = TextureAtlas::from_grid(
-            texture_handle,
-            effect_data.texture.dimensions,
-            effect_data.texture.cols,
-            effect_data.texture.rows,
-            None,
-            None,
-        );
-
-        // add effect texture handle to dictionary
-        effect_texture_atlas_dict.insert(effect_type.clone(), texture_atlases.add(effect_atlas));
-    }
-
-    // load consumable assets
-    let mut consumable_texture_atlas_dict = HashMap::new();
-    for (consumable_type, consumable_data) in consumables.consumables.iter() {
-        // consumable texture
-        let texture_handle = asset_server.load(&consumable_data.texture.path[..]);
-        let consumable_atlas = TextureAtlas::from_grid(
-            texture_handle,
-            consumable_data.texture.dimensions,
-            consumable_data.texture.cols,
-            consumable_data.texture.rows,
-            None,
-            None,
-        );
-
-        // add consumable texture handle to dictionary
-        consumable_texture_atlas_dict.insert(
-            consumable_type.clone(),
-            texture_atlases.add(consumable_atlas),
-        );
-    }
-
-    // add texture atlas dict to the effects resource
-    consumables.texture_atlas_handle = consumable_texture_atlas_dict;
-
-    // add texture atlas dict to the effects resource
-    effects.texture_atlas_handle = effect_texture_atlas_dict;
-
-    // add texture atlas dict to the mobs resource
-    mobs.texture_atlas_handle = mob_texture_atlas_dict;
 
     // add texture atlas dict to the repeater resource
     repeater.texture_atlas_handle = repeater_texture_atlas_dict;

@@ -13,14 +13,10 @@
             random_linvel: Some(((-100, 50),(100, 100))),
             random_angvel: Some((-3.0, 3.0)),
         ),
-        texture: (
-			path: "texture/health_wrench_spritesheet.png",
-			dimensions: (12.0, 12.0),
-			cols: 1,
-			rows: 1,
-			frame_duration: 1.0,
-			animation_direction: None,
-		),
+        animation: (
+            frame_duration: 1.0,
+			direction: None,
+        ),
     ),
     DefenseWrench: (
         consumable_type: DefenseWrench,
@@ -36,14 +32,10 @@
             random_linvel: Some(((-100, 50),(100, 100))),
             random_angvel: Some((-3.0, 3.0)),
         ),
-        texture: (
-			path: "texture/defense_wrench_spritesheet.png",
-			dimensions: (12.0, 12.0),
-			cols: 1,
-			rows: 1,
-			frame_duration: 1.0,
-			animation_direction: None,
-		),
+        animation: (
+            frame_duration: 1.0,
+			direction: None,
+        ),
     ),
     Money5: (
         consumable_type: Money5,
@@ -59,14 +51,10 @@
             random_linvel: Some(((-100, 50),(100, 100))),
             random_angvel: Some((-3.0, 3.0)),
         ),
-        texture: (
-			path: "texture/money5_spritesheet.png",
-			dimensions: (12.0, 12.0),
-			cols: 1,
-			rows: 1,
-			frame_duration: 1.0,
-			animation_direction: None,
-		),
+        animation: (
+            frame_duration: 1.0,
+			direction: None,
+        ),
     ),
     Money1: (
         consumable_type: Money1,
@@ -82,14 +70,10 @@
             random_linvel: Some(((-120, 50),(120, 120))),
             random_angvel: Some((-5.0, 5.0)),
         ),
-        texture: (
-			path: "texture/money1_spritesheet.png",
-			dimensions: (7.0, 7.0),
-			cols: 1,
-			rows: 1,
-			frame_duration: 1.0,
-			animation_direction: None,
-		),
+        animation: (
+            frame_duration: 1.0,
+			direction: None,
+        ),
     ),
     Armor: (
         consumable_type: Armor,
@@ -105,13 +89,9 @@
             random_linvel: Some(((-100, 50),(100, 100))),
             random_angvel: Some((-3.0, 3.0)),
         ),
-        texture: (
-			path: "texture/armor_spritesheet.png",
-			dimensions: (12.0, 12.0),
-			cols: 1,
-			rows: 1,
-			frame_duration: 1.0,
-			animation_direction: None,
-		),
+        animation: (
+            frame_duration: 1.0,
+			direction: None,
+        ),
     ),
 }
