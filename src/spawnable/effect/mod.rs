@@ -41,8 +41,6 @@ pub struct EffectData {
 pub struct EffectsResource {
     /// Maps effect types to data
     pub effects: HashMap<EffectType, EffectData>,
-    /// Maps effect types to textures
-    pub texture_atlas_handle: HashMap<EffectType, Handle<TextureAtlas>>,
 }
 
 /// Event for spawning effect
@@ -98,7 +96,7 @@ pub fn spawn_effect(
 
     effect
         .insert(SpriteSheetBundle {
-            texture_atlas: effect_assets.get_asset(effect_type).clone(),
+            texture_atlas: effect_assets.get_asset(effect_type),
             ..Default::default()
         })
         .insert(AnimationComponent {

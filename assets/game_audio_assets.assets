@@ -1,0 +1,41 @@
+({
+    "sounds.game_music": File (
+        path: "sounds/deflector_soundtrack.mp3",
+    ),
+    "sounds.barrier_bounce": File (
+        path: "sounds/barrier_bounce.wav",
+    ),
+    "sounds.collision": File (
+        path: "sounds/collision.wav",
+    ),
+    "sounds.consumable_pickup": File (
+        path: "sounds/consumable_pickup.wav",
+    ),
+    "sounds.defense_damage": File (
+        path: "sounds/defense_damage.wav",
+    ),
+    "sounds.defense_heal": File (
+        path: "sounds/defense_heal.wav",
+    ),
+    "sounds.enemy_fire_blast": File (
+        path: "sounds/enemy_fire_blast.wav",
+    ),
+    "sounds.menu_input_success": File (
+        path: "sounds/menu_input_success.wav",
+    ),
+    "sounds.mob_explosion": File (
+        path: "sounds/mob_explosion.wav",
+    ),
+    "sounds.mob_hit": File (
+        path: "sounds/mob_hit.wav",
+    ),
+    "sounds.player_explosion": File (
+        path: "sounds/player_explosion.wav",
+    ),
+    "sounds.player_fire_blast": File (
+        path: "sounds/player_fire_blast.wav",
+    ),
+    "sounds.player_hit": File (
+        path: "sounds/player_hit.wav",
+    ),
+})

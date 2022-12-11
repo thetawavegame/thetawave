@@ -1,4 +1,5 @@
 use crate::{
+    assets::GameAudioAssets,
     audio,
     collision::SortedCollisionEvent,
     run::{ObjectiveType, RunResource},
@@ -36,6 +37,7 @@ pub fn consumable_execute_behavior_system(
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
+    audio_assets: Res<GameAudioAssets>,
 ) {
     // put all collision events in a vector first (so that they can be looked at multiple times)
     let mut collision_events_vec = vec![];
@@ -68,6 +70,7 @@ pub fn consumable_execute_behavior_system(
                         &mut spawn_effect_event_writer,
                         &asset_server,
                         &audio_channel,
+                        &audio_assets,
                     );
                 }
                 ConsumableBehavior::AttractToPlayer => {
@@ -139,6 +142,7 @@ fn apply_effects_on_impact(
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
     asset_server: &AssetServer,
     audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
+    audio_assets: &GameAudioAssets,
 ) {
     for collision_event in collision_events.iter() {
         if let SortedCollisionEvent::PlayerToConsumableIntersection {
@@ -162,7 +166,7 @@ fn apply_effects_on_impact(
                 for (player_entity_q, mut player_component, _) in player_query.iter_mut() {
                     if *player_entity == player_entity_q {
                         // play consumable pickup sound
-                        audio_channel.play(asset_server.load("sounds/consumable_pickup.wav"));
+                        audio_channel.play(audio_assets.consumable_pickup.clone());
 
                         // apply the effects to the player
                         for consumable_effect in consumable_effects {

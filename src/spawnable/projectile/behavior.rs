@@ -1,4 +1,5 @@
 use crate::{
+    assets::GameAudioAssets,
     audio,
     collision::SortedCollisionEvent,
     spawnable::{
@@ -39,6 +40,7 @@ pub fn projectile_execute_behavior_system(
     time: Res<Time>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
+    audio_assets: Res<GameAudioAssets>,
 ) {
     // Put all collision events in a vec so they can be read more than once
     let mut collision_events_vec = vec![];
@@ -65,6 +67,7 @@ pub fn projectile_execute_behavior_system(
                     &mut boss_part_query,
                     &asset_server,
                     &audio_channel,
+                    &audio_assets,
                 ),
                 ProjectileBehavior::TimedDespawn {
                     despawn_time,
@@ -123,6 +126,7 @@ fn explode_on_impact(
     boss_part_query: &mut Query<(Entity, &mut BossPartComponent)>,
     asset_server: &AssetServer,
     audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
+    audio_assets: &GameAudioAssets,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
@@ -132,7 +136,7 @@ fn explode_on_impact(
                 projectile_faction,
                 projectile_damage,
             } => {
-                audio_channel.play(asset_server.load("sounds/player_hit.wav"));
+                audio_channel.play(audio_assets.player_hit.clone());
 
                 if entity == *projectile_entity
                     && matches!(
@@ -168,7 +172,7 @@ fn explode_on_impact(
                 projectile_faction,
                 projectile_damage,
             } => {
-                audio_channel.play(asset_server.load("sounds/mob_hit.wav"));
+                audio_channel.play(audio_assets.mob_hit.clone());
 
                 if entity == *projectile_entity
                     && !match mob_faction {
@@ -217,7 +221,7 @@ fn explode_on_impact(
                 projectile_faction,
                 projectile_damage,
             } => {
-                audio_channel.play(asset_server.load("sounds/mob_hit.wav"));
+                audio_channel.play(audio_assets.mob_hit.clone());
 
                 if entity == *projectile_entity {
                     match projectile_faction {

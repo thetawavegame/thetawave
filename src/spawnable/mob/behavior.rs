@@ -5,6 +5,7 @@ use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 
 use crate::{
+    assets::GameAudioAssets,
     audio,
     collision::SortedCollisionEvent,
     game::GameParametersResource,
@@ -79,6 +80,7 @@ pub fn mob_execute_behavior_system(
     loot_drops_resource: Res<LootDropsResource>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
+    audio_assets: Res<GameAudioAssets>,
 ) {
     // Get all contact events first (can't be read more than once within a system)
     let mut collision_events_vec = vec![];
@@ -115,7 +117,7 @@ pub fn mob_execute_behavior_system(
                             }
 
                             //spawn_blast
-                            audio_channel.play(asset_server.load("sounds/enemy_fire_blast.wav"));
+                            audio_channel.play(audio_assets.enemy_fire_blast.clone());
 
                             spawn_projectile_event_writer.send(SpawnProjectileEvent {
                                 projectile_type: data.projectile_type.clone(),
@@ -159,6 +161,7 @@ pub fn mob_execute_behavior_system(
                         mob_transform,
                         &asset_server,
                         &audio_channel,
+                        &audio_assets,
                     );
                 }
                 MobBehavior::DealDamageToPlayerOnImpact => {
@@ -178,7 +181,7 @@ pub fn mob_execute_behavior_system(
                 }
                 MobBehavior::DieAtZeroHealth => {
                     if mob_component.health.is_dead() {
-                        audio_channel.play(asset_server.load("sounds/mob_explosion.wav"));
+                        audio_channel.play(audio_assets.mob_explosion.clone());
 
                         // spawn mob explosion
                         spawn_effect_event_writer.send(SpawnEffectEvent {
@@ -284,6 +287,7 @@ fn explode_on_impact(
     transform: &Transform,
     asset_server: &AssetServer,
     audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
+    audio_assets: &GameAudioAssets,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
@@ -294,7 +298,7 @@ fn explode_on_impact(
                 player_damage: _,
                 mob_damage: _,
             } => {
-                audio_channel.play(asset_server.load("sounds/mob_explosion.wav"));
+                audio_channel.play(audio_assets.mob_explosion.clone());
                 // remove faction check to allow allied mobs to harm players
                 if entity == *mob_entity {
                     // spawn mob explosion
@@ -317,7 +321,7 @@ fn explode_on_impact(
                 mob_faction_2: _,
                 mob_damage_2: _,
             } => {
-                audio_channel.play(asset_server.load("sounds/mob_explosion.wav"));
+                audio_channel.play(audio_assets.mob_explosion.clone());
                 if entity == *mob_entity_1 {
                     // spawn mob explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {

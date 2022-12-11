@@ -116,7 +116,6 @@ fn main() {
             include_bytes!("../data/effects.ron"),
         )
         .unwrap(),
-        texture_atlas_handle: HashMap::new(),
     })
     .insert_resource(spawnable::ProjectileResource {
         projectiles: from_bytes::<HashMap<spawnable::ProjectileType, spawnable::ProjectileData>>(
@@ -159,7 +158,6 @@ fn main() {
         PHYSICS_SCALE,
     ))
     .add_startup_system(camera::setup_cameras_system)
-    .add_startup_system(audio::start_background_audio_system)
     .add_startup_system(audio::set_audio_volume_system)
     .add_system(ui::bouncing_prompt_system)
     .add_system(options::toggle_fullscreen_system)
@@ -181,17 +179,20 @@ fn main() {
                 "mob_assets.assets",
                 "consumable_assets.assets",
                 "effect_assets.assets",
+                "game_audio_assets.assets",
             ])
             .with_collection::<assets::PlayerAssets>()
             .with_collection::<assets::ProjectileAssets>()
             .with_collection::<assets::MobAssets>()
             .with_collection::<assets::ConsumableAssets>()
-            .with_collection::<assets::EffectAssets>(),
+            .with_collection::<assets::EffectAssets>()
+            .with_collection::<assets::GameAudioAssets>(),
     );
 
     // game startup systems (perhaps exchange with app.add_startup_system_set)
     app.add_system_set(
         SystemSet::on_enter(states::AppStates::Game)
+            .with_system(audio::start_background_audio_system)
             .with_system(run::setup_first_level.after("init"))
             .with_system(setup_game.label("init"))
             .with_system(setup_physics.label("init"))
@@ -357,7 +358,6 @@ fn setup_game(
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut repeater: ResMut<spawnable::RepeaterResource>,
-    mut effects: ResMut<spawnable::EffectsResource>,
     mut run_resource: ResMut<run::RunResource>,
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
     levels_resource: Res<run::LevelsResource>,

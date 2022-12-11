@@ -1,5 +1,6 @@
 use crate::{
     arena::ArenaBarrierComponent,
+    assets::GameAudioAssets,
     audio,
     player::PlayerComponent,
     spawnable::{
@@ -235,6 +236,7 @@ pub fn contact_collision_system(
     barrier_query: Query<Entity, With<ArenaBarrierComponent>>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
+    audio_assets: Res<GameAudioAssets>,
 ) {
     // loop through all collision events
     'collision_events: for contact_event in collision_events.iter() {
@@ -262,7 +264,7 @@ pub fn contact_collision_system(
                     // check if player collided with a mob
                     for (mob_entity, mob_component) in mob_query.iter() {
                         if colliding_entities.secondary == mob_entity {
-                            audio_channel.play(asset_server.load("sounds/collision.wav"));
+                            audio_channel.play(audio_assets.collision.clone());
                             collision_event_writer.send(SortedCollisionEvent::PlayerToMobContact {
                                 player_entity: colliding_entities.primary,
                                 mob_entity: colliding_entities.secondary,
@@ -283,7 +285,7 @@ pub fn contact_collision_system(
                         // check if secondary entity is a barrier
                         if colliding_entities.secondary == barrier_entity {
                             // play the barrier bounce sound
-                            audio_channel.play(asset_server.load("sounds/barrier_bounce.wav"));
+                            audio_channel.play(audio_assets.barrier_bounce.clone());
                             continue 'collision_events;
                         }
                     }
@@ -315,7 +317,7 @@ pub fn contact_collision_system(
                         // check if secondary entity is another mob
                         if colliding_entities.secondary == mob_entity_2 {
                             // play collision sound
-                            audio_channel.play(asset_server.load("sounds/collision.wav"));
+                            audio_channel.play(audio_assets.collision.clone());
 
                             // send two sorted collision events, swapping the position of the mobs in the struct
                             collision_event_writer.send(SortedCollisionEvent::MobToMobContact {
@@ -366,7 +368,7 @@ pub fn contact_collision_system(
                                 },
                             );
                             // play the barrier bounce sound
-                            audio_channel.play(asset_server.load("sounds/barrier_bounce.wav"));
+                            audio_channel.play(audio_assets.barrier_bounce.clone());
                             continue 'collision_events;
                         }
                     }

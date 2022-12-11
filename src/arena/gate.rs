@@ -1,4 +1,5 @@
 use crate::{
+    assets::GameAudioAssets,
     audio,
     spawnable::{MobComponent, SpawnableComponent},
     states::{AppStateComponent, AppStates},
@@ -41,6 +42,7 @@ pub fn despawn_gates_system(
     mut enemy_bottom_event: EventWriter<MobReachedBottomGateEvent>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
+    audio_assets: Res<GameAudioAssets>,
 ) {
     // loop through all collision events
     'event_loop: for collision_event in collision_events.iter() {
@@ -78,9 +80,9 @@ pub fn despawn_gates_system(
 
                             // play sound based on if defense was increased or decreased
                             if mob_component.defense_damage > 0.0 {
-                                audio_channel.play(asset_server.load("sounds/defense_damage.wav"));
+                                audio_channel.play(audio_assets.defense_damage.clone());
                             } else if mob_component.defense_damage < -0.5 {
-                                audio_channel.play(asset_server.load("sounds/defense_heal.wav"));
+                                audio_channel.play(audio_assets.defense_heal.clone());
                             }
                         }
                     }

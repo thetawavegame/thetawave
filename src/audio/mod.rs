@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 
+use crate::assets::GameAudioAssets;
+
 // audio channels
 #[derive(Resource)]
 pub struct BackgroundMusicAudioChannel;
@@ -10,12 +12,10 @@ pub struct MenuAudioChannel;
 pub struct SoundEffectsAudioChannel;
 
 pub fn start_background_audio_system(
-    asset_server: Res<AssetServer>,
+    audio_assets: Res<GameAudioAssets>,
     audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
 ) {
-    audio_channel
-        .play(asset_server.load("sounds/deflector_soundtrack.mp3"))
-        .looped();
+    audio_channel.play(audio_assets.game_music.clone()).looped();
 }
 
 pub fn set_audio_volume_system(
