@@ -3,8 +3,8 @@ use crate::{
     audio,
     collision::SortedCollisionEvent,
     spawnable::{
-        BossPartComponent, EffectType, Faction, MobComponent, PlayerComponent, ProjectileType,
-        SpawnEffectEvent, SpawnableComponent,
+        EffectType, Faction, MobComponent, PlayerComponent, ProjectileType, SpawnEffectEvent,
+        SpawnableComponent,
     },
 };
 use bevy::math::Vec3Swizzles;
@@ -34,7 +34,6 @@ pub fn projectile_execute_behavior_system(
     )>,
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
     mut mob_query: Query<(Entity, &mut MobComponent)>,
-    mut boss_part_query: Query<(Entity, &mut BossPartComponent)>,
     mut collision_events: EventReader<SortedCollisionEvent>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     time: Res<Time>,
@@ -64,7 +63,6 @@ pub fn projectile_execute_behavior_system(
                     &mut spawn_effect_event_writer,
                     &mut player_query,
                     &mut mob_query,
-                    &mut boss_part_query,
                     &asset_server,
                     &audio_channel,
                     &audio_assets,
@@ -123,7 +121,6 @@ fn explode_on_impact(
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
     player_query: &mut Query<(Entity, &mut PlayerComponent)>,
     mob_query: &mut Query<(Entity, &mut MobComponent)>,
-    boss_part_query: &mut Query<(Entity, &mut BossPartComponent)>,
     asset_server: &AssetServer,
     audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
     audio_assets: &GameAudioAssets,
@@ -207,42 +204,6 @@ fn explode_on_impact(
                     for (mob_entity_q, mut mob_component) in mob_query.iter_mut() {
                         if *mob_entity == mob_entity_q {
                             mob_component.health.take_damage(*projectile_damage);
-                        }
-                    }
-                    // despawn blast
-                    commands.entity(entity).despawn_recursive();
-                    continue;
-                }
-            }
-
-            SortedCollisionEvent::BossPartToProjectileIntersection {
-                boss_part_entity,
-                projectile_entity,
-                projectile_faction,
-                projectile_damage,
-            } => {
-                audio_channel.play(audio_assets.mob_hit.clone());
-
-                if entity == *projectile_entity {
-                    match projectile_faction {
-                        Faction::Ally => {
-                            // spawn explosion
-                            spawn_effect_event_writer.send(SpawnEffectEvent {
-                                effect_type: EffectType::AllyBlastExplosion,
-                                position: transform.translation.xy(),
-                                scale: Vec2::ZERO,
-                                rotation: 0.0,
-                            });
-                        }
-                        Faction::Enemy => {}
-                        Faction::Neutral => {}
-                    }
-
-                    // deal damage to mob
-                    for (boss_part_entity_q, mut boss_part_component) in boss_part_query.iter_mut()
-                    {
-                        if *boss_part_entity == boss_part_entity_q {
-                            boss_part_component.health.take_damage(*projectile_damage);
                         }
                     }
                     // despawn blast

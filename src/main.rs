@@ -8,7 +8,6 @@ use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
 use ron::de::from_bytes;
-use spawnable::{RepeaterPartType, RepeaterPartsData};
 use states::{AppStateComponent, AppStates};
 use std::collections::HashMap;
 use ui::EndGameTransitionResource;
@@ -104,13 +103,6 @@ fn main() {
         .unwrap(),
         texture_atlas_handle: HashMap::new(),
     })
-    .insert_resource(spawnable::RepeaterResource {
-        repeater_parts: from_bytes::<RepeaterPartsData>(include_bytes!(
-            "../data/bosses/repeater.ron"
-        ))
-        .unwrap(),
-        texture_atlas_handle: HashMap::new(),
-    })
     .insert_resource(spawnable::EffectsResource {
         effects: from_bytes::<HashMap<spawnable::EffectType, spawnable::EffectData>>(
             include_bytes!("../data/effects.ron"),
@@ -146,7 +138,6 @@ fn main() {
     .add_event::<arena::MobReachedBottomGateEvent>()
     .add_event::<spawnable::SpawnEffectEvent>()
     .add_event::<spawnable::SpawnConsumableEvent>()
-    .add_event::<spawnable::SpawnBossEvent>()
     .add_event::<spawnable::SpawnProjectileEvent>()
     .add_event::<spawnable::SpawnMobEvent>()
     .add_plugin(AudioPlugin)
@@ -307,7 +298,6 @@ fn main() {
             )
             .with_system(run::level_system.label("level"))
             .with_system(run::spawn_formation_system.after("level"))
-            .with_system(spawnable::spawn_boss_system.after("level"))
             .with_system(run::next_level_system.label("next_level").after("level"))
             .with_system(player::player_fire_weapon_system)
             .with_system(spawnable::spawn_effect_system) // event generated in projectile execute behavior, consumable execute behavior
@@ -318,7 +308,6 @@ fn main() {
             .with_system(player::player_death_system)
             .with_system(ui::update_ui.after("next_level"))
             .with_system(ui::fade_out_system)
-            .with_system(spawnable::repeater_behavior_system)
             .with_system(player::player_scale_fire_rate_system),
     );
 
@@ -357,7 +346,6 @@ fn setup_game(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
-    mut repeater: ResMut<spawnable::RepeaterResource>,
     mut run_resource: ResMut<run::RunResource>,
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
     levels_resource: Res<run::LevelsResource>,
@@ -379,6 +367,7 @@ fn setup_game(
         .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new("Game Fade"));
 
+    /*
     // load repeater boss assets
     let mut repeater_texture_atlas_dict = HashMap::new();
     let texture_handle = asset_server.load(&repeater.repeater_parts.body.texture.path[..]);
@@ -455,6 +444,7 @@ fn setup_game(
 
     // add texture atlas dict to the repeater resource
     repeater.texture_atlas_handle = repeater_texture_atlas_dict;
+    */
 
     // create run resource
     run_resource.create_level(&levels_resource);

@@ -129,6 +129,10 @@ pub struct MobAssets {
     pub strafer_thruster: Handle<TextureAtlas>,
     #[asset(key = "money_asteroid")]
     pub money_asteroid: Handle<TextureAtlas>,
+    #[asset(key = "hauler.front")]
+    pub hauler_front: Handle<TextureAtlas>,
+    #[asset(key = "hauler.back")]
+    pub hauler_back: Handle<TextureAtlas>,
 }
 
 impl MobAssets {
@@ -143,7 +147,8 @@ impl MobAssets {
                 EnemyType::Missile => self.missile.clone(),
             },
             MobType::Ally(ally_type) => match ally_type {
-                crate::spawnable::AllyType::Hauler => self.hauler.clone(),
+                crate::spawnable::AllyType::Hauler => self.hauler_front.clone(),
+                crate::spawnable::AllyType::HaulerCargo => self.hauler_back.clone(),
             },
             MobType::Neutral(neutral_type) => match neutral_type {
                 crate::spawnable::NeutralType::MoneyAsteroid => self.money_asteroid.clone(),
@@ -162,7 +167,8 @@ impl MobAssets {
                 EnemyType::Missile => Some(self.missile_thruster.clone()),
             },
             MobType::Ally(ally_type) => match ally_type {
-                crate::spawnable::AllyType::Hauler => Some(self.hauler_thruster.clone()),
+                crate::spawnable::AllyType::Hauler => None,
+                crate::spawnable::AllyType::HaulerCargo => None,
             },
             MobType::Neutral(neutral_type) => match neutral_type {
                 crate::spawnable::NeutralType::MoneyAsteroid => None,

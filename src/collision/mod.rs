@@ -4,8 +4,7 @@ use crate::{
     audio,
     player::PlayerComponent,
     spawnable::{
-        BossPartComponent, ConsumableComponent, Faction, MobComponent, MobType,
-        ProjectileComponent, ProjectileType,
+        ConsumableComponent, Faction, MobComponent, MobType, ProjectileComponent, ProjectileType,
     },
 };
 use bevy::prelude::*;
@@ -73,7 +72,6 @@ pub fn intersection_collision_system(
     player_query: Query<Entity, With<PlayerComponent>>,
     consumable_query: Query<Entity, With<ConsumableComponent>>,
     mob_query: Query<(Entity, &MobComponent)>,
-    boss_part_query: Query<(Entity, &BossPartComponent)>,
     projectile_query: Query<(Entity, &ProjectileComponent)>,
 ) {
     // loop through all collision events
@@ -85,47 +83,6 @@ pub fn intersection_collision_system(
             CollisionEventFlags::SENSOR,
         ) = collision_event
         {
-            // check if boss part was collided with
-            for (boss_part_entity, boss_part_component) in boss_part_query.iter() {
-                // first entity is projectile, second is the other colliding entity
-                let colliding_entities: Option<CollidingEntities> =
-                    if boss_part_entity == *collider1_entity {
-                        Some(CollidingEntities {
-                            primary: *collider1_entity,
-                            secondary: *collider2_entity,
-                        })
-                    } else if boss_part_entity == *collider2_entity {
-                        Some(CollidingEntities {
-                            primary: *collider2_entity,
-                            secondary: *collider1_entity,
-                        })
-                    } else {
-                        None
-                    };
-
-                if let Some(colliding_entities) = colliding_entities {
-                    // check for projectile
-                    for (projectile_entity, projectile_component) in projectile_query.iter() {
-                        if colliding_entities.secondary == projectile_entity {
-                            collision_event_writer.send(
-                                SortedCollisionEvent::BossPartToProjectileIntersection {
-                                    boss_part_entity: colliding_entities.primary,
-                                    projectile_entity: colliding_entities.secondary,
-                                    projectile_faction: match projectile_component
-                                        .projectile_type
-                                        .clone()
-                                    {
-                                        ProjectileType::Blast(faction) => faction,
-                                    },
-                                    projectile_damage: projectile_component.damage,
-                                },
-                            );
-                            continue 'collision_events;
-                        }
-                    }
-                }
-            }
-
             //check if player was collided with
             for player_entity in player_query.iter() {
                 // first entity is player second, is the other colliding entity

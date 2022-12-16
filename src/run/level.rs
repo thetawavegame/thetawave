@@ -108,7 +108,6 @@ impl Level {
         &mut self,
         delta: Duration,
         spawn_formation: &mut EventWriter<formation::SpawnFormationEvent>,
-        spawn_boss: &mut EventWriter<spawnable::SpawnBossEvent>,
         level_completed: &mut EventWriter<LevelCompletedEvent>,
         mob_reached_bottom: &mut EventReader<MobReachedBottomGateEvent>,
         formation_pools: &formation::FormationPoolsResource,
@@ -196,10 +195,12 @@ impl Level {
                         .just_finished()
                     {
                         // spawn the boss
+                        /*
                         spawn_boss.send(spawnable::SpawnBossEvent {
                             boss_type,
                             position: Vec2::new(0.0, 1750.0),
                         })
+                        */
                     }
                 }
                 _ => {}
@@ -304,7 +305,6 @@ pub enum LevelPhaseType {
 pub fn level_system(
     mut run_resource: ResMut<super::RunResource>,
     mut spawn_formation: EventWriter<formation::SpawnFormationEvent>,
-    mut spawn_boss: EventWriter<spawnable::SpawnBossEvent>,
     mut level_completed: EventWriter<LevelCompletedEvent>,
     mut mob_reached_bottom: EventReader<MobReachedBottomGateEvent>,
     formation_pools: Res<formation::FormationPoolsResource>,
@@ -316,7 +316,6 @@ pub fn level_system(
         run_resource.tick(
             time.delta(),
             &mut spawn_formation,
-            &mut spawn_boss,
             &mut level_completed,
             &mut mob_reached_bottom,
             &formation_pools,

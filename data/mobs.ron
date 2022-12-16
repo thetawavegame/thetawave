@@ -95,9 +95,9 @@
 		angular_speed: 0.0,
 		attack_damage: 0.0,
 		collision_damage: 5.0,
-		defense_damage: -10.0,
+		defense_damage: 0.0,
 		initial_motion: (),
-		collider_dimensions: (5.0, 10.0),
+		collider_dimensions: (1.0, 1.0),
 		z_level: 6.0,
 		consumable_drops: Standard,
 		health: (
@@ -106,9 +106,20 @@
 			armor: 0,
 		),
 		animation: (
-			direction: PingPong(Forward),
-			frame_duration: 0.25,
+			direction: None,
+			frame_duration: 1.0,
 		),
+		children: Some([(
+			mob_type: Ally(HaulerCargo),
+			offset_position: (0.0, 20.0),
+			offset_rotation: 0.0,
+			joint: (
+				joint_type: Fixed,
+				parent_anchor: (0.0, -50.0),
+				child_anchor: (0.0, 50.0),
+			),
+		)]),
+		/*
 		thruster: Some((
 			y_offset: 18.0,
 			animation: (
@@ -116,6 +127,43 @@
 				frame_duration: 0.15,
 			),
 		)),
+		*/
+	),
+	Ally(HaulerCargo): (
+		mob_type: Ally(HaulerCargo),
+		spawnable_behaviors: [],
+		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+		acceleration: (0.0, 0.0),
+		deceleration: (0.0, 0.0),
+		speed: (0.0, 0.0),
+		angular_acceleration: 0.0,
+		angular_deceleration: 0.0,
+		angular_speed: 0.0,
+		attack_damage: 0.0,
+		collision_damage: 5.0,
+		defense_damage: -10.0,
+		initial_motion: (),
+		collider_dimensions: (1.0, 1.0),
+		z_level: 6.0,
+		consumable_drops: Standard,
+		health: (
+			max_health: 20.0,
+			health: 20.0,
+			armor: 0,
+		),
+		animation: (
+			direction: None,
+			frame_duration: 1.0,
+		),
+		/*
+		thruster: Some((
+			y_offset: 18.0,
+			animation: (
+				direction: PingPong(Forward),
+				frame_duration: 0.15,
+			),
+		)),
+		*/
 	),
 	Enemy(MissileLauncher): (
 		mob_type: Enemy(MissileLauncher),

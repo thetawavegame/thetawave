@@ -3,7 +3,7 @@ use bevy_kira_audio::prelude::*;
 use std::time::Duration;
 
 use crate::{
-    arena::MobReachedBottomGateEvent, assets::GameAudioAssets, audio, spawnable, states::AppStates,
+    arena::MobReachedBottomGateEvent, assets::GameAudioAssets, audio, states::AppStates,
     ui::EndGameTransitionResource,
 };
 
@@ -63,7 +63,6 @@ impl RunResource {
         &mut self,
         delta: Duration,
         spawn_formation: &mut EventWriter<formation::SpawnFormationEvent>,
-        spawn_boss: &mut EventWriter<spawnable::SpawnBossEvent>,
         level_completed: &mut EventWriter<level::LevelCompletedEvent>,
         mob_reached_bottom: &mut EventReader<MobReachedBottomGateEvent>,
         formation_pools: &formation::FormationPoolsResource,
@@ -73,7 +72,6 @@ impl RunResource {
             level.tick(
                 delta,
                 spawn_formation,
-                spawn_boss,
                 level_completed,
                 mob_reached_bottom,
                 formation_pools,
