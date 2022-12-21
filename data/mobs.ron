@@ -97,7 +97,7 @@
 		collision_damage: 5.0,
 		defense_damage: 0.0,
 		initial_motion: (),
-		collider_dimensions: (1.0, 1.0),
+		collider_dimensions: (5.0, 4.0),
 		z_level: 6.0,
 		consumable_drops: Standard,
 		health: (
@@ -119,6 +119,11 @@
 				child_anchor: (0.0, 50.0),
 			),
 		)]),
+		mob_segment_anchor_point: Some((
+			mob_segment_type: Ally(HaulerCargo),
+			position: (0.0, 15.0),
+			joint: Revolute,
+		)),
 		/*
 		thruster: Some((
 			y_offset: 18.0,

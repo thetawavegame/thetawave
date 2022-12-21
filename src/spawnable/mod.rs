@@ -62,6 +62,21 @@ pub struct SpawnableComponent {
     pub behaviors: Vec<SpawnableBehavior>,
 }
 
+impl From<&MobData> for SpawnableComponent {
+    fn from(mob_data: &MobData) -> Self {
+        SpawnableComponent {
+            spawnable_type: SpawnableType::Mob(mob_data.mob_type.clone()),
+            acceleration: mob_data.acceleration,
+            deceleration: mob_data.deceleration,
+            speed: mob_data.speed,
+            angular_acceleration: mob_data.angular_acceleration,
+            angular_deceleration: mob_data.angular_deceleration,
+            angular_speed: mob_data.angular_speed,
+            behaviors: mob_data.spawnable_behaviors.clone(),
+        }
+    }
+}
+
 /// Initial motion that entity is spawned in with
 #[derive(Deserialize, Clone, Default)]
 pub struct InitialMotion {

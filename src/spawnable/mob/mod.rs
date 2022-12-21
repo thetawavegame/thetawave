@@ -17,7 +17,11 @@ use crate::{
 };
 
 mod behavior;
-pub use self::behavior::{mob_execute_behavior_system, MobBehavior};
+mod mob_segment;
+pub use self::{
+    behavior::{mob_execute_behavior_system, MobBehavior},
+    mob_segment::*,
+};
 
 /// Core component for mobs
 #[derive(Component)]
@@ -40,6 +44,22 @@ pub struct MobComponent {
     pub health: Health,
     /// List of consumable drops
     pub consumable_drops: ConsumableDropListType,
+}
+
+impl From<&MobData> for MobComponent {
+    fn from(mob_data: &MobData) -> Self {
+        MobComponent {
+            mob_type: mob_data.mob_type.clone(),
+            behaviors: mob_data.mob_behaviors.clone(),
+            mob_spawn_timer: None,
+            weapon_timer: None,
+            attack_damage: mob_data.attack_damage,
+            collision_damage: mob_data.collision_damage,
+            defense_damage: mob_data.defense_damage,
+            health: mob_data.health.clone(),
+            consumable_drops: mob_data.consumable_drops.clone(),
+        }
+    }
 }
 
 /// Data about mob entities that can be stored in data ron file
@@ -83,25 +103,17 @@ pub struct MobData {
     pub consumable_drops: ConsumableDropListType,
     /// Z level of the mobs transform
     pub z_level: f32,
-    pub children: Option<Vec<ChildMob>>,
+    pub mob_segment_anchor_point: Option<MobSegmentAnchorPointData>,
 }
 
 #[derive(Deserialize)]
-pub struct ChildMob {
-    pub mob_type: MobType,
-    pub offset_position: Vec2,
-    pub offset_rotation: f32,
-    pub joint: JointData,
+pub struct MobSegmentAnchorPointData {
+    pub position: Vec2,
+    pub mob_segment_type: MobSegmentType,
+    pub joint: JointType,
 }
 
-#[derive(Deserialize)]
-pub struct JointData {
-    pub joint_type: JointType,
-    pub parent_anchor: Vec2,
-    pub child_anchor: Vec2,
-}
-
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub enum JointType {
     Fixed,
     Revolute,
@@ -252,97 +264,6 @@ pub fn spawn_mob(
                     direction: thruster.animation.direction.clone(),
                 })
                 .insert(Name::new("Thruster"));
-        });
-    }
-
-    // spawn children
-    if let Some(mob_children) = &mob_data.children {
-        mob.with_children(|parent| {
-            for child_mob in mob_children.iter() {
-                let parent_entity = parent.parent_entity();
-
-                // Get data from mob resource
-                let mob_data = &mob_resource.mobs[&child_mob.mob_type];
-
-                // scale collider to align with the sprite
-                let collider_size_hx =
-                    mob_data.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
-                let collider_size_hy =
-                    mob_data.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
-
-                parent
-                    .spawn_empty()
-                    .insert(ImpulseJoint::new(
-                        parent_entity,
-                        RevoluteJointBuilder::new()
-                            .local_anchor1(child_mob.joint.parent_anchor)
-                            .local_anchor2(child_mob.joint.child_anchor),
-                    ))
-                    .insert(SpriteSheetBundle {
-                        texture_atlas: mob_assets.get_mob_asset(mob_type),
-                        transform: Transform {
-                            translation: Vec2::new(0.0, 0.0).extend(mob_data.z_level),
-                            scale: Vec3::new(
-                                game_parameters.sprite_scale,
-                                game_parameters.sprite_scale,
-                                1.0,
-                            ),
-                            ..Default::default()
-                        },
-                        ..Default::default()
-                    })
-                    .insert(AnimationComponent {
-                        timer: Timer::from_seconds(
-                            mob_data.animation.frame_duration,
-                            TimerMode::Repeating,
-                        ),
-                        direction: mob_data.animation.direction.clone(),
-                    })
-                    .insert(RigidBody::Dynamic)
-                    .insert(LockedAxes::ROTATION_LOCKED)
-                    .insert(Velocity {
-                        angvel: if let Some(random_angvel) = mob_data.initial_motion.random_angvel {
-                            thread_rng().gen_range(random_angvel.0..=random_angvel.1)
-                        } else {
-                            0.0
-                        },
-                        ..Default::default()
-                    })
-                    .insert(Collider::cuboid(collider_size_hx, collider_size_hy))
-                    .insert(Friction::new(1.0))
-                    .insert(Restitution {
-                        coefficient: 1.0,
-                        combine_rule: CoefficientCombineRule::Max,
-                    })
-                    .insert(CollisionGroups {
-                        memberships: SPAWNABLE_COL_GROUP_MEMBERSHIP,
-                        filters: Group::ALL ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
-                    })
-                    .insert(MobComponent {
-                        mob_type: mob_data.mob_type.clone(),
-                        behaviors: mob_data.mob_behaviors.clone(),
-                        mob_spawn_timer: None,
-                        weapon_timer: None,
-                        attack_damage: mob_data.attack_damage,
-                        collision_damage: mob_data.collision_damage,
-                        defense_damage: mob_data.defense_damage,
-                        health: mob_data.health.clone(),
-                        consumable_drops: mob_data.consumable_drops.clone(),
-                    })
-                    .insert(SpawnableComponent {
-                        spawnable_type: SpawnableType::Mob(mob_data.mob_type.clone()),
-                        acceleration: mob_data.acceleration,
-                        deceleration: mob_data.deceleration,
-                        speed: mob_data.speed,
-                        angular_acceleration: mob_data.angular_acceleration,
-                        angular_deceleration: mob_data.angular_deceleration,
-                        angular_speed: mob_data.angular_speed,
-                        behaviors: mob_data.spawnable_behaviors.clone(),
-                    })
-                    .insert(ActiveEvents::COLLISION_EVENTS)
-                    .insert(AppStateComponent(AppStates::Game))
-                    .insert(Name::new(mob_data.mob_type.to_string()));
-            }
         });
     }
 }
