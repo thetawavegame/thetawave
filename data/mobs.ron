@@ -97,7 +97,7 @@
 		collision_damage: 5.0,
 		defense_damage: 0.0,
 		initial_motion: (),
-		collider_dimensions: (5.0, 4.0),
+		collider_dimensions: (3.5, 2.5),
 		z_level: 6.0,
 		consumable_drops: Standard,
 		health: (
@@ -121,45 +121,12 @@
 		)]),
 		mob_segment_anchor_point: Some((
 			mob_segment_type: Ally(HaulerCargo),
-			position: (0.0, 15.0),
+			position: (0.0, 20.0),
 			joint: Revolute,
+			target_pos: 0.0,
+			stiffness: 10.0,
+			damping: 10.0,
 		)),
-		/*
-		thruster: Some((
-			y_offset: 18.0,
-			animation: (
-				direction: PingPong(Forward),
-				frame_duration: 0.15,
-			),
-		)),
-		*/
-	),
-	Ally(HaulerCargo): (
-		mob_type: Ally(HaulerCargo),
-		spawnable_behaviors: [],
-		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
-		acceleration: (0.0, 0.0),
-		deceleration: (0.0, 0.0),
-		speed: (0.0, 0.0),
-		angular_acceleration: 0.0,
-		angular_deceleration: 0.0,
-		angular_speed: 0.0,
-		attack_damage: 0.0,
-		collision_damage: 5.0,
-		defense_damage: -10.0,
-		initial_motion: (),
-		collider_dimensions: (1.0, 1.0),
-		z_level: 6.0,
-		consumable_drops: Standard,
-		health: (
-			max_health: 20.0,
-			health: 20.0,
-			armor: 0,
-		),
-		animation: (
-			direction: None,
-			frame_duration: 1.0,
-		),
 		/*
 		thruster: Some((
 			y_offset: 18.0,

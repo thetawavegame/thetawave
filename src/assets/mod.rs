@@ -4,7 +4,9 @@ use bevy_kira_audio::AudioSource;
 
 use crate::{
     player::{Character, CharacterType},
-    spawnable::{ConsumableType, EffectType, EnemyType, MobType, ProjectileType},
+    spawnable::{
+        ConsumableType, EffectType, EnemyMobType, MobSegmentType, MobType, ProjectileType,
+    },
 };
 
 #[derive(AssetCollection, Resource)]
@@ -139,19 +141,26 @@ impl MobAssets {
     pub fn get_mob_asset(&self, mob_type: &MobType) -> Handle<TextureAtlas> {
         match mob_type {
             MobType::Enemy(enemy_type) => match enemy_type {
-                EnemyType::Pawn => self.pawn.clone(),
-                EnemyType::Drone => self.drone.clone(),
-                EnemyType::StraferRight => self.strafer.clone(),
-                EnemyType::StraferLeft => self.strafer.clone(),
-                EnemyType::MissileLauncher => self.missile_launcher.clone(),
-                EnemyType::Missile => self.missile.clone(),
+                EnemyMobType::Pawn => self.pawn.clone(),
+                EnemyMobType::Drone => self.drone.clone(),
+                EnemyMobType::StraferRight => self.strafer.clone(),
+                EnemyMobType::StraferLeft => self.strafer.clone(),
+                EnemyMobType::MissileLauncher => self.missile_launcher.clone(),
+                EnemyMobType::Missile => self.missile.clone(),
             },
             MobType::Ally(ally_type) => match ally_type {
-                crate::spawnable::AllyType::Hauler => self.hauler_front.clone(),
-                crate::spawnable::AllyType::HaulerCargo => self.hauler_back.clone(),
+                crate::spawnable::AllyMobType::Hauler => self.hauler_front.clone(),
             },
             MobType::Neutral(neutral_type) => match neutral_type {
-                crate::spawnable::NeutralType::MoneyAsteroid => self.money_asteroid.clone(),
+                crate::spawnable::NeutralMobType::MoneyAsteroid => self.money_asteroid.clone(),
+            },
+        }
+    }
+
+    pub fn get_mob_segment_asset(&self, mob_segment_type: &MobSegmentType) -> Handle<TextureAtlas> {
+        match mob_segment_type {
+            MobSegmentType::Ally(ally_type) => match ally_type {
+                crate::spawnable::AllyMobSegmentType::HaulerCargo => self.hauler_back.clone(),
             },
         }
     }
@@ -159,19 +168,18 @@ impl MobAssets {
     pub fn get_thruster_asset(&self, mob_type: &MobType) -> Option<Handle<TextureAtlas>> {
         match mob_type {
             MobType::Enemy(enemy_type) => match enemy_type {
-                EnemyType::Pawn => Some(self.pawn_thruster.clone()),
-                EnemyType::Drone => Some(self.drone_thruster.clone()),
-                EnemyType::StraferRight => Some(self.strafer_thruster.clone()),
-                EnemyType::StraferLeft => Some(self.strafer_thruster.clone()),
-                EnemyType::MissileLauncher => Some(self.missile_launcher_thruster.clone()),
-                EnemyType::Missile => Some(self.missile_thruster.clone()),
+                EnemyMobType::Pawn => Some(self.pawn_thruster.clone()),
+                EnemyMobType::Drone => Some(self.drone_thruster.clone()),
+                EnemyMobType::StraferRight => Some(self.strafer_thruster.clone()),
+                EnemyMobType::StraferLeft => Some(self.strafer_thruster.clone()),
+                EnemyMobType::MissileLauncher => Some(self.missile_launcher_thruster.clone()),
+                EnemyMobType::Missile => Some(self.missile_thruster.clone()),
             },
             MobType::Ally(ally_type) => match ally_type {
-                crate::spawnable::AllyType::Hauler => None,
-                crate::spawnable::AllyType::HaulerCargo => None,
+                crate::spawnable::AllyMobType::Hauler => None,
             },
             MobType::Neutral(neutral_type) => match neutral_type {
-                crate::spawnable::NeutralType::MoneyAsteroid => None,
+                crate::spawnable::NeutralMobType::MoneyAsteroid => None,
             },
         }
     }

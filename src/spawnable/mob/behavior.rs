@@ -243,6 +243,18 @@ fn receive_damage_on_impact(
                     mob_component.health.take_damage(*mob_damage_2);
                 }
             }
+            SortedCollisionEvent::MobToMobSegmentContact {
+                mob_entity,
+                mob_faction: _,
+                mob_damage: _,
+                mob_segment_entity: _,
+                mob_segment_faction: _,
+                mob_segment_damage,
+            } => {
+                if entity == *mob_entity {
+                    mob_component.health.take_damage(*mob_segment_damage);
+                }
+            }
 
             _ => {}
         }
@@ -331,6 +343,26 @@ fn explode_on_impact(
                         rotation: 0.0,
                     });
                     // despawn mob
+                    commands.entity(entity).despawn_recursive();
+                    continue;
+                }
+            }
+            SortedCollisionEvent::MobToMobSegmentContact {
+                mob_entity,
+                mob_faction: _,
+                mob_damage: _,
+                mob_segment_entity: _,
+                mob_segment_faction: _,
+                mob_segment_damage: _,
+            } => {
+                audio_channel.play(audio_assets.mob_explosion.clone());
+                if entity == *mob_entity {
+                    spawn_effect_event_writer.send(SpawnEffectEvent {
+                        effect_type: EffectType::MobExplosion,
+                        position: transform.translation.xy(),
+                        scale: Vec2::ZERO,
+                        rotation: 0.0,
+                    });
                     commands.entity(entity).despawn_recursive();
                     continue;
                 }

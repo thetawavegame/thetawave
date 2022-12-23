@@ -169,8 +169,6 @@ fn explode_on_impact(
                 projectile_faction,
                 projectile_damage,
             } => {
-                audio_channel.play(audio_assets.mob_hit.clone());
-
                 if entity == *projectile_entity
                     && !match mob_faction {
                         Faction::Ally => matches!(projectile_faction, Faction::Ally),
@@ -178,6 +176,7 @@ fn explode_on_impact(
                         Faction::Neutral => matches!(projectile_faction, Faction::Neutral),
                     }
                 {
+                    audio_channel.play(audio_assets.mob_hit.clone());
                     match projectile_faction {
                         Faction::Ally => {
                             // spawn explosion

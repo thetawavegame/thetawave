@@ -23,6 +23,8 @@ pub use self::{
     mob_segment::*,
 };
 
+use super::MobSegmentType;
+
 /// Core component for mobs
 #[derive(Component)]
 pub struct MobComponent {
@@ -106,16 +108,18 @@ pub struct MobData {
     pub mob_segment_anchor_point: Option<MobSegmentAnchorPointData>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct MobSegmentAnchorPointData {
     pub position: Vec2,
     pub mob_segment_type: MobSegmentType,
     pub joint: JointType,
+    pub target_pos: f32,
+    pub stiffness: f32,
+    pub damping: f32,
 }
 
 #[derive(Deserialize, Clone)]
 pub enum JointType {
-    Fixed,
     Revolute,
 }
 
@@ -132,6 +136,7 @@ pub fn spawn_mob_system(
     mut commands: Commands,
     mut event_reader: EventReader<SpawnMobEvent>,
     mob_resource: Res<MobsResource>,
+    mob_segments_resource: Res<MobSegmentsResource>,
     mob_assets: Res<MobAssets>,
     game_parameters: Res<GameParametersResource>,
 ) {
@@ -139,6 +144,7 @@ pub fn spawn_mob_system(
         spawn_mob(
             &event.mob_type,
             &mob_resource,
+            &mob_segments_resource,
             &mob_assets,
             event.position,
             &mut commands,
@@ -170,6 +176,7 @@ pub struct MobsResource {
 pub fn spawn_mob(
     mob_type: &MobType,
     mob_resource: &MobsResource,
+    mob_segments_resource: &MobSegmentsResource,
     mob_assets: &MobAssets,
     position: Vec2,
     commands: &mut Commands,
@@ -222,27 +229,8 @@ pub fn spawn_mob(
         memberships: SPAWNABLE_COL_GROUP_MEMBERSHIP,
         filters: Group::ALL ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
     })
-    .insert(MobComponent {
-        mob_type: mob_data.mob_type.clone(),
-        behaviors: mob_data.mob_behaviors.clone(),
-        mob_spawn_timer: None,
-        weapon_timer: None,
-        attack_damage: mob_data.attack_damage,
-        collision_damage: mob_data.collision_damage,
-        defense_damage: mob_data.defense_damage,
-        health: mob_data.health.clone(),
-        consumable_drops: mob_data.consumable_drops.clone(),
-    })
-    .insert(SpawnableComponent {
-        spawnable_type: SpawnableType::Mob(mob_data.mob_type.clone()),
-        acceleration: mob_data.acceleration,
-        deceleration: mob_data.deceleration,
-        speed: mob_data.speed,
-        angular_acceleration: mob_data.angular_acceleration,
-        angular_deceleration: mob_data.angular_deceleration,
-        angular_speed: mob_data.angular_speed,
-        behaviors: mob_data.spawnable_behaviors.clone(),
-    })
+    .insert(MobComponent::from(mob_data))
+    .insert(SpawnableComponent::from(mob_data))
     .insert(ActiveEvents::COLLISION_EVENTS)
     .insert(AppStateComponent(AppStates::Game))
     .insert(Name::new(mob_data.mob_type.to_string()));
@@ -265,5 +253,36 @@ pub fn spawn_mob(
                 })
                 .insert(Name::new("Thruster"));
         });
+    }
+
+    // add mob segment if anchor point
+    if let Some(anchor_point) = mob_data.mob_segment_anchor_point.clone() {
+        // spawn mob_segment
+
+        let mob_segment_data = &mob_segments_resource.mob_segments[&anchor_point.mob_segment_type];
+
+        // create joint
+        let joint = match &anchor_point.joint {
+            JointType::Revolute => RevoluteJointBuilder::new()
+                .local_anchor1(anchor_point.position)
+                .local_anchor2(mob_segment_data.anchor_point)
+                .motor_position(
+                    anchor_point.target_pos,
+                    anchor_point.stiffness,
+                    anchor_point.damping,
+                ),
+        };
+
+        spawn_mob_segment(
+            &mob_segment_data.mob_segment_type,
+            mob.id(),
+            &joint,
+            mob_segments_resource,
+            mob_assets,
+            position,
+            anchor_point.position,
+            commands,
+            game_parameters,
+        )
     }
 }

@@ -20,7 +20,7 @@ pub use self::boss::{
 
 pub use self::mob::{
     mob_execute_behavior_system, spawn_mob, spawn_mob_system, MobBehavior, MobComponent, MobData,
-    MobsResource, SpawnMobEvent,
+    MobSegmentComponent, MobSegmentData, MobSegmentsResource, MobsResource, SpawnMobEvent,
 };
 pub use self::projectile::{
     projectile_execute_behavior_system, spawn_projectile, spawn_projectile_system,
@@ -77,6 +77,21 @@ impl From<&MobData> for SpawnableComponent {
     }
 }
 
+impl SpawnableComponent {
+    fn new(spawnable_type: SpawnableType) -> Self {
+        SpawnableComponent {
+            spawnable_type,
+            acceleration: Vec2::ZERO,
+            deceleration: Vec2::ZERO,
+            speed: Vec2::ZERO,
+            angular_acceleration: 0.0,
+            angular_deceleration: 0.0,
+            angular_speed: 0.0,
+            behaviors: vec![],
+        }
+    }
+}
+
 /// Initial motion that entity is spawned in with
 #[derive(Deserialize, Clone, Default)]
 pub struct InitialMotion {
@@ -121,6 +136,7 @@ pub enum SpawnableType {
     Item(ItemType),
     Effect(EffectType),
     Mob(MobType),
+    MobSegment(MobSegmentType),
 }
 
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
@@ -152,14 +168,19 @@ pub enum Faction {
 /// Type that encompasses all spawnable mobs
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum MobType {
-    Enemy(EnemyType),
-    Ally(AllyType),
-    Neutral(NeutralType),
+    Enemy(EnemyMobType),
+    Ally(AllyMobType),
+    Neutral(NeutralMobType),
+}
+
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+pub enum MobSegmentType {
+    Ally(AllyMobSegmentType),
 }
 
 /// Type that encompasses all spawnable enemy mobs
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
-pub enum EnemyType {
+pub enum EnemyMobType {
     Pawn,
     Drone,
     StraferRight,
@@ -170,14 +191,19 @@ pub enum EnemyType {
 
 /// Type that encompasses all spawnable ally mobs
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
-pub enum AllyType {
+pub enum AllyMobType {
     Hauler,
+}
+
+/// Type that encompasses all spawnable ally mob segments
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+pub enum AllyMobSegmentType {
     HaulerCargo,
 }
 
 /// Type that encompasses all spawnable neutral mobs
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
-pub enum NeutralType {
+pub enum NeutralMobType {
     MoneyAsteroid,
 }
 

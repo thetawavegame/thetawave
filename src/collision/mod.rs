@@ -4,7 +4,8 @@ use crate::{
     audio,
     player::PlayerComponent,
     spawnable::{
-        ConsumableComponent, Faction, MobComponent, MobType, ProjectileComponent, ProjectileType,
+        ConsumableComponent, Faction, MobComponent, MobSegmentComponent, MobSegmentType, MobType,
+        ProjectileComponent, ProjectileType,
     },
 };
 use bevy::prelude::*;
@@ -27,9 +28,10 @@ pub enum SortedCollisionEvent {
         projectile_faction: Faction,
         projectile_damage: f32,
     },
-    BossPartToProjectileIntersection {
-        boss_part_entity: Entity,
+    MobSegmentToProjectileIntersection {
+        mob_segment_entity: Entity,
         projectile_entity: Entity,
+        mob_segment_faction: Faction,
         projectile_faction: Faction,
         projectile_damage: f32,
     },
@@ -44,6 +46,13 @@ pub enum SortedCollisionEvent {
         player_damage: f32,
         mob_damage: f32,
     },
+    PlayerToMobSegmentContact {
+        player_entity: Entity,
+        mob_segment_entity: Entity,
+        mob_segment_faction: Faction,
+        player_damage: f32,
+        mob_segment_damage: f32,
+    },
     MobToMobContact {
         mob_entity_1: Entity,
         mob_faction_1: Faction,
@@ -51,6 +60,14 @@ pub enum SortedCollisionEvent {
         mob_entity_2: Entity,
         mob_faction_2: Faction,
         mob_damage_2: f32,
+    },
+    MobToMobSegmentContact {
+        mob_entity: Entity,
+        mob_faction: Faction,
+        mob_damage: f32,
+        mob_segment_entity: Entity,
+        mob_segment_faction: Faction,
+        mob_segment_damage: f32,
     },
     MobToBarrierContact {
         mob_entity: Entity,
@@ -72,6 +89,7 @@ pub fn intersection_collision_system(
     player_query: Query<Entity, With<PlayerComponent>>,
     consumable_query: Query<Entity, With<ConsumableComponent>>,
     mob_query: Query<(Entity, &MobComponent)>,
+    mob_segment_query: Query<(Entity, &MobSegmentComponent)>,
     projectile_query: Query<(Entity, &ProjectileComponent)>,
 ) {
     // loop through all collision events
@@ -136,8 +154,9 @@ pub fn intersection_collision_system(
                 }
             }
 
+            // check of mob was collided with
             for (mob_entity, mob_component) in mob_query.iter() {
-                // first entity is projectile, second is the other colliding entity
+                // first entity is mob, second is the other colliding entity
                 let colliding_entities: Option<CollidingEntities> =
                     if mob_entity == *collider1_entity {
                         Some(CollidingEntities {
@@ -180,6 +199,52 @@ pub fn intersection_collision_system(
                     }
                 }
             }
+
+            // check if mob segment was collided with
+            for (mob_segment_entity, mob_segment_component) in mob_segment_query.iter() {
+                // first entity is mob_segment, second is the other colliding entity
+                let colliding_entities: Option<CollidingEntities> =
+                    if mob_segment_entity == *collider1_entity {
+                        Some(CollidingEntities {
+                            primary: *collider1_entity,
+                            secondary: *collider2_entity,
+                        })
+                    } else if mob_segment_entity == *collider2_entity {
+                        Some(CollidingEntities {
+                            primary: *collider2_entity,
+                            secondary: *collider1_entity,
+                        })
+                    } else {
+                        None
+                    };
+
+                if let Some(colliding_entities) = colliding_entities {
+                    // check for projectile
+                    for (projectile_entity, projectile_component) in projectile_query.iter() {
+                        if colliding_entities.secondary == projectile_entity {
+                            collision_event_writer.send(
+                                SortedCollisionEvent::MobSegmentToProjectileIntersection {
+                                    mob_segment_entity: colliding_entities.primary,
+                                    projectile_entity: colliding_entities.secondary,
+                                    mob_segment_faction: match mob_segment_component
+                                        .mob_segment_type
+                                    {
+                                        MobSegmentType::Ally(_) => Faction::Ally,
+                                    },
+                                    projectile_faction: match projectile_component
+                                        .projectile_type
+                                        .clone()
+                                    {
+                                        ProjectileType::Blast(faction) => faction,
+                                    },
+                                    projectile_damage: projectile_component.damage,
+                                },
+                            );
+                            continue 'collision_events;
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -190,6 +255,7 @@ pub fn contact_collision_system(
     mut collision_events: EventReader<CollisionEvent>,
     player_query: Query<(Entity, &PlayerComponent)>,
     mob_query: Query<(Entity, &MobComponent)>,
+    mob_segment_query: Query<(Entity, &MobSegmentComponent)>,
     barrier_query: Query<Entity, With<ArenaBarrierComponent>>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
@@ -243,6 +309,28 @@ pub fn contact_collision_system(
                         if colliding_entities.secondary == barrier_entity {
                             // play the barrier bounce sound
                             audio_channel.play(audio_assets.barrier_bounce.clone());
+                            continue 'collision_events;
+                        }
+                    }
+
+                    // check if player collided with segment
+                    for (mob_segment_entity, mob_segment_component) in mob_segment_query.iter() {
+                        if colliding_entities.secondary == mob_segment_entity {
+                            audio_channel.play(audio_assets.collision.clone());
+                            collision_event_writer.send(
+                                SortedCollisionEvent::PlayerToMobSegmentContact {
+                                    player_entity: colliding_entities.primary,
+                                    mob_segment_entity: colliding_entities.secondary,
+                                    mob_segment_faction: match mob_segment_component
+                                        .mob_segment_type
+                                        .clone()
+                                    {
+                                        MobSegmentType::Ally(_) => Faction::Ally,
+                                    },
+                                    player_damage: player_component.collision_damage,
+                                    mob_segment_damage: mob_segment_component.collision_damage,
+                                },
+                            );
                             continue 'collision_events;
                         }
                     }
@@ -326,6 +414,33 @@ pub fn contact_collision_system(
                             );
                             // play the barrier bounce sound
                             audio_channel.play(audio_assets.barrier_bounce.clone());
+                            continue 'collision_events;
+                        }
+                    }
+                    // check if mob collided with mob segment
+                    for (mob_segment_entity, mob_segment_component) in mob_segment_query.iter() {
+                        // check if secondary entity is a mob segment
+                        if colliding_entities.secondary == mob_segment_entity {
+                            // send  a sorted collision event
+                            audio_channel.play(audio_assets.collision.clone());
+                            collision_event_writer.send(
+                                SortedCollisionEvent::MobToMobSegmentContact {
+                                    mob_entity: colliding_entities.primary,
+                                    mob_faction: match mob_component_1.mob_type {
+                                        MobType::Enemy(_) => Faction::Enemy,
+                                        MobType::Ally(_) => Faction::Ally,
+                                        MobType::Neutral(_) => Faction::Neutral,
+                                    },
+                                    mob_damage: mob_component_1.collision_damage,
+                                    mob_segment_entity: colliding_entities.secondary,
+                                    mob_segment_faction: match mob_segment_component
+                                        .mob_segment_type
+                                    {
+                                        MobSegmentType::Ally(_) => Faction::Ally,
+                                    },
+                                    mob_segment_damage: mob_segment_component.collision_damage,
+                                },
+                            );
                             continue 'collision_events;
                         }
                     }

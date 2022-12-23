@@ -2,7 +2,7 @@ use crate::{
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     player::PlayerComponent,
-    spawnable::{EnemyType, MobType, SpawnableComponent, SpawnableType},
+    spawnable::{EnemyMobType, MobType, SpawnableComponent, SpawnableType},
     tools::signed_modulo,
 };
 use bevy::{math::Vec3Swizzles, prelude::*};
@@ -97,7 +97,7 @@ pub fn spawnable_set_target_behavior_system(
             match &spawnable_component.spawnable_type {
                 SpawnableType::Mob(mob_type) => match mob_type {
                     MobType::Enemy(enemy_type) => match enemy_type {
-                        EnemyType::Missile => {
+                        EnemyMobType::Missile => {
                             // set target to closest player
                             for behavior in spawnable_component.behaviors.iter_mut() {
                                 *behavior = match behavior {
@@ -145,7 +145,8 @@ fn change_horizontal_direction_on_impact(
                 mob_entity_1: mob_entity,
                 ..
             }
-            | SortedCollisionEvent::MobToBarrierContact { mob_entity, .. } => {
+            | SortedCollisionEvent::MobToBarrierContact { mob_entity, .. }
+            | SortedCollisionEvent::MobToMobSegmentContact { mob_entity, .. } => {
                 if entity == *mob_entity {
                     for behavior in spawnable_component.behaviors.iter_mut() {
                         *behavior = match behavior {

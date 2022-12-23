@@ -103,6 +103,12 @@ fn main() {
         .unwrap(),
         texture_atlas_handle: HashMap::new(),
     })
+    .insert_resource(spawnable::MobSegmentsResource {
+        mob_segments: from_bytes::<HashMap<spawnable::MobSegmentType, spawnable::MobSegmentData>>(
+            include_bytes!("../data/mob_segments.ron"),
+        )
+        .unwrap(),
+    })
     .insert_resource(spawnable::EffectsResource {
         effects: from_bytes::<HashMap<spawnable::EffectType, spawnable::EffectData>>(
             include_bytes!("../data/effects.ron"),
