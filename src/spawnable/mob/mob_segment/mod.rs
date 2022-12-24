@@ -15,6 +15,7 @@ use crate::{
 };
 
 mod behavior;
+pub use self::behavior::*;
 
 #[derive(Resource)]
 pub struct MobSegmentsResource {

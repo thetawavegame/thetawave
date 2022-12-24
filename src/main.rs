@@ -10,6 +10,7 @@ use bevy_rapier2d::prelude::*;
 use ron::de::from_bytes;
 use states::{AppStateComponent, AppStates};
 use std::collections::HashMap;
+use std::thread::spawn;
 use ui::EndGameTransitionResource;
 
 pub const PHYSICS_SCALE: f32 = 10.0;
@@ -279,6 +280,12 @@ fn main() {
             .with_system(spawnable::spawnable_execute_behavior_system.after("set_target_behavior"))
             .with_system(
                 spawnable::mob_execute_behavior_system
+                    .after("set_target_behavior")
+                    .after("intersection_collision")
+                    .after("contact_collision"),
+            )
+            .with_system(
+                spawnable::mob_segment_execute_behavior_system
                     .after("set_target_behavior")
                     .after("intersection_collision")
                     .after("contact_collision"),

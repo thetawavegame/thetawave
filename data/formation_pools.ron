@@ -105,14 +105,13 @@
 					),
 					(
 						spawnable_type: Mob(Ally(Hauler)),
-						position: (200.0, 600.0),
+						position: (200.0, 500.0),
 					),
 					(
 						spawnable_type: Mob(Ally(Hauler)),
-						position: (-200.0, 600.0),
+						position: (-200.0, 500.0),
 					),
 				],
-				//weight: 0.5,
 				weight: 100.0,
 				period: 6.0,
 			),

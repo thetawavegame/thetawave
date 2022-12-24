@@ -3,8 +3,8 @@ use crate::{
     audio,
     collision::SortedCollisionEvent,
     spawnable::{
-        EffectType, Faction, MobComponent, PlayerComponent, ProjectileType, SpawnEffectEvent,
-        SpawnableComponent,
+        EffectType, Faction, MobComponent, MobSegmentComponent, PlayerComponent, ProjectileType,
+        SpawnEffectEvent, SpawnableComponent,
     },
 };
 use bevy::math::Vec3Swizzles;
@@ -34,6 +34,7 @@ pub fn projectile_execute_behavior_system(
     )>,
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
     mut mob_query: Query<(Entity, &mut MobComponent)>,
+    mut mob_segment_query: Query<(Entity, &mut MobSegmentComponent)>,
     mut collision_events: EventReader<SortedCollisionEvent>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     time: Res<Time>,
@@ -63,6 +64,7 @@ pub fn projectile_execute_behavior_system(
                     &mut spawn_effect_event_writer,
                     &mut player_query,
                     &mut mob_query,
+                    &mut mob_segment_query,
                     &asset_server,
                     &audio_channel,
                     &audio_assets,
@@ -121,6 +123,7 @@ fn explode_on_impact(
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
     player_query: &mut Query<(Entity, &mut PlayerComponent)>,
     mob_query: &mut Query<(Entity, &mut MobComponent)>,
+    mob_segment_query: &mut Query<(Entity, &mut MobSegmentComponent)>,
     asset_server: &AssetServer,
     audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
     audio_assets: &GameAudioAssets,
@@ -203,6 +206,56 @@ fn explode_on_impact(
                     for (mob_entity_q, mut mob_component) in mob_query.iter_mut() {
                         if *mob_entity == mob_entity_q {
                             mob_component.health.take_damage(*projectile_damage);
+                        }
+                    }
+                    // despawn blast
+                    commands.entity(entity).despawn_recursive();
+                    continue;
+                }
+            }
+            SortedCollisionEvent::MobSegmentToProjectileIntersection {
+                mob_segment_entity,
+                projectile_entity,
+                mob_segment_faction,
+                projectile_faction,
+                projectile_damage,
+            } => {
+                if entity == *projectile_entity
+                    && !match mob_segment_faction {
+                        Faction::Ally => matches!(projectile_faction, Faction::Ally),
+                        Faction::Enemy => matches!(projectile_faction, Faction::Enemy),
+                        Faction::Neutral => matches!(projectile_faction, Faction::Neutral),
+                    }
+                {
+                    audio_channel.play(audio_assets.mob_hit.clone());
+                    match projectile_faction {
+                        Faction::Ally => {
+                            // spawn explosion
+                            spawn_effect_event_writer.send(SpawnEffectEvent {
+                                effect_type: EffectType::AllyBlastExplosion,
+                                position: transform.translation.xy(),
+                                scale: Vec2::ZERO,
+                                rotation: 0.0,
+                            });
+                        }
+                        Faction::Enemy => {
+                            // spawn explosion
+                            spawn_effect_event_writer.send(SpawnEffectEvent {
+                                effect_type: EffectType::EnemyBlastExplosion,
+                                position: transform.translation.xy(),
+                                scale: Vec2::ZERO,
+                                rotation: 0.0,
+                            });
+                        }
+                        Faction::Neutral => {}
+                    }
+
+                    // deal damage to mob
+                    for (mob_segment_entity_q, mut mob_segment_component) in
+                        mob_segment_query.iter_mut()
+                    {
+                        if *mob_segment_entity == mob_segment_entity_q {
+                            mob_segment_component.health.take_damage(*projectile_damage);
                         }
                     }
                     // despawn blast

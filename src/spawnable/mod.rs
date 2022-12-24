@@ -19,8 +19,9 @@ pub use self::boss::{
 */
 
 pub use self::mob::{
-    mob_execute_behavior_system, spawn_mob, spawn_mob_system, MobBehavior, MobComponent, MobData,
-    MobSegmentComponent, MobSegmentData, MobSegmentsResource, MobsResource, SpawnMobEvent,
+    mob_execute_behavior_system, mob_segment_execute_behavior_system, spawn_mob, spawn_mob_system,
+    MobBehavior, MobComponent, MobData, MobSegmentComponent, MobSegmentData, MobSegmentsResource,
+    MobsResource, SpawnMobEvent,
 };
 pub use self::projectile::{
     projectile_execute_behavior_system, spawn_projectile, spawn_projectile_system,
@@ -175,7 +176,7 @@ pub enum MobType {
 
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum MobSegmentType {
-    Ally(AllyMobSegmentType),
+    Neutral(NeutralMobSegmentType),
 }
 
 /// Type that encompasses all spawnable enemy mobs
@@ -197,7 +198,7 @@ pub enum AllyMobType {
 
 /// Type that encompasses all spawnable ally mob segments
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
-pub enum AllyMobSegmentType {
+pub enum NeutralMobSegmentType {
     HaulerCargo,
 }
 

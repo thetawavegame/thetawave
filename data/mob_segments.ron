@@ -1,6 +1,6 @@
 {
-    Ally(HaulerCargo): (
-        mob_segment_type: Ally(HaulerCargo),
+    Neutral(HaulerCargo): (
+        mob_segment_type: Neutral(HaulerCargo),
         animation: (
             direction: None,
             frame_duration: 1.0,
@@ -17,6 +17,6 @@
         consumable_drops: Standard,
         z_level: 5.0,
         anchor_point: (0.0, -30.0),
-        behaviors: [],
+        behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
     )
 }

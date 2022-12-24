@@ -44,14 +44,14 @@
     "hauler.back": TextureAtlas (
         path: "texture/hauler_back.png",
         tile_size_x: 18.,
-        tile_size_y: 22.,
+        tile_size_y: 24.,
         columns: 1,
         rows: 1,
     ),
     "hauler.thruster": TextureAtlas (
         path: "texture/hauler_thrusters_spritesheet.png",
-        tile_size_x: 24.,
-        tile_size_y: 11.,
+        tile_size_x: 20.,
+        tile_size_y: 9.,
         columns: 3,
         rows: 1,
     ),

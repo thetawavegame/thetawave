@@ -35,6 +35,7 @@ pub enum SortedCollisionEvent {
         projectile_faction: Faction,
         projectile_damage: f32,
     },
+
     PlayerToConsumableIntersection {
         player_entity: Entity,
         consumable_entity: Entity,
@@ -68,6 +69,14 @@ pub enum SortedCollisionEvent {
         mob_segment_entity: Entity,
         mob_segment_faction: Faction,
         mob_segment_damage: f32,
+    },
+    MobSegmentToMobSegmentContact {
+        mob_segment_entity_1: Entity,
+        mob_segment_faction_1: Faction,
+        mob_segment_damage_1: f32,
+        mob_segment_entity_2: Entity,
+        mob_segment_faction_2: Faction,
+        mob_segment_damage_2: f32,
     },
     MobToBarrierContact {
         mob_entity: Entity,
@@ -229,7 +238,7 @@ pub fn intersection_collision_system(
                                     mob_segment_faction: match mob_segment_component
                                         .mob_segment_type
                                     {
-                                        MobSegmentType::Ally(_) => Faction::Ally,
+                                        MobSegmentType::Neutral(_) => Faction::Neutral,
                                     },
                                     projectile_faction: match projectile_component
                                         .projectile_type
@@ -325,7 +334,7 @@ pub fn contact_collision_system(
                                         .mob_segment_type
                                         .clone()
                                     {
-                                        MobSegmentType::Ally(_) => Faction::Ally,
+                                        MobSegmentType::Neutral(_) => Faction::Neutral,
                                     },
                                     player_damage: player_component.collision_damage,
                                     mob_segment_damage: mob_segment_component.collision_damage,
@@ -436,9 +445,79 @@ pub fn contact_collision_system(
                                     mob_segment_faction: match mob_segment_component
                                         .mob_segment_type
                                     {
-                                        MobSegmentType::Ally(_) => Faction::Ally,
+                                        (_) => Faction::Ally,
                                     },
                                     mob_segment_damage: mob_segment_component.collision_damage,
+                                },
+                            );
+                            continue 'collision_events;
+                        }
+                    }
+                }
+            }
+
+            // check if mob segment was in collision
+            for (mob_segment_entity_1, mob_segment_component_1) in mob_segment_query.iter() {
+                // first entity is the mob segment, the second entity is the other colliding entity
+                let colliding_entities: Option<CollidingEntities> =
+                    if mob_segment_entity_1 == *collider1_entity {
+                        Some(CollidingEntities {
+                            primary: *collider1_entity,
+                            secondary: *collider2_entity,
+                        })
+                    } else if mob_segment_entity_1 == *collider2_entity {
+                        Some(CollidingEntities {
+                            primary: *collider2_entity,
+                            secondary: *collider1_entity,
+                        })
+                    } else {
+                        None
+                    };
+
+                // check if colliding entities were found
+                if let Some(colliding_entities) = colliding_entities {
+                    // check if mob segment collided with other mob segment
+                    for (mob_segment_entity_2, mob_segment_component_2) in mob_segment_query.iter()
+                    {
+                        if colliding_entities.secondary == mob_segment_entity_2 {
+                            // play collision sound
+                            audio_channel.play(audio_assets.collision.clone());
+
+                            // send two sorted collision events, swapping the position of the mob segments in the struct
+                            collision_event_writer.send(
+                                SortedCollisionEvent::MobSegmentToMobSegmentContact {
+                                    mob_segment_entity_1: colliding_entities.primary,
+                                    mob_segment_faction_1: match mob_segment_component_1
+                                        .mob_segment_type
+                                    {
+                                        MobSegmentType::Neutral(_) => Faction::Neutral,
+                                    },
+                                    mob_segment_damage_1: mob_segment_component_1.collision_damage,
+                                    mob_segment_entity_2: colliding_entities.secondary,
+                                    mob_segment_faction_2: match mob_segment_component_2
+                                        .mob_segment_type
+                                    {
+                                        MobSegmentType::Neutral(_) => Faction::Neutral,
+                                    },
+                                    mob_segment_damage_2: mob_segment_component_2.collision_damage,
+                                },
+                            );
+                            collision_event_writer.send(
+                                SortedCollisionEvent::MobSegmentToMobSegmentContact {
+                                    mob_segment_entity_1: colliding_entities.secondary,
+                                    mob_segment_faction_1: match mob_segment_component_2
+                                        .mob_segment_type
+                                    {
+                                        MobSegmentType::Neutral(_) => Faction::Neutral,
+                                    },
+                                    mob_segment_damage_1: mob_segment_component_2.collision_damage,
+                                    mob_segment_entity_2: colliding_entities.primary,
+                                    mob_segment_faction_2: match mob_segment_component_1
+                                        .mob_segment_type
+                                    {
+                                        MobSegmentType::Neutral(_) => Faction::Neutral,
+                                    },
+                                    mob_segment_damage_2: mob_segment_component_1.collision_damage,
                                 },
                             );
                             continue 'collision_events;

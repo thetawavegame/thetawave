@@ -120,22 +120,20 @@
 			),
 		)]),
 		mob_segment_anchor_point: Some((
-			mob_segment_type: Ally(HaulerCargo),
-			position: (0.0, 20.0),
+			mob_segment_type: Neutral(HaulerCargo),
+			position: (0.0, 28.0),
 			joint: Revolute,
 			target_pos: 0.0,
 			stiffness: 10.0,
 			damping: 10.0,
 		)),
-		/*
 		thruster: Some((
-			y_offset: 18.0,
+			y_offset: 7.0,
 			animation: (
 				direction: PingPong(Forward),
 				frame_duration: 0.15,
 			),
 		)),
-		*/
 	),
 	Enemy(MissileLauncher): (
 		mob_type: Enemy(MissileLauncher),

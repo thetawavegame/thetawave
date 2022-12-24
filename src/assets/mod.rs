@@ -159,8 +159,8 @@ impl MobAssets {
 
     pub fn get_mob_segment_asset(&self, mob_segment_type: &MobSegmentType) -> Handle<TextureAtlas> {
         match mob_segment_type {
-            MobSegmentType::Ally(ally_type) => match ally_type {
-                crate::spawnable::AllyMobSegmentType::HaulerCargo => self.hauler_back.clone(),
+            MobSegmentType::Neutral(neutral_type) => match neutral_type {
+                crate::spawnable::NeutralMobSegmentType::HaulerCargo => self.hauler_back.clone(),
             },
         }
     }
@@ -176,7 +176,7 @@ impl MobAssets {
                 EnemyMobType::Missile => Some(self.missile_thruster.clone()),
             },
             MobType::Ally(ally_type) => match ally_type {
-                crate::spawnable::AllyMobType::Hauler => None,
+                crate::spawnable::AllyMobType::Hauler => Some(self.hauler_thruster.clone()),
             },
             MobType::Neutral(neutral_type) => match neutral_type {
                 crate::spawnable::NeutralMobType::MoneyAsteroid => None,
