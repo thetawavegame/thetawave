@@ -193,13 +193,15 @@ pub enum EnemyMobType {
 /// Type that encompasses all spawnable ally mobs
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum AllyMobType {
-    Hauler,
+    Hauler2,
+    Hauler3,
 }
 
 /// Type that encompasses all spawnable ally mob segments
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum NeutralMobSegmentType {
-    HaulerCargo,
+    HaulerBack,
+    HaulerMiddle,
 }
 
 /// Type that encompasses all spawnable neutral mobs

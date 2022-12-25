@@ -104,15 +104,15 @@
 						position: (-180.0, 900.0),
 					),
 					(
-						spawnable_type: Mob(Ally(Hauler)),
+						spawnable_type: Mob(Ally(Hauler2)),
 						position: (200.0, 500.0),
 					),
 					(
-						spawnable_type: Mob(Ally(Hauler)),
+						spawnable_type: Mob(Ally(Hauler3)),
 						position: (-200.0, 500.0),
 					),
 				],
-				weight: 100.0,
+				weight: 0.5,
 				period: 6.0,
 			),
 			(
@@ -346,12 +346,12 @@
 						position: (-180.0, 900.0),
 					),
 					(
-						spawnable_type: Mob(Ally(Hauler)),
-						position: (200.0, 600.0),
+						spawnable_type: Mob(Ally(Hauler2)),
+						position: (200.0, 500.0),
 					),
 					(
-						spawnable_type: Mob(Ally(Hauler)),
-						position: (-200.0, 600.0),
+						spawnable_type: Mob(Ally(Hauler3)),
+						position: (-200.0, 500.0),
 					),
 				],
 				weight: 0.5,

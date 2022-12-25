@@ -135,6 +135,8 @@ pub struct MobAssets {
     pub hauler_front: Handle<TextureAtlas>,
     #[asset(key = "hauler.back")]
     pub hauler_back: Handle<TextureAtlas>,
+    #[asset(key = "hauler.middle")]
+    pub hauler_middle: Handle<TextureAtlas>,
 }
 
 impl MobAssets {
@@ -149,7 +151,8 @@ impl MobAssets {
                 EnemyMobType::Missile => self.missile.clone(),
             },
             MobType::Ally(ally_type) => match ally_type {
-                crate::spawnable::AllyMobType::Hauler => self.hauler_front.clone(),
+                crate::spawnable::AllyMobType::Hauler2 => self.hauler_front.clone(),
+                crate::spawnable::AllyMobType::Hauler3 => self.hauler_front.clone(),
             },
             MobType::Neutral(neutral_type) => match neutral_type {
                 crate::spawnable::NeutralMobType::MoneyAsteroid => self.money_asteroid.clone(),
@@ -160,7 +163,8 @@ impl MobAssets {
     pub fn get_mob_segment_asset(&self, mob_segment_type: &MobSegmentType) -> Handle<TextureAtlas> {
         match mob_segment_type {
             MobSegmentType::Neutral(neutral_type) => match neutral_type {
-                crate::spawnable::NeutralMobSegmentType::HaulerCargo => self.hauler_back.clone(),
+                crate::spawnable::NeutralMobSegmentType::HaulerBack => self.hauler_back.clone(),
+                crate::spawnable::NeutralMobSegmentType::HaulerMiddle => self.hauler_middle.clone(),
             },
         }
     }
@@ -176,7 +180,8 @@ impl MobAssets {
                 EnemyMobType::Missile => Some(self.missile_thruster.clone()),
             },
             MobType::Ally(ally_type) => match ally_type {
-                crate::spawnable::AllyMobType::Hauler => Some(self.hauler_thruster.clone()),
+                crate::spawnable::AllyMobType::Hauler2 => Some(self.hauler_thruster.clone()),
+                crate::spawnable::AllyMobType::Hauler3 => Some(self.hauler_thruster.clone()),
             },
             MobType::Neutral(neutral_type) => match neutral_type {
                 crate::spawnable::NeutralMobType::MoneyAsteroid => None,

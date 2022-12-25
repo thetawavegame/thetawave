@@ -48,6 +48,13 @@
         columns: 1,
         rows: 1,
     ),
+    "hauler.middle": TextureAtlas (
+        path: "texture/hauler_middle.png",
+        tile_size_x: 18.,
+        tile_size_y: 26.,
+        columns: 1,
+        rows: 1,
+    ),
     "hauler.thruster": TextureAtlas (
         path: "texture/hauler_thrusters_spritesheet.png",
         tile_size_x: 20.,

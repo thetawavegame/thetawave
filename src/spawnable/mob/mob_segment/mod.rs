@@ -17,6 +17,8 @@ use crate::{
 mod behavior;
 pub use self::behavior::*;
 
+use super::{JointType, MobSegmentAnchorPointData};
+
 #[derive(Resource)]
 pub struct MobSegmentsResource {
     /// Mob types mapped to mob data
@@ -58,6 +60,7 @@ pub struct MobSegmentData {
     pub consumable_drops: ConsumableDropListType,
     pub z_level: f32,
     pub anchor_point: Vec2,
+    pub mob_segment_anchor_point: Option<MobSegmentAnchorPointData>,
     pub behaviors: Vec<behavior::MobSegmentBehavior>,
 }
 
@@ -82,16 +85,17 @@ pub fn spawn_mob_segment(
 
     let mut mob_segment = commands.spawn_empty();
 
+    let new_position = Vec2::new(
+        position.x + parent_anchor_point.x - mob_segment_data.anchor_point.x,
+        position.y + parent_anchor_point.y - mob_segment_data.anchor_point.y,
+    );
+
     mob_segment
         .insert(ImpulseJoint::new(joint_parent_entity, *joint))
         .insert(SpriteSheetBundle {
             texture_atlas: mob_assets.get_mob_segment_asset(mob_segment_type),
             transform: Transform {
-                translation: Vec3::new(
-                    position.x + parent_anchor_point.x - mob_segment_data.anchor_point.x,
-                    position.y + parent_anchor_point.y - mob_segment_data.anchor_point.y,
-                    mob_segment_data.z_level,
-                ),
+                translation: new_position.extend(mob_segment_data.z_level),
                 scale: Vec3::new(
                     game_parameters.sprite_scale,
                     game_parameters.sprite_scale,
@@ -126,4 +130,33 @@ pub fn spawn_mob_segment(
         .insert(ActiveEvents::COLLISION_EVENTS)
         .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new(mob_segment_data.mob_segment_type.to_string()));
+
+    if let Some(mob_segment_anchor_point) = mob_segment_data.mob_segment_anchor_point.clone() {
+        let new_mob_segment_data =
+            &mob_segments_resource.mob_segments[&mob_segment_anchor_point.mob_segment_type];
+
+        // create joint
+        let joint = match &mob_segment_anchor_point.joint {
+            JointType::Revolute => RevoluteJointBuilder::new()
+                .local_anchor1(mob_segment_anchor_point.position)
+                .local_anchor2(new_mob_segment_data.anchor_point)
+                .motor_position(
+                    mob_segment_anchor_point.target_pos,
+                    mob_segment_anchor_point.stiffness,
+                    mob_segment_anchor_point.damping,
+                ),
+        };
+
+        spawn_mob_segment(
+            &new_mob_segment_data.mob_segment_type,
+            mob_segment.id(),
+            &joint,
+            mob_segments_resource,
+            mob_assets,
+            new_position,
+            mob_segment_anchor_point.position,
+            commands,
+            game_parameters,
+        )
+    }
 }
