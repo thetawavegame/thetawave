@@ -239,6 +239,7 @@ pub fn intersection_collision_system(
                                         .mob_segment_type
                                     {
                                         MobSegmentType::Neutral(_) => Faction::Neutral,
+                                        MobSegmentType::Enemy(_) => Faction::Enemy,
                                     },
                                     projectile_faction: match projectile_component
                                         .projectile_type
@@ -335,6 +336,7 @@ pub fn contact_collision_system(
                                         .clone()
                                     {
                                         MobSegmentType::Neutral(_) => Faction::Neutral,
+                                        MobSegmentType::Enemy(_) => Faction::Enemy,
                                     },
                                     player_damage: player_component.collision_damage,
                                     mob_segment_damage: mob_segment_component.collision_damage,
@@ -491,6 +493,7 @@ pub fn contact_collision_system(
                                         .mob_segment_type
                                     {
                                         MobSegmentType::Neutral(_) => Faction::Neutral,
+                                        MobSegmentType::Enemy(_) => Faction::Enemy,
                                     },
                                     mob_segment_damage_1: mob_segment_component_1.collision_damage,
                                     mob_segment_entity_2: colliding_entities.secondary,
@@ -498,6 +501,7 @@ pub fn contact_collision_system(
                                         .mob_segment_type
                                     {
                                         MobSegmentType::Neutral(_) => Faction::Neutral,
+                                        MobSegmentType::Enemy(_) => Faction::Enemy,
                                     },
                                     mob_segment_damage_2: mob_segment_component_2.collision_damage,
                                 },
@@ -509,6 +513,7 @@ pub fn contact_collision_system(
                                         .mob_segment_type
                                     {
                                         MobSegmentType::Neutral(_) => Faction::Neutral,
+                                        MobSegmentType::Enemy(_) => Faction::Enemy,
                                     },
                                     mob_segment_damage_1: mob_segment_component_2.collision_damage,
                                     mob_segment_entity_2: colliding_entities.primary,
@@ -516,6 +521,7 @@ pub fn contact_collision_system(
                                         .mob_segment_type
                                     {
                                         MobSegmentType::Neutral(_) => Faction::Neutral,
+                                        MobSegmentType::Enemy(_) => Faction::Enemy,
                                     },
                                     mob_segment_damage_2: mob_segment_component_1.collision_damage,
                                 },

@@ -4,6 +4,16 @@
 			(
 				formation_spawnables: [
 					(
+						spawnable_type: Mob(Enemy(Crustling)),
+						position: (0.0, 550.0),
+					),
+				],
+				weight: 100.0,
+				period: 7.0,
+			),
+			(
+				formation_spawnables: [
+					(
 						spawnable_type: Mob(Enemy(StraferRight)),
 						position: (0.0, 650.0),
 					),

@@ -137,6 +137,14 @@ pub struct MobAssets {
     pub hauler_back: Handle<TextureAtlas>,
     #[asset(key = "hauler.middle")]
     pub hauler_middle: Handle<TextureAtlas>,
+    #[asset(key = "crustling.head")]
+    pub crustling_head: Handle<TextureAtlas>,
+    #[asset(key = "crustling.tentacle1")]
+    pub crustling_tentacle1: Handle<TextureAtlas>,
+    #[asset(key = "crustling.tentacle2")]
+    pub crustling_tentacle2: Handle<TextureAtlas>,
+    #[asset(key = "crustling.tentacle3")]
+    pub crustling_tentacle3: Handle<TextureAtlas>,
 }
 
 impl MobAssets {
@@ -149,6 +157,7 @@ impl MobAssets {
                 EnemyMobType::StraferLeft => self.strafer.clone(),
                 EnemyMobType::MissileLauncher => self.missile_launcher.clone(),
                 EnemyMobType::Missile => self.missile.clone(),
+                EnemyMobType::Crustling => self.crustling_head.clone(),
             },
             MobType::Ally(ally_type) => match ally_type {
                 crate::spawnable::AllyMobType::Hauler2 => self.hauler_front.clone(),
@@ -166,6 +175,17 @@ impl MobAssets {
                 crate::spawnable::NeutralMobSegmentType::HaulerBack => self.hauler_back.clone(),
                 crate::spawnable::NeutralMobSegmentType::HaulerMiddle => self.hauler_middle.clone(),
             },
+            MobSegmentType::Enemy(enemy_type) => match enemy_type {
+                crate::spawnable::EnemyMobSegmentType::CrustlingTentacle1 => {
+                    self.crustling_tentacle1.clone()
+                }
+                crate::spawnable::EnemyMobSegmentType::CrustlingTentacle2 => {
+                    self.crustling_tentacle2.clone()
+                }
+                crate::spawnable::EnemyMobSegmentType::CrustlingTentacle3 => {
+                    self.crustling_tentacle3.clone()
+                }
+            },
         }
     }
 
@@ -178,6 +198,7 @@ impl MobAssets {
                 EnemyMobType::StraferLeft => Some(self.strafer_thruster.clone()),
                 EnemyMobType::MissileLauncher => Some(self.missile_launcher_thruster.clone()),
                 EnemyMobType::Missile => Some(self.missile_thruster.clone()),
+                EnemyMobType::Crustling => None,
             },
             MobType::Ally(ally_type) => match ally_type {
                 crate::spawnable::AllyMobType::Hauler2 => Some(self.hauler_thruster.clone()),

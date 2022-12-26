@@ -105,7 +105,7 @@ pub struct MobData {
     pub consumable_drops: ConsumableDropListType,
     /// Z level of the mobs transform
     pub z_level: f32,
-    pub mob_segment_anchor_point: Option<MobSegmentAnchorPointData>,
+    pub mob_segment_anchor_points: Option<Vec<MobSegmentAnchorPointData>>,
 }
 
 #[derive(Deserialize, Clone)]
@@ -255,34 +255,38 @@ pub fn spawn_mob(
         });
     }
 
+    let mob_entity = mob.id().clone();
     // add mob segment if anchor point
-    if let Some(anchor_point) = mob_data.mob_segment_anchor_point.clone() {
-        // spawn mob_segment
+    if let Some(anchor_points) = mob_data.mob_segment_anchor_points.clone() {
+        for anchor_point in anchor_points.iter() {
+            // spawn mob_segment
 
-        let mob_segment_data = &mob_segments_resource.mob_segments[&anchor_point.mob_segment_type];
+            let mob_segment_data =
+                &mob_segments_resource.mob_segments[&anchor_point.mob_segment_type];
 
-        // create joint
-        let joint = match &anchor_point.joint {
-            JointType::Revolute => RevoluteJointBuilder::new()
-                .local_anchor1(anchor_point.position)
-                .local_anchor2(mob_segment_data.anchor_point)
-                .motor_position(
-                    anchor_point.target_pos,
-                    anchor_point.stiffness,
-                    anchor_point.damping,
-                ),
-        };
+            // create joint
+            let joint = match &anchor_point.joint {
+                JointType::Revolute => RevoluteJointBuilder::new()
+                    .local_anchor1(anchor_point.position)
+                    .local_anchor2(mob_segment_data.anchor_point)
+                    .motor_position(
+                        anchor_point.target_pos,
+                        anchor_point.stiffness,
+                        anchor_point.damping,
+                    ),
+            };
 
-        spawn_mob_segment(
-            &mob_segment_data.mob_segment_type,
-            mob.id(),
-            &joint,
-            mob_segments_resource,
-            mob_assets,
-            position,
-            anchor_point.position,
-            commands,
-            game_parameters,
-        )
+            spawn_mob_segment(
+                &mob_segment_data.mob_segment_type,
+                mob_entity,
+                &joint,
+                mob_segments_resource,
+                mob_assets,
+                position,
+                anchor_point.position,
+                commands,
+                game_parameters,
+            )
+        }
     }
 }

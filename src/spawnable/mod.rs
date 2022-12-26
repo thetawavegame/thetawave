@@ -177,6 +177,7 @@ pub enum MobType {
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum MobSegmentType {
     Neutral(NeutralMobSegmentType),
+    Enemy(EnemyMobSegmentType),
 }
 
 /// Type that encompasses all spawnable enemy mobs
@@ -188,6 +189,7 @@ pub enum EnemyMobType {
     StraferLeft,
     MissileLauncher,
     Missile,
+    Crustling,
 }
 
 /// Type that encompasses all spawnable ally mobs
@@ -202,6 +204,13 @@ pub enum AllyMobType {
 pub enum NeutralMobSegmentType {
     HaulerBack,
     HaulerMiddle,
+}
+
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+pub enum EnemyMobSegmentType {
+    CrustlingTentacle1,
+    CrustlingTentacle2,
+    CrustlingTentacle3,
 }
 
 /// Type that encompasses all spawnable neutral mobs

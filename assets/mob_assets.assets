@@ -1,4 +1,32 @@
 ({
+    "crustling.head": TextureAtlas (
+        path: "texture/crustling_spritesheet.png",
+        tile_size_x: 38.,
+        tile_size_y: 29.,
+        columns: 3,
+        rows: 1,
+    ),
+    "crustling.tentacle1": TextureAtlas (
+        path: "texture/crustling_tentacle_1.png",
+        tile_size_x: 10.,
+        tile_size_y: 30.,
+        columns: 1,
+        rows: 1,
+    ),
+    "crustling.tentacle2": TextureAtlas (
+        path: "texture/crustling_tentacle_2.png",
+        tile_size_x: 10.,
+        tile_size_y: 30.,
+        columns: 1,
+        rows: 1,
+    ),
+    "crustling.tentacle3": TextureAtlas (
+        path: "texture/crustling_tentacle_3.png",
+        tile_size_x: 10.,
+        tile_size_y: 30.,
+        columns: 1,
+        rows: 1,
+    ),
     "drone": TextureAtlas (
         path: "texture/drone_spritesheet.png",
         tile_size_x: 20.,

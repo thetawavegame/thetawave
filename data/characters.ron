@@ -13,8 +13,8 @@
 			projectile_offset_position: (0.0, 40.0),
 			fire_period: 0.4,
 			health: (
-				max_health: 200.0,
-				health: 200.0,
+				max_health: 10000.0,
+				health: 10000.0,
 				armor: 0,	
 			),
 			attack_damage: 10.0,

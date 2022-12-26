@@ -47,4 +47,64 @@
 			damping: 10.0,
 		)),
     ),
+    Enemy(CrustlingTentacle1): (
+        mob_segment_type: Enemy(CrustlingTentacle1),
+        animation: (
+            direction: None,
+            frame_duration: 1.0,
+        ),
+        collider_dimensions: (0.5, 5.0),
+        collision_damage: 0.0,
+        defense_damage: 0.0,
+        health: (
+            max_health: 100.0,
+            health: 100.0,
+            armor: 0,
+
+        ),
+        consumable_drops: Standard,
+        z_level: 4.9,
+        anchor_point: (0.0, 40.0),
+        behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+    ),
+    Enemy(CrustlingTentacle2): (
+        mob_segment_type: Enemy(CrustlingTentacle2),
+        animation: (
+            direction: None,
+            frame_duration: 1.0,
+        ),
+        collider_dimensions: (0.5, 5.0),
+        collision_damage: 0.0,
+        defense_damage: 0.0,
+        health: (
+            max_health: 100.0,
+            health: 100.0,
+            armor: 0,
+
+        ),
+        consumable_drops: Standard,
+        z_level: 4.9,
+        anchor_point: (0.0, 40.0),
+        behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+    ),
+    Enemy(CrustlingTentacle3): (
+        mob_segment_type: Enemy(CrustlingTentacle3),
+        animation: (
+            direction: None,
+            frame_duration: 1.0,
+        ),
+        collider_dimensions: (0.5, 5.0),
+        collision_damage: 0.0,
+        defense_damage: 0.0,
+        health: (
+            max_health: 100.0,
+            health: 100.0,
+            armor: 0,
+
+        ),
+        consumable_drops: Standard,
+        z_level: 4.9,
+        anchor_point: (0.0, 40.0),
+        behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+    ),
 }
