@@ -65,7 +65,17 @@
         consumable_drops: Standard,
         z_level: 4.9,
         anchor_point: (0.0, 40.0),
-        behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+        behaviors: [
+            DealDamageToPlayerOnImpact,
+            ReceiveDamageOnImpact,
+            DieAtZeroHealth,
+            RandomRotation((
+                low_angle: -3.0,
+                high_angle: 3.0,
+                stiffness: 30.0,
+                damping: 30.0,
+            ))
+        ],
     ),
     Enemy(CrustlingTentacle2): (
         mob_segment_type: Enemy(CrustlingTentacle2),
@@ -85,7 +95,17 @@
         consumable_drops: Standard,
         z_level: 4.9,
         anchor_point: (0.0, 40.0),
-        behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+        behaviors: [
+            DealDamageToPlayerOnImpact,
+            ReceiveDamageOnImpact,
+            DieAtZeroHealth,
+            RandomRotation((
+                    low_angle: -3.0,
+                    high_angle: 3.0,
+                    stiffness: 30.0,
+                    damping: 30.0,
+                ))
+            ],
     ),
     Enemy(CrustlingTentacle3): (
         mob_segment_type: Enemy(CrustlingTentacle3),
@@ -105,6 +125,16 @@
         consumable_drops: Standard,
         z_level: 4.9,
         anchor_point: (0.0, 40.0),
-        behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+        behaviors: [
+            DealDamageToPlayerOnImpact,
+            ReceiveDamageOnImpact,
+            DieAtZeroHealth,
+            RandomRotation((
+                low_angle: -3.0,
+                high_angle: 3.0,
+                stiffness: 30.0,
+                damping: 30.0,
+            ))
+        ],
     ),
 }
