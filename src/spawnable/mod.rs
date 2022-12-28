@@ -190,6 +190,7 @@ pub enum EnemyMobType {
     MissileLauncher,
     Missile,
     Crustling,
+    Repeater,
 }
 
 /// Type that encompasses all spawnable ally mobs
@@ -211,6 +212,11 @@ pub enum EnemyMobSegmentType {
     CrustlingTentacle1,
     CrustlingTentacle2,
     CrustlingTentacle3,
+    RepeaterBody,
+    RepeaterRightShoulder,
+    RepeaterLeftShoulder,
+    RepeaterRightArm,
+    RepeaterLeftArm,
 }
 
 /// Type that encompasses all spawnable neutral mobs

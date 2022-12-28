@@ -88,7 +88,7 @@ pub struct MobData {
     /// Motion that the mob initializes with
     pub initial_motion: InitialMotion,
     /// Dimensions of the mob's hitbox
-    pub collider_dimensions: Vec2,
+    pub colliders: Vec<ColliderData>,
     /// Texture
     pub animation: AnimationData,
     /// Optional data describing the thruster
@@ -106,6 +106,25 @@ pub struct MobData {
     /// Z level of the mobs transform
     pub z_level: f32,
     pub mob_segment_anchor_points: Option<Vec<MobSegmentAnchorPointData>>,
+}
+
+#[derive(Deserialize, Clone)]
+pub struct ColliderData {
+    pub dimensions: Vec2,
+    pub rotation: f32,
+    pub position: Vec2,
+}
+
+pub type CompoundColliderData = (Vec2, f32, Collider);
+
+impl Into<CompoundColliderData> for ColliderData {
+    fn into(self) -> CompoundColliderData {
+        (
+            self.position,
+            self.rotation,
+            Collider::cuboid(self.dimensions.x, self.dimensions.y),
+        )
+    }
 }
 
 #[derive(Deserialize, Clone)]
@@ -186,8 +205,8 @@ pub fn spawn_mob(
     let mob_data = &mob_resource.mobs[mob_type];
 
     // scale collider to align with the sprite
-    let collider_size_hx = mob_data.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
-    let collider_size_hy = mob_data.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
+    //let collider_size_hx = mob_data.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
+    //let collider_size_hy = mob_data.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
 
     // create mob entity
     let mut mob = commands.spawn_empty();
@@ -219,7 +238,13 @@ pub fn spawn_mob(
         },
         ..Default::default()
     })
-    .insert(Collider::cuboid(collider_size_hx, collider_size_hy))
+    .insert(Collider::compound(
+        mob_data
+            .colliders
+            .iter()
+            .map(|collider_data| collider_data.clone().into())
+            .collect::<Vec<CompoundColliderData>>(),
+    ))
     .insert(Friction::new(1.0))
     .insert(Restitution {
         coefficient: 1.0,

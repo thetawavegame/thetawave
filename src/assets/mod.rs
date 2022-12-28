@@ -145,6 +145,18 @@ pub struct MobAssets {
     pub crustling_tentacle2: Handle<TextureAtlas>,
     #[asset(key = "crustling.tentacle3")]
     pub crustling_tentacle3: Handle<TextureAtlas>,
+    #[asset(key = "repeater.head")]
+    pub repeater_head: Handle<TextureAtlas>,
+    #[asset(key = "repeater.body")]
+    pub repeater_body: Handle<TextureAtlas>,
+    #[asset(key = "repeater.right_shoulder")]
+    pub repeater_right_shoulder: Handle<TextureAtlas>,
+    #[asset(key = "repeater.left_shoulder")]
+    pub repeater_left_shoulder: Handle<TextureAtlas>,
+    #[asset(key = "repeater.right_arm")]
+    pub repeater_right_arm: Handle<TextureAtlas>,
+    #[asset(key = "repeater.left_arm")]
+    pub repeater_left_arm: Handle<TextureAtlas>,
 }
 
 impl MobAssets {
@@ -158,6 +170,7 @@ impl MobAssets {
                 EnemyMobType::MissileLauncher => self.missile_launcher.clone(),
                 EnemyMobType::Missile => self.missile.clone(),
                 EnemyMobType::Crustling => self.crustling_head.clone(),
+                EnemyMobType::Repeater => self.repeater_head.clone(),
             },
             MobType::Ally(ally_type) => match ally_type {
                 crate::spawnable::AllyMobType::Hauler2 => self.hauler_front.clone(),
@@ -185,6 +198,19 @@ impl MobAssets {
                 crate::spawnable::EnemyMobSegmentType::CrustlingTentacle3 => {
                     self.crustling_tentacle3.clone()
                 }
+                crate::spawnable::EnemyMobSegmentType::RepeaterBody => self.repeater_body.clone(),
+                crate::spawnable::EnemyMobSegmentType::RepeaterRightShoulder => {
+                    self.repeater_right_shoulder.clone()
+                }
+                crate::spawnable::EnemyMobSegmentType::RepeaterLeftShoulder => {
+                    self.repeater_left_shoulder.clone()
+                }
+                crate::spawnable::EnemyMobSegmentType::RepeaterRightArm => {
+                    self.repeater_right_arm.clone()
+                }
+                crate::spawnable::EnemyMobSegmentType::RepeaterLeftArm => {
+                    self.repeater_left_arm.clone()
+                }
             },
         }
     }
@@ -199,6 +225,7 @@ impl MobAssets {
                 EnemyMobType::MissileLauncher => Some(self.missile_launcher_thruster.clone()),
                 EnemyMobType::Missile => Some(self.missile_thruster.clone()),
                 EnemyMobType::Crustling => None,
+                EnemyMobType::Repeater => None,
             },
             MobType::Ally(ally_type) => match ally_type {
                 crate::spawnable::AllyMobType::Hauler2 => Some(self.hauler_thruster.clone()),

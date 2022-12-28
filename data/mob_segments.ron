@@ -5,7 +5,13 @@
             direction: None,
             frame_duration: 1.0,
         ),
-        collider_dimensions: (3.5, 5.5),
+        colliders: [
+			(
+				dimensions: (5.25, 8.25),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
         collision_damage: 6.0,
         defense_damage: -10.0,
         health: (
@@ -25,7 +31,13 @@
             direction: None,
             frame_duration: 1.0,
         ),
-        collider_dimensions: (3.5, 5.5),
+        colliders: [
+			(
+				dimensions: (5.25, 8.25),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
         collision_damage: 6.0,
         defense_damage: -10.0,
         health: (
@@ -38,14 +50,14 @@
         z_level: 5.0,
         anchor_point: (0.0, -30.0),
         behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
-        mob_segment_anchor_point: Some((
+        mob_segment_anchor_points: Some([(
 			mob_segment_type: Neutral(HaulerBack),
 			position: (0.0, 42.0),
 			joint: Revolute,
 			target_pos: 0.0,
 			stiffness: 10.0,
 			damping: 10.0,
-		)),
+		)]),
     ),
     Enemy(CrustlingTentacle1): (
         mob_segment_type: Enemy(CrustlingTentacle1),
@@ -53,7 +65,13 @@
             direction: None,
             frame_duration: 1.0,
         ),
-        collider_dimensions: (0.5, 5.0),
+        colliders: [
+			(
+				dimensions: (0.75, 7.5),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
         collision_damage: 0.0,
         defense_damage: 0.0,
         health: (
@@ -83,7 +101,13 @@
             direction: None,
             frame_duration: 1.0,
         ),
-        collider_dimensions: (0.5, 5.0),
+        colliders: [
+			(
+				dimensions: (0.75, 7.5),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
         collision_damage: 0.0,
         defense_damage: 0.0,
         health: (
@@ -113,7 +137,13 @@
             direction: None,
             frame_duration: 1.0,
         ),
-        collider_dimensions: (0.5, 5.0),
+        colliders: [
+			(
+				dimensions: (0.75, 7.5),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
         collision_damage: 0.0,
         defense_damage: 0.0,
         health: (
@@ -136,5 +166,209 @@
                 damping: 30.0,
             ))
         ],
+    ),
+    Enemy(RepeaterBody): (
+        mob_segment_type: Enemy(RepeaterBody),
+        animation: (
+            direction: PingPong(Forward),
+            frame_duration: 0.25,
+        ),
+        colliders: [
+			(
+				dimensions: (21.0, 9.0),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
+        collision_damage: 10.0,
+        defense_damage: 0.0,
+        health: (
+            max_health: 100.0,
+            health: 100.0,
+            armor: 0,
+
+        ),
+        consumable_drops: Standard,
+        z_level: 4.9,
+        anchor_point: (0.0, -51.0),
+        behaviors: [
+            DealDamageToPlayerOnImpact,
+            ReceiveDamageOnImpact,
+            DieAtZeroHealth,
+        ],
+        mob_segment_anchor_points: Some([
+            (
+			    mob_segment_type: Enemy(RepeaterRightShoulder),
+			    position: (72.0, -5.0),
+			    joint: Revolute,
+			    target_pos: 0.0,
+			    stiffness: 30.0,
+			    damping: 30.0,
+		    ),
+            (
+			    mob_segment_type: Enemy(RepeaterLeftShoulder),
+			    position: (-72.0, -5.0),
+			    joint: Revolute,
+			    target_pos: 0.0,
+			    stiffness: 30.0,
+			    damping: 30.0,
+		    ),
+        ]),
+    ), 
+    Enemy(RepeaterRightShoulder): (
+        mob_segment_type: Enemy(RepeaterRightShoulder),
+        animation: (
+            direction: None,
+            frame_duration: 1.0,
+        ),
+        colliders: [
+			(
+				dimensions: (20.0, 5.0),
+				position: (10.0, -5.0),
+				rotation: -1.05,
+			),
+            (
+				dimensions: (10.5, 8.0),
+				position: (-11.5, 14.0),
+				rotation: 0.0,
+			)
+		],
+        collision_damage: 10.0,
+        defense_damage: 0.0,
+        health: (
+            max_health: 100.0,
+            health: 100.0,
+            armor: 0,
+        ),
+        consumable_drops: Standard,
+        z_level: 5.1,
+        anchor_point: (-75.0, 48.0),
+        behaviors: [
+            DealDamageToPlayerOnImpact,
+            ReceiveDamageOnImpact,
+            DieAtZeroHealth,
+        ],
+        mob_segment_anchor_points: Some([
+            (
+			    mob_segment_type: Enemy(RepeaterRightArm),
+			    position: (65.0, -85.0),
+			    joint: Revolute,
+			    target_pos: 0.0,
+			    stiffness: 30.0,
+			    damping: 30.0,
+		    ),
+        ])
+    ),
+    Enemy(RepeaterLeftShoulder): (
+        mob_segment_type: Enemy(RepeaterLeftShoulder),
+        animation: (
+            direction: None,
+            frame_duration: 1.0,
+        ),
+        colliders: [
+			(
+				dimensions: (20.0, 5.0),
+				position: (-10.0, -5.0),
+				rotation: 1.05,
+			),
+            (
+				dimensions: (10.5, 8.0),
+				position: (11.5, 14.0),
+				rotation: 0.0,
+			)
+		],
+        collision_damage: 10.0,
+        defense_damage: 0.0,
+        health: (
+            max_health: 100.0,
+            health: 100.0,
+            armor: 0,
+        ),
+        consumable_drops: Standard,
+        z_level: 5.1,
+        anchor_point: (75.0, 48.0),
+        behaviors: [
+            DealDamageToPlayerOnImpact,
+            ReceiveDamageOnImpact,
+            DieAtZeroHealth,
+        ],
+        mob_segment_anchor_points: Some([
+            (
+			    mob_segment_type: Enemy(RepeaterLeftArm),
+			    position: (-65.0, -85.0),
+			    joint: Revolute,
+			    target_pos: 0.0,
+			    stiffness: 30.0,
+			    damping: 30.0,
+		    ),
+        ])  
+    ),
+    Enemy(RepeaterRightArm): (
+        mob_segment_type: Enemy(RepeaterRightArm),
+        animation: (
+            direction: None,
+            frame_duration: 1.0,
+        ),
+        colliders: [
+			(
+				dimensions: (17.0, 4.0),
+				position: (16.5, 16.0),
+				rotation: -1.25,
+			),
+            (
+				dimensions: (10.0, 3.0),
+				position: (15.5, -9.0),
+				rotation: 0.75,
+			),
+		],
+        collision_damage: 10.0,
+        defense_damage: 0.0,
+        health: (
+            max_health: 100.0,
+            health: 100.0,
+            armor: 0,
+        ),
+        consumable_drops: Standard,
+        z_level: 5.2,
+        anchor_point: (30.0, 105.0),
+        behaviors: [
+            DealDamageToPlayerOnImpact,
+            ReceiveDamageOnImpact,
+            DieAtZeroHealth,
+        ],  
+    ),
+    Enemy(RepeaterLeftArm): (
+        mob_segment_type: Enemy(RepeaterLeftArm),
+        animation: (
+            direction: None,
+            frame_duration: 1.0,
+        ),
+        colliders: [
+			(
+				dimensions: (17.0, 4.0),
+				position: (-16.5, 16.0),
+				rotation: 1.25,
+			),
+            (
+				dimensions: (10.0, 3.0),
+				position: (-15.5, -9.0),
+				rotation: -0.75,
+			),
+		],
+        collision_damage: 10.0,
+        defense_damage: 0.0,
+        health: (
+            max_health: 100.0,
+            health: 100.0,
+            armor: 0,
+        ),
+        consumable_drops: Standard,
+        z_level: 5.2,
+        anchor_point: (-30.0, 105.0),
+        behaviors: [
+            DealDamageToPlayerOnImpact,
+            ReceiveDamageOnImpact,
+            DieAtZeroHealth,
+        ],  
     ),
 }

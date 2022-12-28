@@ -1,4 +1,49 @@
 {
+	Enemy(Repeater): (
+		mob_type: Enemy(Repeater),
+		spawnable_behaviors: [MoveDown, BrakeHorizontal],
+		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+		acceleration: (2.0, 2.0),
+		deceleration: (2.0, 2.0),
+		speed: (80.0, 30.0),
+		angular_acceleration: 0.0,
+		angular_deceleration: 0.0,
+		angular_speed: 0.0,
+		attack_damage: 0.0,
+		collision_damage: 20.0,
+		defense_damage: 10.0,
+		initial_motion: (),
+		colliders: [
+			(
+				dimensions: (12.0, 12.0),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
+		z_level: 5.0,
+		consumable_drops: Standard,
+		health: (
+			max_health: 100.0,
+			health: 100.0,
+			armor: 0,
+		),
+		animation: (
+			direction: PingPong(Forward),
+			frame_duration: 0.25,
+		),
+		
+		mob_segment_anchor_points: Some([
+			(
+				mob_segment_type: Enemy(RepeaterBody),
+				position: (0.0, 60.0),
+				joint: Revolute,
+				target_pos: 0,
+				stiffness: 30.0,
+				damping: 30.0,
+			),
+		]),
+		
+	),
 	Enemy(Crustling): (
 		mob_type: Enemy(Crustling),
 		spawnable_behaviors: [MoveDown, ChangeHorizontalDirectionOnImpact, MoveRight],
@@ -13,7 +58,13 @@
 		collision_damage: 20.0,
 		defense_damage: 10.0,
 		initial_motion: (),
-		collider_dimensions: (7.0, 3.0),
+		colliders: [
+			(
+				dimensions: (10.5, 4.5),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
 		z_level: 5.0,
 		consumable_drops: Standard,
 		health: (
@@ -66,7 +117,13 @@
 		collision_damage: 12.0,
 		defense_damage: 10.0,
 		initial_motion: (),
-		collider_dimensions: (5.0, 5.0),
+		colliders: [
+			(
+				dimensions: (7.5, 7.5),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
 		z_level: 5.0,
 		consumable_drops: Standard,
 		health: (
@@ -116,7 +173,13 @@
 		collision_damage: 8.0,
 		defense_damage: 10.0,
 		initial_motion: (),
-		collider_dimensions: (5.0, 5.0),
+		colliders: [
+			(
+				dimensions: (7.5, 7.5),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
 		z_level: 5.0,
 		consumable_drops: Standard,
 		health: (
@@ -150,7 +213,13 @@
 		collision_damage: 5.0,
 		defense_damage: 0.0,
 		initial_motion: (),
-		collider_dimensions: (3.5, 2.5),
+		colliders: [
+			(
+				dimensions: (5.25, 3.75),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
 		z_level: 6.0,
 		consumable_drops: Standard,
 		health: (
@@ -194,7 +263,13 @@
 		collision_damage: 5.0,
 		defense_damage: 0.0,
 		initial_motion: (),
-		collider_dimensions: (3.5, 2.5),
+		colliders: [
+			(
+				dimensions: (5.25, 3.75),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
 		z_level: 6.0,
 		consumable_drops: Standard,
 		health: (
@@ -249,7 +324,13 @@
 		collision_damage: 6.0,
 		defense_damage: 25.0,
 		initial_motion: (),
-		collider_dimensions: (6.0, 8.0),
+		colliders: [
+			(
+				dimensions: (9.0, 12.0),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
 		z_level: 5.0,
 		consumable_drops: Standard,
 		health: (
@@ -283,7 +364,13 @@
 		collision_damage: 30.0,
 		defense_damage: 0.0,
 		initial_motion: (),
-		collider_dimensions: (1.5, 4.0),
+		colliders: [
+			(
+				dimensions: (2.25, 6.0),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
 		z_level: 5.0,
 		consumable_drops: Nothing,
 		health: (
@@ -333,7 +420,13 @@
 		collision_damage: 10.0,
 		defense_damage: 15.0,
 		initial_motion: (),
-		collider_dimensions: (7.0, 2.0),
+		colliders: [
+			(
+				dimensions: (10.5, 3.0),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
 		z_level: 5.0,
 		consumable_drops: Standard,
 		health: (
@@ -382,7 +475,13 @@
 		collision_damage: 10.0,
 		defense_damage: 15.0,
 		initial_motion: (),
-		collider_dimensions: (7.0, 2.0),
+		colliders: [
+			(
+				dimensions: (10.5, 3.0),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
 		z_level: 5.0,
 		consumable_drops: Standard,
 		health: (
@@ -420,7 +519,13 @@
 		initial_motion: (
 			random_angvel: Some((-1.0, 1.0)),
 		),
-		collider_dimensions: (5.0, 5.0),
+		colliders: [
+			(
+				dimensions: (7.5, 7.5),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
 		health: (
 			max_health: 50.0,
 			health: 50.0,

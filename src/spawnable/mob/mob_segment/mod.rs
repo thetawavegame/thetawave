@@ -17,7 +17,7 @@ use crate::{
 mod behavior;
 pub use self::behavior::*;
 
-use super::{JointType, MobSegmentAnchorPointData};
+use super::{ColliderData, CompoundColliderData, JointType, MobSegmentAnchorPointData};
 
 #[derive(Resource)]
 pub struct MobSegmentsResource {
@@ -52,7 +52,7 @@ impl From<&MobSegmentData> for MobSegmentComponent {
 #[derive(Deserialize)]
 pub struct MobSegmentData {
     pub animation: AnimationData,
-    pub collider_dimensions: Vec2,
+    pub colliders: Vec<ColliderData>,
     pub mob_segment_type: MobSegmentType,
     pub collision_damage: f32,
     pub defense_damage: f32,
@@ -60,7 +60,7 @@ pub struct MobSegmentData {
     pub consumable_drops: ConsumableDropListType,
     pub z_level: f32,
     pub anchor_point: Vec2,
-    pub mob_segment_anchor_point: Option<MobSegmentAnchorPointData>,
+    pub mob_segment_anchor_points: Option<Vec<MobSegmentAnchorPointData>>,
     pub behaviors: Vec<behavior::MobSegmentBehavior>,
 }
 
@@ -78,11 +78,12 @@ pub fn spawn_mob_segment(
     let mob_segment_data = &mob_segments_resource.mob_segments[mob_segment_type];
 
     // scale collider to align with the sprite
+    /*
     let collider_size_hx =
         mob_segment_data.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
     let collider_size_hy =
         mob_segment_data.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
-
+    */
     let mut mob_segment = commands.spawn_empty();
 
     let new_position = Vec2::new(
@@ -113,7 +114,13 @@ pub fn spawn_mob_segment(
             direction: mob_segment_data.animation.direction.clone(),
         })
         .insert(RigidBody::Dynamic)
-        .insert(Collider::cuboid(collider_size_hx, collider_size_hy))
+        .insert(Collider::compound(
+            mob_segment_data
+                .colliders
+                .iter()
+                .map(|collider_data| collider_data.clone().into())
+                .collect::<Vec<CompoundColliderData>>(),
+        ))
         .insert(Friction::new(1.0))
         .insert(Restitution {
             coefficient: 1.0,
@@ -131,32 +138,36 @@ pub fn spawn_mob_segment(
         .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new(mob_segment_data.mob_segment_type.to_string()));
 
-    if let Some(mob_segment_anchor_point) = mob_segment_data.mob_segment_anchor_point.clone() {
-        let new_mob_segment_data =
-            &mob_segments_resource.mob_segments[&mob_segment_anchor_point.mob_segment_type];
+    let mob_segment_entity = mob_segment.id().clone();
 
-        // create joint
-        let joint = match &mob_segment_anchor_point.joint {
-            JointType::Revolute => RevoluteJointBuilder::new()
-                .local_anchor1(mob_segment_anchor_point.position)
-                .local_anchor2(new_mob_segment_data.anchor_point)
-                .motor_position(
-                    mob_segment_anchor_point.target_pos,
-                    mob_segment_anchor_point.stiffness,
-                    mob_segment_anchor_point.damping,
-                ),
-        };
+    if let Some(mob_segment_anchor_points) = mob_segment_data.mob_segment_anchor_points.clone() {
+        for mob_segment_anchor_point in mob_segment_anchor_points.iter() {
+            let new_mob_segment_data =
+                &mob_segments_resource.mob_segments[&mob_segment_anchor_point.mob_segment_type];
 
-        spawn_mob_segment(
-            &new_mob_segment_data.mob_segment_type,
-            mob_segment.id(),
-            &joint,
-            mob_segments_resource,
-            mob_assets,
-            new_position,
-            mob_segment_anchor_point.position,
-            commands,
-            game_parameters,
-        )
+            // create joint
+            let joint = match &mob_segment_anchor_point.joint {
+                JointType::Revolute => RevoluteJointBuilder::new()
+                    .local_anchor1(mob_segment_anchor_point.position)
+                    .local_anchor2(new_mob_segment_data.anchor_point)
+                    .motor_position(
+                        mob_segment_anchor_point.target_pos,
+                        mob_segment_anchor_point.stiffness,
+                        mob_segment_anchor_point.damping,
+                    ),
+            };
+
+            spawn_mob_segment(
+                &new_mob_segment_data.mob_segment_type,
+                mob_segment_entity,
+                &joint,
+                mob_segments_resource,
+                mob_assets,
+                new_position,
+                mob_segment_anchor_point.position,
+                commands,
+                game_parameters,
+            )
+        }
     }
 }
