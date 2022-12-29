@@ -223,7 +223,7 @@
         ),
         colliders: [
 			(
-				dimensions: (20.0, 5.0),
+				dimensions: (23.0, 5.0),
 				position: (10.0, -5.0),
 				rotation: -1.05,
 			),
@@ -267,7 +267,7 @@
         ),
         colliders: [
 			(
-				dimensions: (20.0, 5.0),
+				dimensions: (23.0, 5.0),
 				position: (-10.0, -5.0),
 				rotation: 1.05,
 			),
@@ -312,30 +312,40 @@
         colliders: [
 			(
 				dimensions: (17.0, 4.0),
-				position: (16.5, 16.0),
+				position: (1.5, 9.0),
 				rotation: -1.25,
 			),
             (
-				dimensions: (10.0, 3.0),
-				position: (15.5, -9.0),
+				dimensions: (11.0, 3.0),
+				position: (1.0, -17.0),
 				rotation: 0.75,
 			),
 		],
         collision_damage: 10.0,
         defense_damage: 0.0,
         health: (
-            max_health: 100.0,
-            health: 100.0,
+            max_health: 500.0,
+            health: 500.0,
             armor: 0,
         ),
         consumable_drops: Standard,
         z_level: 5.2,
-        anchor_point: (30.0, 105.0),
+        anchor_point: (-10.0, 83.0),
         behaviors: [
             DealDamageToPlayerOnImpact,
             ReceiveDamageOnImpact,
             DieAtZeroHealth,
-        ],  
+        ],
+        mob_segment_anchor_points: Some([
+            (
+			    mob_segment_type: Enemy(RepeaterRightClaw),
+			    position: (-30.0, -75.0),
+			    joint: Revolute,
+			    target_pos: 0.0,
+			    stiffness: 30.0,
+			    damping: 30.0,
+		    ),
+        ])    
     ),
     Enemy(RepeaterLeftArm): (
         mob_segment_type: Enemy(RepeaterLeftArm),
@@ -346,25 +356,103 @@
         colliders: [
 			(
 				dimensions: (17.0, 4.0),
-				position: (-16.5, 16.0),
+				position: (-1.5, 9.0),
 				rotation: 1.25,
 			),
             (
-				dimensions: (10.0, 3.0),
-				position: (-15.5, -9.0),
+				dimensions: (11.0, 3.0),
+				position: (-1.0, -17.0),
 				rotation: -0.75,
 			),
 		],
         collision_damage: 10.0,
         defense_damage: 0.0,
         health: (
-            max_health: 100.0,
-            health: 100.0,
+            max_health: 500.0,
+            health: 500.0,
             armor: 0,
         ),
         consumable_drops: Standard,
         z_level: 5.2,
-        anchor_point: (-30.0, 105.0),
+        anchor_point: (10.0, 83.0),
+        behaviors: [
+            DealDamageToPlayerOnImpact,
+            ReceiveDamageOnImpact,
+            DieAtZeroHealth,
+        ],
+        mob_segment_anchor_points: Some([
+            (
+			    mob_segment_type: Enemy(RepeaterLeftClaw),
+			    position: (30.0, -75.0),
+			    joint: Revolute,
+			    target_pos: 0.0,
+			    stiffness: 30.0,
+			    damping: 30.0,
+		    ),
+        ])   
+    ),
+    Enemy(RepeaterRightClaw): (
+        mob_segment_type: Enemy(RepeaterRightClaw),
+        animation: (
+            direction: None,
+            frame_duration: 1.0,
+        ),
+        colliders: [
+			(
+				dimensions: (12.0, 4.0),
+				position: (1.5, -2.0),
+				rotation: 0.0,
+			),
+            (
+				dimensions: (10.0, 2.0),
+				position: (-6.5, 7.0),
+				rotation: -0.75,
+			),
+		],
+        collision_damage: 10.0,
+        defense_damage: 0.0,
+        health: (
+            max_health: 500.0,
+            health: 500.0,
+            armor: 0,
+        ),
+        consumable_drops: Standard,
+        z_level: 5.3,
+        anchor_point: (42.0, -4.0),
+        behaviors: [
+            DealDamageToPlayerOnImpact,
+            ReceiveDamageOnImpact,
+            DieAtZeroHealth,
+        ],  
+    ),
+    Enemy(RepeaterLeftClaw): (
+        mob_segment_type: Enemy(RepeaterLeftClaw),
+        animation: (
+            direction: None,
+            frame_duration: 1.0,
+        ),
+        colliders: [
+			(
+				dimensions: (12.0, 4.0),
+				position: (-1.5, -2.0),
+				rotation: 0.0,
+			),
+            (
+				dimensions: (10.0, 2.0),
+				position: (6.5, 7.0),
+				rotation: 0.75,
+			),
+		],
+        collision_damage: 10.0,
+        defense_damage: 0.0,
+        health: (
+            max_health: 500.0,
+            health: 500.0,
+            armor: 0,
+        ),
+        consumable_drops: Standard,
+        z_level: 5.3,
+        anchor_point: (-42.0, -4.0),
         behaviors: [
             DealDamageToPlayerOnImpact,
             ReceiveDamageOnImpact,

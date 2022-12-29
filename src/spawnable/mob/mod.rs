@@ -23,6 +23,7 @@ pub use self::{
     mob_segment::*,
 };
 
+use super::behavior_sequence::MobBehaviorSequenceType;
 use super::MobSegmentType;
 
 /// Core component for mobs
@@ -32,6 +33,8 @@ pub struct MobComponent {
     pub mob_type: MobType,
     /// Mob specific behaviors
     pub behaviors: Vec<behavior::MobBehavior>,
+    pub behavior_sequence: Option<MobBehaviorSequenceType>,
+    pub behavior_sequence_tracker: Option<BehaviorSequenceTracker>,
     /// Optional mob spawn timer
     pub mob_spawn_timer: Option<Timer>,
     /// Optional weapon timer
@@ -53,6 +56,8 @@ impl From<&MobData> for MobComponent {
         MobComponent {
             mob_type: mob_data.mob_type.clone(),
             behaviors: mob_data.mob_behaviors.clone(),
+            behavior_sequence: mob_data.behavior_sequence_type.clone(),
+            behavior_sequence_tracker: None,
             mob_spawn_timer: None,
             weapon_timer: None,
             attack_damage: mob_data.attack_damage,
@@ -64,6 +69,11 @@ impl From<&MobData> for MobComponent {
     }
 }
 
+pub struct BehaviorSequenceTracker {
+    pub timer: Timer,
+    pub index: usize,
+}
+
 /// Data about mob entities that can be stored in data ron file
 #[derive(Deserialize)]
 pub struct MobData {
@@ -71,6 +81,8 @@ pub struct MobData {
     pub mob_type: MobType,
     /// List of spawnable behaviors that are performed
     pub spawnable_behaviors: Vec<SpawnableBehavior>,
+    /// Behavior sequence type
+    pub behavior_sequence_type: Option<MobBehaviorSequenceType>,
     /// List of mob behaviors that are performed
     pub mob_behaviors: Vec<behavior::MobBehavior>,
     /// Acceleration stat

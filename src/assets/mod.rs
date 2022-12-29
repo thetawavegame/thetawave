@@ -157,6 +157,10 @@ pub struct MobAssets {
     pub repeater_right_arm: Handle<TextureAtlas>,
     #[asset(key = "repeater.left_arm")]
     pub repeater_left_arm: Handle<TextureAtlas>,
+    #[asset(key = "repeater.right_claw")]
+    pub repeater_right_claw: Handle<TextureAtlas>,
+    #[asset(key = "repeater.left_claw")]
+    pub repeater_left_claw: Handle<TextureAtlas>,
 }
 
 impl MobAssets {
@@ -210,6 +214,12 @@ impl MobAssets {
                 }
                 crate::spawnable::EnemyMobSegmentType::RepeaterLeftArm => {
                     self.repeater_left_arm.clone()
+                }
+                crate::spawnable::EnemyMobSegmentType::RepeaterRightClaw => {
+                    self.repeater_right_claw.clone()
+                }
+                crate::spawnable::EnemyMobSegmentType::RepeaterLeftClaw => {
+                    self.repeater_left_claw.clone()
                 }
             },
         }

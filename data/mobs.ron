@@ -1,8 +1,9 @@
 {
 	Enemy(Repeater): (
 		mob_type: Enemy(Repeater),
-		spawnable_behaviors: [MoveDown, BrakeHorizontal],
-		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+		spawnable_behaviors: [],
+		mob_behaviors: [],
+		behavior_sequence_type: Some(Repeater),
 		acceleration: (2.0, 2.0),
 		deceleration: (2.0, 2.0),
 		speed: (80.0, 30.0),

@@ -6,17 +6,11 @@ use serde::Deserialize;
 use strum_macros::Display;
 
 mod behavior;
+mod behavior_sequence;
 mod consumable;
 mod effect;
 mod mob;
 mod projectile;
-
-/*
-pub use self::boss::{
-    repeater_behavior_system, spawn_boss_system, spawn_repeater_boss, BossPartComponent,
-    RepeaterPartType, RepeaterPartsData, RepeaterResource, SpawnBossEvent,
-};
-*/
 
 pub use self::mob::{
     mob_execute_behavior_system, mob_segment_execute_behavior_system, spawn_mob, spawn_mob_system,
@@ -30,6 +24,11 @@ pub use self::projectile::{
 
 pub use self::behavior::{
     spawnable_execute_behavior_system, spawnable_set_target_behavior_system, SpawnableBehavior,
+};
+
+pub use self::behavior_sequence::{
+    mob_behavior_sequence_tracker_system, mob_behavior_sequence_update_system,
+    BehaviorSequenceResource, MobBehaviorUpdateEvent,
 };
 
 pub use self::effect::{
@@ -217,6 +216,8 @@ pub enum EnemyMobSegmentType {
     RepeaterLeftShoulder,
     RepeaterRightArm,
     RepeaterLeftArm,
+    RepeaterRightClaw,
+    RepeaterLeftClaw,
 }
 
 /// Type that encompasses all spawnable neutral mobs

@@ -78,6 +78,12 @@ fn main() {
     )
     .insert_resource(ClearColor(Color::BLACK))
     .insert_resource(
+        from_bytes::<spawnable::BehaviorSequenceResource>(include_bytes!(
+            "../data/behavior_sequences.ron"
+        ))
+        .unwrap(),
+    )
+    .insert_resource(
         from_bytes::<loot::LootDropsResource>(include_bytes!("../data/loot_drops.ron")).unwrap(),
     )
     .insert_resource(
@@ -147,6 +153,7 @@ fn main() {
     .add_event::<spawnable::SpawnConsumableEvent>()
     .add_event::<spawnable::SpawnProjectileEvent>()
     .add_event::<spawnable::SpawnMobEvent>()
+    .add_event::<spawnable::MobBehaviorUpdateEvent>()
     .add_plugin(AudioPlugin)
     .add_plugin(EguiPlugin)
     .add_audio_channel::<audio::BackgroundMusicAudioChannel>()
@@ -277,6 +284,8 @@ fn main() {
             )
             .with_system(collision::intersection_collision_system.label("intersection_collision"))
             .with_system(collision::contact_collision_system.label("contact_collision"))
+            .with_system(spawnable::mob_behavior_sequence_tracker_system)
+            .with_system(spawnable::mob_behavior_sequence_update_system)
             .with_system(spawnable::spawnable_execute_behavior_system.after("set_target_behavior"))
             .with_system(
                 spawnable::mob_execute_behavior_system
@@ -429,7 +438,7 @@ fn setup_game(
         None,
     );
     repeater_texture_atlas_dict.insert(
-        RepeaterPartType::LeftShoulder,
+        RepeaterPartType::LeftShoulder,https://twitter.com/carlosupina/status/1607824762721701889
         texture_atlases.add(lshould_atlas),
     );
 

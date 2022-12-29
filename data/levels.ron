@@ -9,7 +9,7 @@
 			phases: [
 				(
 					phase_type: FormationSpawn(
-						time: 45.0,
+						time: 1000.0,
 						formation_pool: Easy,
 						initial_delay: 1.0,	 			
 					)

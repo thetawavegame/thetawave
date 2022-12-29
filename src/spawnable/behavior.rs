@@ -19,6 +19,7 @@ pub enum SpawnableBehavior {
     MoveLeft,
     BrakeHorizontal,
     ChangeHorizontalDirectionOnImpact,
+    MoveToPosition(Vec2),
 }
 
 /// Manages excuting behaviors of spawnables
@@ -64,6 +65,9 @@ pub fn spawnable_execute_behavior_system(
                 }
                 SpawnableBehavior::BrakeHorizontal => {
                     brake_horizontal(&game_parameters, &spawnable_component, &mut rb_vel);
+                }
+                SpawnableBehavior::MoveToPosition(pos) => {
+                    move_to_position(spawnable_transform, &spawnable_component, &mut rb_vel, pos);
                 }
                 SpawnableBehavior::ChangeHorizontalDirectionOnImpact => {
                     change_horizontal_direction_on_impact(
@@ -129,6 +133,36 @@ pub fn spawnable_set_target_behavior_system(
                 _ => {}
             }
         }
+    }
+}
+
+fn move_to_position(
+    transform: &Transform,
+    spawnable_component: &SpawnableComponent,
+    rb_vel: &mut Velocity,
+    position: Vec2,
+) {
+    let angle = ((transform.translation.y - position.y)
+        .atan2(transform.translation.x - position.x))
+        - (std::f32::consts::PI);
+
+    let max_speed_x = (spawnable_component.speed.x * angle.cos()).abs();
+    let max_speed_y = (spawnable_component.speed.y * angle.sin()).abs();
+
+    if rb_vel.linvel.x > max_speed_x {
+        rb_vel.linvel.x -= spawnable_component.deceleration.x;
+    } else if rb_vel.linvel.x < -max_speed_x {
+        rb_vel.linvel.x += spawnable_component.deceleration.x;
+    } else {
+        rb_vel.linvel.x += spawnable_component.acceleration.x * angle.cos();
+    }
+
+    if rb_vel.linvel.y > max_speed_y {
+        rb_vel.linvel.y -= spawnable_component.deceleration.y;
+    } else if rb_vel.linvel.y < -max_speed_y {
+        rb_vel.linvel.y += spawnable_component.deceleration.y;
+    } else {
+        rb_vel.linvel.y += spawnable_component.acceleration.y * angle.sin();
     }
 }
 
