@@ -55,13 +55,6 @@
         columns: 3,
         rows: 1,
     ),
-    "hauler": TextureAtlas (
-        path: "texture/hauler_spritesheet.png",
-        tile_size_x: 24.,
-        tile_size_y: 38.,
-        columns: 3,
-        rows: 1,
-    ),
     "hauler.front": TextureAtlas (
         path: "texture/hauler_front.png",
         tile_size_x: 18.,
@@ -169,14 +162,14 @@
     ),
     "repeater.right_arm": TextureAtlas (
         path: "texture/repeater_right_arm_spritesheet.png",
-        tile_size_x: 30.,
+        tile_size_x: 41.,
         tile_size_y: 62.,
         columns: 3,
         rows: 1,
     ),
     "repeater.left_arm": TextureAtlas (
         path: "texture/repeater_left_arm_spritesheet.png",
-        tile_size_x: 30.,
+        tile_size_x: 41.,
         tile_size_y: 62.,
         columns: 3,
         rows: 1,
@@ -184,14 +177,14 @@
     "repeater.right_claw": TextureAtlas (
         path: "texture/repeater_right_claw_spritesheet.png",
         tile_size_x: 36.,
-        tile_size_y: 49.,
+        tile_size_y: 35.,
         columns: 3,
         rows: 1,
     ),
     "repeater.left_claw": TextureAtlas (
         path: "texture/repeater_left_claw_spritesheet.png",
         tile_size_x: 36.,
-        tile_size_y: 49.,
+        tile_size_y: 35.,
         columns: 3,
         rows: 1,
     ),

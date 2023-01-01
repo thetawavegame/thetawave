@@ -40,7 +40,6 @@ pub fn despawn_gates_system(
     spawnable_query: Query<Entity, With<SpawnableComponent>>,
     mob_query: Query<(Entity, &MobComponent)>,
     mut enemy_bottom_event: EventWriter<MobReachedBottomGateEvent>,
-    asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
 ) {

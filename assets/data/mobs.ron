@@ -3,6 +3,156 @@
 		mob_type: Enemy(Repeater),
 		spawnable_behaviors: [],
 		mob_behaviors: [],
+		mob_segment_behaviors: Some({
+			RepeaterProtectHead: {
+				Enemy(RepeaterRightShoulder): [
+					DealDamageToPlayerOnImpact,
+            		ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					RepeaterProtectHead(
+						(
+							angle: -0.15,
+							stiffness: 30.0,
+							damping: 50.0,
+						)
+					),
+				],
+				Enemy(RepeaterLeftShoulder): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					RepeaterProtectHead(
+						(
+							angle: 0.15,
+							stiffness: 30.0,
+							damping: 50.0,
+						)
+					),
+				],
+				Enemy(RepeaterRightArm): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					RepeaterProtectHead(
+						(
+							angle: -0.5,
+							stiffness: 30.0,
+							damping: 50.0,
+						)
+					),
+				],
+				Enemy(RepeaterLeftArm): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					RepeaterProtectHead(
+						(
+							angle: 0.5,
+							stiffness: 30.0,
+							damping: 50.0,
+						)
+					),
+				],
+				Enemy(RepeaterRightClaw): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					RepeaterProtectHead(
+						(
+							angle: 1.0,
+							stiffness: 30.0,
+							damping: 50.0,
+						)
+					),
+				],
+				Enemy(RepeaterLeftClaw): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					RepeaterProtectHead(
+						(
+							angle: -1.0,
+							stiffness: 30.0,
+							damping: 50.0,
+						)
+					),
+				],
+			},
+			RepeaterAttack: {
+				Enemy(RepeaterRightShoulder): [
+					DealDamageToPlayerOnImpact,
+            		ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					RepeaterAttack(
+						(
+							angle: 0.0,
+							stiffness: 30.0,
+							damping: 50.0,
+						)
+					),
+				],
+				Enemy(RepeaterLeftShoulder): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					RepeaterAttack(
+						(
+							angle: 0.0,
+							stiffness: 30.0,
+							damping: 50.0,
+						)
+					),
+				],
+				Enemy(RepeaterRightArm): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					RepeaterAttack(
+						(
+							angle: 0.0,
+							stiffness: 30.0,
+							damping: 50.0,
+						)
+					),
+				],
+				Enemy(RepeaterLeftArm): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					RepeaterAttack(
+						(
+							angle: 0.0,
+							stiffness: 30.0,
+							damping: 50.0,
+						)
+					),
+				],
+				Enemy(RepeaterRightClaw): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					RepeaterAttack(
+						(
+							angle: 0.0,
+							stiffness: 30.0,
+							damping: 50.0,
+						)
+					),
+				],
+				Enemy(RepeaterLeftClaw): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					RepeaterAttack(
+						(
+							angle: 0.0,
+							stiffness: 30.0,
+							damping: 30.0,
+						)
+					),
+				],
+			},
+		}),
 		behavior_sequence_type: Some(Repeater),
 		acceleration: (2.0, 2.0),
 		deceleration: (2.0, 2.0),
@@ -151,18 +301,7 @@
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
 			DieAtZeroHealth,
-			PeriodicFire(
-				(
-					projectile_type: Blast(Enemy),
-					offset_position: (0.0, -40.0),
-					initial_motion: (
-						random_angvel: None,
-						linvel: Some((0.0, -400.0)),
-					),
-					despawn_time: 2.5,
-					period: 3.0,
-				)
-			)
+			PeriodicFire,
 		],
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
@@ -232,7 +371,7 @@
 			direction: None,
 			frame_duration: 1.0,
 		),
-		mob_segment_anchor_point: Some([
+		mob_segment_anchor_points: Some([
 			(
 				mob_segment_type: Neutral(HaulerMiddle),
 				position: (0.0, 28.0),
@@ -307,13 +446,7 @@
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
 			DieAtZeroHealth,
-			SpawnMob(
-				(
-					mob_type: Enemy(Missile),
-					offset_position: (0.0, -70.0),
-					period: 4.0,
-				)
-			)
+			SpawnMob,
 		],
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
@@ -398,18 +531,7 @@
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
 			DieAtZeroHealth,
-			PeriodicFire(
-				(
-					projectile_type: Blast(Enemy),
-					offset_position: (0.0, -25.0),
-					initial_motion: (
-						random_angvel: None,
-						linvel: Some((0.0, -250.0)),
-					),
-					despawn_time: 1.5,
-					period: 4.0,
-				)
-			)
+			PeriodicFire,
 		],
 		acceleration: (2.0, 2.0),
 		deceleration: (2.0, 2.0),
@@ -454,17 +576,7 @@
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
 			DieAtZeroHealth,
-			PeriodicFire(
-				(
-					projectile_type: Blast(Enemy),
-					offset_position: (0.0, -25.0),
-					initial_motion: (
-						linvel: Some((0.0, -250.0)),
-					),
-					despawn_time: 1.5,
-					period: 4.0,
-				)
-			)
+			PeriodicFire,
 		],
 		acceleration: (2.0, 2.0),
 		deceleration: (2.0, 2.0),

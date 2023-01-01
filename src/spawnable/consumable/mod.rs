@@ -4,7 +4,7 @@ use serde::Deserialize;
 use std::collections::HashMap;
 
 use crate::{
-    animation::{AnimationComponent, AnimationData, TextureData},
+    animation::{AnimationComponent, AnimationData},
     assets::ConsumableAssets,
     game::GameParametersResource,
     spawnable::{

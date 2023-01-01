@@ -1,6 +1,6 @@
 use bevy::prelude::*;
+use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
-use bevy_rapier2d::{geometry::Group, rapier::prelude::FixedJointBuilder};
 use rand::{thread_rng, Rng};
 use serde::Deserialize;
 use std::{collections::HashMap, string::ToString};
@@ -11,7 +11,7 @@ use crate::{
     game::GameParametersResource,
     loot::ConsumableDropListType,
     misc::Health,
-    spawnable::{InitialMotion, MobType, SpawnableBehavior, SpawnableComponent, SpawnableType},
+    spawnable::{InitialMotion, MobType, SpawnableBehavior, SpawnableComponent},
     states::{AppStateComponent, AppStates},
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
@@ -19,7 +19,7 @@ use crate::{
 mod behavior;
 mod mob_segment;
 pub use self::{
-    behavior::{mob_execute_behavior_system, MobBehavior},
+    behavior::{mob_execute_behavior_system, MobBehavior, MobBehaviorAttributesResource},
     mob_segment::*,
 };
 
@@ -33,6 +33,9 @@ pub struct MobComponent {
     pub mob_type: MobType,
     /// Mob specific behaviors
     pub behaviors: Vec<behavior::MobBehavior>,
+    /// behaviors that mob segments attached to the mob will perform, given the mobs current behavior
+    pub mob_segment_behaviors:
+        Option<HashMap<MobBehavior, HashMap<MobSegmentType, Vec<MobSegmentBehavior>>>>,
     pub behavior_sequence: Option<MobBehaviorSequenceType>,
     pub behavior_sequence_tracker: Option<BehaviorSequenceTracker>,
     /// Optional mob spawn timer
@@ -57,6 +60,7 @@ impl From<&MobData> for MobComponent {
             mob_type: mob_data.mob_type.clone(),
             behaviors: mob_data.mob_behaviors.clone(),
             behavior_sequence: mob_data.behavior_sequence_type.clone(),
+            mob_segment_behaviors: mob_data.mob_segment_behaviors.clone(),
             behavior_sequence_tracker: None,
             mob_spawn_timer: None,
             weapon_timer: None,
@@ -85,6 +89,9 @@ pub struct MobData {
     pub behavior_sequence_type: Option<MobBehaviorSequenceType>,
     /// List of mob behaviors that are performed
     pub mob_behaviors: Vec<behavior::MobBehavior>,
+    /// behaviors that mob segments attached to the mob will perform, given the mobs current behavior
+    pub mob_segment_behaviors:
+        Option<HashMap<MobBehavior, HashMap<MobSegmentType, Vec<MobSegmentBehavior>>>>,
     /// Acceleration stat
     pub acceleration: Vec2,
     /// Deceleration stat

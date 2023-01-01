@@ -14,8 +14,8 @@ mod projectile;
 
 pub use self::mob::{
     mob_execute_behavior_system, mob_segment_execute_behavior_system, spawn_mob, spawn_mob_system,
-    MobBehavior, MobComponent, MobData, MobSegmentComponent, MobSegmentData, MobSegmentsResource,
-    MobsResource, SpawnMobEvent,
+    MobBehavior, MobBehaviorAttributesResource, MobComponent, MobData, MobSegmentComponent,
+    MobSegmentData, MobSegmentsResource, MobsResource, SpawnMobEvent,
 };
 pub use self::projectile::{
     projectile_execute_behavior_system, spawn_projectile, spawn_projectile_system,

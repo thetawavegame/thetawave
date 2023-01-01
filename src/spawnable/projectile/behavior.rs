@@ -4,13 +4,15 @@ use crate::{
     collision::SortedCollisionEvent,
     spawnable::{
         EffectType, Faction, MobComponent, MobSegmentComponent, PlayerComponent, ProjectileType,
-        SpawnEffectEvent, SpawnableComponent,
+        SpawnEffectEvent,
     },
 };
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use serde::Deserialize;
+
+use super::ProjectileComponent;
 
 /// Types of behaviors that can be performed by projectiles
 #[derive(Deserialize, Clone)]
@@ -26,19 +28,13 @@ pub enum ProjectileBehavior {
 #[allow(clippy::too_many_arguments)]
 pub fn projectile_execute_behavior_system(
     mut commands: Commands,
-    mut projectile_query: Query<(
-        Entity,
-        &Transform,
-        &mut SpawnableComponent,
-        &mut super::ProjectileComponent,
-    )>,
+    mut projectile_query: Query<(Entity, &Transform, &mut ProjectileComponent)>,
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
     mut mob_query: Query<(Entity, &mut MobComponent)>,
     mut mob_segment_query: Query<(Entity, &mut MobSegmentComponent)>,
     mut collision_events: EventReader<SortedCollisionEvent>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     time: Res<Time>,
-    asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
 ) {
@@ -49,9 +45,7 @@ pub fn projectile_execute_behavior_system(
     }
 
     // iterate through all projectiles
-    for (entity, projectile_transform, mut spawnable_component, mut projectile_component) in
-        projectile_query.iter_mut()
-    {
+    for (entity, projectile_transform, mut projectile_component) in projectile_query.iter_mut() {
         let projectile_type = projectile_component.projectile_type.clone();
         for behavior in &mut projectile_component.behaviors {
             match behavior {
@@ -59,13 +53,11 @@ pub fn projectile_execute_behavior_system(
                     &mut commands,
                     entity,
                     projectile_transform,
-                    &mut spawnable_component,
                     &collision_events_vec,
                     &mut spawn_effect_event_writer,
                     &mut player_query,
                     &mut mob_query,
                     &mut mob_segment_query,
-                    &asset_server,
                     &audio_channel,
                     &audio_assets,
                 ),
@@ -118,13 +110,11 @@ fn explode_on_impact(
     commands: &mut Commands,
     entity: Entity,
     transform: &Transform,
-    spawnable_component: &mut SpawnableComponent,
     collision_events: &[&SortedCollisionEvent],
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
     player_query: &mut Query<(Entity, &mut PlayerComponent)>,
     mob_query: &mut Query<(Entity, &mut MobComponent)>,
     mob_segment_query: &mut Query<(Entity, &mut MobSegmentComponent)>,
-    asset_server: &AssetServer,
     audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
     audio_assets: &GameAudioAssets,
 ) {

@@ -10,7 +10,6 @@ use bevy_rapier2d::prelude::*;
 use ron::de::from_bytes;
 use states::{AppStateComponent, AppStates};
 use std::collections::HashMap;
-use std::thread::spawn;
 use ui::EndGameTransitionResource;
 
 pub const PHYSICS_SCALE: f32 = 10.0;
@@ -78,65 +77,79 @@ fn main() {
     )
     .insert_resource(ClearColor(Color::BLACK))
     .insert_resource(
-        from_bytes::<spawnable::BehaviorSequenceResource>(include_bytes!(
-            "../data/behavior_sequences.ron"
+        from_bytes::<spawnable::MobBehaviorAttributesResource>(include_bytes!(
+            "../assets/data/mob_behavior_attributes.ron"
         ))
         .unwrap(),
     )
     .insert_resource(
-        from_bytes::<loot::LootDropsResource>(include_bytes!("../data/loot_drops.ron")).unwrap(),
+        from_bytes::<spawnable::BehaviorSequenceResource>(include_bytes!(
+            "../assets/data/behavior_sequences.ron"
+        ))
+        .unwrap(),
     )
     .insert_resource(
-        from_bytes::<player::CharactersResource>(include_bytes!("../data/characters.ron")).unwrap(),
-    )
-    .insert_resource(
-        from_bytes::<run::FormationPoolsResource>(include_bytes!("../data/formation_pools.ron"))
+        from_bytes::<loot::LootDropsResource>(include_bytes!("../assets/data/loot_drops.ron"))
             .unwrap(),
     )
     .insert_resource(
-        from_bytes::<game::GameParametersResource>(include_bytes!("../data/game_parameters.ron"))
+        from_bytes::<player::CharactersResource>(include_bytes!("../assets/data/characters.ron"))
             .unwrap(),
+    )
+    .insert_resource(
+        from_bytes::<run::FormationPoolsResource>(include_bytes!(
+            "../assets/data/formation_pools.ron"
+        ))
+        .unwrap(),
+    )
+    .insert_resource(
+        from_bytes::<game::GameParametersResource>(include_bytes!(
+            "../assets/data/game_parameters.ron"
+        ))
+        .unwrap(),
     )
     .insert_resource(run::RunResource::from(
-        from_bytes::<run::RunResourceData>(include_bytes!("../data/run.ron")).unwrap(),
+        from_bytes::<run::RunResourceData>(include_bytes!("../assets/data/run.ron")).unwrap(),
     ))
     .insert_resource(run::LevelsResource::from(
-        from_bytes::<run::LevelsResourceData>(include_bytes!("../data/levels.ron")).unwrap(),
+        from_bytes::<run::LevelsResourceData>(include_bytes!("../assets/data/levels.ron")).unwrap(),
     ))
     .insert_resource(spawnable::MobsResource {
         mobs: from_bytes::<HashMap<spawnable::MobType, spawnable::MobData>>(include_bytes!(
-            "../data/mobs.ron"
+            "../assets/data/mobs.ron"
         ))
         .unwrap(),
         texture_atlas_handle: HashMap::new(),
     })
     .insert_resource(spawnable::MobSegmentsResource {
         mob_segments: from_bytes::<HashMap<spawnable::MobSegmentType, spawnable::MobSegmentData>>(
-            include_bytes!("../data/mob_segments.ron"),
+            include_bytes!("../assets/data/mob_segments.ron"),
         )
         .unwrap(),
     })
     .insert_resource(spawnable::EffectsResource {
         effects: from_bytes::<HashMap<spawnable::EffectType, spawnable::EffectData>>(
-            include_bytes!("../data/effects.ron"),
+            include_bytes!("../assets/data/effects.ron"),
         )
         .unwrap(),
     })
     .insert_resource(spawnable::ProjectileResource {
         projectiles: from_bytes::<HashMap<spawnable::ProjectileType, spawnable::ProjectileData>>(
-            include_bytes!("../data/projectiles.ron"),
+            include_bytes!("../assets/data/projectiles.ron"),
         )
         .unwrap(),
     })
     .insert_resource(spawnable::ConsumableResource {
         consumables: from_bytes::<HashMap<spawnable::ConsumableType, spawnable::ConsumableData>>(
-            include_bytes!("../data/consumables.ron"),
+            include_bytes!("../assets/data/consumables.ron"),
         )
         .unwrap(),
     })
     .insert_resource(
-        from_bytes::<background::BackgroundsResource>(include_bytes!("../data/backgrounds.ron"))
-            .unwrap(),
+        from_bytes::<background::BackgroundsResource>(include_bytes!(
+            "../assets/data/backgrounds.ron"
+        ))
+        .unwrap(),
     )
     .insert_resource(AmbientLight {
         color: Color::WHITE,
@@ -288,10 +301,9 @@ fn main() {
             .with_system(spawnable::mob_behavior_sequence_update_system)
             .with_system(spawnable::spawnable_execute_behavior_system.after("set_target_behavior"))
             .with_system(
-                spawnable::mob_execute_behavior_system
-                    .after("set_target_behavior")
-                    .after("intersection_collision")
-                    .after("contact_collision"),
+                spawnable::mob_execute_behavior_system, //.after("set_target_behavior")
+                                                        //.after("intersection_collision")
+                                                        //.after("contact_collision"),
             )
             .with_system(
                 spawnable::mob_segment_execute_behavior_system
@@ -366,8 +378,6 @@ fn setup_physics(mut rapier_config: ResMut<RapierConfiguration>) {
 #[allow(clippy::too_many_arguments)]
 fn setup_game(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
     mut run_resource: ResMut<run::RunResource>,
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
     levels_resource: Res<run::LevelsResource>,
@@ -388,85 +398,6 @@ fn setup_game(
         .insert(ui::GameFadeComponent)
         .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new("Game Fade"));
-
-    /*
-    // load repeater boss assets
-    let mut repeater_texture_atlas_dict = HashMap::new();
-    let texture_handle = asset_server.load(&repeater.repeater_parts.body.texture.path[..]);
-    let body_atlas = TextureAtlas::from_grid(
-        texture_handle,
-        repeater.repeater_parts.body.texture.dimensions,
-        repeater.repeater_parts.body.texture.cols,
-        repeater.repeater_parts.body.texture.rows,
-        None,
-        None,
-    );
-    repeater_texture_atlas_dict.insert(RepeaterPartType::Body, texture_atlases.add(body_atlas));
-
-    let texture_handle = asset_server.load(&repeater.repeater_parts.head.texture.path[..]);
-    let head_atlas = TextureAtlas::from_grid(
-        texture_handle,
-        repeater.repeater_parts.head.texture.dimensions,
-        repeater.repeater_parts.head.texture.cols,
-        repeater.repeater_parts.head.texture.rows,
-        None,
-        None,
-    );
-    repeater_texture_atlas_dict.insert(RepeaterPartType::Head, texture_atlases.add(head_atlas));
-
-    let texture_handle = asset_server.load(&repeater.repeater_parts.rshould.texture.path[..]);
-    let rshould_atlas = TextureAtlas::from_grid(
-        texture_handle,
-        repeater.repeater_parts.rshould.texture.dimensions,
-        repeater.repeater_parts.rshould.texture.cols,
-        repeater.repeater_parts.rshould.texture.rows,
-        None,
-        None,
-    );
-    repeater_texture_atlas_dict.insert(
-        RepeaterPartType::RightShoulder,
-        texture_atlases.add(rshould_atlas),
-    );
-
-    let texture_handle = asset_server.load(&repeater.repeater_parts.lshould.texture.path[..]);
-    let lshould_atlas = TextureAtlas::from_grid(
-        texture_handle,
-        repeater.repeater_parts.lshould.texture.dimensions,
-        repeater.repeater_parts.lshould.texture.cols,
-        repeater.repeater_parts.lshould.texture.rows,
-        None,
-        None,
-    );
-    repeater_texture_atlas_dict.insert(
-        RepeaterPartType::LeftShoulder,https://twitter.com/carlosupina/status/1607824762721701889
-        texture_atlases.add(lshould_atlas),
-    );
-
-    let texture_handle = asset_server.load(&repeater.repeater_parts.rarm.texture.path[..]);
-    let rarm_atlas = TextureAtlas::from_grid(
-        texture_handle,
-        repeater.repeater_parts.rarm.texture.dimensions,
-        repeater.repeater_parts.rarm.texture.cols,
-        repeater.repeater_parts.rarm.texture.rows,
-        None,
-        None,
-    );
-    repeater_texture_atlas_dict.insert(RepeaterPartType::RightArm, texture_atlases.add(rarm_atlas));
-
-    let texture_handle = asset_server.load(&repeater.repeater_parts.larm.texture.path[..]);
-    let larm_atlas = TextureAtlas::from_grid(
-        texture_handle,
-        repeater.repeater_parts.larm.texture.dimensions,
-        repeater.repeater_parts.larm.texture.cols,
-        repeater.repeater_parts.larm.texture.rows,
-        None,
-        None,
-    );
-    repeater_texture_atlas_dict.insert(RepeaterPartType::LeftArm, texture_atlases.add(larm_atlas));
-
-    // add texture atlas dict to the repeater resource
-    repeater.texture_atlas_handle = repeater_texture_atlas_dict;
-    */
 
     // create run resource
     run_resource.create_level(&levels_resource);

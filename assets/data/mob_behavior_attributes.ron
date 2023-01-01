@@ -1,0 +1,41 @@
+(
+    periodic_fire_data: {
+        Enemy(Pawn): (
+            projectile_type: Blast(Enemy),
+            offset_position: (0.0, -40.0),
+            initial_motion: (
+                random_angvel: None,
+                linvel: Some((0.0, -400.0)),
+            ),
+            despawn_time: 2.5,
+            period: 3.0,
+        ),
+        Enemy(StraferRight): (
+            projectile_type: Blast(Enemy),
+            offset_position: (0.0, -25.0),
+            initial_motion: (
+                random_angvel: None,
+                linvel: Some((0.0, -250.0)),
+            ),
+            despawn_time: 1.5,
+            period: 4.0,
+        ),
+        Enemy(StraferLeft): (
+            projectile_type: Blast(Enemy),
+            offset_position: (0.0, -25.0),
+            initial_motion: (
+                random_angvel: None,
+                linvel: Some((0.0, -250.0)),
+            ),
+            despawn_time: 1.5,
+            period: 4.0,
+        ),
+    },
+    spawn_mob_data: {
+        Enemy(MissileLauncher): (
+            mob_type: Enemy(Missile),
+            offset_position: (0.0, -70.0),
+            period: 4.0,
+        ),
+    }
+)

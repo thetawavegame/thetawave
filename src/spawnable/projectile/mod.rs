@@ -5,7 +5,7 @@ use serde::Deserialize;
 use std::{collections::HashMap, string::ToString};
 
 use crate::{
-    animation::{AnimationComponent, AnimationData, AnimationDirection, TextureData},
+    animation::{AnimationComponent, AnimationData},
     assets::ProjectileAssets,
     game::GameParametersResource,
     spawnable::InitialMotion,

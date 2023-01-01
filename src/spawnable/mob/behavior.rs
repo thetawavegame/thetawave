@@ -3,31 +3,38 @@ use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
+use std::collections::HashMap;
 
 use crate::{
     assets::GameAudioAssets,
     audio,
     collision::SortedCollisionEvent,
-    game::GameParametersResource,
     loot::LootDropsResource,
     spawnable::{
-        spawn_projectile, EffectType, InitialMotion, MobType, PlayerComponent, ProjectileResource,
-        ProjectileType, SpawnConsumableEvent, SpawnEffectEvent, SpawnProjectileEvent,
-        SpawnableComponent,
+        EffectType, InitialMotion, MobType, PlayerComponent, ProjectileType, SpawnConsumableEvent,
+        SpawnEffectEvent, SpawnProjectileEvent,
     },
 };
 
-use super::SpawnMobEvent;
+use super::{MobComponent, SpawnMobEvent};
 
 /// Types of behaviors that can be performed by mobs
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Hash, PartialEq, Eq, Clone)]
 pub enum MobBehavior {
-    PeriodicFire(PeriodicFireBehaviorData),
-    SpawnMob(SpawnMobBehaviorData),
+    PeriodicFire,
+    SpawnMob,
     ExplodeOnImpact,
     DealDamageToPlayerOnImpact,
     ReceiveDamageOnImpact,
     DieAtZeroHealth,
+    RepeaterProtectHead,
+    RepeaterAttack,
+}
+
+#[derive(Resource, Deserialize)]
+pub struct MobBehaviorAttributesResource {
+    pub periodic_fire_data: HashMap<MobType, PeriodicFireBehaviorData>,
+    pub spawn_mob_data: HashMap<MobType, SpawnMobBehaviorData>,
 }
 
 /// Data used to periodically spawn mobs
@@ -61,24 +68,15 @@ pub struct PeriodicFireBehaviorData {
 pub fn mob_execute_behavior_system(
     mut commands: Commands,
     mut collision_events: EventReader<SortedCollisionEvent>,
-    game_parameters: Res<GameParametersResource>,
     time: Res<Time>,
-    mob_resource: Res<super::MobsResource>,
-    projectile_resource: Res<ProjectileResource>,
-    mut mob_query: Query<(
-        Entity,
-        &mut SpawnableComponent,
-        &mut super::MobComponent,
-        &Transform,
-        &Velocity,
-    )>,
+    mut mob_query: Query<(Entity, &mut MobComponent, &Transform, &Velocity)>,
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     mut spawn_consumable_event_writer: EventWriter<SpawnConsumableEvent>,
     mut spawn_projectile_event_writer: EventWriter<SpawnProjectileEvent>,
     mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
+    mob_attributes_resource: Res<MobBehaviorAttributesResource>,
     loot_drops_resource: Res<LootDropsResource>,
-    asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
 ) {
@@ -89,13 +87,16 @@ pub fn mob_execute_behavior_system(
     }
 
     // Iterate through all spawnable entities and execute their behavior
-    for (entity, mut spawnable_component, mut mob_component, mob_transform, mob_velocity) in
-        mob_query.iter_mut()
-    {
+    for (entity, mut mob_component, mob_transform, mob_velocity) in mob_query.iter_mut() {
         let behaviors = mob_component.behaviors.clone();
         for behavior in behaviors {
             match behavior {
-                MobBehavior::PeriodicFire(data) => {
+                MobBehavior::PeriodicFire => {
+                    // get data
+
+                    let data =
+                        mob_attributes_resource.periodic_fire_data[&mob_component.mob_type].clone();
+
                     if mob_component.weapon_timer.is_none() {
                         mob_component.weapon_timer =
                             Some(Timer::from_seconds(data.period, TimerMode::Repeating));
@@ -129,7 +130,12 @@ pub fn mob_execute_behavior_system(
                         }
                     }
                 }
-                MobBehavior::SpawnMob(data) => {
+                MobBehavior::SpawnMob => {
+                    // get data
+
+                    let data =
+                        mob_attributes_resource.spawn_mob_data[&mob_component.mob_type].clone();
+
                     // if mob component does not have a timer initialize timer
                     // otherwise tick timer and spawn mob on completion
                     if mob_component.mob_spawn_timer.is_none() {
@@ -155,11 +161,9 @@ pub fn mob_execute_behavior_system(
                     explode_on_impact(
                         &mut commands,
                         entity,
-                        &mut spawnable_component,
                         &collision_events_vec,
                         &mut spawn_effect_event_writer,
                         mob_transform,
-                        &asset_server,
                         &audio_channel,
                         &audio_assets,
                     );
@@ -201,6 +205,12 @@ pub fn mob_execute_behavior_system(
                         // despawn mob
                         commands.entity(entity).despawn_recursive();
                     }
+                }
+                MobBehavior::RepeaterProtectHead => {
+                    // head behavior
+                }
+                MobBehavior::RepeaterAttack => {
+                    // head behavior
                 }
             }
         }
@@ -293,11 +303,9 @@ fn deal_damage_to_player_on_impact(
 fn explode_on_impact(
     commands: &mut Commands,
     entity: Entity,
-    spawnable_component: &mut SpawnableComponent,
     collision_events: &[&SortedCollisionEvent],
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
     transform: &Transform,
-    asset_server: &AssetServer,
     audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
     audio_assets: &GameAudioAssets,
 ) {

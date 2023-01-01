@@ -29,7 +29,6 @@ pub fn player_fire_weapon_system(
     mut player_query: Query<(&mut PlayerComponent, &Velocity, &Transform)>,
     time: Res<Time>,
     mut spawn_projectile: EventWriter<SpawnProjectileEvent>,
-    asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
 ) {

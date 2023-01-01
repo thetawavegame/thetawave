@@ -3,7 +3,7 @@ use crate::{
     audio,
     collision::SortedCollisionEvent,
     run::{ObjectiveType, RunResource},
-    spawnable::{EffectType, PlayerComponent, SpawnEffectEvent, SpawnableComponent},
+    spawnable::{EffectType, PlayerComponent, SpawnEffectEvent},
 };
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
@@ -28,14 +28,12 @@ pub fn consumable_execute_behavior_system(
         Entity,
         &Transform,
         &mut Velocity,
-        &mut SpawnableComponent,
         &mut super::ConsumableComponent,
     )>,
     mut player_query: Query<(Entity, &mut PlayerComponent, &Transform)>,
     mut collision_events: EventReader<SortedCollisionEvent>,
     mut run_resource: ResMut<RunResource>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
-    asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
 ) {
@@ -46,13 +44,8 @@ pub fn consumable_execute_behavior_system(
     }
 
     // iterate through all consumable entities
-    for (
-        entity,
-        consumable_transform,
-        mut velocity,
-        mut spawnable_component,
-        consumable_component,
-    ) in consumable_query.iter_mut()
+    for (entity, consumable_transform, mut velocity, consumable_component) in
+        consumable_query.iter_mut()
     {
         // perform each behavior
         for behavior in &consumable_component.behaviors {
@@ -62,13 +55,11 @@ pub fn consumable_execute_behavior_system(
                         &mut commands,
                         entity,
                         consumable_transform,
-                        &mut spawnable_component,
                         &collision_events_vec,
                         &mut player_query,
                         &consumable_component.consumable_effects,
                         &mut run_resource,
                         &mut spawn_effect_event_writer,
-                        &asset_server,
                         &audio_channel,
                         &audio_assets,
                     );
@@ -134,13 +125,11 @@ fn apply_effects_on_impact(
     commands: &mut Commands,
     entity: Entity,
     transform: &Transform,
-    spawnable_component: &mut SpawnableComponent,
     collision_events: &[&SortedCollisionEvent],
     player_query: &mut Query<(Entity, &mut PlayerComponent, &Transform)>,
     consumable_effects: &Vec<ConsumableEffect>,
     run_resource: &mut RunResource,
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
-    asset_server: &AssetServer,
     audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
     audio_assets: &GameAudioAssets,
 ) {

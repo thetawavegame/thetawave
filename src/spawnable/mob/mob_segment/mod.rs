@@ -77,13 +77,6 @@ pub fn spawn_mob_segment(
 ) {
     let mob_segment_data = &mob_segments_resource.mob_segments[mob_segment_type];
 
-    // scale collider to align with the sprite
-    /*
-    let collider_size_hx =
-        mob_segment_data.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
-    let collider_size_hy =
-        mob_segment_data.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
-    */
     let mut mob_segment = commands.spawn_empty();
 
     let new_position = Vec2::new(

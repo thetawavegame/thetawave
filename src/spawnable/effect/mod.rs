@@ -1,5 +1,5 @@
 use crate::{
-    animation::{AnimationComponent, AnimationData, TextureData},
+    animation::{AnimationComponent, AnimationData},
     assets::EffectAssets,
     game::GameParametersResource,
     states::{AppStateComponent, AppStates},

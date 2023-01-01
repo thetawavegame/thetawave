@@ -89,7 +89,6 @@ pub fn reset_run_system(
     mut app_state: ResMut<State<AppStates>>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::MenuAudioChannel>>,
-    audio_assets: Res<GameAudioAssets>,
 ) {
     // get input
     let mut reset = keyboard_input.just_released(KeyCode::R);

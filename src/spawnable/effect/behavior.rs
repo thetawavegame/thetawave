@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use serde::Deserialize;
 
-use crate::spawnable::SpawnableComponent;
+use super::EffectComponent;
 
 /// Types of behaviors that can be performed by effects
 #[derive(Deserialize, Clone)]
@@ -14,16 +14,13 @@ pub fn effect_execute_behavior_system(
     mut commands: Commands,
     mut effect_query: Query<(
         Entity,
-        &mut SpawnableComponent,
-        &super::EffectComponent,
+        &EffectComponent,
         &TextureAtlasSprite,
         &Handle<TextureAtlas>,
     )>,
     texture_atlases: Res<Assets<TextureAtlas>>,
 ) {
-    for (entity, mut spawnable_component, effect_component, sprite, texture_atlas_handle) in
-        effect_query.iter_mut()
-    {
+    for (entity, effect_component, sprite, texture_atlas_handle) in effect_query.iter_mut() {
         let behaviors = effect_component.behaviors.clone();
         for behavior in behaviors {
             match behavior {

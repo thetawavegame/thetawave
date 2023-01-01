@@ -8,6 +8,7 @@ pub struct Health {
 }
 
 impl Health {
+    #[allow(dead_code)]
     /// Create a new health struct from a maximum health value
     pub fn new(health: f32) -> Self {
         Health {
@@ -50,6 +51,7 @@ impl Health {
     }
 
     /// Set health to value
+    #[allow(dead_code)]
     pub fn set_health(&mut self, health: f32) {
         if health > self.max_health {
             eprintln!(
@@ -62,6 +64,7 @@ impl Health {
         }
     }
 
+    #[allow(dead_code)]
     /// Set maximum health to value
     pub fn set_max_health(&mut self, max_health: f32) {
         if max_health <= 0.0 {
