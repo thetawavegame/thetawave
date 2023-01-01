@@ -281,6 +281,16 @@ pub fn contact_collision_system(
                             continue 'collision_events;
                         }
                     }
+
+                    // check if mob collided with barrier
+                    for barrier_entity in barrier_query.iter() {
+                        // check if secondary entity is a barrier
+                        if colliding_entities.secondary == barrier_entity {
+                            // play the barrier bounce sound
+                            audio_channel.play(audio_assets.barrier_bounce.clone());
+                            continue 'collision_events;
+                        }
+                    }
                 }
             }
         }

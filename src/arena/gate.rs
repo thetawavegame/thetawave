@@ -1,7 +1,7 @@
 use crate::{
     assets::GameAudioAssets,
     audio,
-    spawnable::{MobComponent, SpawnableComponent},
+    spawnable::{MobComponent, MobSegmentComponent, SpawnableComponent},
     states::{AppStateComponent, AppStates},
 };
 use bevy::prelude::*;
@@ -39,6 +39,7 @@ pub fn despawn_gates_system(
     despawn_gate_query: Query<Entity, With<DespawnGateComponent>>,
     spawnable_query: Query<Entity, With<SpawnableComponent>>,
     mob_query: Query<(Entity, &MobComponent)>,
+    mob_segment_query: Query<(Entity, &MobSegmentComponent)>,
     mut enemy_bottom_event: EventWriter<MobReachedBottomGateEvent>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
@@ -81,6 +82,23 @@ pub fn despawn_gates_system(
                             if mob_component.defense_damage > 0.0 {
                                 audio_channel.play(audio_assets.defense_damage.clone());
                             } else if mob_component.defense_damage < -0.5 {
+                                audio_channel.play(audio_assets.defense_heal.clone());
+                            }
+                        }
+                    }
+
+                    // check if the other entity is a mob segment
+                    for (mob_segment_entity, mob_segment_component) in mob_segment_query.iter() {
+                        if mob_segment_entity == *other_entity {
+                            // send event for mob segment reaching bottom of arena
+                            enemy_bottom_event.send(MobReachedBottomGateEvent(
+                                mob_segment_component.defense_damage,
+                            ));
+
+                            // play sound based on if defense was increased or decreased
+                            if mob_segment_component.defense_damage > 0.0 {
+                                audio_channel.play(audio_assets.defense_damage.clone());
+                            } else if mob_segment_component.defense_damage < -0.5 {
                                 audio_channel.play(audio_assets.defense_heal.clone());
                             }
                         }
