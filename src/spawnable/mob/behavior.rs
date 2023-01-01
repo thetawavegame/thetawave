@@ -145,14 +145,14 @@ pub fn mob_execute_behavior_system(
                         timer.tick(time.delta());
                         if timer.just_finished() {
                             // spawn mob
-                            let position = Vec2::new(
-                                mob_transform.translation.x + data.offset_position.x,
-                                mob_transform.translation.y + data.offset_position.y,
-                            );
+                            let position = mob_transform.translation.xy()
+                                + mob_transform.local_x().xy() * data.offset_position.x
+                                + mob_transform.local_y().xy() * data.offset_position.y;
 
                             spawn_mob_event_writer.send(SpawnMobEvent {
                                 mob_type: data.mob_type,
                                 position,
+                                rotation: mob_transform.rotation,
                             });
                         }
                     }

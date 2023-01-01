@@ -167,6 +167,8 @@ pub struct SpawnMobEvent {
     pub mob_type: MobType,
     /// Position to spawn mob
     pub position: Vec2,
+
+    pub rotation: Quat,
 }
 
 /// Spawns mobs from events
@@ -185,6 +187,7 @@ pub fn spawn_mob_system(
             &mob_segments_resource,
             &mob_assets,
             event.position,
+            event.rotation,
             &mut commands,
             &game_parameters,
         );
@@ -217,6 +220,7 @@ pub fn spawn_mob(
     mob_segments_resource: &MobSegmentsResource,
     mob_assets: &MobAssets,
     position: Vec2,
+    rotation: Quat,
     commands: &mut Commands,
     game_parameters: &GameParametersResource,
 ) {
@@ -239,6 +243,7 @@ pub fn spawn_mob(
                 game_parameters.sprite_scale,
                 1.0,
             ),
+            rotation,
             ..Default::default()
         },
         ..Default::default()

@@ -56,6 +56,7 @@ impl Formation {
                 spawnable::SpawnableType::Mob(mob_type) => spawn_mob.send(SpawnMobEvent {
                     mob_type: mob_type.clone(),
                     position: formation_spawnable.position,
+                    rotation: Quat::default(),
                 }),
 
                 spawnable::SpawnableType::Consumable(consumable_type) => {

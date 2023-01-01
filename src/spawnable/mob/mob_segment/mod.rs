@@ -34,6 +34,7 @@ pub struct MobSegmentComponent {
     pub health: Health,
     pub consumable_drops: ConsumableDropListType,
     pub behaviors: Vec<behavior::MobSegmentBehavior>,
+    pub mob_spawn_timer: Option<Timer>,
 }
 
 impl From<&MobSegmentData> for MobSegmentComponent {
@@ -45,6 +46,7 @@ impl From<&MobSegmentData> for MobSegmentComponent {
             health: mob_segment_data.health.clone(),
             consumable_drops: mob_segment_data.consumable_drops.clone(),
             behaviors: mob_segment_data.behaviors.clone(),
+            mob_spawn_timer: None,
         }
     }
 }

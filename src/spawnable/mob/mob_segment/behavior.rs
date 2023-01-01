@@ -11,7 +11,10 @@ use crate::{
     collision::SortedCollisionEvent,
     loot::LootDropsResource,
     player::PlayerComponent,
-    spawnable::{EffectType, SpawnConsumableEvent, SpawnEffectEvent},
+    spawnable::{
+        mob::behavior::SpawnMobBehaviorData, EffectType, SpawnConsumableEvent, SpawnEffectEvent,
+        SpawnMobEvent,
+    },
 };
 
 use super::MobSegmentComponent;
@@ -25,6 +28,7 @@ pub enum MobSegmentBehavior {
     RandomRotation(RandomRotationData),
     RepeaterProtectHead(RepeaterSegmentProtectHeadData), // takes in angle to protect head
     RepeaterAttack(RepeaterSegmentAttackData),
+    SpawnMob(SpawnMobBehaviorData),
 }
 
 #[derive(Deserialize, Clone)]
@@ -64,6 +68,8 @@ pub fn mob_segment_execute_behavior_system(
     mut spawn_consumable_event_writer: EventWriter<SpawnConsumableEvent>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
+    time: Res<Time>,
+    mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
 ) {
     let mut collision_events_vec = vec![];
     for collision_event in collision_events.iter() {
@@ -141,6 +147,29 @@ pub fn mob_segment_execute_behavior_system(
                         data.stiffness,
                         data.damping,
                     );
+                }
+
+                MobSegmentBehavior::SpawnMob(data) => {
+                    // if mob component does not have a timer initialize timer
+                    // otherwise tick timer and spawn mob on completion
+                    if mob_segment_component.mob_spawn_timer.is_none() {
+                        mob_segment_component.mob_spawn_timer =
+                            Some(Timer::from_seconds(data.period, TimerMode::Repeating));
+                    } else if let Some(timer) = &mut mob_segment_component.mob_spawn_timer {
+                        timer.tick(time.delta());
+                        if timer.just_finished() {
+                            // spawn mob
+                            let position = mob_segment_transform.translation.xy()
+                                + mob_segment_transform.local_x().xy() * data.offset_position.x
+                                + mob_segment_transform.local_y().xy() * data.offset_position.y;
+
+                            spawn_mob_event_writer.send(SpawnMobEvent {
+                                mob_type: data.mob_type,
+                                position,
+                                rotation: mob_segment_transform.rotation,
+                            });
+                        }
+                    }
                 }
             }
         }

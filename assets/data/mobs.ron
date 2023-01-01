@@ -40,6 +40,13 @@
 							damping: 50.0,
 						)
 					),
+					SpawnMob(
+						(
+							mob_type: Enemy(Missile),
+							offset_position: (30.0, -90.0),
+							period: 2.5, 
+						)
+					),
 				],
 				Enemy(RepeaterLeftArm): [
 					DealDamageToPlayerOnImpact,
@@ -50,6 +57,13 @@
 							angle: 0.5,
 							stiffness: 30.0,
 							damping: 50.0,
+						)
+					),
+					SpawnMob(
+						(
+							mob_type: Enemy(Missile),
+							offset_position: (-30.0, -90.0),
+							period: 2.5, 
 						)
 					),
 				],
