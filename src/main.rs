@@ -121,12 +121,12 @@ fn main() {
         .unwrap(),
         texture_atlas_handle: HashMap::new(),
     })
-    .insert_resource(spawnable::MobSegmentsResource {
-        mob_segments: from_bytes::<HashMap<spawnable::MobSegmentType, spawnable::MobSegmentData>>(
-            include_bytes!("../assets/data/mob_segments.ron"),
-        )
+    .insert_resource(
+        from_bytes::<spawnable::MobSegmentsResource>(include_bytes!(
+            "../assets/data/mob_segments.ron"
+        ))
         .unwrap(),
-    })
+    )
     .insert_resource(spawnable::EffectsResource {
         effects: from_bytes::<HashMap<spawnable::EffectType, spawnable::EffectData>>(
             include_bytes!("../assets/data/effects.ron"),
@@ -167,6 +167,8 @@ fn main() {
     .add_event::<spawnable::SpawnProjectileEvent>()
     .add_event::<spawnable::SpawnMobEvent>()
     .add_event::<spawnable::MobBehaviorUpdateEvent>()
+    .add_event::<spawnable::MobDestroyedEvent>()
+    .add_event::<spawnable::MobSegmentDestroyedEvent>()
     .add_plugin(AudioPlugin)
     .add_plugin(EguiPlugin)
     .add_audio_channel::<audio::BackgroundMusicAudioChannel>()
@@ -301,12 +303,20 @@ fn main() {
             .with_system(spawnable::mob_behavior_sequence_update_system)
             .with_system(spawnable::spawnable_execute_behavior_system.after("set_target_behavior"))
             .with_system(
-                spawnable::mob_execute_behavior_system, //.after("set_target_behavior")
-                                                        //.after("intersection_collision")
-                                                        //.after("contact_collision"),
+                spawnable::mob_execute_behavior_system
+                    .label("mob_execute_behavior")
+                    .after("set_target_behavior")
+                    .after("intersection_collision")
+                    .after("contact_collision"),
+            )
+            .with_system(
+                spawnable::mob_segment_apply_disconnected_behaviors_system
+                    .after("mob_execute_behavior")
+                    .after("mob_segment_execute_behavior"),
             )
             .with_system(
                 spawnable::mob_segment_execute_behavior_system
+                    .label("mob_segment_execute_behavior")
                     .after("set_target_behavior")
                     .after("intersection_collision")
                     .after("contact_collision"),

@@ -19,7 +19,7 @@ pub use self::behavior::*;
 
 use super::{ColliderData, CompoundColliderData, JointType, MobSegmentAnchorPointData};
 
-#[derive(Resource)]
+#[derive(Resource, Deserialize)]
 pub struct MobSegmentsResource {
     /// Mob types mapped to mob data
     pub mob_segments: HashMap<MobSegmentType, MobSegmentData>,
@@ -63,7 +63,8 @@ pub struct MobSegmentData {
     pub z_level: f32,
     pub anchor_point: Vec2,
     pub mob_segment_anchor_points: Option<Vec<MobSegmentAnchorPointData>>,
-    pub behaviors: Vec<behavior::MobSegmentBehavior>,
+    pub behaviors: Vec<MobSegmentBehavior>,
+    pub disconnected_behaviors: Option<Vec<MobSegmentBehavior>>,
 }
 
 pub fn spawn_mob_segment(

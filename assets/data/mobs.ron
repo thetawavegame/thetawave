@@ -5,6 +5,11 @@
 		mob_behaviors: [],
 		mob_segment_behaviors: Some({
 			RepeaterProtectHead: {
+				Enemy(RepeaterBody): [
+					DealDamageToPlayerOnImpact,
+            		ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+				],
 				Enemy(RepeaterRightShoulder): [
 					DealDamageToPlayerOnImpact,
             		ReceiveDamageOnImpact,
@@ -93,6 +98,11 @@
 				],
 			},
 			RepeaterAttack: {
+				Enemy(RepeaterBody): [
+					DealDamageToPlayerOnImpact,
+            		ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+				],
 				Enemy(RepeaterRightShoulder): [
 					DealDamageToPlayerOnImpact,
             		ReceiveDamageOnImpact,

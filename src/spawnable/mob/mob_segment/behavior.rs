@@ -12,12 +12,12 @@ use crate::{
     loot::LootDropsResource,
     player::PlayerComponent,
     spawnable::{
-        mob::behavior::SpawnMobBehaviorData, EffectType, SpawnConsumableEvent, SpawnEffectEvent,
-        SpawnMobEvent,
+        behavior_sequence::EntityPair, mob::behavior::SpawnMobBehaviorData, EffectType,
+        MobDestroyedEvent, SpawnConsumableEvent, SpawnEffectEvent, SpawnMobEvent,
     },
 };
 
-use super::MobSegmentComponent;
+use super::{MobSegmentComponent, MobSegmentsResource};
 
 /// Types of behaviors that can be performed by mobs
 #[derive(Deserialize, Clone)]
@@ -70,6 +70,7 @@ pub fn mob_segment_execute_behavior_system(
     audio_assets: Res<GameAudioAssets>,
     time: Res<Time>,
     mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
+    mut mob_segment_destroyed_event_writer: EventWriter<MobSegmentDestroyedEvent>,
 ) {
     let mut collision_events_vec = vec![];
     for collision_event in collision_events.iter() {
@@ -118,6 +119,9 @@ pub fn mob_segment_execute_behavior_system(
 
                         // despawn mob
                         commands.entity(entity).despawn_recursive();
+
+                        mob_segment_destroyed_event_writer
+                            .send(MobSegmentDestroyedEvent { entity });
                     }
                 }
                 MobSegmentBehavior::RandomRotation(data) => {
@@ -170,6 +174,83 @@ pub fn mob_segment_execute_behavior_system(
                             });
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+pub struct MobSegmentDestroyedEvent {
+    pub entity: Entity,
+}
+
+pub fn mob_segment_apply_disconnected_behaviors_system(
+    mut mob_destroyed_event_reader: EventReader<MobDestroyedEvent>,
+    mut mob_segment_destroyed_event_reader: EventReader<MobSegmentDestroyedEvent>,
+    mut mob_segment_query: Query<(Entity, &mut MobSegmentComponent, &ImpulseJoint)>,
+    mob_segments_resource: Res<MobSegmentsResource>,
+) {
+    let mut entities: Vec<Entity> = mob_destroyed_event_reader
+        .iter()
+        .map(|event| event.entity)
+        .collect();
+
+    let mut mob_segment_entities: Vec<Entity> = mob_segment_destroyed_event_reader
+        .iter()
+        .map(|event| event.entity)
+        .collect();
+
+    entities.append(&mut mob_segment_entities);
+
+    for entity in entities.iter() {
+        let mut entity_pairs = vec![];
+        // find all mob segments attached to mob entity from event
+        for (mob_segment_entity, _, joint) in mob_segment_query.iter_mut() {
+            entity_pairs.push(EntityPair {
+                parent: joint.parent,
+                entity: mob_segment_entity,
+            });
+        }
+
+        // collected joint mob entities
+        let mut mob_segment_entities: Vec<Entity> = vec![];
+        while true {
+            let mut remove_entities = vec![];
+
+            for pair in entity_pairs.iter_mut() {
+                // add entities to mob segment entities if they are the mob, or their parent is in the vector aleady
+                if pair.parent == *entity
+                    || mob_segment_entities
+                        .iter()
+                        .any(|mob_segment_entity| *mob_segment_entity == pair.parent)
+                {
+                    mob_segment_entities.push(pair.entity);
+                    remove_entities.push(pair.entity);
+                }
+            }
+
+            if remove_entities.len() == 0 {
+                break;
+            }
+
+            entity_pairs.retain(|entity_pair| {
+                !remove_entities
+                    .iter()
+                    .any(|remove_entity| *remove_entity == entity_pair.entity)
+            });
+        }
+
+        for (mob_segment_entity, mut mob_segment_comoponent, _) in mob_segment_query.iter_mut() {
+            if mob_segment_entities
+                .iter()
+                .any(|check_entity| *check_entity == mob_segment_entity)
+            {
+                if let Some(disconnected_behaviors) = mob_segments_resource.mob_segments
+                    [&mob_segment_comoponent.mob_segment_type]
+                    .disconnected_behaviors
+                    .clone()
+                {
+                    mob_segment_comoponent.behaviors = disconnected_behaviors.clone();
                 }
             }
         }

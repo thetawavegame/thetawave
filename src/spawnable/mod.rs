@@ -12,11 +12,7 @@ mod effect;
 mod mob;
 mod projectile;
 
-pub use self::mob::{
-    mob_execute_behavior_system, mob_segment_execute_behavior_system, spawn_mob, spawn_mob_system,
-    MobBehavior, MobBehaviorAttributesResource, MobComponent, MobData, MobSegmentComponent,
-    MobSegmentData, MobSegmentsResource, MobsResource, SpawnMobEvent,
-};
+pub use self::mob::*;
 pub use self::projectile::{
     projectile_execute_behavior_system, spawn_projectile, spawn_projectile_system,
     ProjectileComponent, ProjectileData, ProjectileResource, SpawnProjectileEvent,

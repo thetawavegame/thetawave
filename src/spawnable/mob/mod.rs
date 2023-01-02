@@ -18,10 +18,7 @@ use crate::{
 
 mod behavior;
 mod mob_segment;
-pub use self::{
-    behavior::{mob_execute_behavior_system, MobBehavior, MobBehaviorAttributesResource},
-    mob_segment::*,
-};
+pub use self::{behavior::*, mob_segment::*};
 
 use super::behavior_sequence::MobBehaviorSequenceType;
 use super::MobSegmentType;
@@ -226,10 +223,6 @@ pub fn spawn_mob(
 ) {
     // Get data from mob resource
     let mob_data = &mob_resource.mobs[mob_type];
-
-    // scale collider to align with the sprite
-    //let collider_size_hx = mob_data.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
-    //let collider_size_hy = mob_data.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
 
     // create mob entity
     let mut mob = commands.spawn_empty();

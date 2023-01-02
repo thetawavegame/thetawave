@@ -75,6 +75,7 @@ pub fn mob_execute_behavior_system(
     mut spawn_consumable_event_writer: EventWriter<SpawnConsumableEvent>,
     mut spawn_projectile_event_writer: EventWriter<SpawnProjectileEvent>,
     mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
+    mut mob_destroyed_event_writer: EventWriter<MobDestroyedEvent>,
     mob_attributes_resource: Res<MobBehaviorAttributesResource>,
     loot_drops_resource: Res<LootDropsResource>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
@@ -204,6 +205,9 @@ pub fn mob_execute_behavior_system(
 
                         // despawn mob
                         commands.entity(entity).despawn_recursive();
+
+                        // apply disconnected behaviors to connected mob segments
+                        mob_destroyed_event_writer.send(MobDestroyedEvent { entity });
                     }
                 }
                 MobBehavior::RepeaterProtectHead => {
@@ -215,6 +219,10 @@ pub fn mob_execute_behavior_system(
             }
         }
     }
+}
+
+pub struct MobDestroyedEvent {
+    pub entity: Entity,
 }
 
 /// Take damage from colliding entity on impact
