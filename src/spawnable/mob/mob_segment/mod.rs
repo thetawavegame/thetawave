@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
-use std::collections::HashMap;
+use std::collections::{hash_map::Entry, HashMap};
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
@@ -17,7 +17,10 @@ use crate::{
 mod behavior;
 pub use self::behavior::*;
 
-use super::{ColliderData, CompoundColliderData, JointType, MobSegmentAnchorPointData};
+use super::{
+    ColliderData, CompoundColliderData, JointType, MobSegmentAnchorPointData, MobSpawner,
+    MobSpawnerData,
+};
 
 #[derive(Resource, Deserialize)]
 pub struct MobSegmentsResource {
@@ -34,11 +37,28 @@ pub struct MobSegmentComponent {
     pub health: Health,
     pub consumable_drops: ConsumableDropListType,
     pub behaviors: Vec<behavior::MobSegmentBehavior>,
-    pub mob_spawn_timer: Option<Timer>,
+    pub mob_spawners: HashMap<String, Vec<MobSpawner>>,
 }
 
 impl From<&MobSegmentData> for MobSegmentComponent {
     fn from(mob_segment_data: &MobSegmentData) -> Self {
+        let mut mob_spawners: HashMap<String, Vec<MobSpawner>> = HashMap::new();
+
+        if let Some(spawners_map) = mob_segment_data.mob_spawners.clone() {
+            for (spawner_name, spawners) in spawners_map.iter() {
+                for spawner in spawners.iter() {
+                    match mob_spawners.entry(spawner_name.clone()) {
+                        Entry::Occupied(mut e) => {
+                            e.get_mut().push(MobSpawner::from(spawner.clone()));
+                        }
+                        Entry::Vacant(e) => {
+                            e.insert(vec![MobSpawner::from(spawner.clone())]);
+                        }
+                    }
+                }
+            }
+        }
+
         MobSegmentComponent {
             mob_segment_type: mob_segment_data.mob_segment_type.clone(),
             collision_damage: mob_segment_data.collision_damage,
@@ -46,7 +66,7 @@ impl From<&MobSegmentData> for MobSegmentComponent {
             health: mob_segment_data.health.clone(),
             consumable_drops: mob_segment_data.consumable_drops.clone(),
             behaviors: mob_segment_data.behaviors.clone(),
-            mob_spawn_timer: None,
+            mob_spawners,
         }
     }
 }
@@ -65,6 +85,7 @@ pub struct MobSegmentData {
     pub mob_segment_anchor_points: Option<Vec<MobSegmentAnchorPointData>>,
     pub behaviors: Vec<MobSegmentBehavior>,
     pub disconnected_behaviors: Option<Vec<MobSegmentBehavior>>,
+    pub mob_spawners: Option<HashMap<String, Vec<MobSpawnerData>>>,
 }
 
 pub fn spawn_mob_segment(

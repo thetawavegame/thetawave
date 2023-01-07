@@ -3,6 +3,7 @@
 		mob_type: Enemy(Repeater),
 		spawnable_behaviors: [],
 		mob_behaviors: [],
+		control_behaviors: [],
 		mob_segment_behaviors: Some({
 			RepeaterProtectHead: {
 				Enemy(RepeaterBody): [
@@ -45,13 +46,7 @@
 							damping: 50.0,
 						)
 					),
-					SpawnMob(
-						(
-							mob_type: Enemy(Missile),
-							offset_position: (30.0, -90.0),
-							period: 2.5, 
-						)
-					),
+					SpawnMob("missile"),
 				],
 				Enemy(RepeaterLeftArm): [
 					DealDamageToPlayerOnImpact,
@@ -64,13 +59,7 @@
 							damping: 50.0,
 						)
 					),
-					SpawnMob(
-						(
-							mob_type: Enemy(Missile),
-							offset_position: (-30.0, -90.0),
-							period: 2.5, 
-						)
-					),
+					SpawnMob("missile"),
 				],
 				Enemy(RepeaterRightClaw): [
 					DealDamageToPlayerOnImpact,
@@ -205,8 +194,7 @@
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
-		),
-		
+		),	
 		mob_segment_anchor_points: Some([
 			(
 				mob_segment_type: Enemy(RepeaterBody),
@@ -223,6 +211,7 @@
 		mob_type: Enemy(Crustling),
 		spawnable_behaviors: [MoveDown, ChangeHorizontalDirectionOnImpact, MoveRight],
 		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+		control_behaviors: [],
 		acceleration: (2.0, 2.0),
 		deceleration: (2.0, 2.0),
 		speed: (80.0, 45.0),
@@ -282,6 +271,7 @@
 		mob_type: Enemy(Drone),
 		spawnable_behaviors: [MoveDown, BrakeHorizontal],
 		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+		control_behaviors: [],
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
 		speed: (0.0, 100.0),
@@ -325,8 +315,20 @@
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
 			DieAtZeroHealth,
-			PeriodicFire,
+			PeriodicFire(
+				(
+					projectile_type: Blast(Enemy),
+					offset_position: (0.0, -40.0),
+					initial_motion: (
+						random_angvel: None,
+						linvel: Some((0.0, -400.0)),
+					),
+					despawn_time: 2.5,
+					period: 3.0,
+				)
+			),
 		],
+		control_behaviors: [],
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
 		speed: (0.0, 85.0),
@@ -367,6 +369,7 @@
 		mob_type: Ally(Hauler3),
 		spawnable_behaviors: [MoveDown, BrakeHorizontal],
 		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+		control_behaviors: [],
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
 		speed: (0.0, 70.0),
@@ -417,6 +420,7 @@
 		mob_type: Ally(Hauler2),
 		spawnable_behaviors: [MoveDown, BrakeHorizontal],
 		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+		control_behaviors: [],
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
 		speed: (0.0, 70.0),
@@ -470,8 +474,9 @@
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
 			DieAtZeroHealth,
-			SpawnMob,
+			SpawnMob("missile"),
 		],
+		control_behaviors: [],
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
 		speed: (0.0, 75.0),
@@ -507,11 +512,21 @@
 				frame_duration: 0.15,
 			),
 		)),
+		mob_spawners: Some({
+			"missile": [
+				(
+					mob_type: Enemy(Missile),
+					position: Local((0.0, -70.0)),
+					period: 4.0,
+				),
+			],
+		}),
 	),
 	Enemy(Missile): (
 		mob_type: Enemy(Missile),
 		spawnable_behaviors: [RotateToTarget(None), MoveForward],
 		mob_behaviors: [ExplodeOnImpact, DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+		control_behaviors: [],
 		acceleration: (12.0, 2.0),
 		deceleration: (5.0, 5.0),
 		speed: (150.0, 150.0),
@@ -555,8 +570,20 @@
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
 			DieAtZeroHealth,
-			PeriodicFire,
+			PeriodicFire(
+				(
+					projectile_type: Blast(Enemy),
+					offset_position: (0.0, -25.0),
+					initial_motion: (
+						random_angvel: None,
+						linvel: Some((0.0, -250.0)),
+					),
+					despawn_time: 1.5,
+					period: 4.0,
+				)
+			),
 		],
+		control_behaviors: [],
 		acceleration: (2.0, 2.0),
 		deceleration: (2.0, 2.0),
 		speed: (75.0, 75.0),
@@ -600,8 +627,20 @@
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
 			DieAtZeroHealth,
-			PeriodicFire,
+			PeriodicFire(
+				(
+					projectile_type: Blast(Enemy),
+					offset_position: (0.0, -25.0),
+					initial_motion: (
+						random_angvel: None,
+						linvel: Some((0.0, -250.0)),
+					),
+					despawn_time: 1.5,
+					period: 4.0,
+				)
+			),
 		],
+		control_behaviors: [],
 		acceleration: (2.0, 2.0),
 		deceleration: (2.0, 2.0),
 		speed: (75.0, 75.0),
@@ -642,6 +681,7 @@
 		mob_type: Neutral(MoneyAsteroid),
 		spawnable_behaviors: [MoveDown],
 		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+		control_behaviors: [],
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
 		speed: (0.0, 75.0),

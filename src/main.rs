@@ -77,12 +77,6 @@ fn main() {
     )
     .insert_resource(ClearColor(Color::BLACK))
     .insert_resource(
-        from_bytes::<spawnable::MobBehaviorAttributesResource>(include_bytes!(
-            "../assets/data/mob_behavior_attributes.ron"
-        ))
-        .unwrap(),
-    )
-    .insert_resource(
         from_bytes::<spawnable::BehaviorSequenceResource>(include_bytes!(
             "../assets/data/behavior_sequences.ron"
         ))

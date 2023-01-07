@@ -13,7 +13,7 @@ use crate::{
     player::PlayerComponent,
     spawnable::{
         behavior_sequence::EntityPair, mob::behavior::SpawnMobBehaviorData, EffectType,
-        MobDestroyedEvent, SpawnConsumableEvent, SpawnEffectEvent, SpawnMobEvent,
+        MobDestroyedEvent, SpawnConsumableEvent, SpawnEffectEvent, SpawnMobEvent, SpawnPosition,
     },
 };
 
@@ -28,7 +28,7 @@ pub enum MobSegmentBehavior {
     RandomRotation(RandomRotationData),
     RepeaterProtectHead(RepeaterSegmentProtectHeadData), // takes in angle to protect head
     RepeaterAttack(RepeaterSegmentAttackData),
-    SpawnMob(SpawnMobBehaviorData),
+    SpawnMob(String),
 }
 
 #[derive(Deserialize, Clone)]
@@ -153,25 +153,33 @@ pub fn mob_segment_execute_behavior_system(
                     );
                 }
 
-                MobSegmentBehavior::SpawnMob(data) => {
+                MobSegmentBehavior::SpawnMob(mob_spawner_key) => {
                     // if mob component does not have a timer initialize timer
                     // otherwise tick timer and spawn mob on completion
-                    if mob_segment_component.mob_spawn_timer.is_none() {
-                        mob_segment_component.mob_spawn_timer =
-                            Some(Timer::from_seconds(data.period, TimerMode::Repeating));
-                    } else if let Some(timer) = &mut mob_segment_component.mob_spawn_timer {
-                        timer.tick(time.delta());
-                        if timer.just_finished() {
+                    let mob_spawners = mob_segment_component
+                        .mob_spawners
+                        .get_mut(&mob_spawner_key)
+                        .unwrap();
+
+                    for mob_spawner in mob_spawners.iter_mut() {
+                        mob_spawner.timer.tick(time.delta());
+
+                        if mob_spawner.timer.just_finished() {
                             // spawn mob
-                            let position = mob_segment_transform.translation.xy()
-                                + mob_segment_transform.local_x().xy() * data.offset_position.x
-                                + mob_segment_transform.local_y().xy() * data.offset_position.y;
+                            let position = match mob_spawner.position {
+                                SpawnPosition::Global(coords) => coords,
+                                SpawnPosition::Local(coords) => {
+                                    mob_segment_transform.translation.xy()
+                                        + mob_segment_transform.local_x().xy() * coords.x
+                                        + mob_segment_transform.local_y().xy() * coords.y
+                                }
+                            };
 
                             spawn_mob_event_writer.send(SpawnMobEvent {
-                                mob_type: data.mob_type,
+                                mob_type: mob_spawner.mob_type.clone(),
                                 position,
-                                rotation: mob_segment_transform.rotation,
-                            });
+                                rotation: mob_segment_transform.rotation, // passed rotation of the parent mob
+                            })
                         }
                     }
                 }

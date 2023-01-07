@@ -344,7 +344,16 @@
                 DealDamageToPlayerOnImpact,
                 ReceiveDamageOnImpact,
                 DieAtZeroHealth,
-            ]),    
+            ]),
+            mob_spawners: Some({
+                "missile": [
+                    (
+                        mob_type: Enemy(Missile),
+                        position: Local((30.0, -90.0)),
+                        period: 2.5,
+                    ),
+                ],
+		    }),    
         ),
         Enemy(RepeaterLeftArm): (
             mob_segment_type: Enemy(RepeaterLeftArm),
@@ -394,7 +403,16 @@
                 DealDamageToPlayerOnImpact,
                 ReceiveDamageOnImpact,
                 DieAtZeroHealth,
-            ]),   
+            ]),
+            mob_spawners: Some({
+                "missile": [
+                    (
+                        mob_type: Enemy(Missile),
+                        position: Local((-30.0, -90.0)),
+                        period: 2.5,
+                    ),
+                ],
+		    }),    
         ),
         Enemy(RepeaterRightClaw): (
             mob_segment_type: Enemy(RepeaterRightClaw),

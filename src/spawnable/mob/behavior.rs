@@ -16,25 +16,23 @@ use crate::{
     },
 };
 
-use super::{MobComponent, SpawnMobEvent};
+use super::{MobComponent, SpawnMobEvent, SpawnPosition};
 
 /// Types of behaviors that can be performed by mobs
-#[derive(Deserialize, Hash, PartialEq, Eq, Clone)]
+#[derive(Deserialize, Clone)]
 pub enum MobBehavior {
-    PeriodicFire,
-    SpawnMob,
+    PeriodicFire(PeriodicFireBehaviorData),
+    SpawnMob(String),
     ExplodeOnImpact,
     DealDamageToPlayerOnImpact,
     ReceiveDamageOnImpact,
     DieAtZeroHealth,
-    RepeaterProtectHead,
-    RepeaterAttack,
 }
 
-#[derive(Resource, Deserialize)]
-pub struct MobBehaviorAttributesResource {
-    pub periodic_fire_data: HashMap<MobType, PeriodicFireBehaviorData>,
-    pub spawn_mob_data: HashMap<MobType, SpawnMobBehaviorData>,
+#[derive(Deserialize, Hash, PartialEq, Eq, Clone)]
+pub enum MobSegmentControlBehavior {
+    RepeaterProtectHead,
+    RepeaterAttack,
 }
 
 /// Data used to periodically spawn mobs
@@ -76,7 +74,6 @@ pub fn mob_execute_behavior_system(
     mut spawn_projectile_event_writer: EventWriter<SpawnProjectileEvent>,
     mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
     mut mob_destroyed_event_writer: EventWriter<MobDestroyedEvent>,
-    mob_attributes_resource: Res<MobBehaviorAttributesResource>,
     loot_drops_resource: Res<LootDropsResource>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
@@ -92,12 +89,8 @@ pub fn mob_execute_behavior_system(
         let behaviors = mob_component.behaviors.clone();
         for behavior in behaviors {
             match behavior {
-                MobBehavior::PeriodicFire => {
+                MobBehavior::PeriodicFire(data) => {
                     // get data
-
-                    let data =
-                        mob_attributes_resource.periodic_fire_data[&mob_component.mob_type].clone();
-
                     if mob_component.weapon_timer.is_none() {
                         mob_component.weapon_timer =
                             Some(Timer::from_seconds(data.period, TimerMode::Repeating));
@@ -131,30 +124,37 @@ pub fn mob_execute_behavior_system(
                         }
                     }
                 }
-                MobBehavior::SpawnMob => {
+                MobBehavior::SpawnMob(mob_spawner_key) => {
                     // get data
-
-                    let data =
-                        mob_attributes_resource.spawn_mob_data[&mob_component.mob_type].clone();
 
                     // if mob component does not have a timer initialize timer
                     // otherwise tick timer and spawn mob on completion
-                    if mob_component.mob_spawn_timer.is_none() {
-                        mob_component.mob_spawn_timer =
-                            Some(Timer::from_seconds(data.period, TimerMode::Repeating));
-                    } else if let Some(timer) = &mut mob_component.mob_spawn_timer {
-                        timer.tick(time.delta());
-                        if timer.just_finished() {
+
+                    // get all the mob spawners under the given key
+                    let mob_spawners = mob_component
+                        .mob_spawners
+                        .get_mut(&mob_spawner_key)
+                        .unwrap();
+
+                    for mob_spawner in mob_spawners.iter_mut() {
+                        mob_spawner.timer.tick(time.delta());
+
+                        if mob_spawner.timer.just_finished() {
                             // spawn mob
-                            let position = mob_transform.translation.xy()
-                                + mob_transform.local_x().xy() * data.offset_position.x
-                                + mob_transform.local_y().xy() * data.offset_position.y;
+                            let position = match mob_spawner.position {
+                                SpawnPosition::Global(coords) => coords,
+                                SpawnPosition::Local(coords) => {
+                                    mob_transform.translation.xy()
+                                        + mob_transform.local_x().xy() * coords.x
+                                        + mob_transform.local_y().xy() * coords.y
+                                }
+                            };
 
                             spawn_mob_event_writer.send(SpawnMobEvent {
-                                mob_type: data.mob_type,
+                                mob_type: mob_spawner.mob_type.clone(),
                                 position,
-                                rotation: mob_transform.rotation,
-                            });
+                                rotation: mob_transform.rotation, // passed rotation of the parent mob
+                            })
                         }
                     }
                 }
@@ -209,12 +209,6 @@ pub fn mob_execute_behavior_system(
                         // apply disconnected behaviors to connected mob segments
                         mob_destroyed_event_writer.send(MobDestroyedEvent { entity });
                     }
-                }
-                MobBehavior::RepeaterProtectHead => {
-                    // head behavior
-                }
-                MobBehavior::RepeaterAttack => {
-                    // head behavior
                 }
             }
         }

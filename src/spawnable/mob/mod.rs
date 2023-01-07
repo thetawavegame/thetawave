@@ -3,7 +3,10 @@ use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
 use rand::{thread_rng, Rng};
 use serde::Deserialize;
-use std::{collections::HashMap, string::ToString};
+use std::{
+    collections::{hash_map::Entry, HashMap},
+    string::ToString,
+};
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
@@ -31,12 +34,13 @@ pub struct MobComponent {
     /// Mob specific behaviors
     pub behaviors: Vec<behavior::MobBehavior>,
     /// behaviors that mob segments attached to the mob will perform, given the mobs current behavior
-    pub mob_segment_behaviors:
-        Option<HashMap<MobBehavior, HashMap<MobSegmentType, Vec<MobSegmentBehavior>>>>,
+    pub mob_segment_behaviors: Option<
+        HashMap<MobSegmentControlBehavior, HashMap<MobSegmentType, Vec<MobSegmentBehavior>>>,
+    >,
+    pub control_behaviors: Vec<MobSegmentControlBehavior>,
     pub behavior_sequence: Option<MobBehaviorSequenceType>,
     pub behavior_sequence_tracker: Option<BehaviorSequenceTracker>,
-    /// Optional mob spawn timer
-    pub mob_spawn_timer: Option<Timer>,
+    pub mob_spawners: HashMap<String, Vec<MobSpawner>>,
     /// Optional weapon timer
     pub weapon_timer: Option<Timer>,
     /// Damage dealt to other factions through attacks
@@ -53,13 +57,31 @@ pub struct MobComponent {
 
 impl From<&MobData> for MobComponent {
     fn from(mob_data: &MobData) -> Self {
+        let mut mob_spawners: HashMap<String, Vec<MobSpawner>> = HashMap::new();
+
+        if let Some(spawners_map) = mob_data.mob_spawners.clone() {
+            for (spawner_name, spawners) in spawners_map.iter() {
+                for spawner in spawners.iter() {
+                    match mob_spawners.entry(spawner_name.clone()) {
+                        Entry::Occupied(mut e) => {
+                            e.get_mut().push(MobSpawner::from(spawner.clone()));
+                        }
+                        Entry::Vacant(e) => {
+                            e.insert(vec![MobSpawner::from(spawner.clone())]);
+                        }
+                    }
+                }
+            }
+        }
+
         MobComponent {
             mob_type: mob_data.mob_type.clone(),
             behaviors: mob_data.mob_behaviors.clone(),
             behavior_sequence: mob_data.behavior_sequence_type.clone(),
             mob_segment_behaviors: mob_data.mob_segment_behaviors.clone(),
+            control_behaviors: mob_data.control_behaviors.clone(),
             behavior_sequence_tracker: None,
-            mob_spawn_timer: None,
+            mob_spawners,
             weapon_timer: None,
             attack_damage: mob_data.attack_damage,
             collision_damage: mob_data.collision_damage,
@@ -68,6 +90,36 @@ impl From<&MobData> for MobComponent {
             consumable_drops: mob_data.consumable_drops.clone(),
         }
     }
+}
+
+#[derive(Deserialize, Clone, Debug)]
+pub struct MobSpawner {
+    pub mob_type: MobType,
+    pub timer: Timer,
+    pub position: SpawnPosition,
+}
+
+impl From<MobSpawnerData> for MobSpawner {
+    fn from(value: MobSpawnerData) -> Self {
+        MobSpawner {
+            mob_type: value.mob_type.clone(),
+            position: value.position.clone(),
+            timer: Timer::from_seconds(value.period, TimerMode::Repeating),
+        }
+    }
+}
+
+#[derive(Deserialize, Clone)]
+pub struct MobSpawnerData {
+    pub mob_type: MobType,
+    pub period: f32,
+    pub position: SpawnPosition,
+}
+
+#[derive(Deserialize, Clone, Debug)]
+pub enum SpawnPosition {
+    Global(Vec2),
+    Local(Vec2),
 }
 
 pub struct BehaviorSequenceTracker {
@@ -86,9 +138,11 @@ pub struct MobData {
     pub behavior_sequence_type: Option<MobBehaviorSequenceType>,
     /// List of mob behaviors that are performed
     pub mob_behaviors: Vec<behavior::MobBehavior>,
+    pub control_behaviors: Vec<behavior::MobSegmentControlBehavior>,
     /// behaviors that mob segments attached to the mob will perform, given the mobs current behavior
-    pub mob_segment_behaviors:
-        Option<HashMap<MobBehavior, HashMap<MobSegmentType, Vec<MobSegmentBehavior>>>>,
+    pub mob_segment_behaviors: Option<
+        HashMap<MobSegmentControlBehavior, HashMap<MobSegmentType, Vec<MobSegmentBehavior>>>,
+    >,
     /// Acceleration stat
     pub acceleration: Vec2,
     /// Deceleration stat
@@ -122,6 +176,7 @@ pub struct MobData {
     /// Z level of the mobs transform
     pub z_level: f32,
     pub mob_segment_anchor_points: Option<Vec<MobSegmentAnchorPointData>>,
+    pub mob_spawners: Option<HashMap<String, Vec<MobSpawnerData>>>,
 }
 
 #[derive(Deserialize, Clone)]

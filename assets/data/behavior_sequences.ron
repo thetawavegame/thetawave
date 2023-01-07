@@ -5,22 +5,26 @@
                 (
                     time: 20.0,
                     spawnable_behaviors: [MoveToPosition((0,175))],
-                    mob_behaviors: [RepeaterAttack, DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+                    mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+                    control_behaviors: [RepeaterAttack],
                 ),
                 (
                     time: 20.0,
                     spawnable_behaviors: [MoveToPosition((150,125))],
-                    mob_behaviors: [RepeaterProtectHead, DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+                    mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+                    control_behaviors: [RepeaterProtectHead],
                 ),
                 (
                     time: 20.0,
                     spawnable_behaviors: [MoveToPosition((0,175))],
-                    mob_behaviors: [RepeaterAttack, DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+                    mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+                    control_behaviors: [RepeaterAttack],
                 ),
                 (
                     time: 20.0,
                     spawnable_behaviors: [MoveToPosition((-150,125))],
-                    mob_behaviors: [RepeaterProtectHead, DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+                    mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+                    control_behaviors: [RepeaterProtectHead],
                 ),
             ]
         ),

@@ -1,6 +1,6 @@
 use super::{
     mob::BehaviorSequenceTracker, MobBehavior, MobComponent, MobSegmentComponent,
-    SpawnableBehavior, SpawnableComponent,
+    MobSegmentControlBehavior, SpawnableBehavior, SpawnableComponent,
 };
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
@@ -16,6 +16,7 @@ pub struct MobBehaviorSequence {
 pub struct MobBehaviorSequenceElement {
     pub spawnable_behaviors: Vec<SpawnableBehavior>,
     pub mob_behaviors: Vec<MobBehavior>,
+    pub control_behaviors: Vec<MobSegmentControlBehavior>,
     pub time: f32,
 }
 
@@ -68,6 +69,10 @@ pub fn mob_behavior_sequence_tracker_system(
                         mob_behaviors: behavior_sequence.behaviors[behavior_sequence_tracker.index]
                             .mob_behaviors
                             .clone(),
+                        control_behaviors: behavior_sequence.behaviors
+                            [behavior_sequence_tracker.index]
+                            .control_behaviors
+                            .clone(),
                         spawnable_behaviors: behavior_sequence.behaviors
                             [behavior_sequence_tracker.index]
                             .spawnable_behaviors
@@ -87,6 +92,7 @@ pub fn mob_behavior_sequence_tracker_system(
 
                 behavior_update_event_writer.send(MobBehaviorUpdateEvent {
                     mob_behaviors: behavior_sequence.behaviors[0].mob_behaviors.clone(),
+                    control_behaviors: behavior_sequence.behaviors[0].control_behaviors.clone(),
                     spawnable_behaviors: behavior_sequence.behaviors[0].spawnable_behaviors.clone(),
                     entity,
                 });
@@ -97,6 +103,7 @@ pub fn mob_behavior_sequence_tracker_system(
 
 pub struct MobBehaviorUpdateEvent {
     pub mob_behaviors: Vec<MobBehavior>,
+    pub control_behaviors: Vec<MobSegmentControlBehavior>,
     pub spawnable_behaviors: Vec<SpawnableBehavior>,
     pub entity: Entity,
 }
@@ -110,6 +117,7 @@ pub fn mob_behavior_sequence_update_system(
         for (entity, mut mob_component, mut spawnable_component) in mob_query.iter_mut() {
             if entity == event.entity {
                 mob_component.behaviors = event.mob_behaviors.clone();
+                mob_component.control_behaviors = event.control_behaviors.clone();
                 spawnable_component.behaviors = event.spawnable_behaviors.clone();
 
                 let mut entity_pairs = vec![];
@@ -151,7 +159,7 @@ pub fn mob_behavior_sequence_update_system(
                     });
                 }
 
-                // add mob segment behaviors to mob segment from mob component
+                // add mob segment behaviors to mob segment from mob component based on mob joint behaviors
                 for (mob_segment_entity, mut mob_segment_component, _) in
                     mob_segment_query.iter_mut()
                 {
@@ -160,12 +168,12 @@ pub fn mob_behavior_sequence_update_system(
                         .any(|check_entity| *check_entity == mob_segment_entity)
                     {
                         mob_segment_component.behaviors = vec![];
-                        for mob_behavior in event.mob_behaviors.iter() {
+                        for control_behavior in event.control_behaviors.iter() {
                             if let Some(mob_segment_behaviors_map) =
                                 mob_component.mob_segment_behaviors.clone()
                             {
                                 if let Some(all_mob_segment_behaviors) =
-                                    mob_segment_behaviors_map.get(mob_behavior)
+                                    mob_segment_behaviors_map.get(control_behavior)
                                 {
                                     if let Some(mob_segment_behaviors) = all_mob_segment_behaviors
                                         .get(&mob_segment_component.mob_segment_type)
