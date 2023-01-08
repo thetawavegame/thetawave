@@ -1,5 +1,5 @@
 {
-	EarthOrbit: (
+	"earth-orbit": (
 		objective: Defense((
 			max_health: 100.0,
 			health: 100.0,
@@ -9,8 +9,8 @@
 			phases: [
 				(
 					phase_type: FormationSpawn(
-						time: 1000.0,
-						formation_pool: Easy,
+						time: 45.0,
+						formation_pool: "easy",
 						initial_delay: 1.0,	 			
 					)
 				),
@@ -20,13 +20,14 @@
 				(
 					phase_type: FormationSpawn(
 						time: 45.0,
-						formation_pool: Hard,
+						formation_pool: "hard",
 						initial_delay: 1.0,	 			
 					)
 				),
 				(
 					phase_type: Boss(
-						boss_type: Repeater,
+						mob_type: Enemy(Repeater),
+						position: (0.0, 550.0),
         				initial_delay: 5.0,
         				is_defeated: false,			
 					)
@@ -34,7 +35,7 @@
 			],
 		),
 	),
-	TestLevel: (
+	"test": (
 		objective: Defense((
 			max_health: 100.0,
 			health: 100.0,
@@ -44,7 +45,8 @@
 			phases: [
 				(
 					phase_type: Boss(
-						boss_type: Repeater,
+						mob_type: Enemy(Repeater),
+						position: (0.0, 550.0),
         				initial_delay: 5.0,
         				is_defeated: false,			
 					)

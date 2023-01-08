@@ -18,6 +18,10 @@ pub fn start_background_audio_system(
     audio_channel.play(audio_assets.game_music.clone()).looped();
 }
 
+pub fn stop_background_audio_system(audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>) {
+    audio_channel.stop();
+}
+
 pub fn set_audio_volume_system(
     background_audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
     menu_audio_channel: Res<AudioChannel<MenuAudioChannel>>,

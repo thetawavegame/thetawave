@@ -184,8 +184,8 @@
             collision_damage: 10.0,
             defense_damage: 0.0,
             health: (
-                max_health: 100.0,
-                health: 100.0,
+                max_health: 350.0,
+                health: 350.0,
                 armor: 0,
 
             ),
@@ -237,8 +237,8 @@
             collision_damage: 10.0,
             defense_damage: 0.0,
             health: (
-                max_health: 100.0,
-                health: 100.0,
+                max_health: 350.0,
+                health: 350.0,
                 armor: 0,
             ),
             consumable_drops: Standard,
@@ -277,8 +277,8 @@
             collision_damage: 10.0,
             defense_damage: 0.0,
             health: (
-                max_health: 100.0,
-                health: 100.0,
+                max_health: 350.0,
+                health: 350.0,
                 armor: 0,
             ),
             consumable_drops: Standard,
@@ -350,7 +350,7 @@
                     (
                         mob_type: Enemy(Missile),
                         position: Local((30.0, -90.0)),
-                        period: 2.5,
+                        period: 3.5,
                     ),
                 ],
 		    }),    
@@ -409,7 +409,7 @@
                     (
                         mob_type: Enemy(Missile),
                         position: Local((-30.0, -90.0)),
-                        period: 2.5,
+                        period: 3.5,
                     ),
                 ],
 		    }),    
@@ -435,8 +435,8 @@
             collision_damage: 10.0,
             defense_damage: 0.0,
             health: (
-                max_health: 1000.0,
-                health: 1000.0,
+                max_health: 600.0,
+                health: 600.0,
                 armor: 0,
             ),
             consumable_drops: Standard,
@@ -465,8 +465,8 @@
             collision_damage: 10.0,
             defense_damage: 0.0,
             health: (
-                max_health: 1000.0,
-                health: 1000.0,
+                max_health: 600.0,
+                health: 600.0,
                 armor: 0,
             ),
             consumable_drops: Standard,

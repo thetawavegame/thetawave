@@ -13,6 +13,12 @@ pub enum ConsumableDropListType {
     MoneyAsteroid,
 }
 
+impl Default for ConsumableDropListType {
+    fn default() -> Self {
+        ConsumableDropListType::Nothing
+    }
+}
+
 /// Probability profile for a single consumable drop
 /// Number of rolls, probability per roll and the consumable to drop on a successful roll
 #[derive(Deserialize)]

@@ -33,13 +33,17 @@ pub struct MobComponent {
     pub mob_type: MobType,
     /// Mob specific behaviors
     pub behaviors: Vec<behavior::MobBehavior>,
-    /// behaviors that mob segments attached to the mob will perform, given the mobs current behavior
+    /// behaviors that mob segments attached to the mob will perform, given the mob's control behaviors
     pub mob_segment_behaviors: Option<
         HashMap<MobSegmentControlBehavior, HashMap<MobSegmentType, Vec<MobSegmentBehavior>>>,
     >,
+    /// Control behaviors currently in use
     pub control_behaviors: Vec<MobSegmentControlBehavior>,
+    /// Behavior sequence that the mob is using
     pub behavior_sequence: Option<MobBehaviorSequenceType>,
+    /// Tracks the behavior sequence of the mob
     pub behavior_sequence_tracker: Option<BehaviorSequenceTracker>,
+    /// Tracks available mob spawning patterns for the mob
     pub mob_spawners: HashMap<String, Vec<MobSpawner>>,
     /// Optional weapon timer
     pub weapon_timer: Option<Timer>,
@@ -59,16 +63,14 @@ impl From<&MobData> for MobComponent {
     fn from(mob_data: &MobData) -> Self {
         let mut mob_spawners: HashMap<String, Vec<MobSpawner>> = HashMap::new();
 
-        if let Some(spawners_map) = mob_data.mob_spawners.clone() {
-            for (spawner_name, spawners) in spawners_map.iter() {
-                for spawner in spawners.iter() {
-                    match mob_spawners.entry(spawner_name.clone()) {
-                        Entry::Occupied(mut e) => {
-                            e.get_mut().push(MobSpawner::from(spawner.clone()));
-                        }
-                        Entry::Vacant(e) => {
-                            e.insert(vec![MobSpawner::from(spawner.clone())]);
-                        }
+        for (spawner_name, spawners) in mob_data.mob_spawners.iter() {
+            for spawner in spawners.iter() {
+                match mob_spawners.entry(spawner_name.clone()) {
+                    Entry::Occupied(mut e) => {
+                        e.get_mut().push(MobSpawner::from(spawner.clone()));
+                    }
+                    Entry::Vacant(e) => {
+                        e.insert(vec![MobSpawner::from(spawner.clone())]);
                     }
                 }
             }
@@ -133,29 +135,40 @@ pub struct MobData {
     /// Type of mob
     pub mob_type: MobType,
     /// List of spawnable behaviors that are performed
+    #[serde(default)]
     pub spawnable_behaviors: Vec<SpawnableBehavior>,
     /// Behavior sequence type
     pub behavior_sequence_type: Option<MobBehaviorSequenceType>,
     /// List of mob behaviors that are performed
-    pub mob_behaviors: Vec<behavior::MobBehavior>,
-    pub control_behaviors: Vec<behavior::MobSegmentControlBehavior>,
+    #[serde(default)]
+    pub mob_behaviors: Vec<MobBehavior>,
+    /// behaviors used to control attached mob segments
+    #[serde(default)]
+    pub control_behaviors: Vec<MobSegmentControlBehavior>,
     /// behaviors that mob segments attached to the mob will perform, given the mobs current behavior
     pub mob_segment_behaviors: Option<
         HashMap<MobSegmentControlBehavior, HashMap<MobSegmentType, Vec<MobSegmentBehavior>>>,
     >,
     /// Acceleration stat
+    #[serde(default)]
     pub acceleration: Vec2,
     /// Deceleration stat
+    #[serde(default)]
     pub deceleration: Vec2,
     /// Maximum speed that can be accelerated to
+    #[serde(default)]
     pub speed: Vec2,
     /// Angular acceleration stat
+    #[serde(default)]
     pub angular_acceleration: f32,
     /// Angular deceleration stat
+    #[serde(default)]
     pub angular_deceleration: f32,
     /// Maximum angular speed that can be accelerated to
+    #[serde(default)]
     pub angular_speed: f32,
     /// Motion that the mob initializes with
+    #[serde(default)]
     pub initial_motion: InitialMotion,
     /// Dimensions of the mob's hitbox
     pub colliders: Vec<ColliderData>,
@@ -164,19 +177,27 @@ pub struct MobData {
     /// Optional data describing the thruster
     pub thruster: Option<ThrusterData>,
     /// Damage dealt to other factions through attacks
+    #[serde(default)]
     pub attack_damage: f32,
     /// Damage dealt to other factions on collision
+    #[serde(default)]
     pub collision_damage: f32,
     /// Damage dealt to defense objective, after reaching bottom of arena
+    #[serde(default)]
     pub defense_damage: f32,
     /// Health of the mob
     pub health: Health,
     /// List of consumable drops
+    #[serde(default)]
     pub consumable_drops: ConsumableDropListType,
     /// Z level of the mobs transform
     pub z_level: f32,
-    pub mob_segment_anchor_points: Option<Vec<MobSegmentAnchorPointData>>,
-    pub mob_spawners: Option<HashMap<String, Vec<MobSpawnerData>>>,
+    /// anchor points for other mob segments
+    #[serde(default)]
+    pub mob_segment_anchor_points: Vec<MobSegmentAnchorPointData>,
+    /// mob spawners that the mob can use
+    #[serde(default)]
+    pub mob_spawners: HashMap<String, Vec<MobSpawnerData>>,
 }
 
 #[derive(Deserialize, Clone)]
@@ -354,36 +375,34 @@ pub fn spawn_mob(
 
     let mob_entity = mob.id().clone();
     // add mob segment if anchor point
-    if let Some(anchor_points) = mob_data.mob_segment_anchor_points.clone() {
-        for anchor_point in anchor_points.iter() {
-            // spawn mob_segment
 
-            let mob_segment_data =
-                &mob_segments_resource.mob_segments[&anchor_point.mob_segment_type];
+    for anchor_point in mob_data.mob_segment_anchor_points.iter() {
+        // spawn mob_segment
 
-            // create joint
-            let joint = match &anchor_point.joint {
-                JointType::Revolute => RevoluteJointBuilder::new()
-                    .local_anchor1(anchor_point.position)
-                    .local_anchor2(mob_segment_data.anchor_point)
-                    .motor_position(
-                        anchor_point.target_pos,
-                        anchor_point.stiffness,
-                        anchor_point.damping,
-                    ),
-            };
+        let mob_segment_data = &mob_segments_resource.mob_segments[&anchor_point.mob_segment_type];
 
-            spawn_mob_segment(
-                &mob_segment_data.mob_segment_type,
-                mob_entity,
-                &joint,
-                mob_segments_resource,
-                mob_assets,
-                position,
-                anchor_point.position,
-                commands,
-                game_parameters,
-            )
-        }
+        // create joint
+        let joint = match &anchor_point.joint {
+            JointType::Revolute => RevoluteJointBuilder::new()
+                .local_anchor1(anchor_point.position)
+                .local_anchor2(mob_segment_data.anchor_point)
+                .motor_position(
+                    anchor_point.target_pos,
+                    anchor_point.stiffness,
+                    anchor_point.damping,
+                ),
+        };
+
+        spawn_mob_segment(
+            &mob_segment_data.mob_segment_type,
+            mob_entity,
+            &joint,
+            mob_segments_resource,
+            mob_assets,
+            position,
+            anchor_point.position,
+            commands,
+            game_parameters,
+        )
     }
 }

@@ -1,6 +1,6 @@
 (	
 	formation_pools: {
-		Easy: [
+		"easy": [
 			(
 				formation_spawnables: [
 					(
@@ -8,7 +8,7 @@
 						position: (0.0, 550.0),
 					),
 				],
-				weight: 100000000000.0,
+				weight: 0.000000001,
 				period: 100000.0,
 			),
 			(
@@ -226,11 +226,11 @@
 						position: (-200.0, 600.0),
 					),
 				],
-				weight: 100000.0,
+				weight: 1.0,
 				period: 6.0,
 			),
 		],
-		Hard: [
+		"hard": [
 			(
 				formation_spawnables: [
 					(
@@ -480,7 +480,7 @@
 				period: 5.5,
 			),
 		],
-		Asteroids: [
+		"asteroids": [
 			(
 				formation_spawnables: [
 					(

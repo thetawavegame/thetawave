@@ -207,7 +207,10 @@ pub fn mob_execute_behavior_system(
                         commands.entity(entity).despawn_recursive();
 
                         // apply disconnected behaviors to connected mob segments
-                        mob_destroyed_event_writer.send(MobDestroyedEvent { entity });
+                        mob_destroyed_event_writer.send(MobDestroyedEvent {
+                            entity,
+                            mob_type: mob_component.mob_type.clone(),
+                        });
                     }
                 }
             }
@@ -216,6 +219,7 @@ pub fn mob_execute_behavior_system(
 }
 
 pub struct MobDestroyedEvent {
+    pub mob_type: MobType,
     pub entity: Entity,
 }
 

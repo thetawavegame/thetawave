@@ -260,7 +260,9 @@ fn main() {
     );
 
     app.add_system_set(
-        SystemSet::on_enter(states::AppStates::MainMenu).with_system(ui::setup_main_menu_system), //.with_system(states::clear_game_state_system),
+        SystemSet::on_enter(states::AppStates::MainMenu)
+            .with_system(ui::setup_main_menu_system)
+            .with_system(audio::stop_background_audio_system),
     );
 
     app.add_system_set(

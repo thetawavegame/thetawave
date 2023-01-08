@@ -3,14 +3,17 @@ use bevy_kira_audio::prelude::*;
 use std::time::Duration;
 
 use crate::{
-    arena::MobReachedBottomGateEvent, assets::GameAudioAssets, audio, states::AppStates,
+    arena::MobReachedBottomGateEvent,
+    assets::GameAudioAssets,
+    audio,
+    spawnable::{MobDestroyedEvent, SpawnMobEvent},
+    states::AppStates,
     ui::EndGameTransitionResource,
 };
 
 mod formation;
 mod level;
 
-use self::level::LevelType;
 pub use self::{
     formation::{spawn_formation_system, FormationPoolsResource, SpawnFormationEvent},
     level::{
@@ -21,12 +24,12 @@ pub use self::{
 
 // TODO: set to a progression of levels
 /// Right now just set to one level
-pub type RunResourceData = level::LevelType;
+pub type RunResourceData = String;
 
 #[derive(Resource)]
 pub struct RunResource {
     /// Type of the level
-    pub level_type: LevelType,
+    pub level_type: String,
     /// Level struct itself
     pub level: Option<level::Level>,
 }
@@ -64,6 +67,8 @@ impl RunResource {
         delta: Duration,
         spawn_formation: &mut EventWriter<formation::SpawnFormationEvent>,
         level_completed: &mut EventWriter<level::LevelCompletedEvent>,
+        spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
+        mob_destroyed_event_reader: &mut EventReader<MobDestroyedEvent>,
         mob_reached_bottom: &mut EventReader<MobReachedBottomGateEvent>,
         formation_pools: &formation::FormationPoolsResource,
         end_game_trans_resource: &mut EndGameTransitionResource,
@@ -73,6 +78,8 @@ impl RunResource {
                 delta,
                 spawn_formation,
                 level_completed,
+                spawn_mob_event_writer,
+                mob_destroyed_event_reader,
                 mob_reached_bottom,
                 formation_pools,
                 end_game_trans_resource,

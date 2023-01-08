@@ -135,18 +135,6 @@ pub enum SpawnableType {
     MobSegment(MobSegmentType),
 }
 
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
-pub enum BossType {
-    Repeater,
-}
-
-/*
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
-pub enum BossPartType {
-    Repeater(RepeaterPartType),
-}
-*/
-
 /// Type that encompasses all weapon projectiles
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum ProjectileType {
