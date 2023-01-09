@@ -172,7 +172,8 @@ pub enum EnemyMobType {
     StraferLeft,
     MissileLauncher,
     Missile,
-    Crustling,
+    CrustlingRight,
+    CrustlingLeft,
     Repeater,
 }
 
@@ -215,7 +216,7 @@ pub enum NeutralMobType {
 pub enum ConsumableType {
     DefenseWrench,
     Money1,
-    Money5,
+    Money3,
     HealthWrench,
     Armor,
 }

@@ -25,9 +25,12 @@
 					)
 				),
 				(
+					phase_type: Break( time: 5.0)
+				),
+				(
 					phase_type: Boss(
 						mob_type: Enemy(Repeater),
-						position: (0.0, 550.0),
+						position: (0.0, 600.0),
         				initial_delay: 5.0,
         				is_defeated: false,			
 					)

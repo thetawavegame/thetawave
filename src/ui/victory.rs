@@ -90,7 +90,7 @@ pub fn setup_victory_system(mut commands: Commands, asset_server: Res<AssetServe
                     parent
                         .spawn(ImageBundle {
                             image: asset_server
-                                .load("texture/restart_game_prompt_controller.png")
+                                .load("texture/restart_game_prompt_keyboard.png")
                                 .into(),
                             style: Style {
                                 size: Size::new(Val::Px(400.0), Val::Px(100.0)),
@@ -111,7 +111,7 @@ pub fn setup_victory_system(mut commands: Commands, asset_server: Res<AssetServe
                     parent
                         .spawn(ImageBundle {
                             image: asset_server
-                                .load("texture/exit_game_prompt_controller.png")
+                                .load("texture/exit_game_prompt_keyboard.png")
                                 .into(),
                             style: Style {
                                 size: Size::new(Val::Px(400.0), Val::Px(100.0)),

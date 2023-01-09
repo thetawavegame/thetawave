@@ -13,7 +13,7 @@
         columns: 1,
         rows: 1,  
     ),
-    "money5": TextureAtlas (
+    "money3": TextureAtlas (
         path: "texture/money5_spritesheet.png",
         tile_size_x: 12.,
         tile_size_y: 12.,

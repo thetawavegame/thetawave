@@ -37,11 +37,11 @@
 			direction: None,
         ),
     ),
-    Money5: (
-        consumable_type: Money5,
+    Money3: (
+        consumable_type: Money3,
         collider_dimensions: (3.0, 3.0),
         spawnable_behaviors: [BrakeHorizontal, MoveDown],
-        consumable_effects: [GainMoney(5)],
+        consumable_effects: [GainMoney(3)],
         consumable_behaviors: [ApplyEffectsOnImpact, AttractToPlayer],
         acceleration: (0.0, 2.0),
         deceleration: (0.5, 1.0),

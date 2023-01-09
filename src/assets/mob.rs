@@ -67,11 +67,12 @@ impl MobAssets {
             MobType::Enemy(enemy_type) => match enemy_type {
                 EnemyMobType::Pawn => self.pawn.clone(),
                 EnemyMobType::Drone => self.drone.clone(),
-                EnemyMobType::StraferRight => self.strafer.clone(),
-                EnemyMobType::StraferLeft => self.strafer.clone(),
+                EnemyMobType::StraferRight | EnemyMobType::StraferLeft => self.strafer.clone(),
                 EnemyMobType::MissileLauncher => self.missile_launcher.clone(),
                 EnemyMobType::Missile => self.missile.clone(),
-                EnemyMobType::Crustling => self.crustling_head.clone(),
+                EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => {
+                    self.crustling_head.clone()
+                }
                 EnemyMobType::Repeater => self.repeater_head.clone(),
             },
             MobType::Ally(ally_type) => match ally_type {
@@ -128,11 +129,12 @@ impl MobAssets {
             MobType::Enemy(enemy_type) => match enemy_type {
                 EnemyMobType::Pawn => Some(self.pawn_thruster.clone()),
                 EnemyMobType::Drone => Some(self.drone_thruster.clone()),
-                EnemyMobType::StraferRight => Some(self.strafer_thruster.clone()),
-                EnemyMobType::StraferLeft => Some(self.strafer_thruster.clone()),
+                EnemyMobType::StraferRight | EnemyMobType::StraferLeft => {
+                    Some(self.strafer_thruster.clone())
+                }
                 EnemyMobType::MissileLauncher => Some(self.missile_launcher_thruster.clone()),
                 EnemyMobType::Missile => Some(self.missile_thruster.clone()),
-                EnemyMobType::Crustling => None,
+                EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => None,
                 EnemyMobType::Repeater => None,
             },
             MobType::Ally(ally_type) => match ally_type {
