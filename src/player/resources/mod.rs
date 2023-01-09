@@ -2,4 +2,4 @@
 
 mod character;
 
-pub use self::character::{Character, CharactersResource};
+pub use self::character::{Character, CharacterType, CharactersResource};

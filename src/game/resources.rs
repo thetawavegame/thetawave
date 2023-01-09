@@ -1,8 +1,9 @@
 //! Resources for managing the game
+use bevy::prelude::*;
 use serde::Deserialize;
 
 /// Values used globally throughout the game
-#[derive(Deserialize)]
+#[derive(Resource, Deserialize)]
 pub struct GameParametersResource {
     /// Sprite image size multiplier
     pub sprite_scale: f32,

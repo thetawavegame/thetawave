@@ -1,0 +1,20 @@
+({
+    "health_label": File (
+        path: "texture/health_bar_label.png",
+    ),
+    "defense_label": File (
+        path: "texture/defense_bar_label.png",
+    ),
+    "armor_icon": File (
+        path: "texture/armor_spritesheet.png",
+    ),
+    "power_container": File (
+        path: "texture/power_container.png",
+    ),
+    "power_glow": File (
+        path: "texture/power_glow.png",
+    ),
+    "power_label": File (
+        path: "texture/power_label.png",
+    ),
+})

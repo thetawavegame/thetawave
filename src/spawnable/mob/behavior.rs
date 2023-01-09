@@ -3,27 +3,36 @@ use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
+use std::collections::HashMap;
 
 use crate::{
+    assets::GameAudioAssets,
+    audio,
     collision::SortedCollisionEvent,
-    game::GameParametersResource,
     loot::LootDropsResource,
     spawnable::{
-        spawn_projectile, EffectType, InitialMotion, MobType, PlayerComponent, ProjectileResource,
-        ProjectileType, SpawnConsumableEvent, SpawnEffectEvent, SpawnableComponent,
+        EffectType, InitialMotion, MobType, PlayerComponent, ProjectileType, SpawnConsumableEvent,
+        SpawnEffectEvent, SpawnProjectileEvent,
     },
-    SoundEffectsAudioChannel,
 };
+
+use super::{MobComponent, SpawnMobEvent, SpawnPosition};
 
 /// Types of behaviors that can be performed by mobs
 #[derive(Deserialize, Clone)]
 pub enum MobBehavior {
     PeriodicFire(PeriodicFireBehaviorData),
-    SpawnMob(SpawnMobBehaviorData),
+    SpawnMob(String),
     ExplodeOnImpact,
     DealDamageToPlayerOnImpact,
     ReceiveDamageOnImpact,
     DieAtZeroHealth,
+}
+
+#[derive(Deserialize, Hash, PartialEq, Eq, Clone)]
+pub enum MobSegmentControlBehavior {
+    RepeaterProtectHead,
+    RepeaterAttack,
 }
 
 /// Data used to periodically spawn mobs
@@ -57,23 +66,17 @@ pub struct PeriodicFireBehaviorData {
 pub fn mob_execute_behavior_system(
     mut commands: Commands,
     mut collision_events: EventReader<SortedCollisionEvent>,
-    game_parameters: Res<GameParametersResource>,
     time: Res<Time>,
-    mob_resource: Res<super::MobsResource>,
-    projectile_resource: Res<ProjectileResource>,
-    mut mob_query: Query<(
-        Entity,
-        &mut SpawnableComponent,
-        &mut super::MobComponent,
-        &Transform,
-        &Velocity,
-    )>,
+    mut mob_query: Query<(Entity, &mut MobComponent, &Transform, &Velocity)>,
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     mut spawn_consumable_event_writer: EventWriter<SpawnConsumableEvent>,
+    mut spawn_projectile_event_writer: EventWriter<SpawnProjectileEvent>,
+    mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
+    mut mob_destroyed_event_writer: EventWriter<MobDestroyedEvent>,
     loot_drops_resource: Res<LootDropsResource>,
-    asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
+    audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
+    audio_assets: Res<GameAudioAssets>,
 ) {
     // Get all contact events first (can't be read more than once within a system)
     let mut collision_events_vec = vec![];
@@ -82,15 +85,15 @@ pub fn mob_execute_behavior_system(
     }
 
     // Iterate through all spawnable entities and execute their behavior
-    for (entity, mut spawnable_component, mut mob_component, mob_transform, mob_velocity) in
-        mob_query.iter_mut()
-    {
+    for (entity, mut mob_component, mob_transform, mob_velocity) in mob_query.iter_mut() {
         let behaviors = mob_component.behaviors.clone();
         for behavior in behaviors {
             match behavior {
                 MobBehavior::PeriodicFire(data) => {
+                    // get data
                     if mob_component.weapon_timer.is_none() {
-                        mob_component.weapon_timer = Some(Timer::from_seconds(data.period, true));
+                        mob_component.weapon_timer =
+                            Some(Timer::from_seconds(data.period, TimerMode::Repeating));
                     } else if let Some(timer) = &mut mob_component.weapon_timer {
                         timer.tick(time.delta());
                         if timer.just_finished() {
@@ -109,43 +112,49 @@ pub fn mob_execute_behavior_system(
                             }
 
                             //spawn_blast
-                            // TODO: change to event for spawning projectiles
-                            audio_channel.play(asset_server.load("sounds/enemy_fire_blast.wav"));
-                            spawn_projectile(
-                                &data.projectile_type,
-                                &projectile_resource,
+                            audio_channel.play(audio_assets.enemy_fire_blast.clone());
+
+                            spawn_projectile_event_writer.send(SpawnProjectileEvent {
+                                projectile_type: data.projectile_type.clone(),
                                 position,
-                                mob_component.attack_damage,
-                                data.despawn_time,
-                                modified_initial_motion,
-                                &mut commands,
-                                &game_parameters,
-                            );
+                                damage: mob_component.attack_damage,
+                                despawn_time: data.despawn_time,
+                                initial_motion: modified_initial_motion,
+                            });
                         }
                     }
                 }
-                MobBehavior::SpawnMob(data) => {
+                MobBehavior::SpawnMob(mob_spawner_key) => {
+                    // get data
+
                     // if mob component does not have a timer initialize timer
                     // otherwise tick timer and spawn mob on completion
-                    if mob_component.mob_spawn_timer.is_none() {
-                        mob_component.mob_spawn_timer =
-                            Some(Timer::from_seconds(data.period, true));
-                    } else if let Some(timer) = &mut mob_component.mob_spawn_timer {
-                        timer.tick(time.delta());
-                        if timer.just_finished() {
-                            // spawn mob
-                            let position = Vec2::new(
-                                mob_transform.translation.x + data.offset_position.x,
-                                mob_transform.translation.y + data.offset_position.y,
-                            );
 
-                            super::spawn_mob(
-                                &data.mob_type,
-                                &mob_resource,
+                    // get all the mob spawners under the given key
+                    let mob_spawners = mob_component
+                        .mob_spawners
+                        .get_mut(&mob_spawner_key)
+                        .unwrap();
+
+                    for mob_spawner in mob_spawners.iter_mut() {
+                        mob_spawner.timer.tick(time.delta());
+
+                        if mob_spawner.timer.just_finished() {
+                            // spawn mob
+                            let position = match mob_spawner.position {
+                                SpawnPosition::Global(coords) => coords,
+                                SpawnPosition::Local(coords) => {
+                                    mob_transform.translation.xy()
+                                        + mob_transform.local_x().xy() * coords.x
+                                        + mob_transform.local_y().xy() * coords.y
+                                }
+                            };
+
+                            spawn_mob_event_writer.send(SpawnMobEvent {
+                                mob_type: mob_spawner.mob_type.clone(),
                                 position,
-                                &mut commands,
-                                &game_parameters,
-                            )
+                                rotation: mob_transform.rotation, // passed rotation of the parent mob
+                            })
                         }
                     }
                 }
@@ -153,12 +162,11 @@ pub fn mob_execute_behavior_system(
                     explode_on_impact(
                         &mut commands,
                         entity,
-                        &mut spawnable_component,
                         &collision_events_vec,
                         &mut spawn_effect_event_writer,
                         mob_transform,
-                        &asset_server,
                         &audio_channel,
+                        &audio_assets,
                     );
                 }
                 MobBehavior::DealDamageToPlayerOnImpact => {
@@ -178,7 +186,7 @@ pub fn mob_execute_behavior_system(
                 }
                 MobBehavior::DieAtZeroHealth => {
                     if mob_component.health.is_dead() {
-                        audio_channel.play(asset_server.load("sounds/mob_explosion.wav"));
+                        audio_channel.play(audio_assets.mob_explosion.clone());
 
                         // spawn mob explosion
                         spawn_effect_event_writer.send(SpawnEffectEvent {
@@ -197,11 +205,22 @@ pub fn mob_execute_behavior_system(
 
                         // despawn mob
                         commands.entity(entity).despawn_recursive();
+
+                        // apply disconnected behaviors to connected mob segments
+                        mob_destroyed_event_writer.send(MobDestroyedEvent {
+                            entity,
+                            mob_type: mob_component.mob_type.clone(),
+                        });
                     }
                 }
             }
         }
     }
+}
+
+pub struct MobDestroyedEvent {
+    pub mob_type: MobType,
+    pub entity: Entity,
 }
 
 /// Take damage from colliding entity on impact
@@ -238,6 +257,18 @@ fn receive_damage_on_impact(
             } => {
                 if entity == *mob_entity_1 {
                     mob_component.health.take_damage(*mob_damage_2);
+                }
+            }
+            SortedCollisionEvent::MobToMobSegmentContact {
+                mob_entity,
+                mob_faction: _,
+                mob_damage: _,
+                mob_segment_entity: _,
+                mob_segment_faction: _,
+                mob_segment_damage,
+            } => {
+                if entity == *mob_entity {
+                    mob_component.health.take_damage(*mob_segment_damage);
                 }
             }
 
@@ -278,12 +309,11 @@ fn deal_damage_to_player_on_impact(
 fn explode_on_impact(
     commands: &mut Commands,
     entity: Entity,
-    spawnable_component: &mut SpawnableComponent,
     collision_events: &[&SortedCollisionEvent],
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
     transform: &Transform,
-    asset_server: &AssetServer,
-    audio_channel: &AudioChannel<SoundEffectsAudioChannel>,
+    audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
+    audio_assets: &GameAudioAssets,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
@@ -294,7 +324,7 @@ fn explode_on_impact(
                 player_damage: _,
                 mob_damage: _,
             } => {
-                audio_channel.play(asset_server.load("sounds/mob_explosion.wav"));
+                audio_channel.play(audio_assets.mob_explosion.clone());
                 // remove faction check to allow allied mobs to harm players
                 if entity == *mob_entity {
                     // spawn mob explosion
@@ -317,7 +347,7 @@ fn explode_on_impact(
                 mob_faction_2: _,
                 mob_damage_2: _,
             } => {
-                audio_channel.play(asset_server.load("sounds/mob_explosion.wav"));
+                audio_channel.play(audio_assets.mob_explosion.clone());
                 if entity == *mob_entity_1 {
                     // spawn mob explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
@@ -327,6 +357,26 @@ fn explode_on_impact(
                         rotation: 0.0,
                     });
                     // despawn mob
+                    commands.entity(entity).despawn_recursive();
+                    continue;
+                }
+            }
+            SortedCollisionEvent::MobToMobSegmentContact {
+                mob_entity,
+                mob_faction: _,
+                mob_damage: _,
+                mob_segment_entity: _,
+                mob_segment_faction: _,
+                mob_segment_damage: _,
+            } => {
+                audio_channel.play(audio_assets.mob_explosion.clone());
+                if entity == *mob_entity {
+                    spawn_effect_event_writer.send(SpawnEffectEvent {
+                        effect_type: EffectType::MobExplosion,
+                        position: transform.translation.xy(),
+                        scale: Vec2::ZERO,
+                        rotation: 0.0,
+                    });
                     commands.entity(entity).despawn_recursive();
                     continue;
                 }

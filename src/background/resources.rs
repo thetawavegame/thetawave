@@ -47,9 +47,9 @@ impl PlanetData {
 
         // spawn planet entity
         commands
-            .spawn_bundle((transform, GlobalTransform::identity()))
+            .spawn((transform, GlobalTransform::IDENTITY))
             .with_children(|parent| {
-                parent.spawn_bundle(PbrBundle {
+                parent.spawn(PbrBundle {
                     mesh: asset_server.load(&self.mesh_path[..]),
                     material: asset_server.load(&self.material_path[..]),
                     ..Default::default()
@@ -66,7 +66,7 @@ impl PlanetData {
         // spawn light entity
         if let Some(light_data) = &self.light {
             commands
-                .spawn_bundle(PointLightBundle {
+                .spawn(PointLightBundle {
                     point_light: PointLight {
                         color: light_data.color,
                         intensity: light_data.intensity,
@@ -100,7 +100,7 @@ impl Background {
 
 /// Resource to store 3D backgrounds of levels
 // TODO: replace with loading saved scenes (if possible)
-#[derive(Deserialize)]
+#[derive(Resource, Deserialize)]
 pub struct BackgroundsResource {
     /// Names of backgrounds mapped to Background instances
     pub backgrounds: HashMap<String, Background>,

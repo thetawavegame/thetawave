@@ -2,7 +2,7 @@ use crate::{
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     player::PlayerComponent,
-    spawnable::{EnemyType, MobType, SpawnableComponent, SpawnableType},
+    spawnable::{EnemyMobType, MobType, SpawnableComponent, SpawnableType},
     tools::signed_modulo,
 };
 use bevy::{math::Vec3Swizzles, prelude::*};
@@ -19,6 +19,7 @@ pub enum SpawnableBehavior {
     MoveLeft,
     BrakeHorizontal,
     ChangeHorizontalDirectionOnImpact,
+    MoveToPosition(Vec2),
 }
 
 /// Manages excuting behaviors of spawnables
@@ -26,7 +27,6 @@ pub fn spawnable_execute_behavior_system(
     game_parameters: Res<GameParametersResource>,
     mut spawnable_query: Query<(Entity, &mut SpawnableComponent, &mut Velocity, &Transform)>,
     mut collision_events: EventReader<SortedCollisionEvent>,
-    time: Res<Time>,
 ) {
     let mut collision_events_vec = vec![];
     for collision_event in collision_events.iter() {
@@ -65,6 +65,9 @@ pub fn spawnable_execute_behavior_system(
                 SpawnableBehavior::BrakeHorizontal => {
                     brake_horizontal(&game_parameters, &spawnable_component, &mut rb_vel);
                 }
+                SpawnableBehavior::MoveToPosition(pos) => {
+                    move_to_position(spawnable_transform, &spawnable_component, &mut rb_vel, pos);
+                }
                 SpawnableBehavior::ChangeHorizontalDirectionOnImpact => {
                     change_horizontal_direction_on_impact(
                         spawnable_entity,
@@ -97,7 +100,7 @@ pub fn spawnable_set_target_behavior_system(
             match &spawnable_component.spawnable_type {
                 SpawnableType::Mob(mob_type) => match mob_type {
                     MobType::Enemy(enemy_type) => match enemy_type {
-                        EnemyType::Missile => {
+                        EnemyMobType::Missile => {
                             // set target to closest player
                             for behavior in spawnable_component.behaviors.iter_mut() {
                                 *behavior = match behavior {
@@ -132,6 +135,36 @@ pub fn spawnable_set_target_behavior_system(
     }
 }
 
+fn move_to_position(
+    transform: &Transform,
+    spawnable_component: &SpawnableComponent,
+    rb_vel: &mut Velocity,
+    position: Vec2,
+) {
+    let angle = ((transform.translation.y - position.y)
+        .atan2(transform.translation.x - position.x))
+        - (std::f32::consts::PI);
+
+    let max_speed_x = (spawnable_component.speed.x * angle.cos()).abs();
+    let max_speed_y = (spawnable_component.speed.y * angle.sin()).abs();
+
+    if rb_vel.linvel.x > max_speed_x {
+        rb_vel.linvel.x -= spawnable_component.deceleration.x;
+    } else if rb_vel.linvel.x < -max_speed_x {
+        rb_vel.linvel.x += spawnable_component.deceleration.x;
+    } else {
+        rb_vel.linvel.x += spawnable_component.acceleration.x * angle.cos();
+    }
+
+    if rb_vel.linvel.y > max_speed_y {
+        rb_vel.linvel.y -= spawnable_component.deceleration.y;
+    } else if rb_vel.linvel.y < -max_speed_y {
+        rb_vel.linvel.y += spawnable_component.deceleration.y;
+    } else {
+        rb_vel.linvel.y += spawnable_component.acceleration.y * angle.sin();
+    }
+}
+
 /// Toggles the horizontal direction of a spawnable on impact
 fn change_horizontal_direction_on_impact(
     entity: Entity,
@@ -145,7 +178,8 @@ fn change_horizontal_direction_on_impact(
                 mob_entity_1: mob_entity,
                 ..
             }
-            | SortedCollisionEvent::MobToBarrierContact { mob_entity, .. } => {
+            | SortedCollisionEvent::MobToBarrierContact { mob_entity, .. }
+            | SortedCollisionEvent::MobToMobSegmentContact { mob_entity, .. } => {
                 if entity == *mob_entity {
                     for behavior in spawnable_component.behaviors.iter_mut() {
                         *behavior = match behavior {

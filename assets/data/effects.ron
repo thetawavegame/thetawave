@@ -1,0 +1,65 @@
+{
+	AllyBlastExplosion: (
+		effect_type: AllyBlastExplosion,
+		effect_behaviors: [DespawnAfterAnimation],
+		z_level: 10.0,
+		animation: (
+			direction: Forward,
+			frame_duration: 0.1,
+		),
+	),
+	EnemyBlastExplosion: (
+		effect_type: EnemyBlastExplosion,
+		effect_behaviors: [DespawnAfterAnimation],
+		z_level: 10.5,
+		animation: (
+			direction: Forward,
+			frame_duration: 0.1,
+		),
+	),
+	AllyBlastDespawn: (
+		effect_type: AllyBlastDespawn,
+		effect_behaviors: [DespawnAfterAnimation],
+		z_level: 9.0,
+		animation: (
+			direction: Forward,
+			frame_duration: 0.1,
+		),
+	),
+	EnemyBlastDespawn: (
+		effect_type: EnemyBlastDespawn,
+		effect_behaviors: [DespawnAfterAnimation],
+		z_level: 9.0,
+		animation: (
+			direction: Forward,
+			frame_duration: 0.1,
+		),
+	),
+	MobExplosion: (
+		effect_type: MobExplosion,
+		effect_behaviors: [DespawnAfterAnimation],
+		z_level: -5.0,
+		animation: (
+			direction: Forward,
+			frame_duration: 0.1,
+		),
+	),
+	ConsumableDespawn: (
+		effect_type: ConsumableDespawn,
+		effect_behaviors: [DespawnAfterAnimation],
+		z_level: 9.0,
+		animation: (
+			direction: Forward,
+			frame_duration: 0.05,
+		),
+	),
+	BarrierGlow: (
+		effect_type: BarrierGlow,
+		effect_behaviors: [],
+		z_level: 25.0,
+		animation: (
+			direction: PingPong(Forward),
+			frame_duration: 0.2,
+		),
+	),
+}

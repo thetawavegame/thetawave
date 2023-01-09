@@ -6,21 +6,13 @@ use serde::Deserialize;
 use strum_macros::Display;
 
 mod behavior;
-mod boss;
+mod behavior_sequence;
 mod consumable;
 mod effect;
 mod mob;
 mod projectile;
 
-pub use self::boss::{
-    spawn_boss, spawn_boss_system, BossType, RepeaterPart, RepeaterPartsData, RepeaterResource,
-    SpawnBossEvent,
-};
-
-pub use self::mob::{
-    mob_execute_behavior_system, spawn_mob, spawn_mob_system, MobBehavior, MobComponent, MobData,
-    MobsResource, SpawnMobEvent,
-};
+pub use self::mob::*;
 pub use self::projectile::{
     projectile_execute_behavior_system, spawn_projectile, spawn_projectile_system,
     ProjectileComponent, ProjectileData, ProjectileResource, SpawnProjectileEvent,
@@ -28,6 +20,11 @@ pub use self::projectile::{
 
 pub use self::behavior::{
     spawnable_execute_behavior_system, spawnable_set_target_behavior_system, SpawnableBehavior,
+};
+
+pub use self::behavior_sequence::{
+    mob_behavior_sequence_tracker_system, mob_behavior_sequence_update_system,
+    BehaviorSequenceResource, MobBehaviorUpdateEvent,
 };
 
 pub use self::effect::{
@@ -59,6 +56,36 @@ pub struct SpawnableComponent {
     pub angular_speed: f32,
     /// List of behaviors that are performed
     pub behaviors: Vec<SpawnableBehavior>,
+}
+
+impl From<&MobData> for SpawnableComponent {
+    fn from(mob_data: &MobData) -> Self {
+        SpawnableComponent {
+            spawnable_type: SpawnableType::Mob(mob_data.mob_type.clone()),
+            acceleration: mob_data.acceleration,
+            deceleration: mob_data.deceleration,
+            speed: mob_data.speed,
+            angular_acceleration: mob_data.angular_acceleration,
+            angular_deceleration: mob_data.angular_deceleration,
+            angular_speed: mob_data.angular_speed,
+            behaviors: mob_data.spawnable_behaviors.clone(),
+        }
+    }
+}
+
+impl SpawnableComponent {
+    fn new(spawnable_type: SpawnableType) -> Self {
+        SpawnableComponent {
+            spawnable_type,
+            acceleration: Vec2::ZERO,
+            deceleration: Vec2::ZERO,
+            speed: Vec2::ZERO,
+            angular_acceleration: 0.0,
+            angular_deceleration: 0.0,
+            angular_speed: 0.0,
+            behaviors: vec![],
+        }
+    }
 }
 
 /// Initial motion that entity is spawned in with
@@ -105,12 +132,7 @@ pub enum SpawnableType {
     Item(ItemType),
     Effect(EffectType),
     Mob(MobType),
-    BossPart(BossPartType),
-}
-
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
-pub enum BossPartType {
-    Repeater(RepeaterPart),
+    MobSegment(MobSegmentType),
 }
 
 /// Type that encompasses all weapon projectiles
@@ -130,31 +152,62 @@ pub enum Faction {
 /// Type that encompasses all spawnable mobs
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum MobType {
-    Enemy(EnemyType),
-    Ally(AllyType),
-    Neutral(NeutralType),
+    Enemy(EnemyMobType),
+    Ally(AllyMobType),
+    Neutral(NeutralMobType),
+}
+
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+pub enum MobSegmentType {
+    Neutral(NeutralMobSegmentType),
+    Enemy(EnemyMobSegmentType),
 }
 
 /// Type that encompasses all spawnable enemy mobs
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
-pub enum EnemyType {
+pub enum EnemyMobType {
     Pawn,
     Drone,
     StraferRight,
     StraferLeft,
     MissileLauncher,
     Missile,
+    CrustlingRight,
+    CrustlingLeft,
+    Repeater,
 }
 
 /// Type that encompasses all spawnable ally mobs
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
-pub enum AllyType {
-    Hauler,
+pub enum AllyMobType {
+    Hauler2,
+    Hauler3,
+}
+
+/// Type that encompasses all spawnable ally mob segments
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+pub enum NeutralMobSegmentType {
+    HaulerBack,
+    HaulerMiddle,
+}
+
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+pub enum EnemyMobSegmentType {
+    CrustlingTentacle1,
+    CrustlingTentacle2,
+    CrustlingTentacle3,
+    RepeaterBody,
+    RepeaterRightShoulder,
+    RepeaterLeftShoulder,
+    RepeaterRightArm,
+    RepeaterLeftArm,
+    RepeaterRightClaw,
+    RepeaterLeftClaw,
 }
 
 /// Type that encompasses all spawnable neutral mobs
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
-pub enum NeutralType {
+pub enum NeutralMobType {
     MoneyAsteroid,
 }
 
@@ -163,7 +216,7 @@ pub enum NeutralType {
 pub enum ConsumableType {
     DefenseWrench,
     Money1,
-    Money5,
+    Money3,
     HealthWrench,
     Armor,
 }

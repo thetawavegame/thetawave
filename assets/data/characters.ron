@@ -1,0 +1,27 @@
+(
+	characters: {
+		"juggernaut": (
+			acceleration: (14.0, 14.0),
+			deceleration: (2.0, 2.0),
+			speed: (250.0, 250.0),
+			collider_dimensions: (2.0 , 4.0),
+			collider_density: 2.0,
+			character_type: Juggernaut,
+			projectile_type: Blast(Ally),
+			projectile_despawn_time: 0.75,
+			projectile_velocity: (0.0, 500.0),
+			projectile_offset_position: (0.0, 40.0),
+			fire_period: 0.4,
+			health: (
+				max_health: 100.0,
+				health: 100.0,
+				armor: 0,	
+			),
+			attack_damage: 10.0,
+			collision_damage: 10.0,
+			attraction_distance: 120.0,
+			attraction_acceleration: 3.0,
+			money: 0,
+		)
+	}
+)

@@ -5,9 +5,10 @@ use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 use crate::{
+    assets::GameAudioAssets,
+    audio,
     player::PlayerComponent,
     spawnable::{InitialMotion, SpawnProjectileEvent},
-    SoundEffectsAudioChannel,
 };
 
 // TODO: remove from game
@@ -28,8 +29,8 @@ pub fn player_fire_weapon_system(
     mut player_query: Query<(&mut PlayerComponent, &Velocity, &Transform)>,
     time: Res<Time>,
     mut spawn_projectile: EventWriter<SpawnProjectileEvent>,
-    asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
+    audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
+    audio_assets: Res<GameAudioAssets>,
 ) {
     for (mut player_component, rb_vels, transform) in player_query.iter_mut() {
         // get input for firing weapons
@@ -38,7 +39,7 @@ pub fn player_fire_weapon_system(
 
         for gamepad in gamepads.iter() {
             left_mouse |= gamepad_input.pressed(GamepadButton {
-                gamepad: *gamepad,
+                gamepad,
                 button_type: GamepadButtonType::East,
             });
         }
@@ -73,7 +74,7 @@ pub fn player_fire_weapon_system(
             });
 
             // play firing blast sound effect
-            audio_channel.play(asset_server.load("sounds/player_fire_blast.wav"));
+            audio_channel.play(audio_assets.player_fire_blast.clone());
 
             // reset the timer to the player's fire period stat
             let new_period = Duration::from_secs_f32(player_component.fire_period);

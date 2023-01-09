@@ -55,9 +55,9 @@ pub fn spawn_barriers_system(
 /// Spawns an arena barrier
 fn spawn_barrier(commands: &mut Commands, position: Vec2, width: f32, height: f32) {
     commands
-        .spawn()
+        .spawn_empty()
         .insert(RigidBody::Fixed)
-        .insert_bundle(TransformBundle::from_transform(
+        .insert(TransformBundle::from_transform(
             Transform::from_translation(position.extend(0.0)),
         ))
         .insert(Collider::cuboid(width / 2.0, height / 2.0))
@@ -72,9 +72,9 @@ fn spawn_barrier(commands: &mut Commands, position: Vec2, width: f32, height: f3
 /// Spawns a barrier that allows for spawnables to pass
 fn spawn_spawnables_pass_barrier(commands: &mut Commands, position: Vec2, width: f32, height: f32) {
     commands
-        .spawn()
+        .spawn_empty()
         .insert(RigidBody::Fixed)
-        .insert_bundle(TransformBundle::from_transform(
+        .insert(TransformBundle::from_transform(
             Transform::from_translation(position.extend(0.0)),
         ))
         .insert(Collider::cuboid(width / 2.0, height / 2.0))
@@ -82,7 +82,7 @@ fn spawn_spawnables_pass_barrier(commands: &mut Commands, position: Vec2, width:
         .insert(Friction::new(0.0))
         .insert(CollisionGroups {
             memberships: HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
-            filters: u32::MAX ^ SPAWNABLE_COL_GROUP_MEMBERSHIP,
+            filters: Group::ALL ^ SPAWNABLE_COL_GROUP_MEMBERSHIP,
         })
         .insert(AppStateComponent(AppStates::Game))
         .insert(ArenaBarrierComponent)

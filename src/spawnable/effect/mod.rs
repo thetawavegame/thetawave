@@ -1,5 +1,6 @@
 use crate::{
-    animation::{AnimationComponent, TextureData},
+    animation::{AnimationComponent, AnimationData},
+    assets::EffectAssets,
     game::GameParametersResource,
     states::{AppStateComponent, AppStates},
 };
@@ -28,7 +29,7 @@ pub struct EffectData {
     /// Type of the effect
     pub effect_type: super::EffectType,
     /// Sprite texture
-    pub texture: TextureData,
+    pub animation: AnimationData,
     /// Behaviors specific to effects
     pub effect_behaviors: Vec<behavior::EffectBehavior>,
     /// Z level of transform
@@ -36,11 +37,10 @@ pub struct EffectData {
 }
 
 /// Resource to store data and textures of effects
+#[derive(Resource)]
 pub struct EffectsResource {
     /// Maps effect types to data
     pub effects: HashMap<EffectType, EffectData>,
-    /// Maps effect types to textures
-    pub texture_atlas_handle: HashMap<EffectType, Handle<TextureAtlas>>,
 }
 
 /// Event for spawning effect
@@ -60,12 +60,14 @@ pub fn spawn_effect_system(
     mut commands: Commands,
     mut event_reader: EventReader<SpawnEffectEvent>,
     effects_resource: Res<EffectsResource>,
+    effect_assets: Res<EffectAssets>,
     game_parameters: Res<GameParametersResource>,
 ) {
     for event in event_reader.iter() {
         spawn_effect(
             &event.effect_type,
             &effects_resource,
+            &effect_assets,
             event.position,
             event.scale,
             event.rotation,
@@ -79,6 +81,7 @@ pub fn spawn_effect_system(
 pub fn spawn_effect(
     effect_type: &EffectType,
     effects_resource: &EffectsResource,
+    effect_assets: &EffectAssets,
     position: Vec2,
     scale: Vec2,
     rotation: f32,
@@ -87,19 +90,18 @@ pub fn spawn_effect(
 ) {
     // Get data from effect resource
     let effect_data = &effects_resource.effects[effect_type];
-    let texture_atlas_handle = effects_resource.texture_atlas_handle[effect_type].clone_weak();
 
     // spawn the effect
-    let mut effect = commands.spawn();
+    let mut effect = commands.spawn_empty();
 
     effect
-        .insert_bundle(SpriteSheetBundle {
-            texture_atlas: texture_atlas_handle,
+        .insert(SpriteSheetBundle {
+            texture_atlas: effect_assets.get_asset(effect_type),
             ..Default::default()
         })
         .insert(AnimationComponent {
-            timer: Timer::from_seconds(effect_data.texture.frame_duration, true),
-            direction: effect_data.texture.animation_direction.clone(),
+            timer: Timer::from_seconds(effect_data.animation.frame_duration, TimerMode::Repeating),
+            direction: effect_data.animation.direction.clone(),
         })
         .insert(EffectComponent {
             effect_type: effect_data.effect_type.clone(),
@@ -117,7 +119,7 @@ pub fn spawn_effect(
         })
         .insert(LockedAxes::default())
         .insert(RigidBody::Fixed)
-        .insert_bundle(TransformBundle::from_transform(Transform {
+        .insert(TransformBundle::from_transform(Transform {
             translation: position.extend(effect_data.z_level),
             rotation: Quat::from_rotation_z(rotation),
             scale: Vec3::new(
@@ -125,7 +127,6 @@ pub fn spawn_effect(
                 game_parameters.sprite_scale + scale.y,
                 1.0,
             ),
-            ..Default::default()
         }))
         .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new(effect_data.effect_type.to_string()));

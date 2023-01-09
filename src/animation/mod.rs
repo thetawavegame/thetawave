@@ -33,6 +33,12 @@ pub struct TextureData {
     pub animation_direction: AnimationDirection,
 }
 
+#[derive(Deserialize)]
+pub struct AnimationData {
+    pub direction: AnimationDirection,
+    pub frame_duration: f32,
+}
+
 /// Component for managing animation
 #[derive(Component)]
 pub struct AnimationComponent {

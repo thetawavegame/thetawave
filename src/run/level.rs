@@ -5,7 +5,7 @@ use std::{collections::HashMap, time::Duration};
 use crate::{
     arena::MobReachedBottomGateEvent,
     misc::Health,
-    spawnable::{self, BossType},
+    spawnable::{self, MobDestroyedEvent, MobType, SpawnMobEvent},
     states::AppStates,
     tools::weighted_rng,
     ui::EndGameTransitionResource,
@@ -14,13 +14,13 @@ use crate::{
 use super::formation;
 
 /// Structure stored in data file to describe level
-pub type LevelsResourceData = HashMap<LevelType, LevelData>;
+pub type LevelsResourceData = HashMap<String, LevelData>;
 
 /// Resource for storing defined predefined levels
-#[derive(Clone)]
+#[derive(Clone, Resource)]
 pub struct LevelsResource {
     /// Leveltypes maped to levels
-    pub levels: HashMap<LevelType, Level>,
+    pub levels: HashMap<String, Level>,
 }
 
 impl From<LevelsResourceData> for LevelsResource {
@@ -32,13 +32,6 @@ impl From<LevelsResourceData> for LevelsResource {
                 .collect(),
         }
     }
-}
-
-/// Names of levels that are used to be mapped to level structs
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
-pub enum LevelType {
-    EarthOrbit,
-    TestLevel,
 }
 
 /// Data used to initialize levels
@@ -90,10 +83,10 @@ impl Level {
     pub fn get_phase_name(&self) -> String {
         match &self.timeline.phases[self.timeline_idx].phase_type {
             LevelPhaseType::FormationSpawn { formation_pool, .. } => {
-                format!("FormationSpawn({:?})", formation_pool)
+                format!("FormationSpawn({formation_pool:?})")
             }
             LevelPhaseType::Break { .. } => "Break".to_string(),
-            LevelPhaseType::Boss { boss_type, .. } => format!("Boss[{:?}]", boss_type),
+            LevelPhaseType::Boss { mob_type, .. } => format!("Boss[{mob_type:?}]"),
         }
     }
 
@@ -108,8 +101,9 @@ impl Level {
         &mut self,
         delta: Duration,
         spawn_formation: &mut EventWriter<formation::SpawnFormationEvent>,
-        spawn_boss: &mut EventWriter<spawnable::SpawnBossEvent>,
         level_completed: &mut EventWriter<LevelCompletedEvent>,
+        spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
+        mob_destroyed_event_reader: &mut EventReader<MobDestroyedEvent>,
         mob_reached_bottom: &mut EventReader<MobReachedBottomGateEvent>,
         formation_pools: &formation::FormationPoolsResource,
         end_game_trans_resource: &mut EndGameTransitionResource,
@@ -155,7 +149,7 @@ impl Level {
                         .just_finished()
                     {
                         // get weights of each of the formations in the formation pool
-                        let weights = formation_pools[&event_formation_pool]
+                        let weights = formation_pools.formation_pools[&event_formation_pool]
                             .iter()
                             .map(|x| x.weight)
                             .collect();
@@ -168,21 +162,26 @@ impl Level {
                             .as_mut()
                             .unwrap()
                             .set_duration(Duration::from_secs_f32(
-                                formation_pools[&event_formation_pool][random_idx].period,
+                                formation_pools.formation_pools[&event_formation_pool][random_idx]
+                                    .period,
                             ));
 
                         // spawn the spawnables from the selected formation
                         spawn_formation.send(formation::SpawnFormationEvent {
-                            formation: formation_pools[&event_formation_pool][random_idx].clone(),
+                            formation: formation_pools.formation_pools[&event_formation_pool]
+                                [random_idx]
+                                .clone(),
                         });
                     }
                 }
                 LevelPhaseType::Boss {
-                    boss_type,
+                    mob_type,
+                    position,
                     initial_delay: _,
                     is_defeated: _,
                 } => {
-                    let boss_type = boss_type.clone();
+                    let mob_type = mob_type.clone();
+                    let position = position.clone();
 
                     // spawn the boss after the spawn timer has finished
                     if self
@@ -193,10 +192,27 @@ impl Level {
                         .just_finished()
                     {
                         // spawn the boss
-                        spawn_boss.send(spawnable::SpawnBossEvent {
-                            boss_type,
-                            position: Vec2::new(0.0, 100.0),
-                        })
+
+                        spawn_mob_event_writer.send(SpawnMobEvent {
+                            mob_type: mob_type.clone(),
+                            position,
+                            rotation: Quat::default(),
+                        });
+                    }
+
+                    // check if the boss mob type has been destroyed
+                    for event in mob_destroyed_event_reader.iter() {
+                        if event.mob_type == mob_type {
+                            info!("BOSS DESTROYED");
+                            if self.timeline.phases.len() > self.timeline_idx + 1 {
+                                self.timeline_idx += 1;
+                            } else {
+                                // send level completed event when level is completed
+                                level_completed.send(LevelCompletedEvent);
+                            }
+                            // setup the next phase
+                            self.setup_next_phase();
+                        }
                     }
                 }
                 _ => {}
@@ -238,19 +254,21 @@ impl Level {
                     initial_delay,
                     formation_pool: _,
                 } => {
-                    self.spawn_timer = Some(Timer::from_seconds(initial_delay, true));
-                    self.phase_timer = Some(Timer::from_seconds(time, false));
+                    self.spawn_timer =
+                        Some(Timer::from_seconds(initial_delay, TimerMode::Repeating));
+                    self.phase_timer = Some(Timer::from_seconds(time, TimerMode::Once));
                 }
                 LevelPhaseType::Break { time } => {
                     self.spawn_timer = None;
-                    self.phase_timer = Some(Timer::from_seconds(time, false));
+                    self.phase_timer = Some(Timer::from_seconds(time, TimerMode::Once));
                 }
                 LevelPhaseType::Boss {
-                    boss_type: _,
+                    mob_type: _,
+                    position: _,
                     initial_delay,
                     is_defeated: _,
                 } => {
-                    self.spawn_timer = Some(Timer::from_seconds(initial_delay, false));
+                    self.spawn_timer = Some(Timer::from_seconds(initial_delay, TimerMode::Once));
                     self.phase_timer = None;
                 }
             }
@@ -283,13 +301,14 @@ pub enum LevelPhaseType {
     FormationSpawn {
         time: f32,
         initial_delay: f32,
-        formation_pool: formation::FormationPoolType,
+        formation_pool: String,
     },
     Break {
         time: f32,
     },
     Boss {
-        boss_type: BossType,
+        mob_type: MobType,
+        position: Vec2,
         initial_delay: f32,
         is_defeated: bool,
     },
@@ -300,8 +319,9 @@ pub enum LevelPhaseType {
 pub fn level_system(
     mut run_resource: ResMut<super::RunResource>,
     mut spawn_formation: EventWriter<formation::SpawnFormationEvent>,
-    mut spawn_boss: EventWriter<spawnable::SpawnBossEvent>,
     mut level_completed: EventWriter<LevelCompletedEvent>,
+    mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
+    mut mob_destroyed_event_reader: EventReader<MobDestroyedEvent>,
     mut mob_reached_bottom: EventReader<MobReachedBottomGateEvent>,
     formation_pools: Res<formation::FormationPoolsResource>,
     time: Res<Time>,
@@ -312,8 +332,9 @@ pub fn level_system(
         run_resource.tick(
             time.delta(),
             &mut spawn_formation,
-            &mut spawn_boss,
             &mut level_completed,
+            &mut spawn_mob_event_writer,
+            &mut mob_destroyed_event_reader,
             &mut mob_reached_bottom,
             &formation_pools,
             &mut end_game_trans_resource,
@@ -341,19 +362,20 @@ pub fn setup_first_level(mut run_resource: ResMut<super::RunResource>) {
                 initial_delay,
                 formation_pool: _,
             } => {
-                level.spawn_timer = Some(Timer::from_seconds(*initial_delay, true));
-                level.phase_timer = Some(Timer::from_seconds(*time, false));
+                level.spawn_timer = Some(Timer::from_seconds(*initial_delay, TimerMode::Repeating));
+                level.phase_timer = Some(Timer::from_seconds(*time, TimerMode::Once));
             }
             LevelPhaseType::Break { time } => {
                 level.spawn_timer = None;
-                level.phase_timer = Some(Timer::from_seconds(*time, false));
+                level.phase_timer = Some(Timer::from_seconds(*time, TimerMode::Once));
             }
             LevelPhaseType::Boss {
-                boss_type: _,
+                mob_type: _,
+                position: _,
                 initial_delay,
                 is_defeated: _,
             } => {
-                level.spawn_timer = Some(Timer::from_seconds(*initial_delay, false));
+                level.spawn_timer = Some(Timer::from_seconds(*initial_delay, TimerMode::Once));
                 level.phase_timer = None;
             }
         }

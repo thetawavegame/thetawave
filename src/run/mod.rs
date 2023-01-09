@@ -3,14 +3,17 @@ use bevy_kira_audio::prelude::*;
 use std::time::Duration;
 
 use crate::{
-    arena::MobReachedBottomGateEvent, spawnable, states::AppStates, ui::EndGameTransitionResource,
-    MenuAudioChannel,
+    arena::MobReachedBottomGateEvent,
+    assets::GameAudioAssets,
+    audio,
+    spawnable::{MobDestroyedEvent, SpawnMobEvent},
+    states::AppStates,
+    ui::EndGameTransitionResource,
 };
 
 mod formation;
 mod level;
 
-use self::level::LevelType;
 pub use self::{
     formation::{spawn_formation_system, FormationPoolsResource, SpawnFormationEvent},
     level::{
@@ -21,11 +24,12 @@ pub use self::{
 
 // TODO: set to a progression of levels
 /// Right now just set to one level
-pub type RunResourceData = level::LevelType;
+pub type RunResourceData = String;
 
+#[derive(Resource)]
 pub struct RunResource {
     /// Type of the level
-    pub level_type: LevelType,
+    pub level_type: String,
     /// Level struct itself
     pub level: Option<level::Level>,
 }
@@ -62,8 +66,9 @@ impl RunResource {
         &mut self,
         delta: Duration,
         spawn_formation: &mut EventWriter<formation::SpawnFormationEvent>,
-        spawn_boss: &mut EventWriter<spawnable::SpawnBossEvent>,
         level_completed: &mut EventWriter<level::LevelCompletedEvent>,
+        spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
+        mob_destroyed_event_reader: &mut EventReader<MobDestroyedEvent>,
         mob_reached_bottom: &mut EventReader<MobReachedBottomGateEvent>,
         formation_pools: &formation::FormationPoolsResource,
         end_game_trans_resource: &mut EndGameTransitionResource,
@@ -72,8 +77,9 @@ impl RunResource {
             level.tick(
                 delta,
                 spawn_formation,
-                spawn_boss,
                 level_completed,
+                spawn_mob_event_writer,
+                mob_destroyed_event_reader,
                 mob_reached_bottom,
                 formation_pools,
                 end_game_trans_resource,
@@ -89,14 +95,14 @@ pub fn reset_run_system(
     mut keyboard_input: ResMut<Input<KeyCode>>,
     mut app_state: ResMut<State<AppStates>>,
     asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<MenuAudioChannel>>,
+    audio_channel: Res<AudioChannel<audio::MenuAudioChannel>>,
 ) {
     // get input
     let mut reset = keyboard_input.just_released(KeyCode::R);
 
     for gamepad in gamepads.iter() {
         reset |= gamepad_input.just_released(GamepadButton {
-            gamepad: *gamepad,
+            gamepad,
             button_type: GamepadButtonType::East,
         });
     }
@@ -104,16 +110,17 @@ pub fn reset_run_system(
     // if reset input provided reset th run
     if reset {
         // go to the main menu state
-        app_state.set(AppStates::MainMenu).unwrap();
+        app_state.replace(AppStates::MainMenu).unwrap();
 
         // play menu input sound
+        // TODO: change to using loaded assets
         audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
 
         // reset the input
         keyboard_input.reset(KeyCode::R);
         for gamepad in gamepads.iter() {
             gamepad_input.reset(GamepadButton {
-                gamepad: *gamepad,
+                gamepad,
                 button_type: GamepadButtonType::East,
             });
         }

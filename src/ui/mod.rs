@@ -1,6 +1,9 @@
 use std::time::Duration;
 
-use bevy::prelude::*;
+use bevy::{
+    diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin},
+    prelude::*,
+};
 
 use crate::{
     player::PlayerComponent,
@@ -50,7 +53,7 @@ pub struct StatBarLabel;
 /// Initialize all ui
 pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetServer>) {
     commands
-        .spawn_bundle(NodeBundle {
+        .spawn(NodeBundle {
             style: Style {
                 size: Size {
                     width: Val::Px(15.0),
@@ -64,14 +67,14 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
                 position_type: PositionType::Absolute,
                 ..Style::default()
             },
-            color: Color::RED.into(),
+            background_color: Color::RED.into(),
             ..NodeBundle::default()
         })
         .insert(AppStateComponent(AppStates::Game))
         .insert(HealthUI);
 
     commands
-        .spawn_bundle(ImageBundle {
+        .spawn(ImageBundle {
             image: asset_server.load("texture/health_bar_label.png").into(),
             style: Style {
                 position: UiRect {
@@ -88,7 +91,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
         .insert(StatBarLabel);
 
     commands
-        .spawn_bundle(ImageBundle {
+        .spawn(ImageBundle {
             image: asset_server.load("texture/armor_spritesheet.png").into(),
             style: Style {
                 size: Size::new(Val::Px(12.0), Val::Px(12.0)),
@@ -101,7 +104,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
                 ..default()
             },
             transform: Transform::from_scale(Vec3::new(2.5, 2.5, 1.0)),
-            color: Color::rgba(1.0, 1.0, 1.0, 0.2).into(),
+            background_color: Color::rgba(1.0, 1.0, 1.0, 0.2).into(),
             ..Default::default()
         })
         .insert(AppStateComponent(AppStates::Game))
@@ -109,7 +112,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
         .insert(ArmorUI);
 
     commands
-        .spawn_bundle(NodeBundle {
+        .spawn(NodeBundle {
             style: Style {
                 size: Size {
                     width: Val::Px(15.0),
@@ -123,14 +126,14 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
                 position_type: PositionType::Absolute,
                 ..Style::default()
             },
-            color: Color::BLUE.into(),
+            background_color: Color::BLUE.into(),
             ..NodeBundle::default()
         })
         .insert(AppStateComponent(AppStates::Game))
         .insert(LevelUI);
 
     commands
-        .spawn_bundle(ImageBundle {
+        .spawn(ImageBundle {
             image: asset_server.load("texture/defense_bar_label.png").into(),
             style: Style {
                 position: UiRect {
@@ -147,7 +150,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
         .insert(StatBarLabel);
 
     commands
-        .spawn_bundle(ImageBundle {
+        .spawn(ImageBundle {
             image: asset_server.load("texture/power_container.png").into(),
             style: Style {
                 position: UiRect {
@@ -165,7 +168,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
         .insert(StatBarLabel);
 
     commands
-        .spawn_bundle(ImageBundle {
+        .spawn(ImageBundle {
             image: asset_server.load("texture/power_glow.png").into(),
             style: Style {
                 position: UiRect {
@@ -180,10 +183,13 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
             ..Default::default()
         })
         .insert(AppStateComponent(AppStates::Game))
-        .insert(PowerGlowUI(Timer::new(Duration::from_secs_f32(2.0), true)));
+        .insert(PowerGlowUI(Timer::new(
+            Duration::from_secs_f32(2.0),
+            TimerMode::Repeating,
+        )));
 
     commands
-        .spawn_bundle(ImageBundle {
+        .spawn(ImageBundle {
             image: asset_server.load("texture/power_label.png").into(),
             style: Style {
                 position: UiRect {
@@ -206,7 +212,7 @@ pub fn setup_fps_ui_system(mut commands: Commands, asset_server: ResMut<AssetSer
     let font = asset_server.load("fonts/SpaceMadness.ttf");
 
     commands
-        .spawn_bundle(TextBundle {
+        .spawn(TextBundle {
             style: Style {
                 size: Size::default(),
                 position: UiRect {
@@ -231,14 +237,24 @@ pub fn setup_fps_ui_system(mut commands: Commands, asset_server: ResMut<AssetSer
         .insert(FPSUI);
 }
 
+pub fn fps_system(diagnostics: Res<Diagnostics>, mut query: Query<&mut Text, With<FPSUI>>) {
+    let mut text = query.single_mut();
+
+    if let Some(fps) = diagnostics.get(FrameTimeDiagnosticsPlugin::FPS) {
+        if let Some(average) = fps.average() {
+            text.sections[0].value = format!("fps: {average:.2}");
+        }
+    };
+}
+
 #[allow(clippy::type_complexity)]
 /// Update ui to current data from game
 pub fn update_ui(
     mut ui_queries: ParamSet<(
         Query<&mut Style, With<HealthUI>>,
         Query<&mut Style, With<LevelUI>>,
-        Query<&mut UiColor, With<ArmorUI>>,
-        Query<(&mut UiColor, &mut Transform, &mut PowerGlowUI)>,
+        Query<&mut BackgroundColor, With<ArmorUI>>,
+        Query<(&mut BackgroundColor, &mut Transform, &mut PowerGlowUI)>,
     )>,
     player_query: Query<&PlayerComponent>,
     run_resource: Res<RunResource>,

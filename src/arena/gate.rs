@@ -1,7 +1,8 @@
 use crate::{
-    spawnable::{MobComponent, SpawnableComponent},
+    assets::GameAudioAssets,
+    audio,
+    spawnable::{MobComponent, MobSegmentComponent, SpawnableComponent},
     states::{AppStateComponent, AppStates},
-    SoundEffectsAudioChannel,
 };
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
@@ -19,8 +20,8 @@ pub fn spawn_despawn_gates_system(mut commands: Commands) {
 /// Spawn a despawn gate
 fn spawn_despawn_gate(commands: &mut Commands, position: Vec2, width: f32, height: f32) {
     commands
-        .spawn()
-        .insert_bundle(TransformBundle::from_transform(
+        .spawn_empty()
+        .insert(TransformBundle::from_transform(
             Transform::from_translation(position.extend(0.0)),
         ))
         .insert(Collider::cuboid(width / 2.0, height / 2.0))
@@ -38,9 +39,10 @@ pub fn despawn_gates_system(
     despawn_gate_query: Query<Entity, With<DespawnGateComponent>>,
     spawnable_query: Query<Entity, With<SpawnableComponent>>,
     mob_query: Query<(Entity, &MobComponent)>,
+    mob_segment_query: Query<(Entity, &MobSegmentComponent)>,
     mut enemy_bottom_event: EventWriter<MobReachedBottomGateEvent>,
-    asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
+    audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
+    audio_assets: Res<GameAudioAssets>,
 ) {
     // loop through all collision events
     'event_loop: for collision_event in collision_events.iter() {
@@ -78,9 +80,26 @@ pub fn despawn_gates_system(
 
                             // play sound based on if defense was increased or decreased
                             if mob_component.defense_damage > 0.0 {
-                                audio_channel.play(asset_server.load("sounds/defense_damage.wav"));
+                                audio_channel.play(audio_assets.defense_damage.clone());
                             } else if mob_component.defense_damage < -0.5 {
-                                audio_channel.play(asset_server.load("sounds/defense_heal.wav"));
+                                audio_channel.play(audio_assets.defense_heal.clone());
+                            }
+                        }
+                    }
+
+                    // check if the other entity is a mob segment
+                    for (mob_segment_entity, mob_segment_component) in mob_segment_query.iter() {
+                        if mob_segment_entity == *other_entity {
+                            // send event for mob segment reaching bottom of arena
+                            enemy_bottom_event.send(MobReachedBottomGateEvent(
+                                mob_segment_component.defense_damage,
+                            ));
+
+                            // play sound based on if defense was increased or decreased
+                            if mob_segment_component.defense_damage > 0.0 {
+                                audio_channel.play(audio_assets.defense_damage.clone());
+                            } else if mob_segment_component.defense_damage < -0.5 {
+                                audio_channel.play(audio_assets.defense_heal.clone());
                             }
                         }
                     }

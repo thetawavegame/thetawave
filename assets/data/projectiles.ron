@@ -1,0 +1,35 @@
+{
+	Blast(Enemy): (
+		projectile_type: Blast(Enemy),
+		spawnable_behaviors: [],
+		projectile_behaviors: [ExplodeOnImpact],
+		collider_dimensions: (1.5, 1.5),
+		z_level: 20.0,
+		animation: (
+			direction: None,
+			frame_duration: 1.0
+		),
+	),
+	Blast(Neutral): (
+		projectile_type: Blast(Neutral),
+		spawnable_behaviors: [],
+		projectile_behaviors: [ExplodeOnImpact],
+		collider_dimensions: (1.5, 1.5),
+		z_level: 20.0,
+		animation: (
+			direction: None,
+			frame_duration: 1.0
+		),
+	),
+	Blast(Ally): (
+		projectile_type: Blast(Ally),
+		spawnable_behaviors: [],
+		projectile_behaviors: [ExplodeOnImpact],
+		collider_dimensions: (1.5, 1.5),
+		z_level: 19.0,
+		animation: (
+			direction: None,
+			frame_duration: 1.0
+		),
+	)
+}

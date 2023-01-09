@@ -1,0 +1,60 @@
+{
+	"earth-orbit": (
+		objective: Defense((
+			max_health: 100.0,
+			health: 100.0,
+			armor: 0,
+		)),
+		timeline: (
+			phases: [
+				(
+					phase_type: FormationSpawn(
+						time: 45.0,
+						formation_pool: "easy",
+						initial_delay: 1.0,	 			
+					)
+				),
+				(
+					phase_type: Break( time: 10.0)
+				),
+				(
+					phase_type: FormationSpawn(
+						time: 45.0,
+						formation_pool: "hard",
+						initial_delay: 1.0,	 			
+					)
+				),
+				(
+					phase_type: Break( time: 5.0)
+				),
+				(
+					phase_type: Boss(
+						mob_type: Enemy(Repeater),
+						position: (0.0, 600.0),
+        				initial_delay: 5.0,
+        				is_defeated: false,			
+					)
+				),
+			],
+		),
+	),
+	"test": (
+		objective: Defense((
+			max_health: 100.0,
+			health: 100.0,
+			armor: 0,
+		)),
+		timeline: (
+			phases: [
+				(
+					phase_type: Boss(
+						mob_type: Enemy(Repeater),
+						position: (0.0, 550.0),
+        				initial_delay: 5.0,
+        				is_defeated: false,			
+					)
+				),
+			],
+		),
+	),
+}

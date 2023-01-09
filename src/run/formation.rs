@@ -5,18 +5,13 @@ use std::collections::HashMap;
 use crate::spawnable::{self, SpawnConsumableEvent, SpawnMobEvent};
 
 /// Resource for storing collections of formations of spawnables
-pub type FormationPoolsResource = HashMap<FormationPoolType, FormationPool>;
+#[derive(Resource, Deserialize)]
+pub struct FormationPoolsResource {
+    pub formation_pools: HashMap<String, FormationPool>,
+}
 
 /// Collection of formations that can be chosen to be spawned
 pub type FormationPool = Vec<Formation>;
-
-/// Types of formation pools, describes a set of enemy formations to spawn in phase
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
-pub enum FormationPoolType {
-    Easy,
-    Hard,
-    Asteroids,
-}
 
 /// Used for storing information about a spawnables in formations
 #[derive(Deserialize, Clone)]
@@ -53,6 +48,7 @@ impl Formation {
                 spawnable::SpawnableType::Mob(mob_type) => spawn_mob.send(SpawnMobEvent {
                     mob_type: mob_type.clone(),
                     position: formation_spawnable.position,
+                    rotation: Quat::default(),
                 }),
 
                 spawnable::SpawnableType::Consumable(consumable_type) => {
