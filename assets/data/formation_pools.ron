@@ -31,7 +31,7 @@
 					),
 					(
 						spawnable_type: Mob(Enemy(Pawn)),
-						position: (0.0, 700.0),
+						position: (0.0, 1000.0),
 					),
 					(
 						spawnable_type: Mob(Ally(Hauler2)),
@@ -39,7 +39,7 @@
 					),
 				],
 				weight: 1.0,
-				period: 8.5,
+				period: 9.0,
 			),
 			(
 				formation_spawnables: [
@@ -229,15 +229,15 @@
 				formation_spawnables: [
 					(
 						spawnable_type: Mob(Enemy(CrustlingLeft)),
-						position: (0.0, 875.0),
+						position: (0.0, 950.0),
 					),
 					(
 						spawnable_type: Mob(Enemy(CrustlingRight)),
-						position: (0.0, 750.0),
+						position: (0.0, 800.0),
 					),
 					(
 						spawnable_type: Mob(Enemy(CrustlingLeft)),
-						position: (0.0, 625.0),
+						position: (0.0, 650.0),
 					),
 					(
 						spawnable_type: Mob(Enemy(CrustlingRight)),
@@ -245,7 +245,7 @@
 					),
 				],
 				weight: 1.0,
-				period: 14.0,
+				period: 15.0,
 			),
 			(
 				formation_spawnables: [
