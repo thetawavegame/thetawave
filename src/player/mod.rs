@@ -10,7 +10,7 @@ pub use self::{
     resources::{Character, CharacterType, CharactersResource},
     spawn::spawn_player_system,
     systems::{
-        player_death_system, player_fire_weapon_system, player_movement_system,
-        player_scale_fire_rate_system,
+        player_ability_system, player_death_system, player_fire_weapon_system,
+        player_movement_system, player_scale_fire_rate_system,
     },
 };

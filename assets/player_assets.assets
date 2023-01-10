@@ -1,5 +1,8 @@
 ({
+    "captain": File (
+        path: "texture/captain_character.png"
+    ),
     "juggernaut": File (
-        path: "texture/juggernaut.png"
-    )
+        path: "texture/juggernaut_character.png"
+    ),
 })

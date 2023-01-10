@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use serde::Deserialize;
 
 use crate::{misc::Health, player::Character, spawnable::ProjectileType};
 
@@ -39,6 +40,8 @@ pub struct PlayerComponent {
     pub attraction_acceleration: f32,
     /// Amount of money character has collected
     pub money: usize,
+    pub ability_timer: Timer,
+    pub ability_type: AbilityType,
 }
 
 impl From<&Character> for PlayerComponent {
@@ -61,6 +64,14 @@ impl From<&Character> for PlayerComponent {
             attraction_distance: character.attraction_distance,
             attraction_acceleration: character.attraction_acceleration,
             money: character.money,
+            ability_timer: Timer::from_seconds(character.ability_period, TimerMode::Once),
+            ability_type: character.ability_type.clone(),
         }
     }
+}
+
+#[derive(Deserialize, Clone, Debug)]
+pub enum AbilityType {
+    Charge,
+    MegaBlast,
 }

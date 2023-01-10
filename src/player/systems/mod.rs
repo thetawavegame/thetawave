@@ -1,5 +1,6 @@
 //! Systems for managing players
 
+mod ability;
 mod attacks;
 mod movement;
 
@@ -12,6 +13,7 @@ use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 
+pub use self::ability::*;
 pub use self::attacks::{player_fire_weapon_system, player_scale_fire_rate_system};
 pub use self::movement::player_movement_system;
 
