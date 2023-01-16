@@ -139,6 +139,7 @@ pub enum SpawnableType {
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum ProjectileType {
     Blast(Faction),
+    Bullet(Faction),
 }
 
 /// Factions

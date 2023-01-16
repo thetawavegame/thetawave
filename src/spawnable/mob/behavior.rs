@@ -296,7 +296,10 @@ fn deal_damage_to_player_on_impact(
                 // deal damage to player
                 for (player_entity_q, mut player_component) in player_query.iter_mut() {
                     if player_entity_q == *player_entity {
-                        player_component.health.take_damage(*mob_damage);
+                        let damage_multiplier = player_component.incoming_damage_multiplier;
+                        player_component
+                            .health
+                            .take_damage(*mob_damage * damage_multiplier);
                     }
                 }
             }

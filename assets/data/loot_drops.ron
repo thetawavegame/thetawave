@@ -9,12 +9,12 @@
             ),
             (
                 rolls: 1,
-                probability: 0.08,
+                probability: 0.06,
                 consumable: HealthWrench,
             ),
             (
                 rolls: 1,
-                probability: 0.05,
+                probability: 0.03,
                 consumable: DefenseWrench,
             ),
             (

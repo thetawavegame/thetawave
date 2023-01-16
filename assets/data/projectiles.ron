@@ -31,5 +31,38 @@
 			direction: None,
 			frame_duration: 1.0
 		),
+	),
+	Bullet(Enemy): (
+		projectile_type: Bullet(Enemy),
+		spawnable_behaviors: [],
+		projectile_behaviors: [ExplodeOnImpact],
+		collider_dimensions: (2.0, 2.0),
+		z_level: 20.0,
+		animation: (
+			direction: None,
+			frame_duration: 1.0
+		),
+	),
+	Bullet(Neutral): (
+		projectile_type: Bullet(Neutral),
+		spawnable_behaviors: [],
+		projectile_behaviors: [ExplodeOnImpact],
+		collider_dimensions: (2.0, 2.0),
+		z_level: 20.0,
+		animation: (
+			direction: None,
+			frame_duration: 1.0
+		),
+	),
+	Bullet(Ally): (
+		projectile_type: Bullet(Ally),
+		spawnable_behaviors: [],
+		projectile_behaviors: [ExplodeOnImpact],
+		collider_dimensions: (2.0, 2.0),
+		z_level: 19.0,
+		animation: (
+			direction: None,
+			frame_duration: 1.0
+		),
 	)
 }

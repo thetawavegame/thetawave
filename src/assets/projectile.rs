@@ -11,6 +11,8 @@ pub struct ProjectileAssets {
     pub enemy_blast: Handle<TextureAtlas>,
     #[asset(key = "neutral_blast")]
     pub neutral_blast: Handle<TextureAtlas>,
+    #[asset(key = "ally_bullet")]
+    pub ally_bullet: Handle<TextureAtlas>,
 }
 
 impl ProjectileAssets {
@@ -20,6 +22,11 @@ impl ProjectileAssets {
                 Faction::Ally => self.ally_blast.clone(),
                 Faction::Enemy => self.enemy_blast.clone(),
                 Faction::Neutral => self.neutral_blast.clone(),
+            },
+            ProjectileType::Bullet(faction) => match faction {
+                Faction::Ally => self.ally_bullet.clone(),
+                Faction::Enemy => todo!(),
+                Faction::Neutral => todo!(),
             },
         }
     }

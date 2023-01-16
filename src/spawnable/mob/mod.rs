@@ -23,8 +23,8 @@ mod behavior;
 mod mob_segment;
 pub use self::{behavior::*, mob_segment::*};
 
-use super::behavior_sequence::MobBehaviorSequenceType;
 use super::MobSegmentType;
+use super::{behavior_sequence::MobBehaviorSequenceType, ProjectileType};
 
 /// Core component for mobs
 #[derive(Component)]
@@ -45,6 +45,8 @@ pub struct MobComponent {
     pub behavior_sequence_tracker: Option<BehaviorSequenceTracker>,
     /// Tracks available mob spawning patterns for the mob
     pub mob_spawners: HashMap<String, Vec<MobSpawner>>,
+    /// Tracks available mob spawning patterns for projectiles
+    pub projectile_spawners: HashMap<String, Vec<ProjectileSpawner>>,
     /// Optional weapon timer
     pub weapon_timer: Option<Timer>,
     /// Damage dealt to other factions through attacks
@@ -76,6 +78,21 @@ impl From<&MobData> for MobComponent {
             }
         }
 
+        let mut projectile_spawners: HashMap<String, Vec<ProjectileSpawner>> = HashMap::new();
+
+        for (spawner_name, spawners) in mob_data.projectile_spawners.iter() {
+            for spawner in spawners.iter() {
+                match projectile_spawners.entry(spawner_name.clone()) {
+                    Entry::Occupied(mut e) => {
+                        e.get_mut().push(ProjectileSpawner::from(spawner.clone()));
+                    }
+                    Entry::Vacant(e) => {
+                        e.insert(vec![ProjectileSpawner::from(spawner.clone())]);
+                    }
+                }
+            }
+        }
+
         MobComponent {
             mob_type: mob_data.mob_type.clone(),
             behaviors: mob_data.mob_behaviors.clone(),
@@ -84,6 +101,7 @@ impl From<&MobData> for MobComponent {
             control_behaviors: mob_data.control_behaviors.clone(),
             behavior_sequence_tracker: None,
             mob_spawners,
+            projectile_spawners,
             weapon_timer: None,
             attack_damage: mob_data.attack_damage,
             collision_damage: mob_data.collision_damage,
@@ -109,6 +127,31 @@ impl From<MobSpawnerData> for MobSpawner {
             timer: Timer::from_seconds(value.period, TimerMode::Repeating),
         }
     }
+}
+
+#[derive(Deserialize, Clone, Debug)]
+
+pub struct ProjectileSpawner {
+    pub projectile_type: ProjectileType,
+    pub timer: Timer,
+    pub position: SpawnPosition,
+}
+
+impl From<ProjectileSpawnerData> for ProjectileSpawner {
+    fn from(value: ProjectileSpawnerData) -> Self {
+        ProjectileSpawner {
+            projectile_type: value.projectile_type.clone(),
+            timer: Timer::from_seconds(value.period, TimerMode::Repeating),
+            position: value.position.clone(),
+        }
+    }
+}
+
+#[derive(Deserialize, Clone)]
+pub struct ProjectileSpawnerData {
+    pub projectile_type: ProjectileType,
+    pub period: f32,
+    pub position: SpawnPosition,
 }
 
 #[derive(Deserialize, Clone)]
@@ -198,6 +241,9 @@ pub struct MobData {
     /// mob spawners that the mob can use
     #[serde(default)]
     pub mob_spawners: HashMap<String, Vec<MobSpawnerData>>,
+    /// projectile spawners that the mob can use
+    #[serde(default)]
+    pub projectile_spawners: HashMap<String, Vec<ProjectileSpawnerData>>,
 }
 
 #[derive(Deserialize, Clone)]

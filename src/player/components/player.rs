@@ -40,8 +40,11 @@ pub struct PlayerComponent {
     pub attraction_acceleration: f32,
     /// Amount of money character has collected
     pub money: usize,
-    pub ability_timer: Timer,
+    pub ability_cooldown_timer: Timer,
+    pub ability_action_timer: Option<Timer>,
     pub ability_type: AbilityType,
+    pub movement_enabled: bool,
+    pub incoming_damage_multiplier: f32,
 }
 
 impl From<&Character> for PlayerComponent {
@@ -64,14 +67,17 @@ impl From<&Character> for PlayerComponent {
             attraction_distance: character.attraction_distance,
             attraction_acceleration: character.attraction_acceleration,
             money: character.money,
-            ability_timer: Timer::from_seconds(character.ability_period, TimerMode::Once),
+            ability_cooldown_timer: Timer::from_seconds(character.ability_period, TimerMode::Once),
+            ability_action_timer: None,
             ability_type: character.ability_type.clone(),
+            movement_enabled: true,
+            incoming_damage_multiplier: 1.0,
         }
     }
 }
 
 #[derive(Deserialize, Clone, Debug)]
 pub enum AbilityType {
-    Charge,
+    Charge(f32),
     MegaBlast,
 }

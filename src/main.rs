@@ -283,8 +283,8 @@ fn main() {
 
     app.add_system_set(
         SystemSet::on_update(states::AppStates::Game)
-            .with_system(player::player_ability_system)
-            .with_system(player::player_movement_system)
+            .with_system(player::player_ability_system.after("movement"))
+            .with_system(player::player_movement_system.label("movement"))
             .with_system(scanner::scanner_system)
             .with_system(options::toggle_zoom_system)
             .with_system(arena::despawn_gates_system)

@@ -5,7 +5,7 @@
 			deceleration: (2.0, 2.0),
 			speed: (250.0, 250.0),
 			collider_dimensions: (2.0 , 4.0),
-			collider_density: 2.0,
+			collider_density: 1.0,
 			character_type: Captain,
 			projectile_type: Blast(Ally),
 			projectile_despawn_time: 0.75,
@@ -30,7 +30,7 @@
 			deceleration: (2.0, 2.0),
 			speed: (200.0, 200.0),
 			collider_dimensions: (4.0 , 5.5),
-			collider_density: 5.0,
+			collider_density: 1.5,
 			character_type: Juggernaut,
 			projectile_type: Blast(Ally),
 			projectile_despawn_time: 0.6,
@@ -47,8 +47,8 @@
 			attraction_distance: 120.0,
 			attraction_acceleration: 3.0,
 			money: 0,
-			ability_period: 1.5,
-			ability_type: Charge,
+			ability_period: 3.0,
+			ability_type: Charge(0.5),
 		),
 	}
 )
