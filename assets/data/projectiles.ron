@@ -36,7 +36,7 @@
 		projectile_type: Bullet(Enemy),
 		spawnable_behaviors: [],
 		projectile_behaviors: [ExplodeOnImpact],
-		collider_dimensions: (2.0, 2.0),
+		collider_dimensions: (1.5, 1.5),
 		z_level: 20.0,
 		animation: (
 			direction: None,
@@ -47,7 +47,7 @@
 		projectile_type: Bullet(Neutral),
 		spawnable_behaviors: [],
 		projectile_behaviors: [ExplodeOnImpact],
-		collider_dimensions: (2.0, 2.0),
+		collider_dimensions: (1.5, 1.5),
 		z_level: 20.0,
 		animation: (
 			direction: None,
@@ -58,7 +58,7 @@
 		projectile_type: Bullet(Ally),
 		spawnable_behaviors: [],
 		projectile_behaviors: [ExplodeOnImpact],
-		collider_dimensions: (2.0, 2.0),
+		collider_dimensions: (1.5, 1.5),
 		z_level: 19.0,
 		animation: (
 			direction: None,

@@ -129,12 +129,14 @@ impl From<MobSpawnerData> for MobSpawner {
     }
 }
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone)]
 
 pub struct ProjectileSpawner {
     pub projectile_type: ProjectileType,
     pub timer: Timer,
     pub position: SpawnPosition,
+    pub initial_motion: InitialMotion,
+    pub despawn_time: f32,
 }
 
 impl From<ProjectileSpawnerData> for ProjectileSpawner {
@@ -143,6 +145,8 @@ impl From<ProjectileSpawnerData> for ProjectileSpawner {
             projectile_type: value.projectile_type.clone(),
             timer: Timer::from_seconds(value.period, TimerMode::Repeating),
             position: value.position.clone(),
+            initial_motion: value.initial_motion.clone(),
+            despawn_time: value.despawn_time,
         }
     }
 }
@@ -152,6 +156,8 @@ pub struct ProjectileSpawnerData {
     pub projectile_type: ProjectileType,
     pub period: f32,
     pub position: SpawnPosition,
+    pub initial_motion: InitialMotion,
+    pub despawn_time: f32,
 }
 
 #[derive(Deserialize, Clone)]

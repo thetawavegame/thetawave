@@ -21,7 +21,7 @@ use super::{MobComponent, SpawnMobEvent, SpawnPosition};
 /// Types of behaviors that can be performed by mobs
 #[derive(Deserialize, Clone)]
 pub enum MobBehavior {
-    PeriodicFire(PeriodicFireBehaviorData),
+    PeriodicFire(String),
     SpawnMob(String),
     ExplodeOnImpact,
     DealDamageToPlayerOnImpact,
@@ -89,22 +89,31 @@ pub fn mob_execute_behavior_system(
         let behaviors = mob_component.behaviors.clone();
         for behavior in behaviors {
             match behavior {
-                MobBehavior::PeriodicFire(data) => {
-                    // get data
-                    if mob_component.weapon_timer.is_none() {
-                        mob_component.weapon_timer =
-                            Some(Timer::from_seconds(data.period, TimerMode::Repeating));
-                    } else if let Some(timer) = &mut mob_component.weapon_timer {
-                        timer.tick(time.delta());
-                        if timer.just_finished() {
-                            // spawn blast
-                            let position = Vec2::new(
-                                mob_transform.translation.x + data.offset_position.x,
-                                mob_transform.translation.y + data.offset_position.y,
-                            );
+                MobBehavior::PeriodicFire(projectile_spawner_key) => {
+                    let attack_damage = mob_component.attack_damage;
+
+                    // get all the mob spawners under the given key
+                    let projectile_spawners = mob_component
+                        .projectile_spawners
+                        .get_mut(&projectile_spawner_key)
+                        .unwrap();
+
+                    for projectile_spawner in projectile_spawners.iter_mut() {
+                        projectile_spawner.timer.tick(time.delta());
+
+                        if projectile_spawner.timer.just_finished() {
+                            let position = match projectile_spawner.position {
+                                SpawnPosition::Global(coords) => coords,
+                                SpawnPosition::Local(coords) => {
+                                    mob_transform.translation.xy()
+                                        + mob_transform.local_x().xy() * coords.x
+                                        + mob_transform.local_y().xy() * coords.y
+                                }
+                            };
 
                             // add mob velocity to initial blast velocity
-                            let mut modified_initial_motion = data.initial_motion.clone();
+                            let mut modified_initial_motion =
+                                projectile_spawner.initial_motion.clone();
 
                             if let Some(linvel) = &mut modified_initial_motion.linvel {
                                 linvel.x += mob_velocity.linvel.x;
@@ -115,10 +124,10 @@ pub fn mob_execute_behavior_system(
                             audio_channel.play(audio_assets.enemy_fire_blast.clone());
 
                             spawn_projectile_event_writer.send(SpawnProjectileEvent {
-                                projectile_type: data.projectile_type.clone(),
+                                projectile_type: projectile_spawner.projectile_type.clone(),
                                 position,
-                                damage: mob_component.attack_damage,
-                                despawn_time: data.despawn_time,
+                                damage: attack_damage,
+                                despawn_time: projectile_spawner.despawn_time,
                                 initial_motion: modified_initial_motion,
                             });
                         }

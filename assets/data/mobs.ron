@@ -383,18 +383,7 @@
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
 			DieAtZeroHealth,
-			PeriodicFire(
-				(
-					projectile_type: Blast(Enemy),
-					offset_position: (0.0, -40.0),
-					initial_motion: (
-						random_angvel: None,
-						linvel: Some((0.0, -400.0)),
-					),
-					despawn_time: 2.5,
-					period: 3.0,
-				)
-			),
+			PeriodicFire("blast"),
 		],
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
@@ -427,6 +416,20 @@
 				frame_duration: 0.15,
 			),	
 		)),
+		projectile_spawners: {
+			"blast": [
+				(
+					projectile_type: Bullet(Enemy),
+					period: 3.0,
+					position: Local((0.0, -40.0)),
+					despawn_time: 2.5,
+					initial_motion: (
+						random_angvel: None,
+						linvel: Some((0.0, -400.0)),
+					),
+				)
+			]
+		}
 	),
 	Ally(Hauler3): (
 		mob_type: Ally(Hauler3),
@@ -605,18 +608,7 @@
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
 			DieAtZeroHealth,
-			PeriodicFire(
-				(
-					projectile_type: Blast(Enemy),
-					offset_position: (0.0, -25.0),
-					initial_motion: (
-						random_angvel: None,
-						linvel: Some((0.0, -250.0)),
-					),
-					despawn_time: 1.5,
-					period: 4.0,
-				)
-			),
+			PeriodicFire("blast"),
 		],
 		acceleration: (2.0, 2.0),
 		deceleration: (2.0, 2.0),
@@ -649,6 +641,20 @@
 				frame_duration: 0.15,
 			),
 		)),
+		projectile_spawners: {
+			"blast": [
+				(
+					projectile_type: Blast(Enemy),
+					period: 3.0,
+					position: Local((0.0, -40.0)),
+					despawn_time: 2.5,
+					initial_motion: (
+						random_angvel: None,
+						linvel: Some((0.0, -400.0)),
+					),
+				)
+			]
+		}
 	),
 	Enemy(StraferLeft): (
 		mob_type: Enemy(StraferLeft),
@@ -657,18 +663,7 @@
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
 			DieAtZeroHealth,
-			PeriodicFire(
-				(
-					projectile_type: Blast(Enemy),
-					offset_position: (0.0, -25.0),
-					initial_motion: (
-						random_angvel: None,
-						linvel: Some((0.0, -250.0)),
-					),
-					despawn_time: 1.5,
-					period: 4.0,
-				)
-			),
+			PeriodicFire("blast"),
 		],
 		acceleration: (2.0, 2.0),
 		deceleration: (2.0, 2.0),
@@ -701,6 +696,20 @@
 				frame_duration: 0.15,
 			),
 		)),
+		projectile_spawners: {
+			"blast": [
+				(
+					projectile_type: Blast(Enemy),
+					period: 3.0,
+					position: Local((0.0, -40.0)),
+					despawn_time: 2.5,
+					initial_motion: (
+						random_angvel: None,
+						linvel: Some((0.0, -400.0)),
+					),
+				)
+			]
+		}
 	),
 	Neutral(MoneyAsteroid): (
 		mob_type: Neutral(MoneyAsteroid),
