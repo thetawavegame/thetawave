@@ -8,6 +8,7 @@ use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::ProjectileAssets,
     game::GameParametersResource,
+    misc::Health,
     spawnable::InitialMotion,
     spawnable::{ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType},
     states::{AppStateComponent, AppStates},
@@ -16,6 +17,8 @@ use crate::{
 mod behavior;
 
 pub use self::behavior::{projectile_execute_behavior_system, ProjectileBehavior};
+
+use super::ColliderData;
 
 /// Event for spawning projectiles
 pub struct SpawnProjectileEvent {
@@ -40,6 +43,8 @@ pub struct ProjectileComponent {
     pub behaviors: Vec<ProjectileBehavior>,
     /// Damage dealt to target
     pub damage: f32,
+    /// Health
+    pub health: Option<Health>,
 }
 
 /// Data about mob entities that can be stored in data ron file
@@ -51,12 +56,16 @@ pub struct ProjectileData {
     pub spawnable_behaviors: Vec<SpawnableBehavior>,
     /// List of projectile behaviors that are performed
     pub projectile_behaviors: Vec<ProjectileBehavior>,
-    /// Dimensions of the projectile's hitbox
-    pub collider_dimensions: Vec2,
     /// Animation (currently loops single animation in specified direction)
     pub animation: AnimationData,
     /// Z level of transform of projectile
     pub z_level: f32,
+    /// Collider
+    pub collider: ColliderData,
+    /// If it has a contact collider
+    pub is_solid: bool,
+    /// Health
+    pub health: Option<Health>,
 }
 
 /// Stores data about mob entities
@@ -105,12 +114,6 @@ pub fn spawn_projectile(
     // Get data from projectile resource
     let projectile_data = &projectile_resource.projectiles[projectile_type];
 
-    // scale collider to align with the sprite
-    let collider_size_hx =
-        projectile_data.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
-    let collider_size_hy =
-        projectile_data.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
-
     // create projectile entity
     let mut projectile = commands.spawn_empty();
 
@@ -133,7 +136,6 @@ pub fn spawn_projectile(
             direction: projectile_data.animation.direction.clone(),
         })
         .insert(RigidBody::Dynamic)
-        .insert(LockedAxes::ROTATION_LOCKED)
         .insert(Velocity {
             angvel: if let Some(random_angvel) = initial_motion.random_angvel {
                 thread_rng().gen_range(random_angvel.0..=random_angvel.1)
@@ -155,12 +157,15 @@ pub fn spawn_projectile(
             ),
             ..Default::default()
         })
-        .insert(Collider::cuboid(collider_size_hx, collider_size_hy))
-        .insert(Sensor)
+        .insert(Collider::cuboid(
+            projectile_data.collider.dimensions.x,
+            projectile_data.collider.dimensions.y,
+        ))
         .insert(ProjectileComponent {
             projectile_type: projectile_data.projectile_type.clone(),
             behaviors: projectile_behaviors,
             damage,
+            health: projectile_data.health.clone(),
         })
         .insert(SpawnableComponent {
             spawnable_type: SpawnableType::Projectile(projectile_data.projectile_type.clone()),
@@ -175,4 +180,8 @@ pub fn spawn_projectile(
         .insert(ActiveEvents::COLLISION_EVENTS)
         .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new(projectile_data.projectile_type.to_string()));
+
+    if !projectile_data.is_solid {
+        projectile.insert(Sensor);
+    }
 }

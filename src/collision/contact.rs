@@ -3,7 +3,10 @@ use crate::{
     assets::GameAudioAssets,
     audio,
     player::PlayerComponent,
-    spawnable::{Faction, MobComponent, MobSegmentComponent, MobSegmentType, MobType},
+    spawnable::{
+        Faction, MobComponent, MobSegmentComponent, MobSegmentType, MobType, ProjectileComponent,
+        ProjectileType,
+    },
 };
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
@@ -19,6 +22,7 @@ pub fn contact_collision_system(
     mob_query: Query<(Entity, &MobComponent)>,
     mob_segment_query: Query<(Entity, &MobSegmentComponent)>,
     barrier_query: Query<Entity, With<ArenaBarrierComponent>>,
+    projectile_query: Query<(Entity, &ProjectileComponent)>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
 ) {
@@ -91,6 +95,29 @@ pub fn contact_collision_system(
                                     },
                                     player_damage: player_component.collision_damage,
                                     mob_segment_damage: mob_segment_component.collision_damage,
+                                },
+                            );
+                            continue 'collision_events;
+                        }
+                    }
+
+                    // check if player collided with a projectile
+                    for (projectile_entity, projectile_component) in projectile_query.iter() {
+                        if colliding_entities.secondary == projectile_entity {
+                            audio_channel.play(audio_assets.bullet_ding.clone());
+                            collision_event_writer.send(
+                                SortedCollisionEvent::PlayerToProjectileContact {
+                                    player_entity: colliding_entities.primary,
+                                    projectile_entity: colliding_entities.secondary,
+                                    projectile_faction: match player_component
+                                        .projectile_type
+                                        .clone()
+                                    {
+                                        ProjectileType::Blast(faction) => faction,
+                                        ProjectileType::Bullet(faction) => faction,
+                                    },
+                                    player_damage: player_component.collision_damage,
+                                    projectile_damage: projectile_component.damage,
                                 },
                             );
                             continue 'collision_events;

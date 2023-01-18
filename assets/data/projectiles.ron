@@ -3,12 +3,17 @@
 		projectile_type: Blast(Enemy),
 		spawnable_behaviors: [],
 		projectile_behaviors: [ExplodeOnImpact],
-		collider_dimensions: (1.5, 1.5),
 		z_level: 20.0,
 		animation: (
 			direction: None,
 			frame_duration: 1.0
 		),
+		collider: (
+			dimensions: (2.0, 2.0),
+			position: (0.0, 0.0),
+			rotation: 0.0,
+		),
+		is_solid: false,
 	),
 	Blast(Neutral): (
 		projectile_type: Blast(Neutral),
@@ -20,6 +25,12 @@
 			direction: None,
 			frame_duration: 1.0
 		),
+		collider: (
+			dimensions: (2.0, 2.0),
+			position: (0.0, 0.0),
+			rotation: 0.0,
+		),
+		is_solid: false,
 	),
 	Blast(Ally): (
 		projectile_type: Blast(Ally),
@@ -31,6 +42,12 @@
 			direction: None,
 			frame_duration: 1.0
 		),
+		collider: (
+			dimensions: (2.0, 2.0),
+			position: (0.0, 0.0),
+			rotation: 0.0,
+		),
+		is_solid: false,
 	),
 	Bullet(Enemy): (
 		projectile_type: Bullet(Enemy),
@@ -42,6 +59,17 @@
 			direction: None,
 			frame_duration: 1.0
 		),
+		collider: (
+			dimensions: (2.0, 2.0),
+			position: (0.0, 0.0),
+			rotation: 0.0,
+		),
+		is_solid: true,
+		health: Some((
+			max_health: 18.0,
+			health: 18.0,
+			armor: 0,
+		)),
 	),
 	Bullet(Neutral): (
 		projectile_type: Bullet(Neutral),
@@ -53,6 +81,17 @@
 			direction: None,
 			frame_duration: 1.0
 		),
+		collider: (
+			dimensions: (2.0, 2.0),
+			position: (0.0, 0.0),
+			rotation: 0.0,
+		),
+		is_solid: true,
+		health: Some((
+			max_health: 18.0,
+			health: 18.0,
+			armor: 0,
+		)),
 	),
 	Bullet(Ally): (
 		projectile_type: Bullet(Ally),
@@ -64,5 +103,16 @@
 			direction: None,
 			frame_duration: 1.0
 		),
+		collider: (
+			dimensions: (2.0, 2.0),
+			position: (0.0, 0.0),
+			rotation: 0.0,
+		),
+		is_solid: true,
+		health: Some((
+			max_health: 18.0,
+			health: 18.0,
+			armor: 0,
+		)),
 	)
 }

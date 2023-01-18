@@ -47,8 +47,6 @@ pub struct MobComponent {
     pub mob_spawners: HashMap<String, Vec<MobSpawner>>,
     /// Tracks available mob spawning patterns for projectiles
     pub projectile_spawners: HashMap<String, Vec<ProjectileSpawner>>,
-    /// Optional weapon timer
-    pub weapon_timer: Option<Timer>,
     /// Damage dealt to other factions through attacks
     pub attack_damage: f32,
     /// Damage dealt to other factions on collision
@@ -102,7 +100,6 @@ impl From<&MobData> for MobComponent {
             behavior_sequence_tracker: None,
             mob_spawners,
             projectile_spawners,
-            weapon_timer: None,
             attack_damage: mob_data.attack_damage,
             collision_damage: mob_data.collision_damage,
             defense_damage: mob_data.defense_damage,

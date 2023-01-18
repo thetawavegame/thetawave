@@ -38,4 +38,7 @@
     "sounds.player_hit": File (
         path: "sounds/player_hit.wav",
     ),
+    "sounds.bullet_ding": File (
+        path: "sounds/bullet_ding.wav",
+    ),
 })
