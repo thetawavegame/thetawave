@@ -252,6 +252,8 @@ pub enum EffectType {
     EnemyBlastExplosion,
     EnemyBlastDespawn,
     BarrierGlow,
+    EnemyBulletDespawn,
+    EnemyBulletExplosion,
     //PoisonBlastExplosion,
     //CriticalBlastExplosion,
     //MobExplosion,

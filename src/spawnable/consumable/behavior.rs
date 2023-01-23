@@ -3,7 +3,7 @@ use crate::{
     audio,
     collision::SortedCollisionEvent,
     run::{ObjectiveType, RunResource},
-    spawnable::{EffectType, PlayerComponent, SpawnEffectEvent},
+    spawnable::{EffectType, InitialMotion, PlayerComponent, SpawnEffectEvent},
 };
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
@@ -149,6 +149,7 @@ fn apply_effects_on_impact(
                     position: transform.translation.xy(),
                     scale: Vec2::ZERO,
                     rotation: 0.0,
+                    initial_motion: InitialMotion::default(),
                 });
 
                 //apply effect to player

@@ -13,7 +13,8 @@ use crate::{
     player::PlayerComponent,
     spawnable::{
         behavior_sequence::EntityPair, mob::behavior::SpawnMobBehaviorData, EffectType,
-        MobDestroyedEvent, SpawnConsumableEvent, SpawnEffectEvent, SpawnMobEvent, SpawnPosition,
+        InitialMotion, MobDestroyedEvent, SpawnConsumableEvent, SpawnEffectEvent, SpawnMobEvent,
+        SpawnPosition,
     },
 };
 
@@ -108,6 +109,7 @@ pub fn mob_segment_execute_behavior_system(
                             position: mob_segment_transform.translation.xy(),
                             scale: Vec2::ZERO,
                             rotation: 0.0,
+                            initial_motion: InitialMotion::default(),
                         });
 
                         // drop loot

@@ -1,5 +1,5 @@
 use crate::{
-    spawnable::{EffectType, SpawnEffectEvent},
+    spawnable::{EffectType, InitialMotion, SpawnEffectEvent},
     states::{AppStateComponent, AppStates},
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
@@ -31,24 +31,28 @@ pub fn spawn_barriers_system(
         position: Vec2::new(0.0, -355.0),
         scale: Vec2::new(7.25, 0.0),
         rotation: 0.0,
+        initial_motion: InitialMotion::default(),
     });
     spawn_effect.send(SpawnEffectEvent {
         effect_type: EffectType::BarrierGlow,
         position: Vec2::new(0.0, 355.0),
         scale: Vec2::new(7.25, 0.0),
         rotation: 0.0,
+        initial_motion: InitialMotion::default(),
     });
     spawn_effect.send(SpawnEffectEvent {
         effect_type: EffectType::BarrierGlow,
         position: Vec2::new(495.0, 0.0),
         scale: Vec2::new(7.25, 0.0),
         rotation: FRAC_PI_2,
+        initial_motion: InitialMotion::default(),
     });
     spawn_effect.send(SpawnEffectEvent {
         effect_type: EffectType::BarrierGlow,
         position: Vec2::new(-495.0, 0.0),
         scale: Vec2::new(7.25, 0.0),
         rotation: FRAC_PI_2,
+        initial_motion: InitialMotion::default(),
     });
 }
 

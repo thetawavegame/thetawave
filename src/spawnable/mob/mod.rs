@@ -134,6 +134,7 @@ pub struct ProjectileSpawner {
     pub position: SpawnPosition,
     pub initial_motion: InitialMotion,
     pub despawn_time: f32,
+    pub health: Option<Health>,
 }
 
 impl From<ProjectileSpawnerData> for ProjectileSpawner {
@@ -144,6 +145,7 @@ impl From<ProjectileSpawnerData> for ProjectileSpawner {
             position: value.position.clone(),
             initial_motion: value.initial_motion.clone(),
             despawn_time: value.despawn_time,
+            health: value.health.clone(),
         }
     }
 }
@@ -155,6 +157,7 @@ pub struct ProjectileSpawnerData {
     pub position: SpawnPosition,
     pub initial_motion: InitialMotion,
     pub despawn_time: f32,
+    pub health: Option<Health>,
 }
 
 #[derive(Deserialize, Clone)]
@@ -372,14 +375,7 @@ pub fn spawn_mob(
     })
     .insert(RigidBody::Dynamic)
     .insert(LockedAxes::ROTATION_LOCKED)
-    .insert(Velocity {
-        angvel: if let Some(random_angvel) = mob_data.initial_motion.random_angvel {
-            thread_rng().gen_range(random_angvel.0..=random_angvel.1)
-        } else {
-            0.0
-        },
-        ..Default::default()
-    })
+    .insert(Velocity::from(mob_data.initial_motion.clone()))
     .insert(Collider::compound(
         mob_data
             .colliders

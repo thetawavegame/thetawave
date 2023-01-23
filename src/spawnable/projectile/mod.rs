@@ -12,6 +12,7 @@ use crate::{
     spawnable::InitialMotion,
     spawnable::{ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType},
     states::{AppStateComponent, AppStates},
+    HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 
 mod behavior;
@@ -32,6 +33,8 @@ pub struct SpawnProjectileEvent {
     pub despawn_time: f32,
     /// Initial motion of the projectile
     pub initial_motion: InitialMotion,
+    /// Optional health of the projectile
+    pub health: Option<Health>,
 }
 
 /// Core component for projectiles
@@ -45,6 +48,8 @@ pub struct ProjectileComponent {
     pub damage: f32,
     /// Health
     pub health: Option<Health>,
+    /// Time the projectile has existed
+    pub time_alive: f32,
 }
 
 /// Data about mob entities that can be stored in data ron file
@@ -90,6 +95,7 @@ pub fn spawn_projectile_system(
             &projectile_assets,
             event.position,
             event.damage,
+            event.health.clone(),
             event.despawn_time,
             event.initial_motion.clone(),
             &mut commands,
@@ -106,6 +112,7 @@ pub fn spawn_projectile(
     projectile_assets: &ProjectileAssets,
     position: Vec2,
     damage: f32,
+    health: Option<Health>,
     despawn_time: f32, // time before despawning
     initial_motion: InitialMotion,
     commands: &mut Commands,
@@ -118,12 +125,10 @@ pub fn spawn_projectile(
     let mut projectile = commands.spawn_empty();
 
     let mut projectile_behaviors = projectile_data.projectile_behaviors.clone();
-    projectile_behaviors.push(ProjectileBehavior::TimedDespawn {
-        despawn_time,
-        current_time: 0.0,
-    });
+    projectile_behaviors.push(ProjectileBehavior::TimedDespawn { despawn_time });
 
     projectile
+        .insert(LockedAxes::ROTATION_LOCKED)
         .insert(SpriteSheetBundle {
             texture_atlas: projectile_assets.get_asset(projectile_type),
             ..Default::default()
@@ -136,18 +141,7 @@ pub fn spawn_projectile(
             direction: projectile_data.animation.direction.clone(),
         })
         .insert(RigidBody::Dynamic)
-        .insert(Velocity {
-            angvel: if let Some(random_angvel) = initial_motion.random_angvel {
-                thread_rng().gen_range(random_angvel.0..=random_angvel.1)
-            } else {
-                0.0
-            },
-            linvel: if let Some(linvel) = initial_motion.linvel {
-                linvel
-            } else {
-                Vec2::ZERO
-            },
-        })
+        .insert(Velocity::from(initial_motion))
         .insert(Transform {
             translation: position.extend(projectile_data.z_level),
             scale: Vec3::new(
@@ -165,7 +159,8 @@ pub fn spawn_projectile(
             projectile_type: projectile_data.projectile_type.clone(),
             behaviors: projectile_behaviors,
             damage,
-            health: projectile_data.health.clone(),
+            health,
+            time_alive: 0.0,
         })
         .insert(SpawnableComponent {
             spawnable_type: SpawnableType::Projectile(projectile_data.projectile_type.clone()),
@@ -178,6 +173,10 @@ pub fn spawn_projectile(
             behaviors: projectile_data.spawnable_behaviors.clone(),
         })
         .insert(ActiveEvents::COLLISION_EVENTS)
+        .insert(CollisionGroups {
+            memberships: SPAWNABLE_COL_GROUP_MEMBERSHIP,
+            filters: Group::ALL ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
+        })
         .insert(AppStateComponent(AppStates::Game))
         .insert(Name::new(projectile_data.projectile_type.to_string()));
 

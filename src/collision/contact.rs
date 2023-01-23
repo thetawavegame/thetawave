@@ -109,7 +109,7 @@ pub fn contact_collision_system(
                                 SortedCollisionEvent::PlayerToProjectileContact {
                                     player_entity: colliding_entities.primary,
                                     projectile_entity: colliding_entities.secondary,
-                                    projectile_faction: match player_component
+                                    projectile_faction: match projectile_component
                                         .projectile_type
                                         .clone()
                                     {

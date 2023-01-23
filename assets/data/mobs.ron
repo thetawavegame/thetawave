@@ -383,7 +383,7 @@
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
 			DieAtZeroHealth,
-			PeriodicFire("blast"),
+			PeriodicFire("bullet"),
 		],
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
@@ -417,7 +417,7 @@
 			),	
 		)),
 		projectile_spawners: {
-			"blast": [
+			"bullet": [
 				(
 					projectile_type: Bullet(Enemy),
 					period: 3.0,
@@ -427,6 +427,11 @@
 						random_angvel: None,
 						linvel: Some((0.0, -400.0)),
 					),
+					health: Some((
+						max_health: 10.0,
+						health: 10.0,
+						armor: 0,
+					))
 				)
 			]
 		}

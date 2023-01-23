@@ -2,7 +2,7 @@
 	Blast(Enemy): (
 		projectile_type: Blast(Enemy),
 		spawnable_behaviors: [],
-		projectile_behaviors: [ExplodeOnImpact],
+		projectile_behaviors: [ExplodeOnIntersection, DealDamageOnIntersection],
 		z_level: 20.0,
 		animation: (
 			direction: None,
@@ -18,7 +18,7 @@
 	Blast(Neutral): (
 		projectile_type: Blast(Neutral),
 		spawnable_behaviors: [],
-		projectile_behaviors: [ExplodeOnImpact],
+		projectile_behaviors: [ExplodeOnIntersection, DealDamageOnIntersection],
 		collider_dimensions: (1.5, 1.5),
 		z_level: 20.0,
 		animation: (
@@ -35,7 +35,7 @@
 	Blast(Ally): (
 		projectile_type: Blast(Ally),
 		spawnable_behaviors: [],
-		projectile_behaviors: [ExplodeOnImpact],
+		projectile_behaviors: [ExplodeOnIntersection, DealDamageOnIntersection],
 		collider_dimensions: (1.5, 1.5),
 		z_level: 19.0,
 		animation: (
@@ -52,7 +52,7 @@
 	Bullet(Enemy): (
 		projectile_type: Bullet(Enemy),
 		spawnable_behaviors: [],
-		projectile_behaviors: [ExplodeOnImpact],
+		projectile_behaviors: [DealDamageOnContact, ReceiveDamageOnContact, DieAtZeroHealth],
 		collider_dimensions: (1.5, 1.5),
 		z_level: 20.0,
 		animation: (
@@ -65,16 +65,11 @@
 			rotation: 0.0,
 		),
 		is_solid: true,
-		health: Some((
-			max_health: 18.0,
-			health: 18.0,
-			armor: 0,
-		)),
 	),
 	Bullet(Neutral): (
 		projectile_type: Bullet(Neutral),
 		spawnable_behaviors: [],
-		projectile_behaviors: [ExplodeOnImpact],
+		projectile_behaviors: [DealDamageOnContact],
 		collider_dimensions: (1.5, 1.5),
 		z_level: 20.0,
 		animation: (
@@ -87,16 +82,11 @@
 			rotation: 0.0,
 		),
 		is_solid: true,
-		health: Some((
-			max_health: 18.0,
-			health: 18.0,
-			armor: 0,
-		)),
 	),
 	Bullet(Ally): (
 		projectile_type: Bullet(Ally),
 		spawnable_behaviors: [],
-		projectile_behaviors: [ExplodeOnImpact],
+		projectile_behaviors: [DealDamageOnContact],
 		collider_dimensions: (1.5, 1.5),
 		z_level: 19.0,
 		animation: (
@@ -109,10 +99,5 @@
 			rotation: 0.0,
 		),
 		is_solid: true,
-		health: Some((
-			max_health: 18.0,
-			health: 18.0,
-			armor: 0,
-		)),
 	)
 }

@@ -127,6 +127,7 @@ pub fn mob_execute_behavior_system(
                                 projectile_type: projectile_spawner.projectile_type.clone(),
                                 position,
                                 damage: attack_damage,
+                                health: projectile_spawner.health.clone(),
                                 despawn_time: projectile_spawner.despawn_time,
                                 initial_motion: modified_initial_motion,
                             });
@@ -203,6 +204,7 @@ pub fn mob_execute_behavior_system(
                             position: mob_transform.translation.xy(),
                             scale: Vec2::ZERO,
                             rotation: 0.0,
+                            initial_motion: InitialMotion::default(),
                         });
 
                         // drop loot
@@ -345,6 +347,7 @@ fn explode_on_impact(
                         position: transform.translation.xy(),
                         scale: Vec2::ZERO,
                         rotation: 0.0,
+                        initial_motion: InitialMotion::default(),
                     });
                     // despawn mob
                     commands.entity(entity).despawn_recursive();
@@ -367,6 +370,7 @@ fn explode_on_impact(
                         position: transform.translation.xy(),
                         scale: Vec2::ZERO,
                         rotation: 0.0,
+                        initial_motion: InitialMotion::default(),
                     });
                     // despawn mob
                     commands.entity(entity).despawn_recursive();
@@ -388,6 +392,7 @@ fn explode_on_impact(
                         position: transform.translation.xy(),
                         scale: Vec2::ZERO,
                         rotation: 0.0,
+                        initial_motion: InitialMotion::default(),
                     });
                     commands.entity(entity).despawn_recursive();
                     continue;

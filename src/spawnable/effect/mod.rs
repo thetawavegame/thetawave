@@ -6,10 +6,11 @@ use crate::{
 };
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
+use rand::{thread_rng, Rng};
 use serde::Deserialize;
 use std::collections::HashMap;
 
-use super::EffectType;
+use super::{EffectType, InitialMotion};
 
 mod behavior;
 pub use self::behavior::effect_execute_behavior_system;
@@ -53,6 +54,8 @@ pub struct SpawnEffectEvent {
     pub scale: Vec2,
     /// Rotation of the effect to spawn
     pub rotation: f32,
+    /// Initial motion of the effect
+    pub initial_motion: InitialMotion,
 }
 
 /// Handles spawning of effects from events
@@ -71,6 +74,7 @@ pub fn spawn_effect_system(
             event.position,
             event.scale,
             event.rotation,
+            event.initial_motion.clone(),
             &mut commands,
             &game_parameters,
         );
@@ -85,6 +89,7 @@ pub fn spawn_effect(
     position: Vec2,
     scale: Vec2,
     rotation: f32,
+    initial_motion: InitialMotion,
     commands: &mut Commands,
     game_parameters: &GameParametersResource,
 ) {
@@ -118,7 +123,8 @@ pub fn spawn_effect(
             behaviors: vec![],
         })
         .insert(LockedAxes::default())
-        .insert(RigidBody::Fixed)
+        .insert(RigidBody::KinematicVelocityBased)
+        .insert(Velocity::from(initial_motion))
         .insert(TransformBundle::from_transform(Transform {
             translation: position.extend(effect_data.z_level),
             rotation: Quat::from_rotation_z(rotation),

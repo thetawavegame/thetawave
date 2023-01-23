@@ -6,7 +6,7 @@ mod movement;
 
 use crate::assets::GameAudioAssets;
 use crate::audio;
-use crate::spawnable::{EffectType, SpawnEffectEvent};
+use crate::spawnable::{EffectType, InitialMotion, SpawnEffectEvent};
 use crate::states::AppStates;
 use crate::ui::EndGameTransitionResource;
 use bevy::math::Vec3Swizzles;
@@ -39,6 +39,7 @@ pub fn player_death_system(
                 position: transform.translation.xy(),
                 scale: Vec2::ZERO,
                 rotation: 0.0,
+                initial_motion: InitialMotion::default(),
             });
 
             // play explosion sound effect
