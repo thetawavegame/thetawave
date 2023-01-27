@@ -33,4 +33,6 @@ pub struct GameAudioAssets {
     pub player_hit: Handle<AudioSource>,
     #[asset(key = "sounds.bullet_ding")]
     pub bullet_ding: Handle<AudioSource>,
+    #[asset(key = "sounds.bullet_bounce")]
+    pub bullet_bounce: Handle<AudioSource>,
 }

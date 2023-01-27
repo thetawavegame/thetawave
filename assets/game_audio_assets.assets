@@ -41,4 +41,7 @@
     "sounds.bullet_ding": File (
         path: "sounds/bullet_ding.wav",
     ),
+    "sounds.bullet_bounce": File (
+        path: "sounds/bullet_bounce.wav",
+    ),
 })

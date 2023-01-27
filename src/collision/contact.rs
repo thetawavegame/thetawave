@@ -104,7 +104,6 @@ pub fn contact_collision_system(
                     // check if player collided with a projectile
                     for (projectile_entity, projectile_component) in projectile_query.iter() {
                         if colliding_entities.secondary == projectile_entity {
-                            audio_channel.play(audio_assets.bullet_ding.clone());
                             collision_event_writer.send(
                                 SortedCollisionEvent::PlayerToProjectileContact {
                                     player_entity: colliding_entities.primary,
@@ -232,6 +231,14 @@ pub fn contact_collision_system(
                                 },
                             );
                             continue 'collision_events;
+                        }
+                    }
+
+                    // check if mob collided with projectile
+                    for (projectile_entity, projectile_component) in projectile_query.iter() {
+                        // check if secondary entity is a projectile
+                        if colliding_entities.secondary == projectile_entity {
+                            audio_channel.play(audio_assets.bullet_bounce.clone());
                         }
                     }
                 }
