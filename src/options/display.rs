@@ -20,6 +20,7 @@ impl From<DisplayConfig> for WindowDescriptor {
             width: display_config.width,
             height: display_config.height,
             cursor_visible: true,
+            resizable: false,
             mode: if display_config.fullscreen {
                 WindowMode::SizedFullscreen
             } else {
