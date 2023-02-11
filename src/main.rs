@@ -1,8 +1,8 @@
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 use bevy::{pbr::AmbientLight, prelude::*};
 use bevy_asset_loader::prelude::*;
+use bevy_editor_pls::prelude::*;
 use bevy_egui::EguiPlugin;
-use bevy_inspector_egui::WorldInspectorPlugin;
 use bevy_kira_audio::prelude::*;
 
 use bevy_rapier2d::geometry::Group;
@@ -364,9 +364,9 @@ fn main() {
 
     // plugins to use only in debug mode
     if cfg!(debug_assertions) {
-        app.add_plugin(WorldInspectorPlugin::new())
-            .add_plugin(RapierDebugRenderPlugin::default())
+        app.add_plugin(RapierDebugRenderPlugin::default())
             .add_plugin(FrameTimeDiagnosticsPlugin::default())
+            .add_plugin(EditorPlugin)
             .add_startup_system(ui::setup_fps_ui_system)
             .add_system(ui::fps_system);
     }
