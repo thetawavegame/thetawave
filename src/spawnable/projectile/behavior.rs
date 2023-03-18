@@ -71,6 +71,16 @@ pub fn projectile_execute_behavior_system(
                                             initial_motion: InitialMotion::default(),
                                         });
                                     }
+
+                                    Faction::Ally => {
+                                        spawn_effect_event_writer.send(SpawnEffectEvent {
+                                            effect_type: EffectType::AllyBulletExplosion,
+                                            position: projectile_transform.translation.xy(),
+                                            scale: Vec2::ZERO,
+                                            rotation: projectile_transform.rotation.z,
+                                            initial_motion: InitialMotion::default(),
+                                        });
+                                    }
                                     _ => {}
                                 },
                                 _ => {}
@@ -149,6 +159,19 @@ pub fn projectile_execute_behavior_system(
                                 Faction::Enemy => {
                                     spawn_effect_event_writer.send(SpawnEffectEvent {
                                         effect_type: EffectType::EnemyBulletDespawn,
+                                        position: Vec2::new(
+                                            projectile_transform.translation.x,
+                                            projectile_transform.translation.y,
+                                        ),
+                                        scale: Vec2::ZERO,
+                                        rotation: projectile_transform.rotation.z,
+                                        initial_motion: InitialMotion::default(),
+                                    });
+                                }
+
+                                Faction::Ally => {
+                                    spawn_effect_event_writer.send(SpawnEffectEvent {
+                                        effect_type: EffectType::AllyBulletDespawn,
                                         position: Vec2::new(
                                             projectile_transform.translation.x,
                                             projectile_transform.translation.y,

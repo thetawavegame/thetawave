@@ -1,22 +1,24 @@
-use bevy::{math::Vec3Swizzles, prelude::*};
+use bevy::{math::Vec3Swizzles, prelude::*, window::PrimaryWindow};
 
 use crate::{game::GameParametersResource, spawnable::MobComponent};
 
 /// Manages scanning of entities using the cursor
 pub fn scanner_system(
-    windows: Res<Windows>,
+    //windows: Res<Windows>,
+    windows: Query<&Window, With<PrimaryWindow>>,
     game_params: Res<GameParametersResource>,
     mob_query: Query<(Entity, &MobComponent, &Transform)>,
 ) {
     // get the primary window
-    let window = windows.get_primary().unwrap();
+    let primary_window = windows.get_single().unwrap();
 
     // get the cursor position in the window
-    if let Some(mouse_pos) = window.cursor_position() {
+    if let Some(mouse_pos) = primary_window.cursor_position() {
         // query the mobs
         for (mob_entity, mob_component, transform) in mob_query.iter() {
             // check if the mob is in scanning range of the mouse
-            if mouse_pos_to_rapier_pos(mouse_pos, window).distance(transform.translation.xy())
+            if mouse_pos_to_rapier_pos(mouse_pos, primary_window)
+                .distance(transform.translation.xy())
                 < game_params.scan_range
             {
                 // print the mobs entity and health

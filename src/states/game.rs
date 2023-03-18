@@ -9,7 +9,7 @@ pub fn start_game_system(
     gamepads: Res<Gamepads>,
     mut gamepad_input: ResMut<Input<GamepadButton>>,
     mut keyboard_input: ResMut<Input<KeyCode>>,
-    mut app_state: ResMut<State<AppStates>>,
+    mut next_app_state: ResMut<NextState<AppStates>>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::MenuAudioChannel>>,
 ) {
@@ -27,7 +27,7 @@ pub fn start_game_system(
     // if input read enter the game state
     if start_input {
         // set the state to game
-        app_state.set(AppStates::LoadingGame).unwrap();
+        next_app_state.set(AppStates::LoadingGame);
 
         // play sound effect
         audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));

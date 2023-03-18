@@ -4,6 +4,7 @@ use bevy_asset_loader::prelude::*;
 use bevy_editor_pls::prelude::*;
 use bevy_egui::EguiPlugin;
 use bevy_kira_audio::prelude::*;
+use leafwing_input_manager::prelude::*;
 
 use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
@@ -25,6 +26,7 @@ mod background;
 mod camera;
 mod collision;
 mod game;
+mod input;
 mod loot;
 mod misc;
 mod options;
@@ -35,6 +37,27 @@ mod spawnable;
 mod states;
 mod tools;
 mod ui;
+
+#[derive(Debug, Hash, PartialEq, Eq, Clone, SystemSet)]
+pub enum GameEnterSet {
+    Initialize,
+    BuildLevel,
+    SpawnPlayer,
+    BuildUi,
+}
+
+#[derive(Debug, Hash, PartialEq, Eq, Clone, SystemSet)]
+pub enum GameUpdateSet {
+    Movement,
+    Abilities,
+    SetTargetBehavior, // TODO: replace with more general set
+    SpawnableExecuteBehavior,
+    MobExecuteBehavior,
+    MobSegmentExecuteBehavior,
+    ContactCollision,
+    IntersectionCollision,
+    ApplyDisconnectedBehaviors,
+}
 
 // Don't generate a display config for wasm
 #[cfg(target_arch = "wasm32")]
@@ -70,7 +93,7 @@ fn main() {
     app.add_plugins(
         DefaultPlugins
             .set(WindowPlugin {
-                window: WindowDescriptor::from(display_config),
+                primary_window: Some(Window::from(display_config)),
                 ..default()
             })
             .set(ImagePlugin::default_nearest()),
@@ -165,6 +188,7 @@ fn main() {
     .add_event::<spawnable::MobSegmentDestroyedEvent>()
     .add_plugin(AudioPlugin)
     .add_plugin(EguiPlugin)
+    .add_plugin(InputManagerPlugin::<input::InputAction>::default())
     .add_audio_channel::<audio::BackgroundMusicAudioChannel>()
     .add_audio_channel::<audio::MenuAudioChannel>()
     .add_audio_channel::<audio::SoundEffectsAudioChannel>()
@@ -175,182 +199,238 @@ fn main() {
     .add_startup_system(audio::set_audio_volume_system)
     .add_system(ui::bouncing_prompt_system)
     .add_system(options::toggle_fullscreen_system)
-    .add_system_to_stage(CoreStage::Last, ui::position_stat_bar_label_system);
+    .add_system(ui::position_stat_bar_label_system.in_base_set(CoreSet::Last));
 
     #[cfg(not(target_arch = "wasm32"))]
     {
-        app.add_plugin(bevy_framepace::FramepacePlugin);
+        //app.add_plugin(bevy_framepace::FramepacePlugin);
     }
 
     // add states
-    app.add_state(states::AppStates::MainMenu); // start game in the main menu state
+    app.add_state::<AppStates>(); // start game in the main menu state
     app.add_loading_state(
         LoadingState::new(states::AppStates::LoadingGame)
-            .continue_to_state(states::AppStates::Game)
-            .with_dynamic_collections::<StandardDynamicAssetCollection>(vec![
-                "player_assets.assets",
-                "projectile_assets.assets",
-                "mob_assets.assets",
-                "consumable_assets.assets",
-                "effect_assets.assets",
-                "game_audio_assets.assets",
-            ])
-            .with_collection::<assets::PlayerAssets>()
-            .with_collection::<assets::ProjectileAssets>()
-            .with_collection::<assets::MobAssets>()
-            .with_collection::<assets::ConsumableAssets>()
-            .with_collection::<assets::EffectAssets>()
-            .with_collection::<assets::GameAudioAssets>(),
-    );
+            .continue_to_state(states::AppStates::Game),
+    )
+    .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
+        states::AppStates::LoadingGame,
+        "player_assets.assets.ron",
+    )
+    .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
+        states::AppStates::LoadingGame,
+        "projectile_assets.assets.ron",
+    )
+    .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
+        states::AppStates::LoadingGame,
+        "mob_assets.assets.ron",
+    )
+    .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
+        states::AppStates::LoadingGame,
+        "consumable_assets.assets.ron",
+    )
+    .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
+        states::AppStates::LoadingGame,
+        "effect_assets.assets.ron",
+    )
+    .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
+        states::AppStates::LoadingGame,
+        "game_audio_assets.assets.ron",
+    )
+    .add_collection_to_loading_state::<_, assets::PlayerAssets>(states::AppStates::LoadingGame)
+    .add_collection_to_loading_state::<_, assets::ProjectileAssets>(states::AppStates::LoadingGame)
+    .add_collection_to_loading_state::<_, assets::MobAssets>(states::AppStates::LoadingGame)
+    .add_collection_to_loading_state::<_, assets::ConsumableAssets>(states::AppStates::LoadingGame)
+    .add_collection_to_loading_state::<_, assets::EffectAssets>(states::AppStates::LoadingGame)
+    .add_collection_to_loading_state::<_, assets::GameAudioAssets>(states::AppStates::LoadingGame);
 
+    app.configure_sets(
+        (
+            GameEnterSet::Initialize,
+            GameEnterSet::BuildLevel,
+            GameEnterSet::SpawnPlayer,
+            GameEnterSet::BuildUi,
+        )
+            .chain(),
+    );
     // game startup systems (perhaps exchange with app.add_startup_system_set)
-    app.add_system_set(
-        SystemSet::on_enter(states::AppStates::Game)
-            .with_system(audio::start_background_audio_system)
-            .with_system(run::setup_first_level.after("init"))
-            .with_system(setup_game.label("init"))
-            .with_system(setup_physics.label("init"))
-            .with_system(arena::spawn_barriers_system.after("init"))
-            .with_system(arena::spawn_despawn_gates_system.after("init"))
-            .with_system(background::create_background_system.after("init"))
-            .with_system(
-                player::spawn_player_system
-                    .label("spawn_player")
-                    .after("init"),
-            )
-            .with_system(ui::setup_game_ui_system.after("spawn_player")),
+    app.add_systems(
+        (
+            setup_game.in_set(GameEnterSet::Initialize),
+            setup_physics.in_set(GameEnterSet::Initialize),
+            audio::start_background_audio_system.in_set(GameEnterSet::BuildLevel),
+            run::setup_first_level.in_set(GameEnterSet::BuildLevel),
+            arena::spawn_barriers_system.in_set(GameEnterSet::BuildLevel),
+            arena::spawn_despawn_gates_system.in_set(GameEnterSet::BuildLevel),
+            background::create_background_system.in_set(GameEnterSet::BuildLevel),
+            player::spawn_player_system.in_set(GameEnterSet::SpawnPlayer),
+            ui::setup_game_ui_system.after(GameEnterSet::BuildUi),
+        )
+            .in_schedule(OnEnter(states::AppStates::Game)),
     );
 
-    app.add_system_set(
-        SystemSet::on_enter(states::AppStates::PauseMenu).with_system(ui::setup_pause_system),
+    app.configure_sets(
+        (
+            GameUpdateSet::SetTargetBehavior,
+            GameUpdateSet::ContactCollision,
+            GameUpdateSet::IntersectionCollision,
+            GameUpdateSet::SpawnableExecuteBehavior,
+            GameUpdateSet::MobExecuteBehavior,
+            GameUpdateSet::MobSegmentExecuteBehavior,
+            GameUpdateSet::ApplyDisconnectedBehaviors,
+            GameUpdateSet::Movement,
+            GameUpdateSet::Abilities,
+        )
+            .chain(),
+    );
+    app.add_systems(
+        (
+            player::player_movement_system.in_set(GameUpdateSet::Movement),
+            player::player_ability_system.in_set(GameUpdateSet::Abilities),
+            scanner::scanner_system,
+            options::toggle_zoom_system,
+            arena::despawn_gates_system,
+            animation::animate_sprite_system,
+            background::rotate_planet_system,
+            spawnable::despawn_timer_system,
+            spawnable::spawnable_set_target_behavior_system
+                .in_set(GameUpdateSet::SetTargetBehavior),
+            collision::intersection_collision_system.in_set(GameUpdateSet::IntersectionCollision),
+            collision::contact_collision_system.in_set(GameUpdateSet::ContactCollision),
+            spawnable::mob_behavior_sequence_tracker_system,
+            spawnable::mob_behavior_sequence_update_system,
+            spawnable::spawnable_execute_behavior_system
+                .in_set(GameUpdateSet::SpawnableExecuteBehavior),
+            spawnable::mob_execute_behavior_system.in_set(GameUpdateSet::MobExecuteBehavior),
+        )
+            .in_set(OnUpdate(states::AppStates::Game)),
     );
 
-    app.add_system_set(
-        SystemSet::on_exit(states::AppStates::PauseMenu).with_system(states::clear_state_system),
+    app.add_systems(
+        (
+            spawnable::mob_segment_execute_behavior_system
+                .in_set(GameUpdateSet::MobSegmentExecuteBehavior),
+            spawnable::mob_segment_apply_disconnected_behaviors_system
+                .in_set(GameUpdateSet::ApplyDisconnectedBehaviors),
+        )
+            .in_set(OnUpdate(states::AppStates::Game)),
     );
+    /*
 
-    app.add_system_set(
-        SystemSet::on_update(states::AppStates::GameOver)
-            .with_system(ui::game_over_fade_in_system)
-            .with_system(run::reset_run_system)
-            .with_system(states::quit_game_system),
-    );
-
-    app.add_system_set(
-        SystemSet::on_enter(states::AppStates::GameOver).with_system(ui::setup_game_over_system),
-    );
-
-    app.add_system_set(
-        SystemSet::on_exit(states::AppStates::GameOver).with_system(states::clear_state_system),
-    );
-
-    app.add_system_set(
-        SystemSet::on_update(states::AppStates::Victory)
-            .with_system(ui::victory_fade_in_system)
-            .with_system(run::reset_run_system)
-            .with_system(states::quit_game_system),
-    );
-
-    app.add_system_set(
-        SystemSet::on_enter(states::AppStates::Victory).with_system(ui::setup_victory_system),
-    );
-
-    app.add_system_set(
-        SystemSet::on_exit(states::AppStates::Victory).with_system(states::clear_state_system),
-    );
-
-    app.add_system_set(
-        SystemSet::on_enter(states::AppStates::MainMenu)
-            .with_system(ui::setup_main_menu_system)
-            .with_system(audio::stop_background_audio_system),
-    );
-
-    app.add_system_set(
-        SystemSet::on_update(states::AppStates::MainMenu)
-            .with_system(states::start_game_system)
-            .with_system(states::quit_game_system),
-    );
-
-    app.add_system_set(
-        SystemSet::on_exit(states::AppStates::MainMenu).with_system(states::clear_state_system),
-    );
-
-    app.add_system_set(
-        SystemSet::on_update(states::AppStates::PauseMenu)
-            .with_system(states::close_pause_menu_system)
-            .with_system(run::reset_run_system),
+    app.add_systems(
+        (
+            //player::player_ability_system.after("movement"),
+            //player::player_movement_system.in_set("movement"),
+            //scanner::scanner_system,
+            //options::toggle_zoom_system,
+            //arena::despawn_gates_system,
+            //animation::animate_sprite_system,
+            //background::rotate_planet_system,
+            //spawnable::despawn_timer_system,
+            //spawnable::spawnable_set_target_behavior_system.in_set("set_target_behavior"),
+            //collision::intersection_collision_system.in_set("intersection_collision"),
+            //collision::contact_collision_system.in_set("contact_collision"),
+            //spawnable::mob_behavior_sequence_tracker_system,
+            //spawnable::mob_behavior_sequence_update_system,
+            //spawnable::spawnable_execute_behavior_system.after("set_target_behavior"),
+            //spawnable::mob_execute_behavior_system
+            //    .in_set("mob_execute_behavior")
+            //    .after("set_target_behavior")
+            //    .after("intersection_collision")
+            //    .after("contact_collision"),
+            //spawnable::mob_segment_apply_disconnected_behaviors_system
+            //    .after("mob_execute_behavior")
+            //    .after("mob_segment_execute_behavior"),
+            //spawnable::mob_segment_execute_behavior_system
+            //    .in_set("mob_segment_execute_behavior")
+            //    .after("set_target_behavior")
+            //    .after("intersection_collision")
+            //    .after("contact_collision"),
+            spawnable::projectile_execute_behavior_system
+                .in_set("projectile_execute_behavior")
+                .after("set_target_behavior")
+                .after("intersection_collision")
+                .after("contact_collision"),
+            spawnable::effect_execute_behavior_system
+                .after("set_target_behavior")
+                .after("intersection_collision")
+                .after("contact_collision"),
+            spawnable::consumable_execute_behavior_system
+                .after("set_target_behavior")
+                .after("intersection_collision")
+                .after("contact_collision"),
+            run::level_system.in_set("level"),
+            run::spawn_formation_system.after("level"),
+            run::next_level_system.in_set("next_level").after("level"),
+            player::player_fire_weapon_system,
+            spawnable::spawn_effect_system, // event generated in projectile execute behavior, consumable execute behavior
+            spawnable::spawn_projectile_system,
+            spawnable::spawn_consumable_system, // event generated in mob execute behavior
+            spawnable::spawn_mob_system,        // event generated in mob execute behavior
+            states::open_pause_menu_system,
+            player::player_death_system,
+            ui::update_ui.after("next_level"),
+            ui::fade_out_system,
+            player::player_scale_fire_rate_system,
+        )
+            .in_schedule(OnUpdate(states::AppStates::Game)),
     );
 
     app.add_system_set(
         SystemSet::on_update(states::AppStates::Game)
-            .with_system(player::player_ability_system.after("movement"))
-            .with_system(player::player_movement_system.label("movement"))
-            .with_system(scanner::scanner_system)
-            .with_system(options::toggle_zoom_system)
-            .with_system(arena::despawn_gates_system)
-            .with_system(animation::animate_sprite_system)
-            .with_system(background::rotate_planet_system)
-            .with_system(spawnable::despawn_timer_system)
-            .with_system(
-                spawnable::spawnable_set_target_behavior_system.label("set_target_behavior"),
-            )
-            .with_system(collision::intersection_collision_system.label("intersection_collision"))
-            .with_system(collision::contact_collision_system.label("contact_collision"))
-            .with_system(spawnable::mob_behavior_sequence_tracker_system)
-            .with_system(spawnable::mob_behavior_sequence_update_system)
-            .with_system(spawnable::spawnable_execute_behavior_system.after("set_target_behavior"))
-            .with_system(
-                spawnable::mob_execute_behavior_system
-                    .label("mob_execute_behavior")
-                    .after("set_target_behavior")
-                    .after("intersection_collision")
-                    .after("contact_collision"),
-            )
-            .with_system(
-                spawnable::mob_segment_apply_disconnected_behaviors_system
-                    .after("mob_execute_behavior")
-                    .after("mob_segment_execute_behavior"),
-            )
-            .with_system(
-                spawnable::mob_segment_execute_behavior_system
-                    .label("mob_segment_execute_behavior")
-                    .after("set_target_behavior")
-                    .after("intersection_collision")
-                    .after("contact_collision"),
-            )
-            .with_system(
-                spawnable::projectile_execute_behavior_system
-                    .after("set_target_behavior")
-                    .after("intersection_collision")
-                    .after("contact_collision")
-                    .label("projectile_execute_behavior"),
-            )
-            .with_system(
-                spawnable::effect_execute_behavior_system
-                    .after("set_target_behavior")
-                    .after("intersection_collision")
-                    .after("contact_collision"),
-            )
-            .with_system(
-                spawnable::consumable_execute_behavior_system
-                    .after("set_target_behavior")
-                    .after("intersection_collision")
-                    .after("contact_collision"),
-            )
-            .with_system(run::level_system.label("level"))
-            .with_system(run::spawn_formation_system.after("level"))
-            .with_system(run::next_level_system.label("next_level").after("level"))
-            .with_system(player::player_fire_weapon_system)
-            .with_system(spawnable::spawn_effect_system) // event generated in projectile execute behavior, consumable execute behavior
-            .with_system(spawnable::spawn_projectile_system)
-            .with_system(spawnable::spawn_consumable_system) // event generated in mob execute behavior
-            .with_system(spawnable::spawn_mob_system) // event generated in mob execute behavior
-            .with_system(states::open_pause_menu_system)
-            .with_system(player::player_death_system)
-            .with_system(ui::update_ui.after("next_level"))
-            .with_system(ui::fade_out_system)
             .with_system(player::player_scale_fire_rate_system),
     );
+
+    app.add_systems((ui::setup_pause_system).in_schedule(OnEnter(states::AppStates::PauseMenu)));
+
+    app.add_systems((states::clear_state_system).in_schedule(OnExit(states::AppStates::PauseMenu)));
+
+    app.add_systems(
+        (
+            ui::game_over_fade_in_system,
+            run::reset_run_system,
+            states::quit_game_system,
+        )
+            .in_schedule(OnUpdate(states::AppStates::GameOver)),
+    );
+
+    app.add_systems((ui::setup_game_over_system).in_schedule(OnEnter(states::AppStates::GameOver)));
+
+    app.add_systems((states::clear_state_system).in_schedule(OnExit(states::AppStates::GameOver)));
+
+    app.add_systems(
+        (
+            ui::victory_fade_in_system,
+            run::reset_run_system,
+            states::quit_game_system,
+        )
+            .in_schedule(OnUpdate(states::AppStates::Victory)),
+    );
+
+    app.add_systems((ui::setup_victory_system).in_schedule(OnEnter(states::AppStates::Victory)));
+
+    app.add_systems((states::clear_state_system).in_schedule(OnExit(states::AppStates::Victory)));
+
+    app.add_systems(
+        (
+            ui::setup_main_menu_system,
+            audio::stop_background_audio_system,
+        )
+            .in_schedule(OnEnter(states::AppStates::MainMenu)),
+    );
+
+    app.add_systems(
+        (states::start_game_system, states::quit_game_system)
+            .in_schedule(OnUpdate(states::AppStates::MainMenu)),
+    );
+
+    app.add_systems((states::clear_state_system).in_schedule(OnExit(states::AppStates::MainMenu)));
+
+    app.add_systems(
+        (states::close_pause_menu_system, run::reset_run_system)
+            .in_schedule(OnUpdate(states::AppStates::PauseMenu)),
+    );
+
+
 
     if cfg!(debug_assertions) {
         app.add_system_set(
@@ -370,6 +450,7 @@ fn main() {
             .add_startup_system(ui::setup_fps_ui_system)
             .add_system(ui::fps_system);
     }
+    */
 
     app.run();
 }

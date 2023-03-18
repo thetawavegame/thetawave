@@ -13,8 +13,12 @@ pub struct EffectAssets {
     pub ally_blast_despawn: Handle<TextureAtlas>,
     #[asset(key = "enemy_blast_despawn")]
     pub enemy_blast_despawn: Handle<TextureAtlas>,
+    #[asset(key = "ally_bullet_despawn")]
+    pub ally_bullet_despawn: Handle<TextureAtlas>,
     #[asset(key = "enemy_bullet_despawn")]
     pub enemy_bullet_despawn: Handle<TextureAtlas>,
+    #[asset(key = "ally_bullet_explosion")]
+    pub ally_bullet_explosion: Handle<TextureAtlas>,
     #[asset(key = "enemy_bullet_explosion")]
     pub enemy_bullet_explosion: Handle<TextureAtlas>,
     #[asset(key = "mob_explosion")]
@@ -35,7 +39,9 @@ impl EffectAssets {
             EffectType::EnemyBlastExplosion => self.enemy_blast_explosion.clone(),
             EffectType::EnemyBlastDespawn => self.enemy_blast_despawn.clone(),
             EffectType::BarrierGlow => self.barrier_glow.clone(),
+            EffectType::AllyBulletDespawn => self.ally_bullet_despawn.clone(),
             EffectType::EnemyBulletDespawn => self.enemy_bullet_despawn.clone(),
+            EffectType::AllyBulletExplosion => self.ally_bullet_explosion.clone(),
             EffectType::EnemyBulletExplosion => self.enemy_bullet_explosion.clone(),
         }
     }

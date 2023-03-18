@@ -93,7 +93,7 @@ pub fn reset_run_system(
     gamepads: Res<Gamepads>,
     mut gamepad_input: ResMut<Input<GamepadButton>>,
     mut keyboard_input: ResMut<Input<KeyCode>>,
-    mut app_state: ResMut<State<AppStates>>,
+    mut next_app_state: ResMut<NextState<AppStates>>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::MenuAudioChannel>>,
 ) {
@@ -110,7 +110,7 @@ pub fn reset_run_system(
     // if reset input provided reset th run
     if reset {
         // go to the main menu state
-        app_state.replace(AppStates::MainMenu).unwrap();
+        next_app_state.set(AppStates::MainMenu);
 
         // play menu input sound
         // TODO: change to using loaded assets

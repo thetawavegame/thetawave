@@ -28,7 +28,7 @@ pub fn open_pause_menu_system(
     // swiitch to pause menu state if input read
     if pause_input {
         // push pause state
-        app_state.push(AppStates::PauseMenu).unwrap();
+        //app_state.push(AppStates::PauseMenu); // TODO Fix pausing with orthoganal state set
 
         // play sound effect
         audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
@@ -72,7 +72,7 @@ pub fn close_pause_menu_system(
     // pop the pause state if input read
     if unpause_input {
         // pop pause state
-        app_state.pop().unwrap();
+        //app_state.pop().unwrap(); // TODO Fix pausing with orthoganal state set
 
         // play sound effect
         audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));

@@ -14,7 +14,7 @@ pub fn setup_cameras_system(
             clear_color: ClearColorConfig::None,
         },
         camera: Camera {
-            priority: 1,
+            order: 1,
             ..default()
         },
         ..default()

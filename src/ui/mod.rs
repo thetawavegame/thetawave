@@ -311,6 +311,6 @@ pub fn position_stat_bar_label_system(
     mut stat_bar_query: Query<&mut GlobalTransform, With<StatBarLabel>>,
 ) {
     for mut stat_bar_transform in stat_bar_query.iter_mut() {
-        stat_bar_transform.translation_mut().z = 1.0;
+        stat_bar_transform.translation().z = 1.0;
     }
 }

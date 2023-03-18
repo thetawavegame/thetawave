@@ -55,9 +55,9 @@ pub struct GameOverUI;
 
 #[cfg(not(target_arch = "wasm32"))]
 pub fn fade_out_system(
-    mut app_state: ResMut<State<AppStates>>,
+    mut next_app_state: ResMut<NextState<AppStates>>,
     mut rapier_config: ResMut<RapierConfiguration>,
-    mut framepace: ResMut<bevy_framepace::FramepaceSettings>,
+    //mut framepace: ResMut<bevy_framepace::FramepaceSettings>,
     time: Res<Time>,
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
     mut game_fade_query: Query<&mut Sprite, With<GameFadeComponent>>,
@@ -71,8 +71,8 @@ pub fn fade_out_system(
             + end_game_trans_resource.max_fps) as u16)
             .max(1);
 
-        use bevy_framepace::Limiter;
-        framepace.limiter = Limiter::from_framerate(framerate.into());
+        //use bevy_framepace::Limiter;
+        //framepace.limiter = Limiter::from_framerate(framerate.into());
 
         for mut fade_sprite in game_fade_query.iter_mut() {
             let alpha = (end_game_trans_resource.fade_out_speed
@@ -85,10 +85,8 @@ pub fn fade_out_system(
         if end_game_trans_resource.fade_out_timer.just_finished() {
             rapier_config.physics_pipeline_active = false;
             rapier_config.query_pipeline_active = false;
-            framepace.limiter = Limiter::Auto;
-            app_state
-                .set(end_game_trans_resource.next_state.as_ref().unwrap().clone())
-                .unwrap();
+            //framepace.limiter = Limiter::Auto;
+            next_app_state.set(end_game_trans_resource.next_state.as_ref().unwrap().clone());
         }
     }
 }
@@ -175,7 +173,7 @@ pub fn setup_game_over_system(mut commands: Commands, asset_server: Res<AssetSer
                     parent
                         .spawn(ImageBundle {
                             image: asset_server
-                                .load("texture/restart_game_prompt_keyboard.png")
+                                .load("texture/restart_game_prompt_controller.png")
                                 .into(),
                             style: Style {
                                 size: Size::new(Val::Px(400.0), Val::Px(100.0)),
@@ -195,7 +193,7 @@ pub fn setup_game_over_system(mut commands: Commands, asset_server: Res<AssetSer
                     parent
                         .spawn(ImageBundle {
                             image: asset_server
-                                .load("texture/exit_game_prompt_keyboard.png")
+                                .load("texture/exit_game_prompt_controller.png")
                                 .into(),
                             style: Style {
                                 size: Size::new(Val::Px(400.0), Val::Px(100.0)),

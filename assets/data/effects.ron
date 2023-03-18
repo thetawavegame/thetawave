@@ -62,8 +62,26 @@
 			frame_duration: 0.2,
 		),
 	),
+	AllyBulletDespawn: (
+		effect_type: AllyBulletDespawn,
+		effect_behaviors: [DespawnAfterAnimation],
+		z_level: 9.0,
+		animation: (
+			direction: Forward,
+			frame_duration: 0.1,
+		),
+	),
 	EnemyBulletDespawn: (
 		effect_type: EnemyBulletDespawn,
+		effect_behaviors: [DespawnAfterAnimation],
+		z_level: 9.0,
+		animation: (
+			direction: Forward,
+			frame_duration: 0.1,
+		),
+	),
+	AllyBulletExplosion: (
+		effect_type: AllyBulletExplosion,
 		effect_behaviors: [DespawnAfterAnimation],
 		z_level: 9.0,
 		animation: (
