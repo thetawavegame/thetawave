@@ -48,12 +48,15 @@ pub enum GameEnterSet {
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone, SystemSet)]
 pub enum GameUpdateSet {
+    Enter,
+    Level,
+    Spawn,
+    NextLevel,
+    UpdateUI,
     Movement,
     Abilities,
     SetTargetBehavior, // TODO: replace with more general set
-    SpawnableExecuteBehavior,
-    MobExecuteBehavior,
-    MobSegmentExecuteBehavior,
+    ExecuteBehavior,
     ContactCollision,
     IntersectionCollision,
     ApplyDisconnectedBehaviors,
@@ -259,23 +262,28 @@ fn main() {
             setup_physics.in_set(GameEnterSet::Initialize),
             audio::start_background_audio_system.in_set(GameEnterSet::BuildLevel),
             run::setup_first_level.in_set(GameEnterSet::BuildLevel),
+            //.in_set(GameUpdateSet::Enter),
             arena::spawn_barriers_system.in_set(GameEnterSet::BuildLevel),
             arena::spawn_despawn_gates_system.in_set(GameEnterSet::BuildLevel),
             background::create_background_system.in_set(GameEnterSet::BuildLevel),
             player::spawn_player_system.in_set(GameEnterSet::SpawnPlayer),
             ui::setup_game_ui_system.after(GameEnterSet::BuildUi),
         )
+            //.in_set(GameUpdateSet::Enter)
             .in_schedule(OnEnter(states::AppStates::Game)),
     );
 
     app.configure_sets(
         (
+            //GameUpdateSet::Enter,
+            GameUpdateSet::Level,
+            GameUpdateSet::Spawn,
+            GameUpdateSet::NextLevel,
+            GameUpdateSet::UpdateUI,
             GameUpdateSet::SetTargetBehavior,
             GameUpdateSet::ContactCollision,
             GameUpdateSet::IntersectionCollision,
-            GameUpdateSet::SpawnableExecuteBehavior,
-            GameUpdateSet::MobExecuteBehavior,
-            GameUpdateSet::MobSegmentExecuteBehavior,
+            GameUpdateSet::ExecuteBehavior,
             GameUpdateSet::ApplyDisconnectedBehaviors,
             GameUpdateSet::Movement,
             GameUpdateSet::Abilities,
@@ -298,22 +306,46 @@ fn main() {
             collision::contact_collision_system.in_set(GameUpdateSet::ContactCollision),
             spawnable::mob_behavior_sequence_tracker_system,
             spawnable::mob_behavior_sequence_update_system,
-            spawnable::spawnable_execute_behavior_system
-                .in_set(GameUpdateSet::SpawnableExecuteBehavior),
-            spawnable::mob_execute_behavior_system.in_set(GameUpdateSet::MobExecuteBehavior),
+            spawnable::spawnable_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
+            spawnable::mob_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
         )
             .in_set(OnUpdate(states::AppStates::Game)),
     );
 
     app.add_systems(
         (
-            spawnable::mob_segment_execute_behavior_system
-                .in_set(GameUpdateSet::MobSegmentExecuteBehavior),
             spawnable::mob_segment_apply_disconnected_behaviors_system
                 .in_set(GameUpdateSet::ApplyDisconnectedBehaviors),
+            spawnable::mob_segment_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
+            spawnable::projectile_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
+            spawnable::effect_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
+            spawnable::consumable_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
+            //run::level_system.in_set(GameUpdateSet::Level),
+            //run::spawn_formation_system.in_set(GameUpdateSet::Spawn),
+            //run::next_level_system.in_set(GameUpdateSet::NextLevel),
+            player::player_fire_weapon_system,
+            spawnable::spawn_effect_system, // event generated in projectile execute behavior, consumable execute behavior
+            spawnable::spawn_projectile_system,
+            spawnable::spawn_consumable_system, // event generated in mob execute behavior
+            spawnable::spawn_mob_system,        // event generated in mob execute behavior
+            states::open_pause_menu_system,
+            player::player_death_system,
+            ui::update_ui.after(GameUpdateSet::UpdateUI),
+            ui::fade_out_system,
+            player::player_scale_fire_rate_system,
         )
             .in_set(OnUpdate(states::AppStates::Game)),
     );
+
+    app.add_systems(
+        (
+            run::level_system.in_set(GameUpdateSet::Level),
+            //run::spawn_formation_system.in_set(GameUpdateSet::Spawn),
+            //run::next_level_system.in_set(GameUpdateSet::NextLevel),
+        )
+            .in_set(OnUpdate(states::AppStates::Game)),
+    );
+
     /*
 
     app.add_systems(
@@ -345,32 +377,32 @@ fn main() {
             //    .after("set_target_behavior")
             //    .after("intersection_collision")
             //    .after("contact_collision"),
-            spawnable::projectile_execute_behavior_system
-                .in_set("projectile_execute_behavior")
-                .after("set_target_behavior")
-                .after("intersection_collision")
-                .after("contact_collision"),
-            spawnable::effect_execute_behavior_system
-                .after("set_target_behavior")
-                .after("intersection_collision")
-                .after("contact_collision"),
-            spawnable::consumable_execute_behavior_system
-                .after("set_target_behavior")
-                .after("intersection_collision")
-                .after("contact_collision"),
-            run::level_system.in_set("level"),
-            run::spawn_formation_system.after("level"),
-            run::next_level_system.in_set("next_level").after("level"),
-            player::player_fire_weapon_system,
-            spawnable::spawn_effect_system, // event generated in projectile execute behavior, consumable execute behavior
-            spawnable::spawn_projectile_system,
-            spawnable::spawn_consumable_system, // event generated in mob execute behavior
-            spawnable::spawn_mob_system,        // event generated in mob execute behavior
-            states::open_pause_menu_system,
-            player::player_death_system,
-            ui::update_ui.after("next_level"),
-            ui::fade_out_system,
-            player::player_scale_fire_rate_system,
+            //spawnable::projectile_execute_behavior_system
+            //    .in_set("projectile_execute_behavior")
+            //    .after("set_target_behavior")
+            //    .after("intersection_collision")
+            //    .after("contact_collision"),
+            //spawnable::effect_execute_behavior_system
+            //    .after("set_target_behavior")
+            //    .after("intersection_collision")
+            //    .after("contact_collision"),
+            //spawnable::consumable_execute_behavior_system
+            //    .after("set_target_behavior")
+            //    .after("intersection_collision")
+            //    .after("contact_collision"),
+            //run::level_system.in_set("level"),
+            //run::spawn_formation_system.after("level"),
+            //run::next_level_system.in_set("next_level").after("level"),
+            //player::player_fire_weapon_system,
+            //spawnable::spawn_effect_system, // event generated in projectile execute behavior, consumable execute behavior
+            //spawnable::spawn_projectile_system,
+            //spawnable::spawn_consumable_system, // event generated in mob execute behavior
+            //spawnable::spawn_mob_system,        // event generated in mob execute behavior
+            //states::open_pause_menu_system,
+            //player::player_death_system,
+            //ui::update_ui.after("next_level"),
+            //ui::fade_out_system,
+            //player::player_scale_fire_rate_system,
         )
             .in_schedule(OnUpdate(states::AppStates::Game)),
     );
