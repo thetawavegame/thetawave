@@ -140,8 +140,6 @@ impl Level {
                 } => {
                     let event_formation_pool = formation_pool.clone();
 
-                    println!("here");
-
                     // tick spawn timer and spawn from formation pool when finished
                     if self
                         .spawn_timer
@@ -357,8 +355,6 @@ pub fn next_level_system(
 
 /// Setup first level of the game using values from the first level (phase timer spawn timer, etc)
 pub fn setup_first_level(mut run_resource: ResMut<super::RunResource>) {
-    println!("here2");
-
     if let Some(level) = &mut run_resource.level {
         match &level.timeline.phases[0].phase_type {
             LevelPhaseType::FormationSpawn {

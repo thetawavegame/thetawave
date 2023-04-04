@@ -1,4 +1,5 @@
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
+use bevy::ecs::schedule;
 use bevy::{pbr::AmbientLight, prelude::*};
 use bevy_asset_loader::prelude::*;
 use bevy_editor_pls::prelude::*;
@@ -246,15 +247,18 @@ fn main() {
     .add_collection_to_loading_state::<_, assets::EffectAssets>(states::AppStates::LoadingGame)
     .add_collection_to_loading_state::<_, assets::GameAudioAssets>(states::AppStates::LoadingGame);
 
-    app.configure_sets(
-        (
-            GameEnterSet::Initialize,
-            GameEnterSet::BuildLevel,
-            GameEnterSet::SpawnPlayer,
-            GameEnterSet::BuildUi,
-        )
-            .chain(),
-    );
+    app.edit_schedule(OnEnter(states::AppStates::Game), |schedule| {
+        schedule.configure_sets(
+            (
+                GameEnterSet::Initialize,
+                GameEnterSet::BuildLevel,
+                GameEnterSet::SpawnPlayer,
+                GameEnterSet::BuildUi,
+            )
+                .chain(),
+        );
+    });
+
     // game startup systems (perhaps exchange with app.add_startup_system_set)
     app.add_systems(
         (
@@ -262,14 +266,12 @@ fn main() {
             setup_physics.in_set(GameEnterSet::Initialize),
             audio::start_background_audio_system.in_set(GameEnterSet::BuildLevel),
             run::setup_first_level.in_set(GameEnterSet::BuildLevel),
-            //.in_set(GameUpdateSet::Enter),
             arena::spawn_barriers_system.in_set(GameEnterSet::BuildLevel),
             arena::spawn_despawn_gates_system.in_set(GameEnterSet::BuildLevel),
             background::create_background_system.in_set(GameEnterSet::BuildLevel),
             player::spawn_player_system.in_set(GameEnterSet::SpawnPlayer),
             ui::setup_game_ui_system.after(GameEnterSet::BuildUi),
         )
-            //.in_set(GameUpdateSet::Enter)
             .in_schedule(OnEnter(states::AppStates::Game)),
     );
 
@@ -340,8 +342,8 @@ fn main() {
     app.add_systems(
         (
             run::level_system.in_set(GameUpdateSet::Level),
-            //run::spawn_formation_system.in_set(GameUpdateSet::Spawn),
-            //run::next_level_system.in_set(GameUpdateSet::NextLevel),
+            run::spawn_formation_system.in_set(GameUpdateSet::Spawn),
+            run::next_level_system.in_set(GameUpdateSet::NextLevel),
         )
             .in_set(OnUpdate(states::AppStates::Game)),
     );
