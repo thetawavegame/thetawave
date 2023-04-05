@@ -93,6 +93,8 @@ fn main() {
 
     let mut app = App::new();
 
+    app.add_state::<AppStates>(); // start game in the main menu state
+
     // insert resources for all game states
     app.add_plugins(
         DefaultPlugins
@@ -102,6 +104,7 @@ fn main() {
             })
             .set(ImagePlugin::default_nearest()),
     )
+    .add_plugin(player::PlayerPlugin)
     .insert_resource(ClearColor(Color::BLACK))
     .insert_resource(
         from_bytes::<spawnable::BehaviorSequenceResource>(include_bytes!(
@@ -111,10 +114,6 @@ fn main() {
     )
     .insert_resource(
         from_bytes::<loot::LootDropsResource>(include_bytes!("../assets/data/loot_drops.ron"))
-            .unwrap(),
-    )
-    .insert_resource(
-        from_bytes::<player::CharactersResource>(include_bytes!("../assets/data/characters.ron"))
             .unwrap(),
     )
     .insert_resource(
@@ -211,7 +210,6 @@ fn main() {
     }
 
     // add states
-    app.add_state::<AppStates>(); // start game in the main menu state
     app.add_loading_state(
         LoadingState::new(states::AppStates::LoadingGame)
             .continue_to_state(states::AppStates::Game),
@@ -269,7 +267,6 @@ fn main() {
             arena::spawn_barriers_system.in_set(GameEnterSet::BuildLevel),
             arena::spawn_despawn_gates_system.in_set(GameEnterSet::BuildLevel),
             background::create_background_system.in_set(GameEnterSet::BuildLevel),
-            player::spawn_player_system.in_set(GameEnterSet::SpawnPlayer),
             ui::setup_game_ui_system.after(GameEnterSet::BuildUi),
         )
             .in_schedule(OnEnter(states::AppStates::Game)),
