@@ -1,6 +1,14 @@
 use bevy::{math::Vec3Swizzles, prelude::*, window::PrimaryWindow};
 
-use crate::{game::GameParametersResource, spawnable::MobComponent};
+use crate::{game::GameParametersResource, spawnable::MobComponent, states};
+
+pub struct ScannerPlugin;
+
+impl Plugin for ScannerPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems((scanner_system,).in_set(OnUpdate(states::AppStates::Game)));
+    }
+}
 
 /// Manages scanning of entities using the cursor
 pub fn scanner_system(

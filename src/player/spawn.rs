@@ -5,7 +5,7 @@ use crate::{
     assets,
     game::GameParametersResource,
     player::{CharactersResource, PlayerComponent},
-    states::{AppStateComponent, AppStates},
+    states::{AppStates, GameCleanup},
 };
 
 /// Spawns player into the game
@@ -46,7 +46,7 @@ pub fn spawn_player_system(
         .insert(Restitution::new(1.0))
         .insert(ColliderMassProperties::Density(character.collider_density))
         .insert(PlayerComponent::from(character))
-        .insert(AppStateComponent(AppStates::Game))
+        .insert(GameCleanup)
         .insert(ActiveEvents::COLLISION_EVENTS)
         .insert(ExternalImpulse::default())
         .insert(Name::new("Player"));

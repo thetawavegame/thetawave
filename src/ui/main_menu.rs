@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::states::{AppStateComponent, AppStates};
+use crate::states::{self, AppStates};
 
 #[derive(Component)]
 pub struct MainMenuUI;
@@ -19,7 +19,8 @@ pub fn setup_main_menu_system(mut commands: Commands, asset_server: Res<AssetSer
             },
             ..Default::default()
         })
-        .insert(AppStateComponent(AppStates::MainMenu))
+        //.insert(AppStateComponent(AppStates::MainMenu))
+        .insert(states::MainMenuCleanup)
         .insert(MainMenuUI)
         .with_children(|parent| {
             parent

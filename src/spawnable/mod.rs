@@ -1,7 +1,11 @@
+use std::collections::HashMap;
+
 use crate::player::PlayerComponent;
+use crate::{states, GameUpdateSet};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::Velocity;
 use rand::{thread_rng, Rng};
+use ron::de::from_bytes;
 use serde::Deserialize;
 use strum_macros::Display;
 
@@ -36,6 +40,78 @@ pub use self::consumable::{
     consumable_execute_behavior_system, spawn_consumable, spawn_consumable_system,
     ConsumableComponent, ConsumableData, ConsumableResource, SpawnConsumableEvent,
 };
+
+pub struct SpawnablePlugin;
+
+impl Plugin for SpawnablePlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(
+            from_bytes::<BehaviorSequenceResource>(include_bytes!(
+                "../../assets/data/behavior_sequences.ron"
+            ))
+            .unwrap(),
+        )
+        .insert_resource(MobsResource {
+            mobs: from_bytes::<HashMap<MobType, MobData>>(include_bytes!(
+                "../../assets/data/mobs.ron"
+            ))
+            .unwrap(),
+            texture_atlas_handle: HashMap::new(),
+        })
+        .insert_resource(
+            from_bytes::<MobSegmentsResource>(include_bytes!("../../assets/data/mob_segments.ron"))
+                .unwrap(),
+        )
+        .insert_resource(EffectsResource {
+            effects: from_bytes::<HashMap<EffectType, EffectData>>(include_bytes!(
+                "../../assets/data/effects.ron"
+            ))
+            .unwrap(),
+        })
+        .insert_resource(ProjectileResource {
+            projectiles: from_bytes::<HashMap<ProjectileType, ProjectileData>>(include_bytes!(
+                "../../assets/data/projectiles.ron"
+            ))
+            .unwrap(),
+        })
+        .insert_resource(ConsumableResource {
+            consumables: from_bytes::<HashMap<ConsumableType, ConsumableData>>(include_bytes!(
+                "../../assets/data/consumables.ron"
+            ))
+            .unwrap(),
+        });
+
+        app.add_event::<SpawnEffectEvent>()
+            .add_event::<SpawnConsumableEvent>()
+            .add_event::<SpawnProjectileEvent>()
+            .add_event::<SpawnMobEvent>()
+            .add_event::<MobBehaviorUpdateEvent>()
+            .add_event::<MobDestroyedEvent>()
+            .add_event::<MobSegmentDestroyedEvent>();
+
+        app.add_systems(
+            (
+                despawn_timer_system,
+                spawnable_set_target_behavior_system.in_set(GameUpdateSet::SetTargetBehavior),
+                mob_behavior_sequence_tracker_system,
+                mob_behavior_sequence_update_system,
+                spawnable_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
+                mob_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
+                mob_segment_apply_disconnected_behaviors_system
+                    .in_set(GameUpdateSet::ApplyDisconnectedBehaviors),
+                mob_segment_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
+                projectile_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
+                effect_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
+                consumable_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
+                spawn_effect_system, // event generated in projectile execute behavior, consumable execute behavior
+                spawn_projectile_system,
+                spawn_consumable_system, // event generated in mob execute behavior
+                spawn_mob_system,        // event generated in mob execute behavior
+            )
+                .in_set(OnUpdate(states::AppStates::Game)),
+        );
+    }
+}
 
 /// Core component of spawnable entities
 #[derive(Component)]

@@ -15,7 +15,7 @@ use crate::{
     loot::ConsumableDropListType,
     misc::Health,
     spawnable::{InitialMotion, MobType, SpawnableBehavior, SpawnableComponent},
-    states::{AppStateComponent, AppStates},
+    states::{AppStates, GameCleanup},
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 
@@ -395,7 +395,7 @@ pub fn spawn_mob(
     .insert(MobComponent::from(mob_data))
     .insert(SpawnableComponent::from(mob_data))
     .insert(ActiveEvents::COLLISION_EVENTS)
-    .insert(AppStateComponent(AppStates::Game))
+    .insert(GameCleanup)
     .insert(Name::new(mob_data.mob_type.to_string()));
 
     // spawn thruster as child if mob has thruster

@@ -1,5 +1,5 @@
 use crate::background::PlanetComponent;
-use crate::states::{AppStateComponent, AppStates};
+use crate::states::{AppStates, GameCleanup};
 use bevy::prelude::Commands;
 use bevy::prelude::*;
 use serde::Deserialize;
@@ -58,7 +58,7 @@ impl PlanetData {
             .insert(PlanetComponent {
                 rotation_speed: self.rotation_speed,
             })
-            .insert(AppStateComponent(AppStates::Game))
+            .insert(GameCleanup)
             .insert(Visibility::default())
             .insert(ComputedVisibility::default())
             .insert(Name::new("Planet"));
@@ -76,7 +76,7 @@ impl PlanetData {
                     transform,
                     ..Default::default()
                 })
-                .insert(AppStateComponent(AppStates::Game))
+                .insert(GameCleanup)
                 .insert(Name::new("Planet Light"));
         }
     }

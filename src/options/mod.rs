@@ -1,5 +1,5 @@
 //! `thetawave` player module
-
+use bevy::prelude::*;
 use std::{
     env::current_dir,
     fs::{DirBuilder, File},
@@ -8,7 +8,19 @@ use std::{
 
 mod display;
 
+use crate::states;
+
 pub use self::display::{toggle_fullscreen_system, toggle_zoom_system, DisplayConfig};
+
+pub struct OptionsPlugin;
+
+impl Plugin for OptionsPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_system(toggle_fullscreen_system);
+
+        app.add_systems((toggle_zoom_system,).in_set(OnUpdate(states::AppStates::Game)));
+    }
+}
 
 /// Creates config file in config directory from config file in this directory
 macro_rules! confgen {

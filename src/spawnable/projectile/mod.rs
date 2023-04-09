@@ -11,7 +11,7 @@ use crate::{
     misc::Health,
     spawnable::InitialMotion,
     spawnable::{ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType},
-    states::{AppStateComponent, AppStates},
+    states::{AppStates, GameCleanup},
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 
@@ -177,7 +177,7 @@ pub fn spawn_projectile(
             memberships: SPAWNABLE_COL_GROUP_MEMBERSHIP,
             filters: Group::ALL ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
         })
-        .insert(AppStateComponent(AppStates::Game))
+        .insert(GameCleanup)
         .insert(Name::new(projectile_data.projectile_type.to_string()));
 
     if !projectile_data.is_solid {

@@ -1,9 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{
-    states::{AppStateComponent, AppStates},
-    ui::BouncingPromptComponent,
-};
+use crate::{states::AppStates, ui::BouncingPromptComponent};
 
 #[derive(Component)]
 pub struct PauseUI;
@@ -18,7 +15,7 @@ pub fn setup_pause_system(mut commands: Commands, asset_server: Res<AssetServer>
             background_color: Color::rgba(0.5, 0.5, 0.5, 0.1).into(),
             ..Default::default()
         })
-        .insert(AppStateComponent(AppStates::PauseMenu))
+        //.insert(AppStateComponent(AppStates::PauseMenu))
         .insert(PauseUI)
         .with_children(|parent| {
             parent

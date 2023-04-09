@@ -10,7 +10,7 @@ use crate::{
     loot::ConsumableDropListType,
     misc::Health,
     spawnable::{MobSegmentType, SpawnableComponent, SpawnableType},
-    states::{AppStateComponent, AppStates},
+    states::{AppStates, GameCleanup},
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 
@@ -152,7 +152,7 @@ pub fn spawn_mob_segment(
             mob_segment_type.clone(),
         )))
         .insert(ActiveEvents::COLLISION_EVENTS)
-        .insert(AppStateComponent(AppStates::Game))
+        .insert(GameCleanup)
         .insert(Name::new(mob_segment_data.mob_segment_type.to_string()));
 
     let mob_segment_entity = mob_segment.id().clone();

@@ -2,7 +2,7 @@ use crate::{
     assets::GameAudioAssets,
     audio,
     spawnable::{MobComponent, MobSegmentComponent, SpawnableComponent},
-    states::{AppStateComponent, AppStates},
+    states::{AppStates, GameCleanup},
 };
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
@@ -27,7 +27,7 @@ fn spawn_despawn_gate(commands: &mut Commands, position: Vec2, width: f32, heigh
         .insert(Collider::cuboid(width / 2.0, height / 2.0))
         .insert(Sensor)
         .insert(DespawnGateComponent)
-        .insert(AppStateComponent(AppStates::Game))
+        .insert(GameCleanup)
         .insert(Name::new("Despawn Gate"));
 }
 

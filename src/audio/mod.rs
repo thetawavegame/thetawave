@@ -1,7 +1,28 @@
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 
-use crate::assets::GameAudioAssets;
+use crate::{assets::GameAudioAssets, states, GameEnterSet};
+
+pub struct ThetawaveAudioPlugin;
+
+impl Plugin for ThetawaveAudioPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_audio_channel::<BackgroundMusicAudioChannel>()
+            .add_audio_channel::<MenuAudioChannel>()
+            .add_audio_channel::<SoundEffectsAudioChannel>();
+
+        app.add_startup_system(set_audio_volume_system);
+
+        app.add_systems(
+            (start_background_audio_system.in_set(GameEnterSet::BuildLevel),)
+                .in_schedule(OnEnter(states::AppStates::Game)),
+        );
+
+        app.add_systems(
+            (stop_background_audio_system,).in_schedule(OnEnter(states::AppStates::MainMenu)),
+        );
+    }
+}
 
 // audio channels
 #[derive(Resource)]

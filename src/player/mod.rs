@@ -7,7 +7,7 @@ mod resources;
 mod spawn;
 mod systems;
 
-use crate::{states, GameEnterSet};
+use crate::{states, GameEnterSet, GameUpdateSet};
 
 pub use self::{
     components::PlayerComponent,
@@ -32,6 +32,16 @@ impl Plugin for PlayerPlugin {
             spawn_player_system
                 .in_set(GameEnterSet::SpawnPlayer)
                 .in_schedule(OnEnter(states::AppStates::Game)),
+        )
+        .add_systems(
+            (
+                player_fire_weapon_system,
+                player_death_system,
+                player_scale_fire_rate_system,
+                player_movement_system.in_set(GameUpdateSet::Movement),
+                player_ability_system.in_set(GameUpdateSet::Abilities),
+            )
+                .in_set(OnUpdate(states::AppStates::Game)),
         );
     }
 }

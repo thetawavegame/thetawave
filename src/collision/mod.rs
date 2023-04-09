@@ -1,10 +1,26 @@
-use crate::spawnable::Faction;
+use crate::{spawnable::Faction, states, GameUpdateSet};
 use bevy::prelude::*;
 
 mod contact;
 mod instersection;
 
 pub use self::{contact::*, instersection::*};
+
+pub struct CollisionPlugin;
+
+impl Plugin for CollisionPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_event::<SortedCollisionEvent>();
+
+        app.add_systems(
+            (
+                intersection_collision_system.in_set(GameUpdateSet::IntersectionCollision),
+                contact_collision_system.in_set(GameUpdateSet::ContactCollision),
+            )
+                .in_set(OnUpdate(states::AppStates::Game)),
+        );
+    }
+}
 
 /// Types of collisions
 #[derive(Debug)]

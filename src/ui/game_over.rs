@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_rapier2d::plugin::RapierConfiguration;
 
 use crate::{
-    states::{AppStateComponent, AppStates},
+    states::{AppStates, GameCleanup},
     ui::BouncingPromptComponent,
 };
 
@@ -152,7 +152,7 @@ pub fn setup_game_over_system(mut commands: Commands, asset_server: Res<AssetSer
             background_color: Color::rgba(0.0, 0.0, 0.0, 0.0).into(),
             ..Default::default()
         })
-        .insert(AppStateComponent(AppStates::GameOver))
+        .insert(GameCleanup)
         .insert(GameOverUI)
         .with_children(|parent| {
             parent

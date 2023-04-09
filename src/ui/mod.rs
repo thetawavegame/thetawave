@@ -8,7 +8,8 @@ use bevy::{
 use crate::{
     player::PlayerComponent,
     run::RunResource,
-    states::{AppStateComponent, AppStates},
+    states::{self, AppStates, GameCleanup},
+    GameEnterSet, GameUpdateSet,
 };
 
 mod debug;
@@ -27,6 +28,35 @@ pub use self::{
     pause_menu::setup_pause_system,
     victory::{setup_victory_system, victory_fade_in_system},
 };
+
+pub struct UiPlugin;
+
+impl Plugin for UiPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(EndGameTransitionResource::new(
+            2.0, 3.0, 2.5, 0.5, 0.5, 30.0,
+        ));
+
+        app.add_systems((
+            bouncing_prompt_system,
+            position_stat_bar_label_system.in_base_set(CoreSet::Last),
+        ));
+
+        app.add_systems(
+            (setup_game_ui_system.after(GameEnterSet::BuildUi),)
+                .in_schedule(OnEnter(states::AppStates::Game)),
+        );
+
+        app.add_systems(
+            (update_ui.after(GameUpdateSet::UpdateUi), fade_out_system)
+                .in_set(OnUpdate(states::AppStates::Game)),
+        );
+
+        app.add_systems(
+            (setup_main_menu_system,).in_schedule(OnEnter(states::AppStates::MainMenu)),
+        );
+    }
+}
 
 /// Tag for player health ui
 #[derive(Component)]
@@ -70,7 +100,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
             background_color: Color::RED.into(),
             ..NodeBundle::default()
         })
-        .insert(AppStateComponent(AppStates::Game))
+        .insert(GameCleanup)
         .insert(HealthUI);
 
     commands
@@ -87,7 +117,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
             },
             ..Default::default()
         })
-        .insert(AppStateComponent(AppStates::Game))
+        .insert(GameCleanup)
         .insert(StatBarLabel);
 
     commands
@@ -107,7 +137,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
             background_color: Color::rgba(1.0, 1.0, 1.0, 0.2).into(),
             ..Default::default()
         })
-        .insert(AppStateComponent(AppStates::Game))
+        .insert(GameCleanup)
         .insert(StatBarLabel)
         .insert(ArmorUI);
 
@@ -129,7 +159,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
             background_color: Color::BLUE.into(),
             ..NodeBundle::default()
         })
-        .insert(AppStateComponent(AppStates::Game))
+        .insert(GameCleanup)
         .insert(LevelUI);
 
     commands
@@ -146,7 +176,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
             },
             ..Default::default()
         })
-        .insert(AppStateComponent(AppStates::Game))
+        .insert(GameCleanup)
         .insert(StatBarLabel);
 
     commands
@@ -164,7 +194,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
             transform: Transform::from_scale(Vec3::new(3.0, 3.0, 1.0)),
             ..Default::default()
         })
-        .insert(AppStateComponent(AppStates::Game))
+        .insert(GameCleanup)
         .insert(StatBarLabel);
 
     commands
@@ -182,7 +212,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
             transform: Transform::from_scale(Vec3::new(3.0, 3.0, 1.0)),
             ..Default::default()
         })
-        .insert(AppStateComponent(AppStates::Game))
+        .insert(GameCleanup)
         .insert(PowerGlowUI(Timer::new(
             Duration::from_secs_f32(2.0),
             TimerMode::Repeating,
@@ -203,7 +233,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
             transform: Transform::from_scale(Vec3::new(1.3, 1.3, 1.0)),
             ..Default::default()
         })
-        .insert(AppStateComponent(AppStates::Game))
+        .insert(GameCleanup)
         .insert(StatBarLabel);
 }
 

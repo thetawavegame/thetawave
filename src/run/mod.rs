@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
+use ron::de::from_bytes;
 use std::time::Duration;
 
 use crate::{
@@ -7,8 +8,9 @@ use crate::{
     assets::GameAudioAssets,
     audio,
     spawnable::{MobDestroyedEvent, SpawnMobEvent},
-    states::AppStates,
+    states::{self, AppStates},
     ui::EndGameTransitionResource,
+    GameEnterSet, GameUpdateSet,
 };
 
 mod formation;
@@ -21,6 +23,43 @@ pub use self::{
         LevelsResourceData, ObjectiveType,
     },
 };
+
+pub struct RunPlugin;
+
+impl Plugin for RunPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(
+            from_bytes::<FormationPoolsResource>(include_bytes!(
+                "../../assets/data/formation_pools.ron"
+            ))
+            .unwrap(),
+        )
+        .insert_resource(RunResource::from(
+            from_bytes::<RunResourceData>(include_bytes!("../../assets/data/run.ron")).unwrap(),
+        ))
+        .insert_resource(LevelsResource::from(
+            from_bytes::<LevelsResourceData>(include_bytes!("../../assets/data/levels.ron"))
+                .unwrap(),
+        ));
+
+        app.add_event::<SpawnFormationEvent>()
+            .add_event::<LevelCompletedEvent>();
+
+        app.add_systems(
+            (setup_first_level.in_set(GameEnterSet::BuildLevel),)
+                .in_schedule(OnEnter(states::AppStates::Game)),
+        );
+
+        app.add_systems(
+            (
+                level_system.in_set(GameUpdateSet::Level),
+                spawn_formation_system.in_set(GameUpdateSet::Spawn),
+                next_level_system.in_set(GameUpdateSet::NextLevel),
+            )
+                .in_set(OnUpdate(states::AppStates::Game)),
+        );
+    }
+}
 
 // TODO: set to a progression of levels
 /// Right now just set to one level

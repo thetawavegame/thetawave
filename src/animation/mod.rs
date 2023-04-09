@@ -1,6 +1,16 @@
 use bevy::prelude::*;
 use serde::Deserialize;
 
+use crate::states;
+
+pub struct AnimationPlugin;
+
+impl Plugin for AnimationPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems((animate_sprite_system,).in_set(OnUpdate(states::AppStates::Game)));
+    }
+}
+
 /// Describes how to change frames of animation
 #[derive(Deserialize, Clone)]
 pub enum AnimationDirection {
