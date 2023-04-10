@@ -58,6 +58,8 @@ impl Plugin for RunPlugin {
             )
                 .in_set(OnUpdate(states::AppStates::Game)),
         );
+
+        app.add_systems((reset_run_system,).in_set(OnUpdate(states::AppStates::GameOver)));
     }
 }
 

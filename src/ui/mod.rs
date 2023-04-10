@@ -55,6 +55,12 @@ impl Plugin for UiPlugin {
         app.add_systems(
             (setup_main_menu_system,).in_schedule(OnEnter(states::AppStates::MainMenu)),
         );
+
+        app.add_systems(
+            (setup_game_over_system,).in_schedule(OnEnter(states::AppStates::GameOver)),
+        );
+
+        app.add_systems((game_over_fade_in_system,).in_set(OnUpdate(states::AppStates::GameOver)));
     }
 }
 

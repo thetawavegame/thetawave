@@ -106,6 +106,7 @@ fn main() {
             })
             .set(ImagePlugin::default_nearest()),
     )
+    .add_plugin(EditorPlugin::new())
     .add_plugin(player::PlayerPlugin)
     .add_plugin(spawnable::SpawnablePlugin)
     .add_plugin(run::RunPlugin)
@@ -127,7 +128,6 @@ fn main() {
         brightness: 0.1,
     })
     .add_plugin(AudioPlugin)
-    .add_plugin(EguiPlugin)
     .add_plugin(InputManagerPlugin::<input::InputAction>::default())
     .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
         PHYSICS_SCALE,
@@ -157,14 +157,10 @@ fn main() {
 
     app.add_systems(
         (
-            ui::game_over_fade_in_system,
             run::reset_run_system,
-            states::quit_game_system,
         )
             .in_schedule(OnUpdate(states::AppStates::GameOver)),
     );
-
-    app.add_systems((ui::setup_game_over_system).in_schedule(OnEnter(states::AppStates::GameOver)));
 
     app.add_systems((states::clear_state_system).in_schedule(OnExit(states::AppStates::GameOver)));
 
@@ -209,6 +205,11 @@ fn main() {
             .add_plugin(EditorPlugin)
             .add_startup_system(ui::setup_fps_ui_system)
             .add_system(ui::fps_system);
+    }
+    */
+    /*
+    if cfg!(debug_assertions) {
+        app.add_plugin(EditorPlugin::default());
     }
     */
 

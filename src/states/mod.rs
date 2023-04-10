@@ -91,9 +91,15 @@ impl Plugin for StatesPlugin {
         );
 
         app.add_systems(
-            (clear_state_system::<MainMenuCleanup>,)
-                //.after(OnUpdate(AppStates::MainMenu))
-                .in_schedule(OnExit(AppStates::MainMenu)),
+            (clear_state_system::<MainMenuCleanup>,).in_schedule(OnExit(AppStates::MainMenu)),
+        );
+
+        app.add_systems((clear_state_system::<GameCleanup>,).in_schedule(OnExit(AppStates::Game)));
+
+        app.add_systems((quit_game_system,).in_set(OnUpdate(AppStates::GameOver)));
+
+        app.add_systems(
+            (clear_state_system::<GameOverCleanup>,).in_schedule(OnExit(AppStates::GameOver)),
         );
     }
 }
@@ -115,6 +121,9 @@ pub struct MainMenuCleanup;
 
 #[derive(Component)]
 pub struct GameCleanup;
+
+#[derive(Component)]
+pub struct GameOverCleanup;
 
 // remove entities tagged for the current app state
 pub fn clear_state_system<T: Component>(
