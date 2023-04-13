@@ -78,6 +78,6 @@ impl From<&Character> for PlayerComponent {
 
 #[derive(Deserialize, Clone, Debug)]
 pub enum AbilityType {
-    Charge(f32),
-    MegaBlast,
+    Charge(f32),    // ability duration
+    MegaBlast(f32), // scale and damage multiplier
 }

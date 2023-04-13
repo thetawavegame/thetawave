@@ -1,7 +1,10 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::{ExternalImpulse, RigidBody, Velocity};
 
-use crate::player::PlayerComponent;
+use crate::{
+    player::PlayerComponent,
+    spawnable::{InitialMotion, SpawnProjectileEvent},
+};
 
 pub fn player_ability_system(
     mut player_query: Query<(
@@ -11,6 +14,7 @@ pub fn player_ability_system(
         &mut ExternalImpulse,
     )>,
     time: Res<Time>,
+    mut spawn_projectile: EventWriter<SpawnProjectileEvent>,
     keyboard_input: Res<Input<KeyCode>>,
     gamepads: Res<Gamepads>,
     gamepad_input: Res<Input<GamepadButton>>,
@@ -71,8 +75,37 @@ pub fn player_ability_system(
                     player_component.ability_action_timer =
                         Some(Timer::from_seconds(ability_duration, TimerMode::Once));
                 }
-                crate::player::components::AbilityType::MegaBlast => {
+                crate::player::components::AbilityType::MegaBlast(multiplier) => {
                     info!("MEGABLAST ABILITY");
+
+                    let projectile_transform = Transform {
+                        translation: Vec3::new(
+                            player_trans.translation.x
+                                + player_component.projectile_offset_position.x,
+                            player_trans.translation.y
+                                + player_component.projectile_offset_position.y,
+                            1.0,
+                        ),
+                        scale: Vec3::new(multiplier, multiplier, 1.0),
+                        ..Default::default()
+                    };
+
+                    let initial_motion = InitialMotion {
+                        linvel: Some(Vec2::new(
+                            (player_component.projectile_velocity.x) + player_vel.linvel.x,
+                            (player_component.projectile_velocity.y) + player_vel.linvel.y,
+                        )),
+                        ..Default::default()
+                    };
+
+                    spawn_projectile.send(SpawnProjectileEvent {
+                        projectile_type: player_component.projectile_type.clone(),
+                        transform: projectile_transform,
+                        damage: player_component.attack_damage * multiplier,
+                        health: None,
+                        despawn_time: player_component.projectile_despawn_time,
+                        initial_motion,
+                    });
                 }
             }
             // reset timer
@@ -89,7 +122,7 @@ pub fn player_ability_system(
                         player_component.movement_enabled = true;
                         player_component.incoming_damage_multiplier += 0.5;
                     }
-                    crate::player::components::AbilityType::MegaBlast => {}
+                    crate::player::components::AbilityType::MegaBlast(_) => {}
                 }
             }
         }

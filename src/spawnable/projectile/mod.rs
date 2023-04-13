@@ -26,7 +26,7 @@ pub struct SpawnProjectileEvent {
     /// Type of projectile to spawn
     pub projectile_type: ProjectileType,
     /// Position to spawn
-    pub position: Vec2,
+    pub transform: Transform,
     /// Damage of projectile
     pub damage: f32,
     /// Time until projectile despawns
@@ -93,7 +93,7 @@ pub fn spawn_projectile_system(
             &event.projectile_type,
             &projectile_resource,
             &projectile_assets,
-            event.position,
+            event.transform,
             event.damage,
             event.health.clone(),
             event.despawn_time,
@@ -110,7 +110,7 @@ pub fn spawn_projectile(
     projectile_type: &ProjectileType,
     projectile_resource: &ProjectileResource,
     projectile_assets: &ProjectileAssets,
-    position: Vec2,
+    transform: Transform,
     damage: f32,
     health: Option<Health>,
     despawn_time: f32, // time before despawning
@@ -127,6 +127,14 @@ pub fn spawn_projectile(
     let mut projectile_behaviors = projectile_data.projectile_behaviors.clone();
     projectile_behaviors.push(ProjectileBehavior::TimedDespawn { despawn_time });
 
+    let mut projectile_transform = transform;
+    projectile_transform.translation.z = projectile_data.z_level;
+    projectile_transform.scale.x *= game_parameters.sprite_scale;
+    projectile_transform.scale.y *= game_parameters.sprite_scale;
+    projectile_transform.scale.z = 1.0;
+
+    println!("Projectile transform: {:?}", projectile_transform);
+
     projectile
         .insert(LockedAxes::ROTATION_LOCKED)
         .insert(SpriteSheetBundle {
@@ -142,15 +150,8 @@ pub fn spawn_projectile(
         })
         .insert(RigidBody::Dynamic)
         .insert(Velocity::from(initial_motion))
-        .insert(Transform {
-            translation: position.extend(projectile_data.z_level),
-            scale: Vec3::new(
-                game_parameters.sprite_scale,
-                game_parameters.sprite_scale,
-                1.0,
-            ),
-            ..Default::default()
-        })
+        .insert(projectile_transform)
+        .insert(projectile_transform)
         .insert(Collider::cuboid(
             projectile_data.collider.dimensions.x,
             projectile_data.collider.dimensions.y,

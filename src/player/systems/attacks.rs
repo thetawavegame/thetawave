@@ -49,11 +49,14 @@ pub fn player_fire_weapon_system(
 
         // fire blast if timer finished and input pressed
         if player_component.fire_timer.finished() && left_mouse {
-            // position of the spawned blast
-            let position = Vec2::new(
-                transform.translation.x + player_component.projectile_offset_position.x,
-                transform.translation.y + player_component.projectile_offset_position.y,
-            );
+            let projectile_transform = Transform {
+                translation: Vec3::new(
+                    transform.translation.x + player_component.projectile_offset_position.x,
+                    transform.translation.y + player_component.projectile_offset_position.y,
+                    1.0,
+                ),
+                ..Default::default()
+            };
 
             // pass player velocity into the spawned blast
             let initial_motion = InitialMotion {
@@ -67,7 +70,7 @@ pub fn player_fire_weapon_system(
             // spawn the projectile
             spawn_projectile.send(SpawnProjectileEvent {
                 projectile_type: player_component.projectile_type.clone(),
-                position,
+                transform: projectile_transform,
                 damage: player_component.attack_damage,
                 health: None,
                 despawn_time: player_component.projectile_despawn_time,

@@ -23,7 +23,7 @@
 			attraction_acceleration: 3.0,
 			money: 0,
 			ability_period: 5.0,
-			ability_type: MegaBlast,
+			ability_type: MegaBlast(5.0),
 		),
 		"juggernaut": (
 			acceleration: (10.0, 10.0),

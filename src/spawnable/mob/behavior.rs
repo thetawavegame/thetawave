@@ -9,10 +9,11 @@ use crate::{
     assets::GameAudioAssets,
     audio,
     collision::SortedCollisionEvent,
+    game::GameParametersResource,
     loot::LootDropsResource,
     spawnable::{
-        EffectType, InitialMotion, MobType, PlayerComponent, ProjectileType, SpawnConsumableEvent,
-        SpawnEffectEvent, SpawnProjectileEvent,
+        EffectType, InitialMotion, MobType, PlayerComponent, ProjectileResource, ProjectileType,
+        SpawnConsumableEvent, SpawnEffectEvent, SpawnProjectileEvent,
     },
 };
 
@@ -111,6 +112,19 @@ pub fn mob_execute_behavior_system(
                                 }
                             };
 
+                            let projectile_transform = Transform {
+                                translation: match projectile_spawner.position {
+                                    SpawnPosition::Global(coords) => coords.extend(1.0),
+                                    SpawnPosition::Local(coords) => {
+                                        (mob_transform.translation.xy()
+                                            + mob_transform.local_x().xy() * coords.x
+                                            + mob_transform.local_y().xy() * coords.y)
+                                            .extend(1.0)
+                                    }
+                                },
+                                ..Default::default()
+                            };
+
                             // add mob velocity to initial blast velocity
                             let mut modified_initial_motion =
                                 projectile_spawner.initial_motion.clone();
@@ -125,7 +139,7 @@ pub fn mob_execute_behavior_system(
 
                             spawn_projectile_event_writer.send(SpawnProjectileEvent {
                                 projectile_type: projectile_spawner.projectile_type.clone(),
-                                position,
+                                transform: projectile_transform,
                                 damage: attack_damage,
                                 health: projectile_spawner.health.clone(),
                                 despawn_time: projectile_spawner.despawn_time,
