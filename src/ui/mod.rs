@@ -37,10 +37,7 @@ impl Plugin for UiPlugin {
             2.0, 3.0, 2.5, 0.5, 0.5, 30.0,
         ));
 
-        app.add_systems((
-            bouncing_prompt_system,
-            position_stat_bar_label_system.in_base_set(CoreSet::Last),
-        ));
+        app.add_systems((bouncing_prompt_system,));
 
         app.add_systems(
             (setup_game_ui_system.after(GameEnterSet::BuildUi),)
@@ -128,6 +125,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
                 position_type: PositionType::Absolute,
                 ..default()
             },
+            transform: Transform::from_xyz(0.0, 0.0, 1.0),
             ..Default::default()
         })
         .insert(GameCleanup)
@@ -187,6 +185,7 @@ pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetSe
                 position_type: PositionType::Absolute,
                 ..default()
             },
+            transform: Transform::from_xyz(0.0, 0.0, 1.0),
             ..Default::default()
         })
         .insert(GameCleanup)
@@ -347,13 +346,5 @@ pub fn update_ui(
                 .0
                 .set_a((0.5 * (power_glow.0.elapsed_secs() * std::f32::consts::PI).sin()) + 0.5);
         }
-    }
-}
-
-pub fn position_stat_bar_label_system(
-    mut stat_bar_query: Query<&mut GlobalTransform, With<StatBarLabel>>,
-) {
-    for mut stat_bar_transform in stat_bar_query.iter_mut() {
-        stat_bar_transform.translation().z = 1.0;
     }
 }
