@@ -65,9 +65,11 @@ pub fn projectile_execute_behavior_system(
                                     Faction::Enemy => {
                                         spawn_effect_event_writer.send(SpawnEffectEvent {
                                             effect_type: EffectType::EnemyBulletExplosion,
-                                            position: projectile_transform.translation.xy(),
-                                            scale: Vec2::ZERO,
-                                            rotation: projectile_transform.rotation.z,
+                                            transform: Transform {
+                                                translation: projectile_transform.translation,
+                                                scale: projectile_transform.scale,
+                                                ..Default::default()
+                                            },
                                             initial_motion: InitialMotion::default(),
                                         });
                                     }
@@ -75,9 +77,11 @@ pub fn projectile_execute_behavior_system(
                                     Faction::Ally => {
                                         spawn_effect_event_writer.send(SpawnEffectEvent {
                                             effect_type: EffectType::AllyBulletExplosion,
-                                            position: projectile_transform.translation.xy(),
-                                            scale: Vec2::ZERO,
-                                            rotation: projectile_transform.rotation.z,
+                                            transform: Transform {
+                                                translation: projectile_transform.translation,
+                                                scale: projectile_transform.scale,
+                                                ..Default::default()
+                                            },
                                             initial_motion: InitialMotion::default(),
                                         });
                                     }
@@ -132,24 +136,22 @@ pub fn projectile_execute_behavior_system(
                                 Faction::Enemy => {
                                     spawn_effect_event_writer.send(SpawnEffectEvent {
                                         effect_type: EffectType::EnemyBlastDespawn,
-                                        position: Vec2::new(
-                                            projectile_transform.translation.x,
-                                            projectile_transform.translation.y,
-                                        ),
-                                        scale: Vec2::ZERO,
-                                        rotation: 0.0,
+                                        transform: Transform {
+                                            translation: projectile_transform.translation,
+                                            scale: projectile_transform.scale,
+                                            ..Default::default()
+                                        },
                                         initial_motion: InitialMotion::default(),
                                     });
                                 }
                                 Faction::Ally => {
                                     spawn_effect_event_writer.send(SpawnEffectEvent {
                                         effect_type: EffectType::AllyBlastDespawn,
-                                        position: Vec2::new(
-                                            projectile_transform.translation.x,
-                                            projectile_transform.translation.y,
-                                        ),
-                                        scale: Vec2::ZERO,
-                                        rotation: 0.0,
+                                        transform: Transform {
+                                            translation: projectile_transform.translation,
+                                            scale: projectile_transform.scale,
+                                            ..Default::default()
+                                        },
                                         initial_motion: InitialMotion::default(),
                                     });
                                 }
@@ -159,12 +161,11 @@ pub fn projectile_execute_behavior_system(
                                 Faction::Enemy => {
                                     spawn_effect_event_writer.send(SpawnEffectEvent {
                                         effect_type: EffectType::EnemyBulletDespawn,
-                                        position: Vec2::new(
-                                            projectile_transform.translation.x,
-                                            projectile_transform.translation.y,
-                                        ),
-                                        scale: Vec2::ZERO,
-                                        rotation: projectile_transform.rotation.z,
+                                        transform: Transform {
+                                            translation: projectile_transform.translation,
+                                            scale: projectile_transform.scale,
+                                            ..Default::default()
+                                        },
                                         initial_motion: InitialMotion::default(),
                                     });
                                 }
@@ -172,12 +173,11 @@ pub fn projectile_execute_behavior_system(
                                 Faction::Ally => {
                                     spawn_effect_event_writer.send(SpawnEffectEvent {
                                         effect_type: EffectType::AllyBulletDespawn,
-                                        position: Vec2::new(
-                                            projectile_transform.translation.x,
-                                            projectile_transform.translation.y,
-                                        ),
-                                        scale: Vec2::ZERO,
-                                        rotation: projectile_transform.rotation.z,
+                                        transform: Transform {
+                                            translation: projectile_transform.translation,
+                                            scale: projectile_transform.scale,
+                                            ..Default::default()
+                                        },
                                         initial_motion: InitialMotion::default(),
                                     });
                                 }
@@ -384,9 +384,11 @@ fn explode_on_impact(
                     // spawn explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::EnemyBlastExplosion,
-                        position: transform.translation.xy(),
-                        scale: Vec2::ZERO,
-                        rotation: 0.0,
+                        transform: Transform {
+                            translation: transform.translation,
+                            scale: transform.scale,
+                            ..Default::default()
+                        },
                         initial_motion: InitialMotion::default(),
                     });
 
@@ -417,9 +419,11 @@ fn explode_on_impact(
                             // spawn explosion
                             spawn_effect_event_writer.send(SpawnEffectEvent {
                                 effect_type: EffectType::AllyBlastExplosion,
-                                position: transform.translation.xy(),
-                                scale: Vec2::ZERO,
-                                rotation: 0.0,
+                                transform: Transform {
+                                    translation: transform.translation,
+                                    scale: transform.scale,
+                                    ..Default::default()
+                                },
                                 initial_motion: InitialMotion::default(),
                             });
                         }
@@ -427,9 +431,11 @@ fn explode_on_impact(
                             // spawn explosion
                             spawn_effect_event_writer.send(SpawnEffectEvent {
                                 effect_type: EffectType::EnemyBlastExplosion,
-                                position: transform.translation.xy(),
-                                scale: Vec2::ZERO,
-                                rotation: 0.0,
+                                transform: Transform {
+                                    translation: transform.translation,
+                                    scale: transform.scale,
+                                    ..Default::default()
+                                },
                                 initial_motion: InitialMotion::default(),
                             });
                         }
@@ -461,9 +467,11 @@ fn explode_on_impact(
                             // spawn explosion
                             spawn_effect_event_writer.send(SpawnEffectEvent {
                                 effect_type: EffectType::AllyBlastExplosion,
-                                position: transform.translation.xy(),
-                                scale: Vec2::ZERO,
-                                rotation: 0.0,
+                                transform: Transform {
+                                    translation: transform.translation,
+                                    scale: transform.scale,
+                                    ..Default::default()
+                                },
                                 initial_motion: InitialMotion::default(),
                             });
                         }
@@ -471,9 +479,11 @@ fn explode_on_impact(
                             // spawn explosion
                             spawn_effect_event_writer.send(SpawnEffectEvent {
                                 effect_type: EffectType::EnemyBlastExplosion,
-                                position: transform.translation.xy(),
-                                scale: Vec2::ZERO,
-                                rotation: 0.0,
+                                transform: Transform {
+                                    translation: transform.translation,
+                                    scale: transform.scale,
+                                    ..Default::default()
+                                },
                                 initial_motion: InitialMotion::default(),
                             });
                         }

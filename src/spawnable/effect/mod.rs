@@ -49,11 +49,7 @@ pub struct SpawnEffectEvent {
     /// Type of the effect
     pub effect_type: EffectType,
     /// Position of the effect to spawn
-    pub position: Vec2,
-    /// Scale of the effect to spawn
-    pub scale: Vec2,
-    /// Rotation of the effect to spawn
-    pub rotation: f32,
+    pub transform: Transform,
     /// Initial motion of the effect
     pub initial_motion: InitialMotion,
 }
@@ -71,9 +67,7 @@ pub fn spawn_effect_system(
             &event.effect_type,
             &effects_resource,
             &effect_assets,
-            event.position,
-            event.scale,
-            event.rotation,
+            event.transform,
             event.initial_motion.clone(),
             &mut commands,
             &game_parameters,
@@ -86,9 +80,7 @@ pub fn spawn_effect(
     effect_type: &EffectType,
     effects_resource: &EffectsResource,
     effect_assets: &EffectAssets,
-    position: Vec2,
-    scale: Vec2,
-    rotation: f32,
+    transform: Transform,
     initial_motion: InitialMotion,
     commands: &mut Commands,
     game_parameters: &GameParametersResource,
@@ -98,6 +90,9 @@ pub fn spawn_effect(
 
     // spawn the effect
     let mut effect = commands.spawn_empty();
+
+    let mut effect_transform = transform;
+    effect_transform.translation.z = effect_data.z_level;
 
     effect
         .insert(SpriteSheetBundle {
@@ -125,6 +120,8 @@ pub fn spawn_effect(
         .insert(LockedAxes::default())
         .insert(RigidBody::KinematicVelocityBased)
         .insert(Velocity::from(initial_motion))
+        .insert(effect_transform)
+        /*
         .insert(TransformBundle::from_transform(Transform {
             translation: position.extend(effect_data.z_level),
             rotation: Quat::from_rotation_z(rotation),
@@ -134,6 +131,7 @@ pub fn spawn_effect(
                 1.0,
             ),
         }))
+        */
         .insert(GameCleanup)
         .insert(Name::new(effect_data.effect_type.to_string()));
 }

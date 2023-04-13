@@ -6,6 +6,7 @@ mod movement;
 
 use crate::assets::GameAudioAssets;
 use crate::audio;
+use crate::game::GameParametersResource;
 use crate::spawnable::{EffectType, InitialMotion, SpawnEffectEvent};
 use crate::states::AppStates;
 use crate::ui::EndGameTransitionResource;
@@ -27,6 +28,7 @@ pub fn player_death_system(
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
+    game_parameters: Res<GameParametersResource>,
 ) {
     for (entity, player, transform) in player_query.iter() {
         if player.health.is_dead() {
@@ -36,9 +38,15 @@ pub fn player_death_system(
             // spawn explosion effect
             effect_event_writer.send(SpawnEffectEvent {
                 effect_type: EffectType::MobExplosion,
-                position: transform.translation.xy(),
-                scale: Vec2::ZERO,
-                rotation: 0.0,
+                transform: Transform {
+                    translation: transform.translation,
+                    scale: Vec3::new(
+                        game_parameters.sprite_scale,
+                        game_parameters.sprite_scale,
+                        1.0,
+                    ),
+                    ..Default::default()
+                },
                 initial_motion: InitialMotion::default(),
             });
 

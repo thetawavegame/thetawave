@@ -2,6 +2,7 @@ use crate::{
     assets::GameAudioAssets,
     audio,
     collision::SortedCollisionEvent,
+    game::GameParametersResource,
     run::{ObjectiveType, RunResource},
     spawnable::{EffectType, InitialMotion, PlayerComponent, SpawnEffectEvent},
 };
@@ -36,6 +37,7 @@ pub fn consumable_execute_behavior_system(
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
+    game_parameters_res: Res<GameParametersResource>,
 ) {
     // put all collision events in a vector first (so that they can be looked at multiple times)
     let mut collision_events_vec = vec![];
@@ -62,6 +64,7 @@ pub fn consumable_execute_behavior_system(
                         &mut spawn_effect_event_writer,
                         &audio_channel,
                         &audio_assets,
+                        &game_parameters_res,
                     );
                 }
                 ConsumableBehavior::AttractToPlayer => {
@@ -132,6 +135,7 @@ fn apply_effects_on_impact(
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
     audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
     audio_assets: &GameAudioAssets,
+    game_parameters_res: &GameParametersResource,
 ) {
     for collision_event in collision_events.iter() {
         if let SortedCollisionEvent::PlayerToConsumableIntersection {
@@ -146,9 +150,15 @@ fn apply_effects_on_impact(
                 // spawn the consumable despawn effeect
                 spawn_effect_event_writer.send(SpawnEffectEvent {
                     effect_type: EffectType::ConsumableDespawn,
-                    position: transform.translation.xy(),
-                    scale: Vec2::ZERO,
-                    rotation: 0.0,
+                    transform: Transform {
+                        translation: transform.translation,
+                        scale: Vec3::new(
+                            game_parameters_res.sprite_scale,
+                            game_parameters_res.sprite_scale,
+                            1.0,
+                        ),
+                        ..Default::default()
+                    },
                     initial_motion: InitialMotion::default(),
                 });
 

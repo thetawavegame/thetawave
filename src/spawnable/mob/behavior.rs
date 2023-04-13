@@ -78,6 +78,7 @@ pub fn mob_execute_behavior_system(
     loot_drops_resource: Res<LootDropsResource>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
+    game_parameters: Res<GameParametersResource>,
 ) {
     // Get all contact events first (can't be read more than once within a system)
     let mut collision_events_vec = vec![];
@@ -103,15 +104,6 @@ pub fn mob_execute_behavior_system(
                         projectile_spawner.timer.tick(time.delta());
 
                         if projectile_spawner.timer.just_finished() {
-                            let position = match projectile_spawner.position {
-                                SpawnPosition::Global(coords) => coords,
-                                SpawnPosition::Local(coords) => {
-                                    mob_transform.translation.xy()
-                                        + mob_transform.local_x().xy() * coords.x
-                                        + mob_transform.local_y().xy() * coords.y
-                                }
-                            };
-
                             let projectile_transform = Transform {
                                 translation: match projectile_spawner.position {
                                     SpawnPosition::Global(coords) => coords.extend(1.0),
@@ -191,6 +183,7 @@ pub fn mob_execute_behavior_system(
                         mob_transform,
                         &audio_channel,
                         &audio_assets,
+                        &game_parameters,
                     );
                 }
                 MobBehavior::DealDamageToPlayerOnImpact => {
@@ -215,9 +208,15 @@ pub fn mob_execute_behavior_system(
                         // spawn mob explosion
                         spawn_effect_event_writer.send(SpawnEffectEvent {
                             effect_type: EffectType::MobExplosion,
-                            position: mob_transform.translation.xy(),
-                            scale: Vec2::ZERO,
-                            rotation: 0.0,
+                            transform: Transform {
+                                translation: mob_transform.translation,
+                                scale: Vec3::new(
+                                    game_parameters.sprite_scale,
+                                    game_parameters.sprite_scale,
+                                    1.0,
+                                ),
+                                ..Default::default()
+                            },
                             initial_motion: InitialMotion::default(),
                         });
 
@@ -342,6 +341,7 @@ fn explode_on_impact(
     transform: &Transform,
     audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
     audio_assets: &GameAudioAssets,
+    game_parameters: &GameParametersResource,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
@@ -358,9 +358,15 @@ fn explode_on_impact(
                     // spawn mob explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::MobExplosion,
-                        position: transform.translation.xy(),
-                        scale: Vec2::ZERO,
-                        rotation: 0.0,
+                        transform: Transform {
+                            translation: transform.translation,
+                            scale: Vec3::new(
+                                game_parameters.sprite_scale,
+                                game_parameters.sprite_scale,
+                                1.0,
+                            ),
+                            ..Default::default()
+                        },
                         initial_motion: InitialMotion::default(),
                     });
                     // despawn mob
@@ -381,9 +387,15 @@ fn explode_on_impact(
                     // spawn mob explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::MobExplosion,
-                        position: transform.translation.xy(),
-                        scale: Vec2::ZERO,
-                        rotation: 0.0,
+                        transform: Transform {
+                            translation: transform.translation,
+                            scale: Vec3::new(
+                                game_parameters.sprite_scale,
+                                game_parameters.sprite_scale,
+                                1.0,
+                            ),
+                            ..Default::default()
+                        },
                         initial_motion: InitialMotion::default(),
                     });
                     // despawn mob
@@ -403,9 +415,15 @@ fn explode_on_impact(
                 if entity == *mob_entity {
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::MobExplosion,
-                        position: transform.translation.xy(),
-                        scale: Vec2::ZERO,
-                        rotation: 0.0,
+                        transform: Transform {
+                            translation: transform.translation,
+                            scale: Vec3::new(
+                                game_parameters.sprite_scale,
+                                game_parameters.sprite_scale,
+                                1.0,
+                            ),
+                            ..Default::default()
+                        },
                         initial_motion: InitialMotion::default(),
                     });
                     commands.entity(entity).despawn_recursive();

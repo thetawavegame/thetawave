@@ -9,6 +9,7 @@ use crate::{
     assets::GameAudioAssets,
     audio,
     collision::SortedCollisionEvent,
+    game::GameParametersResource,
     loot::LootDropsResource,
     player::PlayerComponent,
     spawnable::{
@@ -72,6 +73,7 @@ pub fn mob_segment_execute_behavior_system(
     time: Res<Time>,
     mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
     mut mob_segment_destroyed_event_writer: EventWriter<MobSegmentDestroyedEvent>,
+    game_parameters: Res<GameParametersResource>,
 ) {
     let mut collision_events_vec = vec![];
     for collision_event in collision_events.iter() {
@@ -106,9 +108,15 @@ pub fn mob_segment_execute_behavior_system(
                         // spawn mob explosion
                         spawn_effect_event_writer.send(SpawnEffectEvent {
                             effect_type: EffectType::MobExplosion,
-                            position: mob_segment_transform.translation.xy(),
-                            scale: Vec2::ZERO,
-                            rotation: 0.0,
+                            transform: Transform {
+                                translation: mob_segment_transform.translation,
+                                scale: Vec3::new(
+                                    game_parameters.sprite_scale,
+                                    game_parameters.sprite_scale,
+                                    1.0,
+                                ),
+                                ..Default::default()
+                            },
                             initial_motion: InitialMotion::default(),
                         });
 

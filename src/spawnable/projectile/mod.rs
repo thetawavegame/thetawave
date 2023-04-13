@@ -133,8 +133,6 @@ pub fn spawn_projectile(
     projectile_transform.scale.y *= game_parameters.sprite_scale;
     projectile_transform.scale.z = 1.0;
 
-    println!("Projectile transform: {:?}", projectile_transform);
-
     projectile
         .insert(LockedAxes::ROTATION_LOCKED)
         .insert(SpriteSheetBundle {
@@ -150,7 +148,6 @@ pub fn spawn_projectile(
         })
         .insert(RigidBody::Dynamic)
         .insert(Velocity::from(initial_motion))
-        .insert(projectile_transform)
         .insert(projectile_transform)
         .insert(Collider::cuboid(
             projectile_data.collider.dimensions.x,
