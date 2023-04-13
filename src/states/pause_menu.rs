@@ -1,4 +1,4 @@
-use super::AppStates;
+use super::{AppStates, GameStates};
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
@@ -10,7 +10,7 @@ pub fn open_pause_menu_system(
     gamepads: Res<Gamepads>,
     mut gamepad_input: ResMut<Input<GamepadButton>>,
     mut keyboard_input: ResMut<Input<KeyCode>>,
-    mut app_state: ResMut<State<AppStates>>,
+    mut next_game_state: ResMut<NextState<GameStates>>,
     mut rapier_config: ResMut<RapierConfiguration>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::MenuAudioChannel>>,
@@ -29,6 +29,8 @@ pub fn open_pause_menu_system(
     if pause_input {
         // push pause state
         //app_state.push(AppStates::PauseMenu); // TODO Fix pausing with orthoganal state set
+
+        next_game_state.set(GameStates::Paused);
 
         // play sound effect
         audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
@@ -54,7 +56,7 @@ pub fn close_pause_menu_system(
     gamepads: Res<Gamepads>,
     mut gamepad_input: ResMut<Input<GamepadButton>>,
     mut keyboard_input: ResMut<Input<KeyCode>>,
-    mut app_state: ResMut<State<AppStates>>,
+    mut next_game_state: ResMut<NextState<GameStates>>,
     mut rapier_config: ResMut<RapierConfiguration>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::MenuAudioChannel>>,
@@ -73,6 +75,7 @@ pub fn close_pause_menu_system(
     if unpause_input {
         // pop pause state
         //app_state.pop().unwrap(); // TODO Fix pausing with orthoganal state set
+        next_game_state.set(GameStates::Playing);
 
         // play sound effect
         audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));

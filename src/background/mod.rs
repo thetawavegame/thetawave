@@ -24,7 +24,11 @@ impl Plugin for BackgroundPlugin {
                 .in_schedule(OnEnter(states::AppStates::Game)),
         );
 
-        app.add_systems((rotate_planet_system,).in_set(OnUpdate(states::AppStates::Game)));
+        app.add_systems(
+            (rotate_planet_system,)
+                .in_set(OnUpdate(states::AppStates::Game))
+                .in_set(OnUpdate(states::GameStates::Playing)),
+        );
     }
 }
 

@@ -32,11 +32,11 @@
 			collider_dimensions: (4.0 , 5.5),
 			collider_density: 1.5,
 			character_type: Juggernaut,
-			projectile_type: Bullet(Ally),
+			projectile_type: Blast(Ally),
 			projectile_despawn_time: 0.6,
 			projectile_velocity: (0.0, 400.0),
 			projectile_offset_position: (0.0, 45.0),
-			fire_period: 0.6,
+			fire_period: 0.7, // currently gets overwritten by the fire rate increase from collecting the rocks
 			health: (
 				max_health: 200.0,
 				health: 200.0,

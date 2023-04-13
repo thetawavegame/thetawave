@@ -108,7 +108,8 @@ impl Plugin for SpawnablePlugin {
                 spawn_consumable_system, // event generated in mob execute behavior
                 spawn_mob_system,        // event generated in mob execute behavior
             )
-                .in_set(OnUpdate(states::AppStates::Game)),
+                .in_set(OnUpdate(states::AppStates::Game))
+                .in_set(OnUpdate(states::GameStates::Playing)),
         );
     }
 }

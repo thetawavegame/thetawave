@@ -49,7 +49,8 @@ impl Plugin for UiPlugin {
 
         app.add_systems(
             (update_ui.after(GameUpdateSet::UpdateUi), fade_out_system)
-                .in_set(OnUpdate(states::AppStates::Game)),
+                .in_set(OnUpdate(states::AppStates::Game))
+                .in_set(OnUpdate(states::GameStates::Playing)),
         );
 
         app.add_systems(
@@ -61,6 +62,12 @@ impl Plugin for UiPlugin {
         );
 
         app.add_systems((game_over_fade_in_system,).in_set(OnUpdate(states::AppStates::GameOver)));
+
+        app.add_systems((setup_victory_system,).in_schedule(OnEnter(states::AppStates::Victory)));
+
+        app.add_systems((victory_fade_in_system,).in_set(OnUpdate(states::AppStates::Victory)));
+
+        app.add_systems((setup_pause_system,).in_schedule(OnEnter(states::GameStates::Paused)));
     }
 }
 

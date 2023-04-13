@@ -383,7 +383,7 @@
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
 			DieAtZeroHealth,
-			PeriodicFire("bullet"),
+			PeriodicFire("blast"),
 		],
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
@@ -432,6 +432,18 @@
 						health: 10.0,
 						armor: 0,
 					))
+				)
+			],
+			"blast": [
+				(
+					projectile_type: Blast(Enemy),
+					period: 3.0,
+					position: Local((0.0, -40.0)),
+					despawn_time: 2.5,
+					initial_motion: (
+						random_angvel: None,
+						linvel: Some((0.0, -400.0)),
+					),
 				)
 			]
 		}

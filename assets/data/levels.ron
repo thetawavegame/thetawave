@@ -46,6 +46,7 @@
 		)),
 		timeline: (
 			phases: [
+				/*
 				(
 					phase_type: Boss(
 						mob_type: Enemy(Repeater),
@@ -54,6 +55,10 @@
         				is_defeated: false,			
 					)
 				),
+				*/
+				(
+					phase_type: Break( time: 5.0)
+				)
 			],
 		),
 	),

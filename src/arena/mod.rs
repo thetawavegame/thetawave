@@ -22,6 +22,10 @@ impl Plugin for ArenaPlugin {
                 .in_schedule(OnEnter(states::AppStates::Game)),
         );
 
-        app.add_systems((despawn_gates_system,).in_set(OnUpdate(states::AppStates::Game)));
+        app.add_systems(
+            (despawn_gates_system,)
+                .in_set(OnUpdate(states::AppStates::Game))
+                .in_set(OnUpdate(states::GameStates::Playing)),
+        );
     }
 }

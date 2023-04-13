@@ -10,7 +10,7 @@ use leafwing_input_manager::prelude::*;
 use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
 use ron::de::from_bytes;
-use states::{AppStates, GameCleanup};
+use states::{AppStates, GameCleanup, GameStates};
 use std::collections::HashMap;
 use ui::EndGameTransitionResource;
 
@@ -96,6 +96,7 @@ fn main() {
     let mut app = App::new();
 
     app.add_state::<AppStates>(); // start game in the main menu state
+    app.add_state::<GameStates>(); // start the game in playing state
 
     // insert resources for all game states
     app.add_plugins(
@@ -106,7 +107,6 @@ fn main() {
             })
             .set(ImagePlugin::default_nearest()),
     )
-    .add_plugin(EditorPlugin::new())
     .add_plugin(player::PlayerPlugin)
     .add_plugin(spawnable::SpawnablePlugin)
     .add_plugin(run::RunPlugin)
@@ -149,54 +149,16 @@ fn main() {
             .in_schedule(OnEnter(states::AppStates::Game)),
     );
 
+    if cfg!(debug_assertions) {
+        app.add_plugin(EditorPlugin::new());
+    }
     /*
-
-    app.add_systems((ui::setup_pause_system).in_schedule(OnEnter(states::AppStates::PauseMenu)));
-
-    app.add_systems((states::clear_state_system).in_schedule(OnExit(states::AppStates::PauseMenu)));
-
-    app.add_systems(
-        (
-            run::reset_run_system,
-        )
-            .in_schedule(OnUpdate(states::AppStates::GameOver)),
-    );
-
-    app.add_systems((states::clear_state_system).in_schedule(OnExit(states::AppStates::GameOver)));
-
-    app.add_systems(
-        (
-            ui::victory_fade_in_system,
-            run::reset_run_system,
-            states::quit_game_system,
-        )
-            .in_schedule(OnUpdate(states::AppStates::Victory)),
-    );
-
-    app.add_systems((ui::setup_victory_system).in_schedule(OnEnter(states::AppStates::Victory)));
-
-    app.add_systems((states::clear_state_system).in_schedule(OnExit(states::AppStates::Victory)));
-
-
-
-
-
-    app.add_systems(
-        (states::close_pause_menu_system, run::reset_run_system)
-            .in_schedule(OnUpdate(states::AppStates::PauseMenu)),
-    );
-
-
 
     if cfg!(debug_assertions) {
         app.add_system_set(
             SystemSet::on_update(states::AppStates::Game).with_system(ui::game_debug_ui),
         );
     }
-
-    app.add_system_set(
-        SystemSet::on_exit(states::AppStates::Game).with_system(states::clear_state_system),
-    );
 
     // plugins to use only in debug mode
     if cfg!(debug_assertions) {

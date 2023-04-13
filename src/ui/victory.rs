@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
 use crate::states::AppStates;
+use crate::states::VictoryCleanup;
 use crate::ui::BouncingPromptComponent;
 use crate::ui::EndGameTransitionResource;
 
@@ -69,7 +70,7 @@ pub fn setup_victory_system(mut commands: Commands, asset_server: Res<AssetServe
             background_color: Color::rgba(0.0, 0.0, 0.0, 0.0).into(),
             ..Default::default()
         })
-        //.insert(AppStateComponent(AppStates::Victory))
+        .insert(VictoryCleanup)
         .insert(VictoryUI)
         .with_children(|parent| {
             parent

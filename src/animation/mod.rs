@@ -7,7 +7,11 @@ pub struct AnimationPlugin;
 
 impl Plugin for AnimationPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems((animate_sprite_system,).in_set(OnUpdate(states::AppStates::Game)));
+        app.add_systems(
+            (animate_sprite_system,)
+                .in_set(OnUpdate(states::AppStates::Game))
+                .in_set(OnUpdate(states::GameStates::Playing)),
+        );
     }
 }
 

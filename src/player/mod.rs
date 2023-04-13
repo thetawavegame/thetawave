@@ -41,7 +41,8 @@ impl Plugin for PlayerPlugin {
                 player_movement_system.in_set(GameUpdateSet::Movement),
                 player_ability_system.in_set(GameUpdateSet::Abilities),
             )
-                .in_set(OnUpdate(states::AppStates::Game)),
+                .in_set(OnUpdate(states::AppStates::Game))
+                .in_set(OnUpdate(states::GameStates::Playing)),
         );
     }
 }

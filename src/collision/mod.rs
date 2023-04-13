@@ -17,7 +17,8 @@ impl Plugin for CollisionPlugin {
                 intersection_collision_system.in_set(GameUpdateSet::IntersectionCollision),
                 contact_collision_system.in_set(GameUpdateSet::ContactCollision),
             )
-                .in_set(OnUpdate(states::AppStates::Game)),
+                .in_set(OnUpdate(states::AppStates::Game))
+                .in_set(OnUpdate(states::GameStates::Playing)),
         );
     }
 }

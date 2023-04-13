@@ -18,38 +18,38 @@ pub struct StatesPlugin;
 impl Plugin for StatesPlugin {
     fn build(&self, app: &mut App) {
         app.add_loading_state(
-            LoadingState::new(AppStates::LoadingGame).continue_to_state(AppStates::Game),
+            LoadingState::new(AppStates::LoadingAssets).continue_to_state(AppStates::MainMenu),
         )
         .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
-            AppStates::LoadingGame,
+            AppStates::LoadingAssets,
             "player_assets.assets.ron",
         )
         .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
-            AppStates::LoadingGame,
+            AppStates::LoadingAssets,
             "projectile_assets.assets.ron",
         )
         .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
-            AppStates::LoadingGame,
+            AppStates::LoadingAssets,
             "mob_assets.assets.ron",
         )
         .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
-            AppStates::LoadingGame,
+            AppStates::LoadingAssets,
             "consumable_assets.assets.ron",
         )
         .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
-            AppStates::LoadingGame,
+            AppStates::LoadingAssets,
             "effect_assets.assets.ron",
         )
         .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
-            AppStates::LoadingGame,
+            AppStates::LoadingAssets,
             "game_audio_assets.assets.ron",
         )
-        .add_collection_to_loading_state::<_, assets::PlayerAssets>(AppStates::LoadingGame)
-        .add_collection_to_loading_state::<_, assets::ProjectileAssets>(AppStates::LoadingGame)
-        .add_collection_to_loading_state::<_, assets::MobAssets>(AppStates::LoadingGame)
-        .add_collection_to_loading_state::<_, assets::ConsumableAssets>(AppStates::LoadingGame)
-        .add_collection_to_loading_state::<_, assets::EffectAssets>(AppStates::LoadingGame)
-        .add_collection_to_loading_state::<_, assets::GameAudioAssets>(AppStates::LoadingGame);
+        .add_collection_to_loading_state::<_, assets::PlayerAssets>(AppStates::LoadingAssets)
+        .add_collection_to_loading_state::<_, assets::ProjectileAssets>(AppStates::LoadingAssets)
+        .add_collection_to_loading_state::<_, assets::MobAssets>(AppStates::LoadingAssets)
+        .add_collection_to_loading_state::<_, assets::ConsumableAssets>(AppStates::LoadingAssets)
+        .add_collection_to_loading_state::<_, assets::EffectAssets>(AppStates::LoadingAssets)
+        .add_collection_to_loading_state::<_, assets::GameAudioAssets>(AppStates::LoadingAssets);
 
         app.edit_schedule(OnEnter(AppStates::Game), |schedule| {
             schedule.configure_sets(
@@ -83,7 +83,11 @@ impl Plugin for StatesPlugin {
                 .chain(),
         );
 
-        app.add_systems((open_pause_menu_system,).in_set(OnUpdate(AppStates::Game)));
+        app.add_systems(
+            (open_pause_menu_system,)
+                .in_set(OnUpdate(AppStates::Game))
+                .in_set(OnUpdate(GameStates::Playing)),
+        );
 
         app.add_systems(
             (start_game_system, quit_game_system).in_set(OnUpdate(AppStates::MainMenu)), //.distributive_run_if(in_state(AppStates::MainMenu))
@@ -101,6 +105,18 @@ impl Plugin for StatesPlugin {
         app.add_systems(
             (clear_state_system::<GameOverCleanup>,).in_schedule(OnExit(AppStates::GameOver)),
         );
+
+        app.add_systems((quit_game_system,).in_set(OnUpdate(AppStates::Victory)));
+
+        app.add_systems(
+            (clear_state_system::<VictoryCleanup>,).in_schedule(OnExit(AppStates::Victory)),
+        );
+
+        app.add_systems(
+            (clear_state_system::<PauseCleanup>,).in_schedule(OnExit(GameStates::Paused)),
+        );
+
+        app.add_systems((close_pause_menu_system,).in_set(OnUpdate(GameStates::Paused)));
     }
 }
 
@@ -108,12 +124,19 @@ impl Plugin for StatesPlugin {
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default, States)]
 pub enum AppStates {
     #[default]
+    LoadingAssets,
     MainMenu,
-    PauseMenu,
-    LoadingGame,
+    //LoadingGame, // assets can currently only be loaded once
     Game,
     GameOver,
     Victory,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, States)]
+pub enum GameStates {
+    #[default]
+    Playing,
+    Paused,
 }
 
 #[derive(Component)]
@@ -125,21 +148,27 @@ pub struct GameCleanup;
 #[derive(Component)]
 pub struct GameOverCleanup;
 
+#[derive(Component)]
+pub struct VictoryCleanup;
+
+#[derive(Component)]
+pub struct PauseCleanup;
+
 // remove entities tagged for the current app state
 pub fn clear_state_system<T: Component>(
     mut commands: Commands,
-    mut despawn_entities_query: Query<Entity, With<T>>,
-    //app_state: Res<State<AppStates>>,
+    despawn_entities_query: Query<Entity, With<T>>,
 ) {
-    //println!("clearing state: {:?}", app_state.0);
-    /*
-    for (entity, entity_app_state) in despawn_entities_query.iter_mut() {
-        if app_state.0 == entity_app_state.0 {
-            commands.entity(entity).despawn_recursive();
-        }
-    }*/
-
     for entity in despawn_entities_query.iter() {
         commands.entity(entity).despawn_recursive();
     }
+}
+
+pub fn unload_game_assets(mut commands: Commands) {
+    commands.remove_resource::<assets::PlayerAssets>();
+    commands.remove_resource::<assets::ProjectileAssets>();
+    commands.remove_resource::<assets::MobAssets>();
+    commands.remove_resource::<assets::ConsumableAssets>();
+    commands.remove_resource::<assets::EffectAssets>();
+    commands.remove_resource::<assets::GameAudioAssets>();
 }

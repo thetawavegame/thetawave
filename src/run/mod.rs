@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_asset_loader::prelude::AssetCollection;
 use bevy_kira_audio::prelude::*;
 use ron::de::from_bytes;
 use std::time::Duration;
@@ -8,7 +9,7 @@ use crate::{
     assets::GameAudioAssets,
     audio,
     spawnable::{MobDestroyedEvent, SpawnMobEvent},
-    states::{self, AppStates},
+    states::{self, AppStates, GameStates},
     ui::EndGameTransitionResource,
     GameEnterSet, GameUpdateSet,
 };
@@ -56,10 +57,14 @@ impl Plugin for RunPlugin {
                 spawn_formation_system.in_set(GameUpdateSet::Spawn),
                 next_level_system.in_set(GameUpdateSet::NextLevel),
             )
-                .in_set(OnUpdate(states::AppStates::Game)),
+                .in_set(OnUpdate(states::AppStates::Game))
+                .in_set(OnUpdate(states::GameStates::Playing)),
         );
 
         app.add_systems((reset_run_system,).in_set(OnUpdate(states::AppStates::GameOver)));
+
+        app.add_systems((reset_run_system,).in_set(OnUpdate(states::AppStates::Victory)));
+        app.add_systems((reset_run_system,).in_set(OnUpdate(states::GameStates::Paused)));
     }
 }
 
@@ -135,6 +140,7 @@ pub fn reset_run_system(
     mut gamepad_input: ResMut<Input<GamepadButton>>,
     mut keyboard_input: ResMut<Input<KeyCode>>,
     mut next_app_state: ResMut<NextState<AppStates>>,
+    mut next_game_state: ResMut<NextState<GameStates>>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::MenuAudioChannel>>,
 ) {
@@ -152,6 +158,7 @@ pub fn reset_run_system(
     if reset {
         // go to the main menu state
         next_app_state.set(AppStates::MainMenu);
+        next_game_state.set(GameStates::Playing);
 
         // play menu input sound
         // TODO: change to using loaded assets
