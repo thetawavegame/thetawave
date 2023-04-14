@@ -20,7 +20,7 @@ pub fn start_game_system(
     for gamepad in gamepads.iter() {
         start_input |= gamepad_input.just_released(GamepadButton {
             gamepad,
-            button_type: GamepadButtonType::East,
+            button_type: GamepadButtonType::South,
         });
     }
 
@@ -39,7 +39,7 @@ pub fn start_game_system(
         for gamepad in gamepads.iter() {
             gamepad_input.reset(GamepadButton {
                 gamepad,
-                button_type: GamepadButtonType::East,
+                button_type: GamepadButtonType::South,
             });
         }
     }

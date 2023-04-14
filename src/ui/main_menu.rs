@@ -39,7 +39,7 @@ pub fn setup_main_menu_system(mut commands: Commands, asset_server: Res<AssetSer
                     parent
                         .spawn(ImageBundle {
                             image: asset_server
-                                .load("texture/start_game_prompt_controller.png")
+                                .load("texture/start_game_prompt_arcade.png")
                                 .into(),
                             style: Style {
                                 size: Size::new(Val::Px(400.0), Val::Px(100.0)),
@@ -56,7 +56,7 @@ pub fn setup_main_menu_system(mut commands: Commands, asset_server: Res<AssetSer
                         .insert(BouncingPromptComponent {
                             flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
                         });
-
+                    /*
                     parent
                         .spawn(ImageBundle {
                             image: asset_server
@@ -77,6 +77,7 @@ pub fn setup_main_menu_system(mut commands: Commands, asset_server: Res<AssetSer
                         .insert(BouncingPromptComponent {
                             flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
                         });
+                        */
                 });
         });
 }

@@ -40,7 +40,7 @@ pub fn player_fire_weapon_system(
         for gamepad in gamepads.iter() {
             left_mouse |= gamepad_input.pressed(GamepadButton {
                 gamepad,
-                button_type: GamepadButtonType::East,
+                button_type: GamepadButtonType::RightTrigger,
             });
         }
 

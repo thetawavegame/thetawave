@@ -29,6 +29,9 @@ pub fn player_ability_system(
         let mut right =
             keyboard_input.pressed(KeyCode::D) || keyboard_input.pressed(KeyCode::Right);
 
+        let mut activate_ability_input =
+            keyboard_input.pressed(KeyCode::LShift) || mouse_input.pressed(MouseButton::Right);
+
         for gamepad in gamepads.iter() {
             up |= gamepad_input.pressed(GamepadButton {
                 gamepad,
@@ -46,14 +49,17 @@ pub fn player_ability_system(
                 gamepad,
                 button_type: GamepadButtonType::DPadRight,
             });
+
+            activate_ability_input |= gamepad_input.pressed(GamepadButton {
+                gamepad,
+                button_type: GamepadButtonType::LeftTrigger,
+            });
         }
 
         player_component.ability_cooldown_timer.tick(time.delta());
 
         // start ability if input pressed and available
-        if player_component.ability_cooldown_timer.finished()
-            && (keyboard_input.pressed(KeyCode::LShift) || mouse_input.pressed(MouseButton::Right))
-        {
+        if player_component.ability_cooldown_timer.finished() && activate_ability_input {
             // perform ability
             match player_component.ability_type {
                 crate::player::components::AbilityType::Charge(ability_duration) => {

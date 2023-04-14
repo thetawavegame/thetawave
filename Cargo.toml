@@ -32,3 +32,7 @@ opt-level = 3
 
 [profile.dev]
 opt-level = 1
+
+# For bevy-rapier2d
+[profile.release]
+codegen-units = 1
