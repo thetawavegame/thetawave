@@ -90,9 +90,11 @@ impl Plugin for StatesPlugin {
         );
 
         app.add_systems(
-            (start_game_system, quit_game_system).in_set(OnUpdate(AppStates::MainMenu)), //.distributive_run_if(in_state(AppStates::MainMenu))
-                                                                                         //.in_base_set(CoreSet::PreUpdate),
+            (start_instructions_system, quit_game_system).in_set(OnUpdate(AppStates::MainMenu)), //.distributive_run_if(in_state(AppStates::MainMenu))
+                                                                                                 //.in_base_set(CoreSet::PreUpdate),
         );
+
+        app.add_systems((start_game_system,).in_set(OnUpdate(AppStates::Instructions)));
 
         app.add_systems(
             (clear_state_system::<MainMenuCleanup>,).in_schedule(OnExit(AppStates::MainMenu)),
@@ -116,6 +118,11 @@ impl Plugin for StatesPlugin {
             (clear_state_system::<PauseCleanup>,).in_schedule(OnExit(GameStates::Paused)),
         );
 
+        app.add_systems(
+            (clear_state_system::<InstructionsCleanup>,)
+                .in_schedule(OnExit(AppStates::Instructions)),
+        );
+
         app.add_systems((close_pause_menu_system,).in_set(OnUpdate(GameStates::Paused)));
     }
 }
@@ -126,6 +133,7 @@ pub enum AppStates {
     #[default]
     LoadingAssets,
     MainMenu,
+    Instructions,
     //LoadingGame, // assets can currently only be loaded once
     Game,
     GameOver,
@@ -153,6 +161,9 @@ pub struct VictoryCleanup;
 
 #[derive(Component)]
 pub struct PauseCleanup;
+
+#[derive(Component)]
+pub struct InstructionsCleanup;
 
 // remove entities tagged for the current app state
 pub fn clear_state_system<T: Component>(

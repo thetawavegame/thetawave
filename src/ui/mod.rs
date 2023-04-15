@@ -14,10 +14,12 @@ use crate::{
 
 mod debug;
 mod game_over;
+mod instructions;
 mod main_menu;
 mod pause_menu;
 mod victory;
 
+use self::instructions::setup_instructions_system;
 pub use self::{
     debug::game_debug_ui,
     game_over::{
@@ -52,6 +54,10 @@ impl Plugin for UiPlugin {
 
         app.add_systems(
             (setup_main_menu_system,).in_schedule(OnEnter(states::AppStates::MainMenu)),
+        );
+
+        app.add_systems(
+            (setup_instructions_system,).in_schedule(OnEnter(states::AppStates::Instructions)),
         );
 
         app.add_systems(

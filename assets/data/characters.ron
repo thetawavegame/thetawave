@@ -2,7 +2,8 @@
 	characters: {
 		"captain": (
 			acceleration: (14.0, 14.0),
-			deceleration: (2.0, 2.0),
+			//deceleration: (2.0, 2.0), // for pc
+			deceleration: (8.0, 8.0), // for arcade
 			speed: (250.0, 250.0),
 			collider_dimensions: (2.0 , 4.0),
 			collider_density: 1.0,
