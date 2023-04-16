@@ -118,6 +118,8 @@ impl RunResource {
         mob_reached_bottom: &mut EventReader<MobReachedBottomGateEvent>,
         formation_pools: &formation::FormationPoolsResource,
         end_game_trans_resource: &mut EndGameTransitionResource,
+        audio_channel: &AudioChannel<audio::BackgroundMusicAudioChannel>,
+        audio_assets: &GameAudioAssets,
     ) {
         if let Some(level) = &mut self.level {
             level.tick(
@@ -129,6 +131,8 @@ impl RunResource {
                 mob_reached_bottom,
                 formation_pools,
                 end_game_trans_resource,
+                audio_channel,
+                audio_assets,
             );
         }
     }

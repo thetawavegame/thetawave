@@ -78,6 +78,10 @@ impl Plugin for UiPlugin {
 #[derive(Component)]
 pub struct HealthUI;
 
+#[derive(Component)]
+
+pub struct AbilityUI;
+
 /// Tag for armor ui
 #[derive(Component)]
 pub struct ArmorUI;
@@ -96,8 +100,76 @@ pub struct FPSUI;
 #[derive(Component)]
 pub struct StatBarLabel;
 
+#[derive(Component)]
+pub struct AbilityChargingUI;
+
+#[derive(Component)]
+pub struct AbilityReadyUI;
+
 /// Initialize all ui
 pub fn setup_game_ui_system(mut commands: Commands, asset_server: ResMut<AssetServer>) {
+    commands
+        .spawn(NodeBundle {
+            style: Style {
+                size: Size {
+                    width: Val::Px(80.0),
+                    height: Val::Px(15.0),
+                },
+                position: UiRect {
+                    left: Val::Percent(91.5),
+                    bottom: Val::Percent(65.0),
+                    ..UiRect::default()
+                },
+                position_type: PositionType::Absolute,
+                ..Style::default()
+            },
+            background_color: Color::PURPLE.into(),
+            ..NodeBundle::default()
+        })
+        .insert(GameCleanup)
+        .insert(AbilityUI);
+
+    commands
+        .spawn(ImageBundle {
+            image: asset_server.load("texture/ability_charging.png").into(),
+            style: Style {
+                position: UiRect {
+                    left: Val::Percent(90.5),
+                    bottom: Val::Percent(63.0),
+                    ..default()
+                },
+                position_type: PositionType::Absolute,
+                ..default()
+            },
+            transform: Transform::from_xyz(0.0, 0.0, 1.0),
+            ..Default::default()
+        })
+        .insert(GameCleanup)
+        .insert(AbilityChargingUI)
+        .insert(StatBarLabel);
+
+    commands
+        .spawn(ImageBundle {
+            image: asset_server.load("texture/ability_ready.png").into(),
+            style: Style {
+                position: UiRect {
+                    left: Val::Percent(91.5),
+                    bottom: Val::Percent(65.0),
+                    ..default()
+                },
+                position_type: PositionType::Absolute,
+                ..default()
+            },
+            transform: Transform::from_xyz(0.0, 0.0, 1.0),
+            ..Default::default()
+        })
+        .insert(GameCleanup)
+        .insert(AbilityReadyUI)
+        .insert(BouncingPromptComponent {
+            flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
+        })
+        .insert(StatBarLabel);
+
     commands
         .spawn(NodeBundle {
             style: Style {
@@ -303,6 +375,9 @@ pub fn update_ui(
         Query<&mut Style, With<LevelUI>>,
         Query<&mut BackgroundColor, With<ArmorUI>>,
         Query<(&mut BackgroundColor, &mut Transform, &mut PowerGlowUI)>,
+        Query<&mut Style, With<AbilityUI>>,
+        Query<&mut Visibility, With<AbilityChargingUI>>,
+        Query<&mut Visibility, With<AbilityReadyUI>>,
     )>,
     player_query: Query<&PlayerComponent>,
     run_resource: Res<RunResource>,
@@ -351,6 +426,51 @@ pub fn update_ui(
             ui_color
                 .0
                 .set_a((0.5 * (power_glow.0.elapsed_secs() * std::f32::consts::PI).sin()) + 0.5);
+        }
+    }
+
+    // update player ability ui
+    for mut style_component in ui_queries.p4().iter_mut() {
+        for player_component in player_query.iter() {
+            let cooldown_ratio = player_component.ability_cooldown_timer.elapsed_secs()
+                / player_component
+                    .ability_cooldown_timer
+                    .duration()
+                    .as_secs_f32();
+
+            style_component.size.width = Val::Px(80.0 * cooldown_ratio);
+        }
+    }
+
+    for mut visibility_component in ui_queries.p5().iter_mut() {
+        for player_component in player_query.iter() {
+            let cooldown_ratio = player_component.ability_cooldown_timer.elapsed_secs()
+                / player_component
+                    .ability_cooldown_timer
+                    .duration()
+                    .as_secs_f32();
+
+            if cooldown_ratio as i8 == 1 {
+                *visibility_component = Visibility::Hidden;
+            } else {
+                *visibility_component = Visibility::Visible;
+            }
+        }
+    }
+
+    for mut visibility_component in ui_queries.p6().iter_mut() {
+        for player_component in player_query.iter() {
+            let cooldown_ratio = player_component.ability_cooldown_timer.elapsed_secs()
+                / player_component
+                    .ability_cooldown_timer
+                    .duration()
+                    .as_secs_f32();
+
+            if cooldown_ratio as i8 == 1 {
+                *visibility_component = Visibility::Visible;
+            } else {
+                *visibility_component = Visibility::Hidden;
+            }
         }
     }
 }

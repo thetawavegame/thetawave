@@ -13,6 +13,7 @@ impl Plugin for ThetawaveAudioPlugin {
 
         app.add_startup_system(set_audio_volume_system);
 
+        /*
         app.add_systems(
             (start_background_audio_system.in_set(GameEnterSet::BuildLevel),)
                 .in_schedule(OnEnter(states::AppStates::Game)),
@@ -21,6 +22,7 @@ impl Plugin for ThetawaveAudioPlugin {
         app.add_systems(
             (stop_background_audio_system,).in_schedule(OnEnter(states::AppStates::MainMenu)),
         );
+        */
     }
 }
 
@@ -48,7 +50,7 @@ pub fn set_audio_volume_system(
     menu_audio_channel: Res<AudioChannel<MenuAudioChannel>>,
     effects_audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
 ) {
-    background_audio_channel.set_volume(0.60);
+    background_audio_channel.set_volume(0.70);
     menu_audio_channel.set_volume(0.05);
-    effects_audio_channel.set_volume(0.70);
+    effects_audio_channel.set_volume(0.60);
 }

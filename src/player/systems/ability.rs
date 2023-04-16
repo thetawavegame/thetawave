@@ -1,7 +1,10 @@
 use bevy::prelude::*;
+use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::{ExternalImpulse, RigidBody, Velocity};
 
 use crate::{
+    assets::GameAudioAssets,
+    audio,
     player::PlayerComponent,
     spawnable::{InitialMotion, SpawnProjectileEvent},
 };
@@ -19,6 +22,8 @@ pub fn player_ability_system(
     gamepads: Res<Gamepads>,
     gamepad_input: Res<Input<GamepadButton>>,
     mouse_input: Res<Input<MouseButton>>,
+    audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
+    audio_assets: Res<GameAudioAssets>,
 ) {
     for (mut player_component, mut player_vel, player_trans, mut player_ext_impulse) in
         player_query.iter_mut()
@@ -83,7 +88,7 @@ pub fn player_ability_system(
                 }
                 crate::player::components::AbilityType::MegaBlast(multiplier) => {
                     info!("MEGABLAST ABILITY");
-
+                    audio_channel.play(audio_assets.megablast_ability.clone());
                     let projectile_transform = Transform {
                         translation: Vec3::new(
                             player_trans.translation.x

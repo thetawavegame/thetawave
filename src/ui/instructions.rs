@@ -41,7 +41,7 @@ pub fn setup_instructions_system(mut commands: Commands, asset_server: Res<Asset
                                 margin: UiRect {
                                     left: Val::Auto,
                                     right: Val::Percent(20.0),
-                                    top: Val::Percent(45.0),
+                                    top: Val::Percent(65.0),
                                     ..Default::default()
                                 },
                                 ..Default::default()

@@ -12,20 +12,25 @@
 						time: 45.0,
 						formation_pool: "easy",
 						initial_delay: 1.0,	 			
-					)
+					),
+					bg_music_transition: Some((
+						loop_from: 0.0,
+						bg_music: Game,
+					)),
 				),
 				(
-					phase_type: Break( time: 10.0)
+					phase_type: Break( time: 10.0),
 				),
 				(
 					phase_type: FormationSpawn(
 						time: 45.0,
 						formation_pool: "hard",
 						initial_delay: 1.0,	 			
-					)
+					),
+					
 				),
 				(
-					phase_type: Break( time: 5.0)
+					phase_type: Break( time: 5.0),
 				),
 				(
 					phase_type: Boss(
@@ -33,8 +38,12 @@
 						position: (0.0, 600.0),
         				initial_delay: 5.0,
         				is_defeated: false,			
-					)
-				),
+					),
+					bg_music_transition: Some((
+						loop_from: 4.5785,
+						bg_music: Boss,
+					)),
+				)
 			],
 		),
 	),
@@ -53,11 +62,19 @@
 						position: (0.0, 550.0),
         				initial_delay: 5.0,
         				is_defeated: false,			
-					)
+					),
+					bg_music_transition: Some((
+						loop_from: 4.5785,
+						bg_music: Boss,
+					)),	
 				),
 				*/
 				(
-					phase_type: Break( time: 5.0)
+					phase_type: Break( time: 5.0),
+					bg_music_transition: Some((
+						loop_from: 0.0,
+						bg_music: Game,
+					)),
 				)
 			],
 		),

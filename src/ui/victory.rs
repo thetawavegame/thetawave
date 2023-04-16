@@ -1,9 +1,13 @@
+use std::time::Duration;
+
 use bevy::prelude::*;
 
+use crate::audio::BackgroundMusicAudioChannel;
 use crate::states::AppStates;
 use crate::states::VictoryCleanup;
 use crate::ui::BouncingPromptComponent;
 use crate::ui::EndGameTransitionResource;
+use bevy_kira_audio::prelude::*;
 
 #[derive(Component)]
 pub struct VictoryFadeComponent;
@@ -60,7 +64,15 @@ pub fn victory_fade_in_system(
     }
 }
 
-pub fn setup_victory_system(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn setup_victory_system(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
+) {
+    audio_channel
+        .stop()
+        .fade_out(AudioTween::linear(Duration::from_secs_f32(5.0)));
+
     commands
         .spawn(NodeBundle {
             style: Style {

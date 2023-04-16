@@ -2,6 +2,12 @@
     "sounds.game_music": File (
         path: "sounds/earth-orbit_soundtrack.mp3",
     ),
+    "sounds.boss_music": File (
+        path: "sounds/boss_soundtrack.mp3",
+    ),
+    "sounds.boss_trans_music": File (
+        path: "sounds/boss_transition_soundtrack.mp3",
+    ),
     "sounds.barrier_bounce": File (
         path: "sounds/barrier_bounce.wav",
     ),
@@ -43,5 +49,8 @@
     ),
     "sounds.bullet_bounce": File (
         path: "sounds/bullet_bounce.wav",
+    ),
+    "sounds.megablast_ability": File (
+        path: "sounds/megablast_ability.wav",
     ),
 })

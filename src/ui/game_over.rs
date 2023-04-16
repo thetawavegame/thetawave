@@ -1,7 +1,11 @@
+use std::time::Duration;
+
 use bevy::prelude::*;
+use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::plugin::RapierConfiguration;
 
 use crate::{
+    audio::BackgroundMusicAudioChannel,
     states::{AppStates, GameCleanup, GameOverCleanup},
     ui::BouncingPromptComponent,
 };
@@ -142,7 +146,14 @@ pub fn game_over_fade_in_system(
     }
 }
 
-pub fn setup_game_over_system(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn setup_game_over_system(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
+) {
+    audio_channel
+        .stop()
+        .fade_out(AudioTween::linear(Duration::from_secs_f32(5.0)));
     commands
         .spawn(NodeBundle {
             style: Style {

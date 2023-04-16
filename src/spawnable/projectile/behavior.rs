@@ -280,8 +280,6 @@ fn deal_damage_on_intersection(
                 projectile_faction,
                 projectile_damage,
             } => {
-                audio_channel.play(audio_assets.player_hit.clone());
-
                 if entity == *projectile_entity
                     && matches!(
                         projectile_faction.clone(),
@@ -292,6 +290,7 @@ fn deal_damage_on_intersection(
                     for (player_entity_q, mut player_component) in player_query.iter_mut() {
                         if *player_entity == player_entity_q {
                             player_component.health.take_damage(*projectile_damage);
+                            audio_channel.play(audio_assets.player_hit.clone());
                         }
                     }
 
@@ -373,8 +372,6 @@ fn explode_on_impact(
                 projectile_faction,
                 projectile_damage,
             } => {
-                audio_channel.play(audio_assets.player_hit.clone());
-
                 if entity == *projectile_entity
                     && matches!(
                         projectile_faction.clone(),
