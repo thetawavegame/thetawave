@@ -94,7 +94,11 @@ impl Plugin for StatesPlugin {
                                                                                                  //.in_base_set(CoreSet::PreUpdate),
         );
 
-        app.add_systems((start_game_system,).in_set(OnUpdate(AppStates::Instructions)));
+        app.add_systems(
+            (start_character_selection_system,).in_set(OnUpdate(AppStates::Instructions)),
+        );
+
+        app.add_systems((start_game_system,).in_set(OnUpdate(AppStates::CharacterSelection)));
 
         app.add_systems(
             (clear_state_system::<MainMenuCleanup>,).in_schedule(OnExit(AppStates::MainMenu)),
@@ -112,6 +116,11 @@ impl Plugin for StatesPlugin {
 
         app.add_systems(
             (clear_state_system::<VictoryCleanup>,).in_schedule(OnExit(AppStates::Victory)),
+        );
+
+        app.add_systems(
+            (clear_state_system::<CharacterSelectionCleanup>,)
+                .in_schedule(OnExit(AppStates::CharacterSelection)),
         );
 
         app.add_systems(
@@ -134,6 +143,7 @@ pub enum AppStates {
     LoadingAssets,
     MainMenu,
     Instructions,
+    CharacterSelection,
     //LoadingGame, // assets can currently only be loaded once
     Game,
     GameOver,
@@ -164,6 +174,9 @@ pub struct PauseCleanup;
 
 #[derive(Component)]
 pub struct InstructionsCleanup;
+
+#[derive(Component)]
+pub struct CharacterSelectionCleanup;
 
 // remove entities tagged for the current app state
 pub fn clear_state_system<T: Component>(

@@ -17,7 +17,7 @@ pub fn spawn_player_system(
 ) {
     // TODO: get chosen character from a character selector when implemented
     // choose a character
-    let character = &characters.characters["captain"];
+    let character = &characters.characters["juggernaut"];
 
     // scale collider to align with the sprite
     let collider_size_hx = character.collider_dimensions.x * game_parameters.sprite_scale / 2.0;

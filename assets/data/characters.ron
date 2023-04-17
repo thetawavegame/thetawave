@@ -28,7 +28,8 @@
 		),
 		"juggernaut": (
 			acceleration: (10.0, 10.0),
-			deceleration: (2.0, 2.0),
+			//deceleration: (2.0, 2.0),
+			deceleration: (10.0, 10.0), // for arcade
 			speed: (200.0, 200.0),
 			collider_dimensions: (4.0 , 5.5),
 			collider_density: 1.5,

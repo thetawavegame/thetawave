@@ -1,13 +1,11 @@
+use super::BouncingPromptComponent;
+use crate::states;
 use bevy::prelude::*;
 
-use crate::states;
-
-use super::BouncingPromptComponent;
-
 #[derive(Component)]
-pub struct InstructionsUI;
+pub struct CharacterSelectionUI;
 
-pub fn setup_instructions_system(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn setup_character_selection_system(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn(NodeBundle {
             style: Style {
@@ -16,12 +14,14 @@ pub fn setup_instructions_system(mut commands: Commands, asset_server: Res<Asset
             },
             ..Default::default()
         })
-        .insert(states::InstructionsCleanup)
-        .insert(InstructionsUI)
+        .insert(states::CharacterSelectionCleanup)
+        .insert(CharacterSelectionUI)
         .with_children(|parent| {
             parent
                 .spawn(ImageBundle {
-                    image: asset_server.load("texture/instructions_54.png").into(),
+                    image: asset_server
+                        .load("texture/character_selection_54.png")
+                        .into(),
                     style: Style {
                         size: Size::new(Val::Percent(100.), Val::Percent(100.)),
                         align_items: AlignItems::Center,

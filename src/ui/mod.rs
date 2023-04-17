@@ -12,6 +12,7 @@ use crate::{
     GameEnterSet, GameUpdateSet,
 };
 
+mod character_selection;
 mod debug;
 mod game_over;
 mod instructions;
@@ -19,6 +20,7 @@ mod main_menu;
 mod pause_menu;
 mod victory;
 
+use self::character_selection::setup_character_selection_system;
 use self::instructions::setup_instructions_system;
 pub use self::{
     debug::game_debug_ui,
@@ -58,6 +60,11 @@ impl Plugin for UiPlugin {
 
         app.add_systems(
             (setup_instructions_system,).in_schedule(OnEnter(states::AppStates::Instructions)),
+        );
+
+        app.add_systems(
+            (setup_character_selection_system,)
+                .in_schedule(OnEnter(states::AppStates::CharacterSelection)),
         );
 
         app.add_systems(
