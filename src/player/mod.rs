@@ -11,7 +11,7 @@ use crate::{states, GameEnterSet, GameUpdateSet};
 
 pub use self::{
     components::PlayerComponent,
-    resources::{Character, CharacterType, CharactersResource},
+    resources::{Character, CharacterType, CharactersResource, PlayersResource},
     spawn::spawn_player_system,
     systems::{
         player_ability_system, player_death_system, player_fire_weapon_system,
@@ -27,6 +27,8 @@ impl Plugin for PlayerPlugin {
             from_bytes::<CharactersResource>(include_bytes!("../../assets/data/characters.ron"))
                 .unwrap(),
         );
+
+        app.insert_resource(PlayersResource::default());
 
         app.add_system(
             spawn_player_system
