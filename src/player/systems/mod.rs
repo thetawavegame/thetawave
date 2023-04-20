@@ -30,6 +30,12 @@ pub fn player_death_system(
     audio_assets: Res<GameAudioAssets>,
     game_parameters: Res<GameParametersResource>,
 ) {
+    // end the game if no players are alive
+    if player_query.iter().count() == 0 {
+        // transition to the game over state
+        end_game_trans_resource.start(AppStates::GameOver);
+    }
+
     for (entity, player, transform) in player_query.iter() {
         if player.health.is_dead() {
             // despawn the player
@@ -52,9 +58,6 @@ pub fn player_death_system(
 
             // play explosion sound effect
             audio_channel.play(audio_assets.player_explosion.clone());
-
-            // transition to the game over state
-            end_game_trans_resource.start(AppStates::GameOver);
         }
     }
 }
