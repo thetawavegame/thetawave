@@ -200,6 +200,7 @@ pub fn setup_game_over_system(
                         })
                         .insert(BouncingPromptComponent {
                             flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
+                            is_active: true,
                         });
                     /*
                     parent

@@ -13,6 +13,7 @@ use crate::{
 };
 
 /// Tag for player health ui
+
 #[derive(Component)]
 pub struct HealthUI;
 

@@ -119,6 +119,7 @@ pub fn setup_victory_system(
                         })
                         .insert(BouncingPromptComponent {
                             flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
+                            is_active: true,
                         });
 
                     /*

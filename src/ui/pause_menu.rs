@@ -40,6 +40,7 @@ pub fn setup_pause_system(mut commands: Commands, asset_server: Res<AssetServer>
                 })
                 .insert(BouncingPromptComponent {
                     flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
+                    is_active: true,
                 });
         });
 }

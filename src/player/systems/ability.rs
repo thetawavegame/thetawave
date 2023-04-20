@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::{ExternalImpulse, RigidBody, Velocity};
@@ -5,7 +7,7 @@ use bevy_rapier2d::prelude::{ExternalImpulse, RigidBody, Velocity};
 use crate::{
     assets::GameAudioAssets,
     audio,
-    player::PlayerComponent,
+    player::{PlayerComponent, PlayerInput, PlayersResource},
     spawnable::{InitialMotion, SpawnProjectileEvent},
 };
 
@@ -22,44 +24,118 @@ pub fn player_ability_system(
     gamepads: Res<Gamepads>,
     gamepad_input: Res<Input<GamepadButton>>,
     mouse_input: Res<Input<MouseButton>>,
+    players_resource: Res<PlayersResource>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
 ) {
+    let up_keyboard_input =
+        keyboard_input.pressed(KeyCode::W) || keyboard_input.pressed(KeyCode::Up);
+    let down_keyboard_input =
+        keyboard_input.pressed(KeyCode::S) || keyboard_input.pressed(KeyCode::Down);
+    let left_keyboard_input =
+        keyboard_input.pressed(KeyCode::A) || keyboard_input.pressed(KeyCode::Left);
+    let right_keyboard_input =
+        keyboard_input.pressed(KeyCode::D) || keyboard_input.pressed(KeyCode::Right);
+
+    let up_gamepad_inputs: HashMap<usize, bool> = gamepads
+        .iter()
+        .map(|gamepad| {
+            (
+                gamepad.id,
+                gamepad_input.pressed(GamepadButton {
+                    gamepad,
+                    button_type: GamepadButtonType::DPadUp,
+                }),
+            )
+        })
+        .collect();
+
+    let down_gamepad_inputs: HashMap<usize, bool> = gamepads
+        .iter()
+        .map(|gamepad| {
+            (
+                gamepad.id,
+                gamepad_input.pressed(GamepadButton {
+                    gamepad,
+                    button_type: GamepadButtonType::DPadDown,
+                }),
+            )
+        })
+        .collect();
+
+    let left_gamepad_inputs: HashMap<usize, bool> = gamepads
+        .iter()
+        .map(|gamepad| {
+            (
+                gamepad.id,
+                gamepad_input.pressed(GamepadButton {
+                    gamepad,
+                    button_type: GamepadButtonType::DPadLeft,
+                }),
+            )
+        })
+        .collect();
+
+    let right_gamepad_inputs: HashMap<usize, bool> = gamepads
+        .iter()
+        .map(|gamepad| {
+            (
+                gamepad.id,
+                gamepad_input.pressed(GamepadButton {
+                    gamepad,
+                    button_type: GamepadButtonType::DPadRight,
+                }),
+            )
+        })
+        .collect();
+
+    let ability_keyboard_input =
+        keyboard_input.pressed(KeyCode::LShift) || mouse_input.pressed(MouseButton::Right);
+
+    let ability_gamepad_inputs: HashMap<usize, bool> = gamepads
+        .iter()
+        .map(|gamepad| {
+            (
+                gamepad.id,
+                gamepad_input.pressed(GamepadButton {
+                    gamepad,
+                    button_type: GamepadButtonType::LeftTrigger,
+                }),
+            )
+        })
+        .collect();
+
     for (mut player_component, mut player_vel, player_trans, mut player_ext_impulse) in
         player_query.iter_mut()
     {
-        let mut up = keyboard_input.pressed(KeyCode::W) || keyboard_input.pressed(KeyCode::Up);
-        let mut down = keyboard_input.pressed(KeyCode::S) || keyboard_input.pressed(KeyCode::Down);
-        let mut left = keyboard_input.pressed(KeyCode::A) || keyboard_input.pressed(KeyCode::Left);
-        let mut right =
-            keyboard_input.pressed(KeyCode::D) || keyboard_input.pressed(KeyCode::Right);
+        let player_input = players_resource.player_inputs[player_component.player_index]
+            .clone()
+            .unwrap();
 
-        let mut activate_ability_input =
-            keyboard_input.pressed(KeyCode::LShift) || mouse_input.pressed(MouseButton::Right);
+        let up = match player_input {
+            PlayerInput::Keyboard => up_keyboard_input,
+            PlayerInput::Gamepad(gamepad) => up_gamepad_inputs[&gamepad],
+        };
 
-        for gamepad in gamepads.iter() {
-            up |= gamepad_input.pressed(GamepadButton {
-                gamepad,
-                button_type: GamepadButtonType::DPadUp,
-            });
-            down |= gamepad_input.pressed(GamepadButton {
-                gamepad,
-                button_type: GamepadButtonType::DPadDown,
-            });
-            left |= gamepad_input.pressed(GamepadButton {
-                gamepad,
-                button_type: GamepadButtonType::DPadLeft,
-            });
-            right |= gamepad_input.pressed(GamepadButton {
-                gamepad,
-                button_type: GamepadButtonType::DPadRight,
-            });
+        let down = match player_input {
+            PlayerInput::Keyboard => down_keyboard_input,
+            PlayerInput::Gamepad(gamepad) => down_gamepad_inputs[&gamepad],
+        };
 
-            activate_ability_input |= gamepad_input.pressed(GamepadButton {
-                gamepad,
-                button_type: GamepadButtonType::LeftTrigger,
-            });
-        }
+        let left = match player_input {
+            PlayerInput::Keyboard => left_keyboard_input,
+            PlayerInput::Gamepad(gamepad) => left_gamepad_inputs[&gamepad],
+        };
+
+        let right = match player_input {
+            PlayerInput::Keyboard => right_keyboard_input,
+            PlayerInput::Gamepad(gamepad) => right_gamepad_inputs[&gamepad],
+        };
+
+        let activate_ability_input = match player_input {
+            PlayerInput::Keyboard => ability_keyboard_input,
+            PlayerInput::Gamepad(gamepad) => ability_gamepad_inputs[&gamepad],
+        };
 
         player_component.ability_cooldown_timer.tick(time.delta());
 

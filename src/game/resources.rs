@@ -17,4 +17,6 @@ pub struct GameParametersResource {
     pub camera_zoom_out_scale: f32,
     /// Range of mouse scanning
     pub scan_range: f32,
+
+    pub player_spawn_distance: f32,
 }

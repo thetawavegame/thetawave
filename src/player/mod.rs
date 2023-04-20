@@ -11,8 +11,8 @@ use crate::{states, GameEnterSet, GameUpdateSet};
 
 pub use self::{
     components::PlayerComponent,
-    resources::{Character, CharacterType, CharactersResource, PlayersResource},
-    spawn::spawn_player_system,
+    resources::{Character, CharacterType, CharactersResource, PlayerInput, PlayersResource},
+    spawn::spawn_players_system,
     systems::{
         player_ability_system, player_death_system, player_fire_weapon_system,
         player_movement_system, player_scale_fire_rate_system,
@@ -31,7 +31,7 @@ impl Plugin for PlayerPlugin {
         app.insert_resource(PlayersResource::default());
 
         app.add_system(
-            spawn_player_system
+            spawn_players_system
                 .in_set(GameEnterSet::SpawnPlayer)
                 .in_schedule(OnEnter(states::AppStates::Game)),
         )

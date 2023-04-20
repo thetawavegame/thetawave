@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{collections::HashMap, time::Duration};
 
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
@@ -7,7 +7,7 @@ use bevy_rapier2d::prelude::*;
 use crate::{
     assets::GameAudioAssets,
     audio,
-    player::PlayerComponent,
+    player::{PlayerComponent, PlayerInput, PlayersResource},
     spawnable::{InitialMotion, SpawnProjectileEvent},
 };
 
@@ -31,24 +31,39 @@ pub fn player_fire_weapon_system(
     mut spawn_projectile: EventWriter<SpawnProjectileEvent>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
+    players_resource: Res<PlayersResource>,
 ) {
-    for (mut player_component, rb_vels, transform) in player_query.iter_mut() {
-        // get input for firing weapons
-        let mut left_mouse =
-            mouse_input.pressed(MouseButton::Left) || keyboard_input.pressed(KeyCode::Space);
+    let fire_keyboard_input =
+        keyboard_input.pressed(KeyCode::Space) || mouse_input.pressed(MouseButton::Left);
 
-        for gamepad in gamepads.iter() {
-            left_mouse |= gamepad_input.pressed(GamepadButton {
-                gamepad,
-                button_type: GamepadButtonType::RightTrigger,
-            });
-        }
+    let fire_gamepad_inputs: HashMap<usize, bool> = gamepads
+        .iter()
+        .map(|gamepad| {
+            (
+                gamepad.id,
+                gamepad_input.pressed(GamepadButton {
+                    gamepad,
+                    button_type: GamepadButtonType::RightTrigger,
+                }),
+            )
+        })
+        .collect();
+
+    for (mut player_component, rb_vels, transform) in player_query.iter_mut() {
+        let player_input = players_resource.player_inputs[player_component.player_index]
+            .clone()
+            .unwrap();
+
+        let fire_input = match player_input {
+            PlayerInput::Keyboard => fire_keyboard_input,
+            PlayerInput::Gamepad(gamepad) => fire_gamepad_inputs[&gamepad],
+        };
 
         // tick fire timer
         player_component.fire_timer.tick(time.delta());
 
         // fire blast if timer finished and input pressed
-        if player_component.fire_timer.finished() && left_mouse {
+        if player_component.fire_timer.finished() && fire_input {
             let projectile_transform = Transform {
                 translation: Vec3::new(
                     transform.translation.x + player_component.projectile_offset_position.x,

@@ -2,7 +2,7 @@ use super::AppStates;
 use bevy::{app::AppExit, prelude::*};
 use bevy_kira_audio::prelude::*;
 
-use crate::audio;
+use crate::{audio, player::PlayersResource};
 
 // Start the game by entering the Game state
 pub fn start_game_system(
@@ -10,6 +10,7 @@ pub fn start_game_system(
     mut gamepad_input: ResMut<Input<GamepadButton>>,
     mut keyboard_input: ResMut<Input<KeyCode>>,
     mut next_app_state: ResMut<NextState<AppStates>>,
+    players_resource: Res<PlayersResource>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::MenuAudioChannel>>,
 ) {
@@ -20,12 +21,12 @@ pub fn start_game_system(
     for gamepad in gamepads.iter() {
         start_input |= gamepad_input.just_released(GamepadButton {
             gamepad,
-            button_type: GamepadButtonType::South,
+            button_type: GamepadButtonType::Start,
         });
     }
 
     // if input read enter the game state
-    if start_input {
+    if start_input && players_resource.player_inputs[0].is_some() {
         // set the state to game
         next_app_state.set(AppStates::Game);
 
@@ -61,7 +62,7 @@ pub fn start_instructions_system(
     for gamepad in gamepads.iter() {
         start_input |= gamepad_input.just_released(GamepadButton {
             gamepad,
-            button_type: GamepadButtonType::South,
+            button_type: GamepadButtonType::Start,
         });
     }
 
@@ -101,7 +102,7 @@ pub fn start_character_selection_system(
     for gamepad in gamepads.iter() {
         start_input |= gamepad_input.just_released(GamepadButton {
             gamepad,
-            button_type: GamepadButtonType::South,
+            button_type: GamepadButtonType::Start,
         });
     }
 
@@ -139,7 +140,7 @@ pub fn quit_game_system(
     for gamepad in gamepads.iter() {
         quit_input |= gamepad_input.just_released(GamepadButton {
             gamepad,
-            button_type: GamepadButtonType::Start,
+            button_type: GamepadButtonType::East,
         });
     }
 

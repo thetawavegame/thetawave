@@ -5,4 +5,10 @@
     "juggernaut": File (
         path: "texture/juggernaut_character.png"
     ),
+    "captain_outline": File (
+        path: "texture/captain_character_outline.png"
+    ),
+    "juggernaut_outline": File (
+        path: "texture/juggernaut_character_outline.png"
+    ),
 })

@@ -1,6 +1,6 @@
 (
 	characters: {
-		"captain": (
+		Captain: (
 			acceleration: (20.0, 20.0),
 			//deceleration: (2.0, 2.0), // for pc
 			deceleration: (10.0, 10.0), // for arcade
@@ -26,7 +26,7 @@
 			ability_period: 5.0,
 			ability_type: MegaBlast(5.0),
 		),
-		"juggernaut": (
+		Juggernaut: (
 			acceleration: (10.0, 10.0),
 			//deceleration: (2.0, 2.0),
 			deceleration: (10.0, 10.0), // for arcade

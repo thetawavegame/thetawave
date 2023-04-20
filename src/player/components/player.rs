@@ -45,6 +45,7 @@ pub struct PlayerComponent {
     pub ability_type: AbilityType,
     pub movement_enabled: bool,
     pub incoming_damage_multiplier: f32,
+    pub player_index: usize,
 }
 
 impl From<&Character> for PlayerComponent {
@@ -72,6 +73,7 @@ impl From<&Character> for PlayerComponent {
             ability_type: character.ability_type.clone(),
             movement_enabled: true,
             incoming_damage_multiplier: 1.0,
+            player_index: 0,
         }
     }
 }

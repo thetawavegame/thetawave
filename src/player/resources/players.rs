@@ -2,8 +2,23 @@ use bevy::prelude::*;
 
 use super::CharacterType;
 
-#[derive(Default, Resource)]
+#[derive(Resource, Debug)]
 pub struct PlayersResource {
-    pub player_1_character: Option<CharacterType>,
-    pub player_2_character: Option<CharacterType>,
+    pub player_characters: Vec<Option<CharacterType>>,
+    pub player_inputs: Vec<Option<PlayerInput>>,
+}
+
+impl Default for PlayersResource {
+    fn default() -> Self {
+        PlayersResource {
+            player_characters: vec![None, None, None, None],
+            player_inputs: vec![None, None, None, None],
+        }
+    }
+}
+
+#[derive(Clone, PartialEq, Debug)]
+pub enum PlayerInput {
+    Keyboard,
+    Gamepad(usize),
 }

@@ -48,7 +48,7 @@ pub struct Character {
     pub ability_type: AbilityType,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum CharacterType {
     Captain,
     Juggernaut,
@@ -58,5 +58,5 @@ pub enum CharacterType {
 #[derive(Resource, Deserialize)]
 pub struct CharactersResource {
     /// Names mapped to characters for all characters
-    pub characters: HashMap<String, Character>,
+    pub characters: HashMap<CharacterType, Character>,
 }

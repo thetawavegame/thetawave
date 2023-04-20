@@ -8,6 +8,7 @@ pub struct MainMenuUI;
 #[derive(Component)]
 pub struct BouncingPromptComponent {
     pub flash_timer: Timer,
+    pub is_active: bool,
 }
 
 pub fn setup_main_menu_system(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -55,6 +56,7 @@ pub fn setup_main_menu_system(mut commands: Commands, asset_server: Res<AssetSer
                         })
                         .insert(BouncingPromptComponent {
                             flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
+                            is_active: true,
                         });
                     /*
                     parent
@@ -87,6 +89,12 @@ pub fn bouncing_prompt_system(
     time: Res<Time>,
 ) {
     for (mut transform, mut prompt) in flashing_prompt_query.iter_mut() {
+        if !prompt.is_active {
+            transform.scale.x = 1.0;
+            transform.scale.y = 1.0;
+            prompt.flash_timer.reset();
+            continue;
+        }
         prompt.flash_timer.tick(time.delta());
 
         let scale: f32 = -0.2 * (prompt.flash_timer.elapsed_secs() - 1.0).powf(2.0) + 1.2;

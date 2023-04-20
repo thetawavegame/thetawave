@@ -8,6 +8,7 @@ use crate::{
     arena::MobReachedBottomGateEvent,
     assets::GameAudioAssets,
     audio,
+    player::PlayersResource,
     spawnable::{MobDestroyedEvent, SpawnMobEvent},
     states::{self, AppStates, GameStates},
     ui::EndGameTransitionResource,
@@ -147,6 +148,8 @@ pub fn reset_run_system(
     mut next_game_state: ResMut<NextState<GameStates>>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::MenuAudioChannel>>,
+    bg_auido_channel: Res<AudioChannel<audio::BackgroundMusicAudioChannel>>,
+    mut players_resource: ResMut<PlayersResource>,
 ) {
     // get input
     let mut reset = keyboard_input.just_released(KeyCode::R);
@@ -163,10 +166,12 @@ pub fn reset_run_system(
         // go to the main menu state
         next_app_state.set(AppStates::MainMenu);
         next_game_state.set(GameStates::Playing);
+        *players_resource = PlayersResource::default();
 
         // play menu input sound
         // TODO: change to using loaded assets
         audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
+        bg_auido_channel.stop();
 
         // reset the input
         keyboard_input.reset(KeyCode::R);

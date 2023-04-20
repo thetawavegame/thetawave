@@ -40,7 +40,7 @@
         				is_defeated: false,			
 					),
 					bg_music_transition: Some((
-						loop_from: 4.5785,
+						loop_from: 9.615,
 						bg_music: Boss,
 					)),
 				)
@@ -64,7 +64,7 @@
         				is_defeated: false,			
 					),
 					bg_music_transition: Some((
-						loop_from: 4.5785,
+						loop_from: 9.615,
 						bg_music: Boss,
 					)),	
 				),
