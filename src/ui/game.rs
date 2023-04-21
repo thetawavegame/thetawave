@@ -62,12 +62,12 @@ pub fn setup_game_ui_system(
         .spawn(NodeBundle {
             style: Style {
                 size: Size {
-                    width: Val::Px(15.0),
-                    height: Val::Px(200.0),
+                    width: Val::Px(800.0),
+                    height: Val::Px(30.0),
                 },
                 position: UiRect {
-                    left: Val::Percent(6.5),
-                    bottom: Val::Percent(70.0),
+                    left: Val::Percent(19.0),
+                    bottom: Val::Percent(2.0),
                     ..UiRect::default()
                 },
                 position_type: PositionType::Absolute,
@@ -84,8 +84,8 @@ pub fn setup_game_ui_system(
             image: asset_server.load("texture/defense_bar_label.png").into(),
             style: Style {
                 position: UiRect {
-                    left: Val::Percent(6.5),
-                    bottom: Val::Percent(73.0),
+                    left: Val::Percent(42.5),
+                    bottom: Val::Percent(1.7),
                     ..default()
                 },
                 position_type: PositionType::Absolute,
@@ -159,7 +159,7 @@ pub fn setup_game_ui_system(
         .insert(AbilityReadyUI)
         .insert(BouncingPromptComponent {
             flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
-            is_active: false,
+            is_active: true,
         })
         .insert(StatBarLabel)
         .insert(Player1UI);
@@ -350,7 +350,7 @@ pub fn setup_game_ui_system(
             .insert(AbilityReadyUI)
             .insert(BouncingPromptComponent {
                 flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
-                is_active: false,
+                is_active: true,
             })
             .insert(StatBarLabel)
             .insert(Player2UI);
@@ -554,8 +554,8 @@ pub fn update_player1_ui(
         if let Some(level) = &run_resource.level {
             match &level.objective {
                 crate::run::ObjectiveType::Defense(health) => {
-                    style_component.size.height =
-                        Val::Px(200.0 * (health.get_health() / health.get_max_health()));
+                    style_component.size.width =
+                        Val::Px(800.0 * (health.get_health() / health.get_max_health()));
                 }
             }
         }

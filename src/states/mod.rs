@@ -87,10 +87,7 @@ impl Plugin for StatesPlugin {
                 .in_set(OnUpdate(GameStates::Playing)),
         );
 
-        app.add_systems(
-            (start_instructions_system, quit_game_system).in_set(OnUpdate(AppStates::MainMenu)), //.distributive_run_if(in_state(AppStates::MainMenu))
-                                                                                                 //.in_base_set(CoreSet::PreUpdate),
-        );
+        app.add_systems((start_instructions_system,).in_set(OnUpdate(AppStates::MainMenu)));
 
         app.add_systems(
             (start_character_selection_system,).in_set(OnUpdate(AppStates::Instructions)),
@@ -104,13 +101,9 @@ impl Plugin for StatesPlugin {
 
         app.add_systems((clear_state_system::<GameCleanup>,).in_schedule(OnExit(AppStates::Game)));
 
-        app.add_systems((quit_game_system,).in_set(OnUpdate(AppStates::GameOver)));
-
         app.add_systems(
             (clear_state_system::<GameOverCleanup>,).in_schedule(OnExit(AppStates::GameOver)),
         );
-
-        app.add_systems((quit_game_system,).in_set(OnUpdate(AppStates::Victory)));
 
         app.add_systems(
             (clear_state_system::<VictoryCleanup>,).in_schedule(OnExit(AppStates::Victory)),

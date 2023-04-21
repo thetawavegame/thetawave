@@ -36,7 +36,7 @@
             ),
             (
                 rolls: 1,
-                probability: 0.2,
+                probability: 0.1,
                 consumable: Money3,
             ),
         ],

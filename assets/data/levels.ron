@@ -9,7 +9,7 @@
 			phases: [
 				(
 					phase_type: FormationSpawn(
-						time: 45.0,
+						time: 20.0,
 						formation_pool: "easy",
 						initial_delay: 1.0,	 			
 					),
@@ -23,7 +23,17 @@
 				),
 				(
 					phase_type: FormationSpawn(
-						time: 45.0,
+						time: 40.0,
+						formation_pool: "medium",
+						initial_delay: 1.0,	 			
+					),
+				),
+				(
+					phase_type: Break( time: 10.0),
+				),
+				(
+					phase_type: FormationSpawn(
+						time: 60.0,
 						formation_pool: "hard",
 						initial_delay: 1.0,	 			
 					),

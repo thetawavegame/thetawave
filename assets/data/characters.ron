@@ -49,7 +49,7 @@
 			attraction_distance: 120.0,
 			attraction_acceleration: 3.0,
 			money: 0,
-			ability_period: 3.0,
+			ability_period: 2.0,
 			ability_type: Charge(0.5),
 		),
 	}

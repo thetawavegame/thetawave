@@ -178,8 +178,8 @@
 		z_level: 5.0,
 		consumable_drops: Standard,
 		health: (
-			max_health: 1000.0,
-			health: 1000.0,
+			max_health: 1500.0,
+			health: 1500.0,
 			armor: 0,
 		),
 		animation: (

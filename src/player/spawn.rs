@@ -80,7 +80,7 @@ pub fn spawn_players_system(
                             texture: player_assets.get_outline_asset(&character.character_type),
                             sprite: Sprite {
                                 color: if player_index == 0 {
-                                    Color::rgb(0.5, 0.0, 0.0)
+                                    Color::rgb(0.7, 0.0, 0.0)
                                 } else {
                                     Color::rgb(0.0, 0.0, 1.0)
                                 },
