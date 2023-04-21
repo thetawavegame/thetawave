@@ -4,7 +4,7 @@
 			acceleration: (20.0, 20.0),
 			//deceleration: (2.0, 2.0), // for pc
 			deceleration: (10.0, 10.0), // for arcade
-			speed: (250.0, 250.0),
+			speed: (300.0, 300.0),
 			collider_dimensions: (2.0 , 4.0),
 			collider_density: 1.0,
 			character_type: Captain,
@@ -30,7 +30,7 @@
 			acceleration: (10.0, 10.0),
 			//deceleration: (2.0, 2.0),
 			deceleration: (10.0, 10.0), // for arcade
-			speed: (200.0, 200.0),
+			speed: (250.0, 250.0),
 			collider_dimensions: (4.0 , 5.5),
 			collider_density: 1.5,
 			character_type: Juggernaut,

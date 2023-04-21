@@ -1,17 +1,11 @@
-use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
-use bevy::ecs::schedule;
 use bevy::{pbr::AmbientLight, prelude::*};
-use bevy_asset_loader::prelude::*;
 use bevy_editor_pls::prelude::*;
-use bevy_egui::EguiPlugin;
 use bevy_kira_audio::prelude::*;
 use leafwing_input_manager::prelude::*;
 
 use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
-use ron::de::from_bytes;
 use states::{AppStates, GameCleanup, GameStates};
-use std::collections::HashMap;
 use ui::EndGameTransitionResource;
 
 pub const PHYSICS_SCALE: f32 = 10.0;
@@ -133,14 +127,6 @@ fn main() {
         PHYSICS_SCALE,
     ));
 
-    #[cfg(not(target_arch = "wasm32"))]
-    {
-        //app.add_plugin(bevy_framepace::FramepacePlugin);
-    }
-
-    // add states
-
-    // game startup systems (perhaps exchange with app.add_startup_system_set)
     app.add_systems(
         (
             setup_game.in_set(GameEnterSet::Initialize),
@@ -150,30 +136,9 @@ fn main() {
     );
 
     if cfg!(debug_assertions) {
-        app.add_plugin(EditorPlugin::new());
+        app.add_plugin(EditorPlugin::new())
+            .add_plugin(RapierDebugRenderPlugin::default());
     }
-    /*
-
-    if cfg!(debug_assertions) {
-        app.add_system_set(
-            SystemSet::on_update(states::AppStates::Game).with_system(ui::game_debug_ui),
-        );
-    }
-
-    // plugins to use only in debug mode
-    if cfg!(debug_assertions) {
-        app.add_plugin(RapierDebugRenderPlugin::default())
-            .add_plugin(FrameTimeDiagnosticsPlugin::default())
-            .add_plugin(EditorPlugin)
-            .add_startup_system(ui::setup_fps_ui_system)
-            .add_system(ui::fps_system);
-    }
-    */
-    /*
-    if cfg!(debug_assertions) {
-        app.add_plugin(EditorPlugin::default());
-    }
-    */
 
     app.run();
 }

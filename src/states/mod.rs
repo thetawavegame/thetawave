@@ -1,5 +1,3 @@
-use std::default;
-
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 
