@@ -15,7 +15,7 @@ use crate::{
 /// Increase fire rate of player based on the amount of money collected
 pub fn player_scale_fire_rate_system(mut player_query: Query<&mut PlayerComponent>) {
     for mut player in player_query.iter_mut() {
-        player.fire_period = 1.0 / (2.0 * ((player.money as f32) + 4.0).ln());
+        player.fire_period = 1.0 / (1.5 * ((0.8 * player.money as f32) + 4.0).ln());
     }
 }
 
