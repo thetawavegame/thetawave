@@ -1,7 +1,8 @@
 (
 	characters: {
 		Captain: (
-			acceleration: (20.0, 20.0),
+			acceleration: (25.0, 25.0),
+			//acceleration: (20.0, 20.0),
 			//deceleration: (2.0, 2.0), // for pc
 			deceleration: (10.0, 10.0), // for arcade
 			speed: (300.0, 300.0),
@@ -9,7 +10,7 @@
 			collider_density: 1.0,
 			character_type: Captain,
 			projectile_type: Blast(Ally),
-			projectile_despawn_time: 0.75,
+			projectile_despawn_time: 1.00,
 			projectile_velocity: (0.0, 500.0),
 			projectile_offset_position: (0.0, 40.0),
 			fire_period: 0.4,
@@ -20,14 +21,14 @@
 			),
 			attack_damage: 10.0,
 			collision_damage: 10.0,
-			attraction_distance: 120.0,
-			attraction_acceleration: 3.0,
+			attraction_distance: 150.0,
+			attraction_acceleration: 5.0,
 			money: 0,
 			ability_period: 5.0,
 			ability_type: MegaBlast(5.0),
 		),
 		Juggernaut: (
-			acceleration: (10.0, 10.0),
+			acceleration: (25.0, 25.0),
 			//deceleration: (2.0, 2.0),
 			deceleration: (10.0, 10.0), // for arcade
 			speed: (250.0, 250.0),
@@ -35,7 +36,7 @@
 			collider_density: 1.5,
 			character_type: Juggernaut,
 			projectile_type: Blast(Ally),
-			projectile_despawn_time: 0.6,
+			projectile_despawn_time: 0.7,
 			projectile_velocity: (0.0, 400.0),
 			projectile_offset_position: (0.0, 45.0),
 			fire_period: 0.7, // currently gets overwritten by the fire rate increase from collecting the rocks
@@ -46,8 +47,8 @@
 			),
 			attack_damage: 10.0,
 			collision_damage: 15.0,
-			attraction_distance: 120.0,
-			attraction_acceleration: 3.0,
+			attraction_distance: 150.0,
+			attraction_acceleration: 5.0,
 			money: 0,
 			ability_period: 2.0,
 			ability_type: Charge(0.5),

@@ -1,6 +1,6 @@
 use crate::{
     arena::ArenaBarrierComponent,
-    assets::GameAudioAssets,
+    assets::{CollisionSoundType, GameAudioAssets},
     audio,
     player::PlayerComponent,
     spawnable::{
@@ -52,7 +52,10 @@ pub fn contact_collision_system(
                     // check if player collided with a mob
                     for (mob_entity, mob_component) in mob_query.iter() {
                         if colliding_entities.secondary == mob_entity {
-                            audio_channel.play(audio_assets.collision.clone());
+                            audio_channel.play(
+                                audio_assets
+                                    .get_collision_sound_asset(&mob_component.collision_sound),
+                            );
                             collision_event_writer.send(SortedCollisionEvent::PlayerToMobContact {
                                 player_entity: colliding_entities.primary,
                                 mob_entity: colliding_entities.secondary,
@@ -81,7 +84,11 @@ pub fn contact_collision_system(
                     // check if player collided with segment
                     for (mob_segment_entity, mob_segment_component) in mob_segment_query.iter() {
                         if colliding_entities.secondary == mob_segment_entity {
-                            audio_channel.play(audio_assets.collision.clone());
+                            audio_channel.play(
+                                audio_assets.get_collision_sound_asset(
+                                    &mob_segment_component.collision_sound,
+                                ),
+                            );
                             collision_event_writer.send(
                                 SortedCollisionEvent::PlayerToMobSegmentContact {
                                     player_entity: colliding_entities.primary,
@@ -150,7 +157,24 @@ pub fn contact_collision_system(
                         // check if secondary entity is another mob
                         if colliding_entities.secondary == mob_entity_2 {
                             // play collision sound
-                            audio_channel.play(audio_assets.collision.clone());
+
+                            if mob_component_1.collision_sound != CollisionSoundType::default() {
+                                audio_channel.play(
+                                    audio_assets.get_collision_sound_asset(
+                                        &mob_component_1.collision_sound,
+                                    ),
+                                );
+                            } else if mob_component_2.collision_sound
+                                != CollisionSoundType::default()
+                            {
+                                audio_channel.play(
+                                    audio_assets.get_collision_sound_asset(
+                                        &mob_component_2.collision_sound,
+                                    ),
+                                );
+                            } else {
+                                audio_channel.play(audio_assets.collision.clone());
+                            }
 
                             // send two sorted collision events, swapping the position of the mobs in the struct
                             collision_event_writer.send(SortedCollisionEvent::MobToMobContact {
@@ -210,7 +234,21 @@ pub fn contact_collision_system(
                         // check if secondary entity is a mob segment
                         if colliding_entities.secondary == mob_segment_entity {
                             // send  a sorted collision event
-                            audio_channel.play(audio_assets.collision.clone());
+                            if mob_component_1.collision_sound != CollisionSoundType::default() {
+                                audio_channel.play(
+                                    audio_assets.get_collision_sound_asset(
+                                        &mob_component_1.collision_sound,
+                                    ),
+                                );
+                            } else if mob_segment_component.collision_sound
+                                != CollisionSoundType::default()
+                            {
+                                audio_channel.play(audio_assets.get_collision_sound_asset(
+                                    &mob_segment_component.collision_sound,
+                                ));
+                            } else {
+                                audio_channel.play(audio_assets.collision.clone());
+                            }
                             collision_event_writer.send(
                                 SortedCollisionEvent::MobToMobSegmentContact {
                                     mob_entity: colliding_entities.primary,
@@ -269,7 +307,21 @@ pub fn contact_collision_system(
                     {
                         if colliding_entities.secondary == mob_segment_entity_2 {
                             // play collision sound
-                            audio_channel.play(audio_assets.collision.clone());
+                            if mob_segment_component_1.collision_sound
+                                != CollisionSoundType::default()
+                            {
+                                audio_channel.play(audio_assets.get_collision_sound_asset(
+                                    &mob_segment_component_1.collision_sound,
+                                ));
+                            } else if mob_segment_component_2.collision_sound
+                                != CollisionSoundType::default()
+                            {
+                                audio_channel.play(audio_assets.get_collision_sound_asset(
+                                    &mob_segment_component_2.collision_sound,
+                                ));
+                            } else {
+                                audio_channel.play(audio_assets.collision.clone());
+                            }
 
                             // send two sorted collision events, swapping the position of the mob segments in the struct
                             collision_event_writer.send(

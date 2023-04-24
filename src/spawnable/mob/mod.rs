@@ -10,7 +10,7 @@ use std::{
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
-    assets::MobAssets,
+    assets::{CollisionSoundType, MobAssets},
     game::GameParametersResource,
     loot::ConsumableDropListType,
     misc::Health,
@@ -51,6 +51,7 @@ pub struct MobComponent {
     pub attack_damage: f32,
     /// Damage dealt to other factions on collision
     pub collision_damage: f32,
+    pub collision_sound: CollisionSoundType,
     /// Damage dealt to defense objective, after reaching bottom of arena
     pub defense_damage: f32,
     /// Health of the mob
@@ -102,6 +103,7 @@ impl From<&MobData> for MobComponent {
             projectile_spawners,
             attack_damage: mob_data.attack_damage,
             collision_damage: mob_data.collision_damage,
+            collision_sound: mob_data.collision_sound.clone(),
             defense_damage: mob_data.defense_damage,
             health: mob_data.health.clone(),
             consumable_drops: mob_data.consumable_drops.clone(),
@@ -232,6 +234,8 @@ pub struct MobData {
     #[serde(default)]
     pub collision_damage: f32,
     /// Damage dealt to defense objective, after reaching bottom of arena
+    #[serde(default)]
+    pub collision_sound: CollisionSoundType,
     #[serde(default)]
     pub defense_damage: f32,
     /// Health of the mob

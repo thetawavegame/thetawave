@@ -11,6 +11,13 @@ pub enum BGMusicType {
     BossTransition,
 }
 
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display, Default)]
+pub enum CollisionSoundType {
+    Squishy,
+    #[default]
+    Normal,
+}
+
 #[derive(AssetCollection, Resource)]
 pub struct GameAudioAssets {
     #[asset(key = "sounds.game_music")]
@@ -23,6 +30,8 @@ pub struct GameAudioAssets {
     pub barrier_bounce: Handle<AudioSource>,
     #[asset(key = "sounds.collision")]
     pub collision: Handle<AudioSource>,
+    #[asset(key = "sounds.squishy_collision")]
+    pub squishy_collision: Handle<AudioSource>,
     #[asset(key = "sounds.consumable_pickup")]
     pub consumable_pickup: Handle<AudioSource>,
     #[asset(key = "sounds.defense_damage")]
@@ -57,6 +66,16 @@ impl GameAudioAssets {
             BGMusicType::Game => self.game_music.clone(),
             BGMusicType::Boss => self.boss_music.clone(),
             BGMusicType::BossTransition => self.boss_trans_music.clone(),
+        }
+    }
+
+    pub fn get_collision_sound_asset(
+        &self,
+        collision_sound_type: &CollisionSoundType,
+    ) -> Handle<AudioSource> {
+        match collision_sound_type {
+            CollisionSoundType::Squishy => self.squishy_collision.clone(),
+            CollisionSoundType::Normal => self.collision.clone(),
         }
     }
 }

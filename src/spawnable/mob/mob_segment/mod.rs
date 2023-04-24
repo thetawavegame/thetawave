@@ -5,7 +5,7 @@ use std::collections::{hash_map::Entry, HashMap};
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
-    assets::MobAssets,
+    assets::{CollisionSoundType, MobAssets},
     game::GameParametersResource,
     loot::ConsumableDropListType,
     misc::Health,
@@ -33,6 +33,7 @@ pub struct MobSegmentsResource {
 pub struct MobSegmentComponent {
     pub mob_segment_type: MobSegmentType,
     pub collision_damage: f32,
+    pub collision_sound: CollisionSoundType,
     pub defense_damage: f32,
     pub health: Health,
     pub consumable_drops: ConsumableDropListType,
@@ -62,6 +63,7 @@ impl From<&MobSegmentData> for MobSegmentComponent {
         MobSegmentComponent {
             mob_segment_type: mob_segment_data.mob_segment_type.clone(),
             collision_damage: mob_segment_data.collision_damage,
+            collision_sound: mob_segment_data.collision_sound.clone(),
             defense_damage: mob_segment_data.defense_damage,
             health: mob_segment_data.health.clone(),
             consumable_drops: mob_segment_data.consumable_drops.clone(),
@@ -77,6 +79,8 @@ pub struct MobSegmentData {
     pub colliders: Vec<ColliderData>,
     pub mob_segment_type: MobSegmentType,
     pub collision_damage: f32,
+    #[serde(default)]
+    pub collision_sound: CollisionSoundType,
     pub defense_damage: f32,
     pub health: Health,
     pub consumable_drops: ConsumableDropListType,

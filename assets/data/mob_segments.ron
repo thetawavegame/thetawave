@@ -74,6 +74,7 @@
                 )
             ],
             collision_damage: 0.0,
+            collision_sound: Squishy,
             defense_damage: 0.0,
             health: (
                 max_health: 35.0,
@@ -110,6 +111,7 @@
                 )
             ],
             collision_damage: 0.0,
+            collision_sound: Squishy,
             defense_damage: 0.0,
             health: (
                 max_health: 35.0,
@@ -146,6 +148,7 @@
                 )
             ],
             collision_damage: 0.0,
+            collision_sound: Squishy,
             defense_damage: 0.0,
             health: (
                 max_health: 35.0,
