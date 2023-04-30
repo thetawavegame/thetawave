@@ -21,18 +21,6 @@ Thetawave is an open-source game, designed to be easily expandable. It is progra
 
 ## Credits
 
-### Music
-
-#### *Deflector*
-
- Deflector by [Ghostrifter Official](https://soundcloud.com/ghostrifter-official)
-
-Music promoted by https://www.chosic.com/free-music/all/
-
-Creative Commons CC BY-SA 3.0
-
-https://creativecommons.org/licenses/by-sa/3.0/
-
 ### Sound Effects
 
 #### *Space Ultimate Megapack*
