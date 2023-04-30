@@ -102,7 +102,11 @@ pub fn setup_victory_system(
                     parent
                         .spawn(ImageBundle {
                             image: asset_server
-                                .load("texture/restart_game_prompt_arcade.png")
+                                .load(if cfg!(feature = "arcade") {
+                                    "texture/restart_game_prompt_arcade.png"
+                                } else {
+                                    "texture/restart_game_prompt_keyboard.png"
+                                })
                                 .into(),
                             style: Style {
                                 size: Size::new(Val::Px(400.0), Val::Px(100.0)),

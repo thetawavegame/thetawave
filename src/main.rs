@@ -132,6 +132,8 @@ fn main() {
             .in_schedule(OnEnter(states::AppStates::Game)),
     );
 
+    if cfg!(arcade) {}
+
     if cfg!(debug_assertions) {
         app.add_plugin(EditorPlugin::new())
             .add_plugin(RapierDebugRenderPlugin::default());
