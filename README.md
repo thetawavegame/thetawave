@@ -22,7 +22,7 @@ Thetawave is an open-source game, designed to be easily expandable. It is progra
 
 ## Credits
 
-### Music by Joel Schuman
+### Music by [Joel Schuman](https://joelhasa.site/)
 
 ### Sound Effects
 
