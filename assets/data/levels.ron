@@ -65,6 +65,17 @@
 		)),
 		timeline: (
 			phases: [
+				(
+					phase_type: FormationSpawn(
+						time: 20000000000.0,
+						formation_pool: "easy",
+						initial_delay: 1.0,	 			
+					),
+					bg_music_transition: Some((
+						loop_from: 0.0,
+						bg_music: Game,
+					)),
+				),
 				/*
 				(
 					phase_type: Boss(
