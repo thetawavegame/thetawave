@@ -3,7 +3,8 @@
 ## Controls
 
 - Movement: WASD or Arrow Keys
-- Fire Weapon: Left Click (can hold) or Spacebar
+- Fire weapon (can hold) : Spacebar or Left Click 
+- Special ability (when ready): Right Click or Shift
 
 ## Description
 
@@ -20,6 +21,8 @@ Thetawave is an open-source game, designed to be easily expandable. It is progra
 ![survive](assets/images/survive.gif)
 
 ## Credits
+
+### Music by Joel Schuman
 
 ### Sound Effects
 
