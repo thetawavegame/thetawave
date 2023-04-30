@@ -10,7 +10,7 @@ use crate::{
     spawnable::{
         ConsumableType, InitialMotion, SpawnableBehavior, SpawnableComponent, SpawnableType,
     },
-    states::{AppStates, GameCleanup},
+    states::GameCleanup,
 };
 
 mod behavior;
@@ -123,7 +123,7 @@ pub fn spawn_consumable(
     // spawn the consumable
     consumable
         .insert(SpriteSheetBundle {
-            texture_atlas: consumable_assets.get_asset(&consumable_type),
+            texture_atlas: consumable_assets.get_asset(consumable_type),
             ..Default::default()
         })
         .insert(AnimationComponent {

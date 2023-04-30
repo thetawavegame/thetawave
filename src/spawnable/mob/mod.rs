@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
-use rand::{thread_rng, Rng};
 use serde::Deserialize;
 use std::{
     collections::{hash_map::Entry, HashMap},
@@ -15,7 +14,7 @@ use crate::{
     loot::ConsumableDropListType,
     misc::Health,
     spawnable::{InitialMotion, MobType, SpawnableBehavior, SpawnableComponent},
-    states::{AppStates, GameCleanup},
+    states::GameCleanup,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 
@@ -147,7 +146,7 @@ impl From<ProjectileSpawnerData> for ProjectileSpawner {
             position: value.position.clone(),
             initial_motion: value.initial_motion.clone(),
             despawn_time: value.despawn_time,
-            health: value.health.clone(),
+            health: value.health,
         }
     }
 }
@@ -265,12 +264,12 @@ pub struct ColliderData {
 
 pub type CompoundColliderData = (Vec2, f32, Collider);
 
-impl Into<CompoundColliderData> for ColliderData {
-    fn into(self) -> CompoundColliderData {
+impl From<ColliderData> for CompoundColliderData {
+    fn from(val: ColliderData) -> Self {
         (
-            self.position,
-            self.rotation,
-            Collider::cuboid(self.dimensions.x, self.dimensions.y),
+            val.position,
+            val.rotation,
+            Collider::cuboid(val.dimensions.x, val.dimensions.y),
         )
     }
 }
@@ -343,6 +342,7 @@ pub struct MobsResource {
 }
 
 /// Spawn a mob entity
+#[allow(clippy::too_many_arguments)]
 pub fn spawn_mob(
     mob_type: &MobType,
     mob_resource: &MobsResource,
@@ -369,7 +369,6 @@ pub fn spawn_mob(
                 1.0,
             ),
             rotation,
-            ..Default::default()
         },
         ..Default::default()
     })
@@ -422,7 +421,7 @@ pub fn spawn_mob(
         });
     }
 
-    let mob_entity = mob.id().clone();
+    let mob_entity = mob.id();
     // add mob segment if anchor point
 
     for anchor_point in mob_data.mob_segment_anchor_points.iter() {

@@ -20,7 +20,6 @@ strum_macros = "0.24.3"
 console_error_panic_hook = "0.1.7"
 bevy_kira_audio = { version = "0.15.0", features = ["mp3", "wav"] }
 bevy_editor_pls = "0.4.0"
-leafwing-input-manager = "0.9.1"
 
 # bevy_framespace currently does not support wasm
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
@@ -36,3 +35,6 @@ opt-level = 1
 # For bevy-rapier2d
 [profile.release]
 codegen-units = 1
+
+[profile.arcade]
+inherits = "release"

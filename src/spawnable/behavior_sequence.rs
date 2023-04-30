@@ -133,7 +133,7 @@ pub fn mob_behavior_sequence_update_system(
 
                 // collected jointed mob entities
                 let mut mob_segment_entities: Vec<Entity> = vec![];
-                while true {
+                loop {
                     let mut remove_entities = vec![];
 
                     for pair in entity_pairs.iter_mut() {
@@ -148,7 +148,7 @@ pub fn mob_behavior_sequence_update_system(
                         }
                     }
 
-                    if remove_entities.len() == 0 {
+                    if remove_entities.is_empty() {
                         break;
                     }
 

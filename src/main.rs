@@ -1,7 +1,6 @@
 use bevy::{pbr::AmbientLight, prelude::*};
 use bevy_editor_pls::prelude::*;
 use bevy_kira_audio::prelude::*;
-use leafwing_input_manager::prelude::*;
 
 use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
@@ -21,7 +20,6 @@ mod background;
 mod camera;
 mod collision;
 mod game;
-mod input;
 mod loot;
 mod misc;
 mod options;
@@ -122,7 +120,6 @@ fn main() {
         brightness: 0.1,
     })
     .add_plugin(AudioPlugin)
-    .add_plugin(InputManagerPlugin::<input::InputAction>::default())
     .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
         PHYSICS_SCALE,
     ));

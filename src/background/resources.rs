@@ -1,5 +1,5 @@
 use crate::background::PlanetComponent;
-use crate::states::{AppStates, GameCleanup};
+use crate::states::GameCleanup;
 use bevy::prelude::Commands;
 use bevy::prelude::*;
 use serde::Deserialize;

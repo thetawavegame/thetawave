@@ -3,7 +3,6 @@ use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
-use std::collections::HashMap;
 
 use crate::{
     assets::GameAudioAssets,
@@ -12,8 +11,8 @@ use crate::{
     game::GameParametersResource,
     loot::LootDropsResource,
     spawnable::{
-        EffectType, InitialMotion, MobType, PlayerComponent, ProjectileResource, ProjectileType,
-        SpawnConsumableEvent, SpawnEffectEvent, SpawnProjectileEvent,
+        EffectType, InitialMotion, MobType, PlayerComponent, ProjectileType, SpawnConsumableEvent,
+        SpawnEffectEvent, SpawnProjectileEvent,
     },
 };
 

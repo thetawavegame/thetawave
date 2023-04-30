@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::states::{self, AppStates};
+use crate::states;
 
 #[derive(Component)]
 pub struct MainMenuUI;

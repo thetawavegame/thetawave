@@ -1,5 +1,3 @@
-use std::default;
-
 use bevy::prelude::*;
 use rand::Rng;
 use serde::Deserialize;
@@ -26,6 +24,7 @@ pub struct ConsumableLootDrop {
 }
 
 impl ConsumableLootDrop {
+    /// Roll for loot drops and spawn consumables
     pub fn roll_and_spawn(
         &self,
         consumable_event_writer: &mut EventWriter<SpawnConsumableEvent>,

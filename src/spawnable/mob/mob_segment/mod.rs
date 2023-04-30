@@ -10,7 +10,7 @@ use crate::{
     loot::ConsumableDropListType,
     misc::Health,
     spawnable::{MobSegmentType, SpawnableComponent, SpawnableType},
-    states::{AppStates, GameCleanup},
+    states::GameCleanup,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 
@@ -92,6 +92,8 @@ pub struct MobSegmentData {
     pub mob_spawners: Option<HashMap<String, Vec<MobSpawnerData>>>,
 }
 
+/// Spawn a mob segment
+#[allow(clippy::too_many_arguments)]
 pub fn spawn_mob_segment(
     mob_segment_type: &MobSegmentType,
     joint_parent_entity: Entity,
@@ -159,7 +161,7 @@ pub fn spawn_mob_segment(
         .insert(GameCleanup)
         .insert(Name::new(mob_segment_data.mob_segment_type.to_string()));
 
-    let mob_segment_entity = mob_segment.id().clone();
+    let mob_segment_entity = mob_segment.id();
 
     if let Some(mob_segment_anchor_points) = mob_segment_data.mob_segment_anchor_points.clone() {
         for mob_segment_anchor_point in mob_segment_anchor_points.iter() {

@@ -17,6 +17,7 @@ impl Default for PlayersResource {
     }
 }
 
+/// Player input
 #[derive(Clone, PartialEq, Debug)]
 pub enum PlayerInput {
     Keyboard,

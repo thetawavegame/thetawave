@@ -15,7 +15,7 @@ pub use self::{
     spawn::spawn_players_system,
     systems::{
         player_ability_system, player_death_system, player_fire_weapon_system,
-        player_movement_system, player_scale_fire_rate_system,
+        player_health_system, player_movement_system, player_scale_fire_rate_system,
     },
 };
 
@@ -39,6 +39,7 @@ impl Plugin for PlayerPlugin {
             (
                 player_fire_weapon_system,
                 player_death_system,
+                player_health_system,
                 player_scale_fire_rate_system,
                 player_movement_system.in_set(GameUpdateSet::Movement),
                 player_ability_system.in_set(GameUpdateSet::Abilities),

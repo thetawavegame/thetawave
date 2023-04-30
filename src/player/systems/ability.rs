@@ -2,15 +2,16 @@ use std::collections::HashMap;
 
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
-use bevy_rapier2d::prelude::{ExternalImpulse, RigidBody, Velocity};
+use bevy_rapier2d::prelude::{ExternalImpulse, Velocity};
 
 use crate::{
     assets::GameAudioAssets,
     audio,
-    player::{PlayerComponent, PlayerInput, PlayersResource},
+    player::{components::AbilityType, PlayerComponent, PlayerInput, PlayersResource},
     spawnable::{InitialMotion, SpawnProjectileEvent},
 };
 
+#[allow(clippy::too_many_arguments)]
 pub fn player_ability_system(
     mut player_query: Query<(
         &mut PlayerComponent,
@@ -28,6 +29,7 @@ pub fn player_ability_system(
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
 ) {
+    // get keyboard directional inputs
     let up_keyboard_input =
         keyboard_input.pressed(KeyCode::W) || keyboard_input.pressed(KeyCode::Up);
     let down_keyboard_input =
@@ -37,6 +39,7 @@ pub fn player_ability_system(
     let right_keyboard_input =
         keyboard_input.pressed(KeyCode::D) || keyboard_input.pressed(KeyCode::Right);
 
+    // get gamepad directional inputs
     let up_gamepad_inputs: HashMap<usize, bool> = gamepads
         .iter()
         .map(|gamepad| {
@@ -89,9 +92,11 @@ pub fn player_ability_system(
         })
         .collect();
 
+    // get ability keyboard input
     let ability_keyboard_input =
         keyboard_input.pressed(KeyCode::LShift) || mouse_input.pressed(MouseButton::Right);
 
+    // get ability gamepad input
     let ability_gamepad_inputs: HashMap<usize, bool> = gamepads
         .iter()
         .map(|gamepad| {
@@ -108,10 +113,12 @@ pub fn player_ability_system(
     for (mut player_component, mut player_vel, player_trans, mut player_ext_impulse) in
         player_query.iter_mut()
     {
+        // get the input for the queried player
         let player_input = players_resource.player_inputs[player_component.player_index]
             .clone()
             .unwrap();
 
+        // check what actions given input matches
         let up = match player_input {
             PlayerInput::Keyboard => up_keyboard_input,
             PlayerInput::Gamepad(gamepad) => up_gamepad_inputs[&gamepad],
@@ -137,14 +144,16 @@ pub fn player_ability_system(
             PlayerInput::Gamepad(gamepad) => ability_gamepad_inputs[&gamepad],
         };
 
+        // update ability cooldown timer
         player_component.ability_cooldown_timer.tick(time.delta());
 
         // start ability if input pressed and available
         if player_component.ability_cooldown_timer.finished() && activate_ability_input {
             // perform ability
             match player_component.ability_type {
-                crate::player::components::AbilityType::Charge(ability_duration) => {
-                    info!("CHARGE ABILITY");
+                // TODO: move hardcoded values to player componnet
+                // charge player in direction
+                AbilityType::Charge(ability_duration) => {
                     //if let Some(vec2_normal) = player_vel.linvel.try_normalize() {
                     if let Some(vec2_normal) = Vec2::new(
                         (-(left as i8) + right as i8) as f32,
@@ -162,8 +171,8 @@ pub fn player_ability_system(
                     player_component.ability_action_timer =
                         Some(Timer::from_seconds(ability_duration, TimerMode::Once));
                 }
-                crate::player::components::AbilityType::MegaBlast(multiplier) => {
-                    info!("MEGABLAST ABILITY");
+                // shoot a giant projectile
+                AbilityType::MegaBlast(multiplier) => {
                     audio_channel.play(audio_assets.megablast_ability.clone());
                     let projectile_transform = Transform {
                         translation: Vec3::new(
@@ -195,21 +204,24 @@ pub fn player_ability_system(
                     });
                 }
             }
-            // reset timer
+            // reset ability timer
             player_component.ability_cooldown_timer.reset();
         }
 
+        // handle ability action timer
         if let Some(ability_action_timer) = &mut player_component.ability_action_timer {
+            // tick timer
             ability_action_timer.tick(time.delta());
 
+            // change values when timer finished
             if ability_action_timer.just_finished() {
                 match player_component.ability_type {
-                    crate::player::components::AbilityType::Charge(_) => {
+                    AbilityType::Charge(_) => {
                         player_vel.linvel = Vec2::new(0.0, 0.0);
                         player_component.movement_enabled = true;
                         player_component.incoming_damage_multiplier += 0.5;
                     }
-                    crate::player::components::AbilityType::MegaBlast(_) => {}
+                    AbilityType::MegaBlast(_) => {}
                 }
             }
         }

@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy_asset_loader::prelude::AssetCollection;
 use bevy_kira_audio::prelude::*;
 use ron::de::from_bytes;
 use std::time::Duration;
@@ -140,6 +139,7 @@ impl RunResource {
 }
 
 /// Restarts the run reseting all of the values in the game
+#[allow(clippy::too_many_arguments)]
 pub fn reset_run_system(
     gamepads: Res<Gamepads>,
     mut gamepad_input: ResMut<Input<GamepadButton>>,

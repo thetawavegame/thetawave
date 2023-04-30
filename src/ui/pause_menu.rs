@@ -1,9 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{
-    states::{AppStates, PauseCleanup},
-    ui::BouncingPromptComponent,
-};
+use crate::{states::PauseCleanup, ui::BouncingPromptComponent};
 
 #[derive(Component)]
 pub struct PauseUI;

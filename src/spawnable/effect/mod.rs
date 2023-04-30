@@ -1,12 +1,10 @@
 use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::EffectAssets,
-    game::GameParametersResource,
-    states::{AppStates, GameCleanup},
+    states::GameCleanup,
 };
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
-use rand::{thread_rng, Rng};
 use serde::Deserialize;
 use std::collections::HashMap;
 
@@ -60,7 +58,6 @@ pub fn spawn_effect_system(
     mut event_reader: EventReader<SpawnEffectEvent>,
     effects_resource: Res<EffectsResource>,
     effect_assets: Res<EffectAssets>,
-    game_parameters: Res<GameParametersResource>,
 ) {
     for event in event_reader.iter() {
         spawn_effect(
@@ -70,7 +67,6 @@ pub fn spawn_effect_system(
             event.transform,
             event.initial_motion.clone(),
             &mut commands,
-            &game_parameters,
         );
     }
 }
@@ -83,7 +79,6 @@ pub fn spawn_effect(
     transform: Transform,
     initial_motion: InitialMotion,
     commands: &mut Commands,
-    game_parameters: &GameParametersResource,
 ) {
     // Get data from effect resource
     let effect_data = &effects_resource.effects[effect_type];
@@ -121,17 +116,6 @@ pub fn spawn_effect(
         .insert(RigidBody::KinematicVelocityBased)
         .insert(Velocity::from(initial_motion))
         .insert(effect_transform)
-        /*
-        .insert(TransformBundle::from_transform(Transform {
-            translation: position.extend(effect_data.z_level),
-            rotation: Quat::from_rotation_z(rotation),
-            scale: Vec3::new(
-                game_parameters.sprite_scale + scale.x,
-                game_parameters.sprite_scale + scale.y,
-                1.0,
-            ),
-        }))
-        */
         .insert(GameCleanup)
         .insert(Name::new(effect_data.effect_type.to_string()));
 }

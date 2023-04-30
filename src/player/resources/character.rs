@@ -44,7 +44,9 @@ pub struct Character {
     pub attraction_acceleration: f32,
     /// Amount of money character has collected
     pub money: usize,
+    /// Ability cooldown time
     pub ability_period: f32,
+    /// Type of ability
     pub ability_type: AbilityType,
 }
 

@@ -3,7 +3,6 @@ use std::time::Duration;
 use bevy::prelude::*;
 
 use crate::audio::BackgroundMusicAudioChannel;
-use crate::states::AppStates;
 use crate::states::VictoryCleanup;
 use crate::ui::BouncingPromptComponent;
 use crate::ui::EndGameTransitionResource;
@@ -121,29 +120,6 @@ pub fn setup_victory_system(
                             flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
                             is_active: true,
                         });
-
-                    /*
-                    parent
-                        .spawn(ImageBundle {
-                            image: asset_server
-                                .load("texture/exit_game_prompt_keyboard.png")
-                                .into(),
-                            style: Style {
-                                size: Size::new(Val::Px(400.0), Val::Px(100.0)),
-                                margin: UiRect {
-                                    left: Val::Auto,
-                                    right: Val::Auto,
-                                    top: Val::Percent(20.0),
-                                    ..Default::default()
-                                },
-                                ..Default::default()
-                            },
-                            ..Default::default()
-                        })
-                        .insert(BouncingPromptComponent {
-                            flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
-                        });
-                        */
                 });
         });
 }

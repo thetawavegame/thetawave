@@ -419,10 +419,6 @@
 					),
 					(
 						spawnable_type: Mob(Enemy(Drone)),
-						position: (100.0, 650.0),
-					),
-					(
-						spawnable_type: Mob(Enemy(Drone)),
 						position: (50.0, 600.0),
 					),
 					(
@@ -432,10 +428,6 @@
 					(
 						spawnable_type: Mob(Enemy(Drone)),
 						position: (-150.0, 675.0),
-					),
-					(
-						spawnable_type: Mob(Enemy(Drone)),
-						position: (-100.0, 650.0),
 					),
 					(
 						spawnable_type: Mob(Enemy(Drone)),

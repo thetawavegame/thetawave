@@ -11,8 +11,8 @@ use crate::{
     spawnable::{InitialMotion, SpawnProjectileEvent},
 };
 
-// TODO: remove from game
 /// Increase fire rate of player based on the amount of money collected
+// TODO: Remove hardcoded values
 pub fn player_scale_fire_rate_system(mut player_query: Query<&mut PlayerComponent>) {
     for mut player in player_query.iter_mut() {
         player.fire_period = 1.0 / (1.5 * ((0.8 * player.money as f32) + 4.0).ln());
@@ -33,9 +33,11 @@ pub fn player_fire_weapon_system(
     audio_assets: Res<GameAudioAssets>,
     players_resource: Res<PlayersResource>,
 ) {
+    // get keyboard fire input
     let fire_keyboard_input =
         keyboard_input.pressed(KeyCode::Space) || mouse_input.pressed(MouseButton::Left);
 
+    // get gamepad fire input
     let fire_gamepad_inputs: HashMap<usize, bool> = gamepads
         .iter()
         .map(|gamepad| {
@@ -50,10 +52,12 @@ pub fn player_fire_weapon_system(
         .collect();
 
     for (mut player_component, rb_vels, transform) in player_query.iter_mut() {
+        // check if player matches input
         let player_input = players_resource.player_inputs[player_component.player_index]
             .clone()
             .unwrap();
 
+        // get fire input for player
         let fire_input = match player_input {
             PlayerInput::Keyboard => fire_keyboard_input,
             PlayerInput::Gamepad(gamepad) => fire_gamepad_inputs[&gamepad],

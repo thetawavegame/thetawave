@@ -1,7 +1,7 @@
 use crate::{
     game::GameParametersResource,
     spawnable::{EffectType, InitialMotion, SpawnEffectEvent},
-    states::{AppStates, GameCleanup},
+    states::GameCleanup,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 use bevy::prelude::*;

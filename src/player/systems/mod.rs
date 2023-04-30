@@ -10,7 +10,6 @@ use crate::game::GameParametersResource;
 use crate::spawnable::{EffectType, InitialMotion, SpawnEffectEvent};
 use crate::states::AppStates;
 use crate::ui::EndGameTransitionResource;
-use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 
@@ -36,6 +35,7 @@ pub fn player_death_system(
         end_game_trans_resource.start(AppStates::GameOver);
     }
 
+    // handle death of player entities
     for (entity, player, transform) in player_query.iter() {
         if player.health.is_dead() {
             // despawn the player
@@ -59,5 +59,12 @@ pub fn player_death_system(
             // play explosion sound effect
             audio_channel.play(audio_assets.player_explosion.clone());
         }
+    }
+}
+
+/// Handle player health regeneration
+pub fn player_health_system(mut player_query: Query<&mut PlayerComponent>) {
+    for mut player_component in player_query.iter_mut() {
+        player_component.health.regenerate_shields();
     }
 }

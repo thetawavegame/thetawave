@@ -15,6 +15,7 @@ use bevy_rapier2d::prelude::*;
 use super::{CollidingEntityPair, SortedCollisionEvent};
 
 /// Creates events from contact collisions
+#[allow(clippy::too_many_arguments)]
 pub fn contact_collision_system(
     mut collision_event_writer: EventWriter<SortedCollisionEvent>,
     mut collision_events: EventReader<CollisionEvent>,
@@ -273,7 +274,7 @@ pub fn contact_collision_system(
                     }
 
                     // check if mob collided with projectile
-                    for (projectile_entity, projectile_component) in projectile_query.iter() {
+                    for (projectile_entity, _projectile_component) in projectile_query.iter() {
                         // check if secondary entity is a projectile
                         if colliding_entities.secondary == projectile_entity {
                             audio_channel.play(audio_assets.bullet_bounce.clone());

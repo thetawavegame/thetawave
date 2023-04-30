@@ -13,9 +13,8 @@ use crate::{
     loot::LootDropsResource,
     player::PlayerComponent,
     spawnable::{
-        behavior_sequence::EntityPair, mob::behavior::SpawnMobBehaviorData, EffectType,
-        InitialMotion, MobDestroyedEvent, SpawnConsumableEvent, SpawnEffectEvent, SpawnMobEvent,
-        SpawnPosition,
+        behavior_sequence::EntityPair, EffectType, InitialMotion, MobDestroyedEvent,
+        SpawnConsumableEvent, SpawnEffectEvent, SpawnMobEvent, SpawnPosition,
     },
 };
 
@@ -55,6 +54,8 @@ pub struct RandomRotationData {
     pub stiffness: f32,
 }
 
+/// Executes the behaviors of mob segments
+#[allow(clippy::too_many_arguments)]
 pub fn mob_segment_execute_behavior_system(
     mut commands: Commands,
     mut collision_events: EventReader<SortedCollisionEvent>,
@@ -198,10 +199,12 @@ pub fn mob_segment_execute_behavior_system(
     }
 }
 
+/// Event to be sent when a mob segment is destroyed
 pub struct MobSegmentDestroyedEvent {
     pub entity: Entity,
 }
 
+/// Applies disconnected behaviors to other parts of the mob when a mob segment is destroyed
 pub fn mob_segment_apply_disconnected_behaviors_system(
     mut mob_destroyed_event_reader: EventReader<MobDestroyedEvent>,
     mut mob_segment_destroyed_event_reader: EventReader<MobSegmentDestroyedEvent>,
@@ -232,7 +235,7 @@ pub fn mob_segment_apply_disconnected_behaviors_system(
 
         // collected joint mob entities
         let mut mob_segment_entities: Vec<Entity> = vec![];
-        while true {
+        loop {
             let mut remove_entities = vec![];
 
             for pair in entity_pairs.iter_mut() {
@@ -247,7 +250,7 @@ pub fn mob_segment_apply_disconnected_behaviors_system(
                 }
             }
 
-            if remove_entities.len() == 0 {
+            if remove_entities.is_empty() {
                 break;
             }
 

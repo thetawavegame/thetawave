@@ -5,7 +5,7 @@ use crate::{
     assets,
     game::GameParametersResource,
     player::{CharactersResource, PlayerComponent, PlayersResource},
-    states::{AppStates, GameCleanup},
+    states::GameCleanup,
 };
 
 /// Spawns player into the game
@@ -16,6 +16,7 @@ pub fn spawn_players_system(
     player_assets: Res<assets::PlayerAssets>,
     players_resource: Res<PlayersResource>,
 ) {
+    // check if more than one player is playing
     let is_multiplayer = players_resource.player_characters[0].is_some()
         && players_resource.player_characters[1].is_some();
 
@@ -30,6 +31,7 @@ pub fn spawn_players_system(
             let collider_size_hy =
                 character.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
 
+            // create player component from character
             let mut player_component = PlayerComponent::from(character);
             player_component.player_index = player_index;
 
@@ -73,6 +75,7 @@ pub fn spawn_players_system(
                 .insert(ExternalImpulse::default())
                 .insert(Name::new("Player"));
 
+            // add colored outline to player if multiplayer
             if is_multiplayer {
                 player_entity.with_children(|parent| {
                     parent

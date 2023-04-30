@@ -8,7 +8,7 @@ use crate::{
     assets::{BGMusicType, GameAudioAssets},
     audio,
     misc::Health,
-    spawnable::{self, MobDestroyedEvent, MobType, SpawnMobEvent},
+    spawnable::{MobDestroyedEvent, MobType, SpawnMobEvent},
     states::AppStates,
     tools::weighted_rng,
     ui::EndGameTransitionResource,
@@ -52,6 +52,7 @@ pub struct LevelCompletedEvent;
 /// Struct to manage a level
 #[derive(Clone, Debug)]
 pub struct Level {
+    /// Index of the current phase
     timeline_idx: usize,
     /// Timeline
     pub timeline: LevelTimeline,
@@ -186,7 +187,7 @@ impl Level {
                     is_defeated: _,
                 } => {
                     let mob_type = mob_type.clone();
-                    let position = position.clone();
+                    let position = *position;
 
                     // spawn the boss after the spawn timer has finished
                     if self
@@ -316,8 +317,8 @@ pub struct LevelPhase {
     pub bg_music_transition: Option<BGMusicTransition>,
 }
 
+/// Background music transition
 #[derive(Deserialize, Clone, Debug)]
-
 pub struct BGMusicTransition {
     pub loop_from: f64,
     pub bg_music: BGMusicType,

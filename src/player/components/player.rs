@@ -26,7 +26,7 @@ pub struct PlayerComponent {
     pub projectile_offset_position: Vec2,
     /// Tracks time between firing blasts
     pub fire_timer: Timer,
-
+    /// Time between firing projectiles
     pub fire_period: f32,
     /// Health of the player
     pub health: Health,
@@ -40,11 +40,17 @@ pub struct PlayerComponent {
     pub attraction_acceleration: f32,
     /// Amount of money character has collected
     pub money: usize,
+    /// Timer for ability cooldown
     pub ability_cooldown_timer: Timer,
+    /// Timer for ability action
     pub ability_action_timer: Option<Timer>,
+    /// Type of ability
     pub ability_type: AbilityType,
+    /// Whether the player responds to move inputs
     pub movement_enabled: bool,
+    /// Multiplier for incoming damage
     pub incoming_damage_multiplier: f32,
+    /// Index of the player
     pub player_index: usize,
 }
 

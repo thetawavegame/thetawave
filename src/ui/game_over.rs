@@ -6,7 +6,7 @@ use bevy_rapier2d::plugin::RapierConfiguration;
 
 use crate::{
     audio::BackgroundMusicAudioChannel,
-    states::{AppStates, GameCleanup, GameOverCleanup},
+    states::{AppStates, GameOverCleanup},
     ui::BouncingPromptComponent,
 };
 
@@ -202,28 +202,6 @@ pub fn setup_game_over_system(
                             flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
                             is_active: true,
                         });
-                    /*
-                    parent
-                        .spawn(ImageBundle {
-                            image: asset_server
-                                .load("texture/exit_game_prompt_controller.png")
-                                .into(),
-                            style: Style {
-                                size: Size::new(Val::Px(400.0), Val::Px(100.0)),
-                                margin: UiRect {
-                                    left: Val::Auto,
-                                    right: Val::Auto,
-                                    top: Val::Percent(20.0),
-                                    ..Default::default()
-                                },
-                                ..Default::default()
-                            },
-                            ..Default::default()
-                        })
-                        .insert(BouncingPromptComponent {
-                            flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
-                        });
-                        */
                 });
         });
 }

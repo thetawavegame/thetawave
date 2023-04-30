@@ -17,6 +17,10 @@ use super::BouncingPromptComponent;
 #[derive(Component)]
 pub struct HealthUI;
 
+/// Tag for player shields ui
+#[derive(Component)]
+pub struct ShieldsUI;
+
 #[derive(Component)]
 
 pub struct AbilityUI;
@@ -173,7 +177,7 @@ pub fn setup_game_ui_system(
                 },
                 position: UiRect {
                     left: Val::Percent(3.5),
-                    bottom: Val::Percent(70.0),
+                    bottom: Val::Percent(67.0),
                     ..UiRect::default()
                 },
                 position_type: PositionType::Absolute,
@@ -187,12 +191,40 @@ pub fn setup_game_ui_system(
         .insert(Player1UI);
 
     commands
+        .spawn(NodeBundle {
+            style: Style {
+                size: Size {
+                    width: Val::Px(15.0),
+                    height: Val::Px(200.0),
+                },
+                position: UiRect {
+                    left: Val::Percent(4.5),
+                    bottom: Val::Percent(67.0),
+                    ..UiRect::default()
+                },
+                position_type: PositionType::Absolute,
+                ..Style::default()
+            },
+            background_color: Color::Rgba {
+                red: 0.0,
+                green: 0.74,
+                blue: 1.0,
+                alpha: 0.5,
+            }
+            .into(),
+            ..NodeBundle::default()
+        })
+        .insert(GameCleanup)
+        .insert(ShieldsUI)
+        .insert(Player1UI);
+
+    commands
         .spawn(ImageBundle {
             image: asset_server.load("texture/health_bar_label.png").into(),
             style: Style {
                 position: UiRect {
                     left: Val::Percent(3.5),
-                    bottom: Val::Percent(74.5),
+                    bottom: Val::Percent(71.5),
                     ..default()
                 },
                 position_type: PositionType::Absolute,
@@ -211,14 +243,14 @@ pub fn setup_game_ui_system(
             style: Style {
                 size: Size::new(Val::Px(12.0), Val::Px(12.0)),
                 position: UiRect {
-                    left: Val::Percent(3.5),
-                    bottom: Val::Percent(69.0),
+                    left: Val::Percent(4.1),
+                    bottom: Val::Percent(87.0),
                     ..default()
                 },
                 position_type: PositionType::Absolute,
                 ..default()
             },
-            transform: Transform::from_scale(Vec3::new(2.5, 2.5, 1.0)),
+            transform: Transform::from_scale(Vec3::new(6.0, 6.0, 1.0)),
             background_color: Color::rgba(1.0, 1.0, 1.0, 0.2).into(),
             ..Default::default()
         })
@@ -363,8 +395,8 @@ pub fn setup_game_ui_system(
                         height: Val::Px(200.0),
                     },
                     position: UiRect {
-                        left: Val::Percent(92.5),
-                        bottom: Val::Percent(70.0),
+                        left: Val::Percent(96.5),
+                        bottom: Val::Percent(67.0),
                         ..UiRect::default()
                     },
                     position_type: PositionType::Absolute,
@@ -378,12 +410,40 @@ pub fn setup_game_ui_system(
             .insert(Player2UI);
 
         commands
+            .spawn(NodeBundle {
+                style: Style {
+                    size: Size {
+                        width: Val::Px(15.0),
+                        height: Val::Px(200.0),
+                    },
+                    position: UiRect {
+                        left: Val::Percent(95.5),
+                        bottom: Val::Percent(67.0),
+                        ..UiRect::default()
+                    },
+                    position_type: PositionType::Absolute,
+                    ..Style::default()
+                },
+                background_color: Color::Rgba {
+                    red: 0.0,
+                    green: 0.74,
+                    blue: 1.0,
+                    alpha: 0.5,
+                }
+                .into(),
+                ..NodeBundle::default()
+            })
+            .insert(GameCleanup)
+            .insert(ShieldsUI)
+            .insert(Player2UI);
+
+        commands
             .spawn(ImageBundle {
                 image: asset_server.load("texture/health_bar_label.png").into(),
                 style: Style {
                     position: UiRect {
-                        left: Val::Percent(92.5),
-                        bottom: Val::Percent(74.5),
+                        left: Val::Percent(96.5),
+                        bottom: Val::Percent(71.5),
                         ..default()
                     },
                     position_type: PositionType::Absolute,
@@ -402,14 +462,14 @@ pub fn setup_game_ui_system(
                 style: Style {
                     size: Size::new(Val::Px(12.0), Val::Px(12.0)),
                     position: UiRect {
-                        left: Val::Percent(92.5),
-                        bottom: Val::Percent(69.0),
+                        left: Val::Percent(95.9),
+                        bottom: Val::Percent(87.0),
                         ..default()
                     },
                     position_type: PositionType::Absolute,
                     ..default()
                 },
-                transform: Transform::from_scale(Vec3::new(2.5, 2.5, 1.0)),
+                transform: Transform::from_scale(Vec3::new(6.0, 6.0, 1.0)),
                 background_color: Color::rgba(1.0, 1.0, 1.0, 0.2).into(),
                 ..Default::default()
             })
@@ -531,6 +591,7 @@ pub fn update_player1_ui(
         Query<&mut Visibility, (With<AbilityChargingUI>, With<Player1UI>)>,
         Query<&mut Visibility, (With<AbilityReadyUI>, With<Player1UI>)>,
         Query<&mut Style, With<LevelUI>>,
+        Query<&mut Style, (With<ShieldsUI>, With<Player1UI>)>,
     )>,
     player_query: Query<&PlayerComponent>,
     run_resource: Res<RunResource>,
@@ -545,6 +606,18 @@ pub fn update_player1_ui(
                     200.0
                         * (player_component.health.get_health()
                             / player_component.health.get_max_health()),
+                )
+            }
+        }
+    }
+
+    for mut style_component in player1_ui_queries.p7().iter_mut() {
+        for player_component in player_query.iter() {
+            if player_component.player_index == 0 {
+                style_component.size.height = Val::Px(
+                    200.0
+                        * (player_component.health.get_shields()
+                            / player_component.health.get_max_shields()),
                 )
             }
         }
@@ -650,6 +723,7 @@ pub fn update_player2_ui(
         Query<&mut Style, (With<AbilityUI>, With<Player2UI>)>,
         Query<&mut Visibility, (With<AbilityChargingUI>, With<Player2UI>)>,
         Query<&mut Visibility, (With<AbilityReadyUI>, With<Player2UI>)>,
+        Query<&mut Style, (With<ShieldsUI>, With<Player2UI>)>,
     )>,
     player_query: Query<&PlayerComponent>,
     time: Res<Time>,
@@ -663,6 +737,18 @@ pub fn update_player2_ui(
                     200.0
                         * (player_component.health.get_health()
                             / player_component.health.get_max_health()),
+                )
+            }
+        }
+    }
+
+    for mut style_component in player2_ui_queries.p6().iter_mut() {
+        for player_component in player_query.iter() {
+            if player_component.player_index == 1 {
+                style_component.size.height = Val::Px(
+                    200.0
+                        * (player_component.health.get_shields()
+                            / player_component.health.get_max_shields()),
                 )
             }
         }

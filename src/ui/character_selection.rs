@@ -1,6 +1,6 @@
 use super::BouncingPromptComponent;
 use crate::{
-    player::{Character, CharacterType, PlayerInput, PlayersResource},
+    player::{CharacterType, PlayerInput, PlayersResource},
     states,
 };
 use bevy::{prelude::*, utils::hashbrown::HashMap};
@@ -27,8 +27,20 @@ pub struct CharacterSelectionChoice {
 }
 
 #[derive(Component)]
+pub struct CharacterDescription {
+    pub character: Option<CharacterType>,
+}
+
+#[derive(Component)]
+pub struct Player1Description;
+
+#[derive(Component)]
+pub struct Player2Description;
+
+#[derive(Component)]
 pub struct StartGamePrompt;
 
+/// Setup the character selection UI
 pub fn setup_character_selection_system(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn(NodeBundle {
@@ -70,7 +82,7 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                     style: Style {
                                         size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
                                         margin: UiRect {
-                                            top: Val::Percent(45.0),
+                                            top: Val::Percent(35.0),
                                             ..Default::default()
                                         },
                                         flex_direction: FlexDirection::Row,
@@ -303,6 +315,154 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                                 });
                                         });
                                 });
+
+                            parent
+                                .spawn(NodeBundle {
+                                    style: Style {
+                                        size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
+                                        margin: UiRect {
+                                            ..Default::default()
+                                        },
+                                        flex_direction: FlexDirection::Row,
+                                        ..Default::default()
+                                    },
+                                    ..Default::default()
+                                })
+                                .with_children(|parent| {
+                                    parent
+                                        .spawn(ImageBundle {
+                                            image: asset_server
+                                                .load("texture/captain_description.png")
+                                                .into(),
+                                            style: Style {
+                                                size: Size::new(Val::Px(400.0), Val::Px(300.0)),
+                                                margin: UiRect {
+                                                    right: Val::Auto,
+                                                    left: Val::Auto,
+                                                    //top: Val::Percent(65.0),
+                                                    ..Default::default()
+                                                },
+                                                display: Display::None,
+                                                ..Default::default()
+                                            },
+                                            ..Default::default()
+                                        })
+                                        .insert(CharacterDescription {
+                                            character: Some(CharacterType::Captain),
+                                        })
+                                        .insert(Player1Description);
+
+                                    parent
+                                        .spawn(ImageBundle {
+                                            image: asset_server
+                                                .load("texture/juggernaut_description.png")
+                                                .into(),
+                                            style: Style {
+                                                size: Size::new(Val::Px(400.0), Val::Px(300.0)),
+                                                margin: UiRect {
+                                                    right: Val::Auto,
+                                                    left: Val::Auto,
+                                                    //top: Val::Percent(65.0),
+                                                    ..Default::default()
+                                                },
+                                                display: Display::None,
+                                                ..Default::default()
+                                            },
+                                            ..Default::default()
+                                        })
+                                        .insert(CharacterDescription {
+                                            character: Some(CharacterType::Juggernaut),
+                                        })
+                                        .insert(Player1Description);
+
+                                    parent
+                                        .spawn(ImageBundle {
+                                            image: asset_server
+                                                .load("texture/blank_description.png")
+                                                .into(),
+                                            style: Style {
+                                                size: Size::new(Val::Px(400.0), Val::Px(300.0)),
+                                                margin: UiRect {
+                                                    right: Val::Auto,
+                                                    left: Val::Auto,
+                                                    //top: Val::Percent(65.0),
+                                                    ..Default::default()
+                                                },
+                                                display: Display::None,
+                                                ..Default::default()
+                                            },
+                                            ..Default::default()
+                                        })
+                                        .insert(CharacterDescription { character: None })
+                                        .insert(Player1Description);
+
+                                    parent
+                                        .spawn(ImageBundle {
+                                            image: asset_server
+                                                .load("texture/captain_description.png")
+                                                .into(),
+                                            style: Style {
+                                                size: Size::new(Val::Px(400.0), Val::Px(300.0)),
+                                                margin: UiRect {
+                                                    right: Val::Auto,
+                                                    left: Val::Auto,
+                                                    //top: Val::Percent(65.0),
+                                                    ..Default::default()
+                                                },
+                                                display: Display::None,
+                                                ..Default::default()
+                                            },
+                                            ..Default::default()
+                                        })
+                                        .insert(CharacterDescription {
+                                            character: Some(CharacterType::Captain),
+                                        })
+                                        .insert(Player2Description);
+
+                                    parent
+                                        .spawn(ImageBundle {
+                                            image: asset_server
+                                                .load("texture/juggernaut_description.png")
+                                                .into(),
+                                            style: Style {
+                                                size: Size::new(Val::Px(400.0), Val::Px(300.0)),
+                                                margin: UiRect {
+                                                    right: Val::Auto,
+                                                    left: Val::Auto,
+                                                    //top: Val::Percent(65.0),
+                                                    ..Default::default()
+                                                },
+                                                display: Display::None,
+                                                ..Default::default()
+                                            },
+                                            ..Default::default()
+                                        })
+                                        .insert(CharacterDescription {
+                                            character: Some(CharacterType::Juggernaut),
+                                        })
+                                        .insert(Player2Description);
+
+                                    parent
+                                        .spawn(ImageBundle {
+                                            image: asset_server
+                                                .load("texture/blank_description.png")
+                                                .into(),
+                                            style: Style {
+                                                size: Size::new(Val::Px(400.0), Val::Px(300.0)),
+                                                margin: UiRect {
+                                                    right: Val::Auto,
+                                                    left: Val::Auto,
+                                                    //top: Val::Percent(65.0),
+                                                    ..Default::default()
+                                                },
+                                                display: Display::None,
+                                                ..Default::default()
+                                            },
+                                            ..Default::default()
+                                        })
+                                        .insert(CharacterDescription { character: None })
+                                        .insert(Player2Description);
+                                });
                             parent
                                 .spawn(ImageBundle {
                                     image: asset_server
@@ -333,6 +493,7 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
         });
 }
 
+/// Handles players joining the game
 pub fn player_join_system(
     gamepads: Res<Gamepads>,
     mut keyboard_input: ResMut<Input<KeyCode>>,
@@ -350,8 +511,7 @@ pub fn player_join_system(
     let used_inputs: Vec<PlayerInput> = players_resource
         .player_inputs
         .iter()
-        .filter(|input| input.is_some())
-        .map(|input| input.clone().unwrap())
+        .filter_map(|input| input.clone())
         .collect();
 
     // check for keyboard input
@@ -423,10 +583,10 @@ pub fn player_join_system(
     } else {
         *start_game_prompt.single_mut() = Visibility::Hidden;
     }
-    println!("players resource: {:?}", players_resource);
 }
 
 // handle the character selection for each player
+#[allow(clippy::too_many_arguments)]
 pub fn select_character_system(
     gamepads: Res<Gamepads>,
     keyboard_input: Res<Input<KeyCode>>,
@@ -434,6 +594,11 @@ pub fn select_character_system(
     mut players_resource: ResMut<PlayersResource>,
     player_1_selection: Query<&Children, With<Player1CharacterSelection>>,
     player_2_selection: Query<&Children, With<Player2CharacterSelection>>,
+
+    mut character_description_queries: ParamSet<(
+        Query<(&mut Style, &CharacterDescription), With<Player1Description>>,
+        Query<(&mut Style, &CharacterDescription), With<Player2Description>>,
+    )>,
     mut selection_choice: Query<(
         &mut CharacterSelectionChoice,
         &mut BouncingPromptComponent,
@@ -546,5 +711,23 @@ pub fn select_character_system(
         && players_resource.player_characters[1].is_none()
     {
         players_resource.player_characters[1] = Some(CharacterType::Captain);
+    }
+
+    // set the charcater description for player 1
+    for (mut style, description) in character_description_queries.p0().iter_mut() {
+        if players_resource.player_characters[0] == description.character {
+            style.display = Display::Flex;
+        } else {
+            style.display = Display::None;
+        }
+    }
+
+    // set the charcater description for player 2
+    for (mut style, description) in character_description_queries.p1().iter_mut() {
+        if players_resource.player_characters[1] == description.character {
+            style.display = Display::Flex;
+        } else {
+            style.display = Display::None;
+        }
     }
 }
