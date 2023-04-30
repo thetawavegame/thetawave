@@ -13,11 +13,6 @@
                 consumable: HealthWrench,
             ),
             (
-                rolls: 1,
-                probability: 0.03,
-                consumable: DefenseWrench,
-            ),
-            (
                 rolls: 2,
                 probability: 0.1,
                 consumable: Money1,

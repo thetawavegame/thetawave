@@ -93,8 +93,9 @@ pub fn player_ability_system(
         .collect();
 
     // get ability keyboard input
-    let ability_keyboard_input =
-        keyboard_input.pressed(KeyCode::LShift) || mouse_input.pressed(MouseButton::Right);
+    let ability_keyboard_input = keyboard_input.pressed(KeyCode::LShift)
+        || mouse_input.pressed(MouseButton::Right)
+        || keyboard_input.pressed(KeyCode::RShift);
 
     // get ability gamepad input
     let ability_gamepad_inputs: HashMap<usize, bool> = gamepads

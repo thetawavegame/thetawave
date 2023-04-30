@@ -241,10 +241,10 @@ pub fn setup_game_ui_system(
         .spawn(ImageBundle {
             image: asset_server.load("texture/armor_spritesheet.png").into(),
             style: Style {
-                size: Size::new(Val::Px(12.0), Val::Px(12.0)),
+                size: Size::new(Val::Px(10.0), Val::Px(10.0)),
                 position: UiRect {
-                    left: Val::Percent(4.1),
-                    bottom: Val::Percent(87.0),
+                    left: Val::Percent(4.2),
+                    bottom: Val::Percent(90.0),
                     ..default()
                 },
                 position_type: PositionType::Absolute,
@@ -395,7 +395,7 @@ pub fn setup_game_ui_system(
                         height: Val::Px(200.0),
                     },
                     position: UiRect {
-                        left: Val::Percent(96.5),
+                        left: Val::Percent(94.5),
                         bottom: Val::Percent(67.0),
                         ..UiRect::default()
                     },
@@ -417,7 +417,7 @@ pub fn setup_game_ui_system(
                         height: Val::Px(200.0),
                     },
                     position: UiRect {
-                        left: Val::Percent(95.5),
+                        left: Val::Percent(93.5),
                         bottom: Val::Percent(67.0),
                         ..UiRect::default()
                     },
@@ -442,7 +442,7 @@ pub fn setup_game_ui_system(
                 image: asset_server.load("texture/health_bar_label.png").into(),
                 style: Style {
                     position: UiRect {
-                        left: Val::Percent(96.5),
+                        left: Val::Percent(94.5),
                         bottom: Val::Percent(71.5),
                         ..default()
                     },
@@ -460,10 +460,10 @@ pub fn setup_game_ui_system(
             .spawn(ImageBundle {
                 image: asset_server.load("texture/armor_spritesheet.png").into(),
                 style: Style {
-                    size: Size::new(Val::Px(12.0), Val::Px(12.0)),
+                    size: Size::new(Val::Px(10.0), Val::Px(10.0)),
                     position: UiRect {
-                        left: Val::Percent(95.9),
-                        bottom: Val::Percent(87.0),
+                        left: Val::Percent(94.3),
+                        bottom: Val::Percent(90.0),
                         ..default()
                     },
                     position_type: PositionType::Absolute,

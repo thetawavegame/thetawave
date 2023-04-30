@@ -21,7 +21,13 @@ pub fn setup_instructions_system(mut commands: Commands, asset_server: Res<Asset
         .with_children(|parent| {
             parent
                 .spawn(ImageBundle {
-                    image: asset_server.load("texture/instructions_54.png").into(),
+                    image: asset_server
+                        .load(if cfg!(feature = "arcade") {
+                            "texture/instructions_54_arcade.png"
+                        } else {
+                            "texture/instructions_54.png"
+                        })
+                        .into(),
                     style: Style {
                         size: Size::new(Val::Percent(100.), Val::Percent(100.)),
                         align_items: AlignItems::Center,

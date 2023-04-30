@@ -94,7 +94,11 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                     parent
                                         .spawn(ImageBundle {
                                             image: asset_server
-                                                .load("texture/join_prompt_arcade.png")
+                                                .load(if cfg!(feature = "arcade") {
+                                                    "texture/join_prompt_arcade.png"
+                                                } else {
+                                                    "texture/join_prompt_keyboard.png"
+                                                })
                                                 .into(),
                                             style: Style {
                                                 size: Size::new(Val::Px(400.0), Val::Px(100.0)),
@@ -206,7 +210,11 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                     parent
                                         .spawn(ImageBundle {
                                             image: asset_server
-                                                .load("texture/join_prompt_arcade.png")
+                                                .load(if cfg!(feature = "arcade") {
+                                                    "texture/join_prompt_arcade.png"
+                                                } else {
+                                                    "texture/join_prompt_keyboard.png"
+                                                })
                                                 .into(),
                                             style: Style {
                                                 size: Size::new(Val::Px(400.0), Val::Px(100.0)),
@@ -519,7 +527,8 @@ pub fn player_join_system(
         .collect();
 
     // check for keyboard input
-    let mut keyboard_join_input = keyboard_input.just_released(KeyCode::LShift);
+    let mut keyboard_join_input = keyboard_input.just_released(KeyCode::LShift)
+        || keyboard_input.just_released(KeyCode::RShift);
 
     // join with keyboard
     if keyboard_join_input {
