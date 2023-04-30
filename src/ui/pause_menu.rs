@@ -1,9 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{
-    states::{AppStateComponent, AppStates},
-    ui::BouncingPromptComponent,
-};
+use crate::{states::PauseCleanup, ui::BouncingPromptComponent};
 
 #[derive(Component)]
 pub struct PauseUI;
@@ -18,13 +15,17 @@ pub fn setup_pause_system(mut commands: Commands, asset_server: Res<AssetServer>
             background_color: Color::rgba(0.5, 0.5, 0.5, 0.1).into(),
             ..Default::default()
         })
-        .insert(AppStateComponent(AppStates::PauseMenu))
+        .insert(PauseCleanup)
         .insert(PauseUI)
         .with_children(|parent| {
             parent
                 .spawn(ImageBundle {
                     image: asset_server
-                        .load("texture/restart_game_prompt_keyboard.png")
+                        .load(if cfg!(feature = "arcade") {
+                            "texture/restart_game_prompt_arcade.png"
+                        } else {
+                            "texture/restart_game_prompt_keyboard.png"
+                        })
                         .into(),
                     style: Style {
                         size: Size::new(Val::Px(400.0), Val::Px(100.0)),
@@ -40,6 +41,7 @@ pub fn setup_pause_system(mut commands: Commands, asset_server: Res<AssetServer>
                 })
                 .insert(BouncingPromptComponent {
                     flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
+                    is_active: true,
                 });
         });
 }

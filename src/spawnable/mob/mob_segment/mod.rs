@@ -5,12 +5,12 @@ use std::collections::{hash_map::Entry, HashMap};
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
-    assets::MobAssets,
+    assets::{CollisionSoundType, MobAssets},
     game::GameParametersResource,
     loot::ConsumableDropListType,
     misc::Health,
     spawnable::{MobSegmentType, SpawnableComponent, SpawnableType},
-    states::{AppStateComponent, AppStates},
+    states::GameCleanup,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 
@@ -33,6 +33,7 @@ pub struct MobSegmentsResource {
 pub struct MobSegmentComponent {
     pub mob_segment_type: MobSegmentType,
     pub collision_damage: f32,
+    pub collision_sound: CollisionSoundType,
     pub defense_damage: f32,
     pub health: Health,
     pub consumable_drops: ConsumableDropListType,
@@ -62,6 +63,7 @@ impl From<&MobSegmentData> for MobSegmentComponent {
         MobSegmentComponent {
             mob_segment_type: mob_segment_data.mob_segment_type.clone(),
             collision_damage: mob_segment_data.collision_damage,
+            collision_sound: mob_segment_data.collision_sound.clone(),
             defense_damage: mob_segment_data.defense_damage,
             health: mob_segment_data.health.clone(),
             consumable_drops: mob_segment_data.consumable_drops.clone(),
@@ -77,6 +79,8 @@ pub struct MobSegmentData {
     pub colliders: Vec<ColliderData>,
     pub mob_segment_type: MobSegmentType,
     pub collision_damage: f32,
+    #[serde(default)]
+    pub collision_sound: CollisionSoundType,
     pub defense_damage: f32,
     pub health: Health,
     pub consumable_drops: ConsumableDropListType,
@@ -88,6 +92,8 @@ pub struct MobSegmentData {
     pub mob_spawners: Option<HashMap<String, Vec<MobSpawnerData>>>,
 }
 
+/// Spawn a mob segment
+#[allow(clippy::too_many_arguments)]
 pub fn spawn_mob_segment(
     mob_segment_type: &MobSegmentType,
     joint_parent_entity: Entity,
@@ -152,10 +158,10 @@ pub fn spawn_mob_segment(
             mob_segment_type.clone(),
         )))
         .insert(ActiveEvents::COLLISION_EVENTS)
-        .insert(AppStateComponent(AppStates::Game))
+        .insert(GameCleanup)
         .insert(Name::new(mob_segment_data.mob_segment_type.to_string()));
 
-    let mob_segment_entity = mob_segment.id().clone();
+    let mob_segment_entity = mob_segment.id();
 
     if let Some(mob_segment_anchor_points) = mob_segment_data.mob_segment_anchor_points.clone() {
         for mob_segment_anchor_point in mob_segment_anchor_points.iter() {

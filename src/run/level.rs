@@ -1,11 +1,14 @@
 use bevy::prelude::*;
+use bevy_kira_audio::prelude::*;
 use serde::Deserialize;
 use std::{collections::HashMap, time::Duration};
 
 use crate::{
     arena::MobReachedBottomGateEvent,
+    assets::{BGMusicType, GameAudioAssets},
+    audio,
     misc::Health,
-    spawnable::{self, MobDestroyedEvent, MobType, SpawnMobEvent},
+    spawnable::{MobDestroyedEvent, MobType, SpawnMobEvent},
     states::AppStates,
     tools::weighted_rng,
     ui::EndGameTransitionResource,
@@ -49,6 +52,7 @@ pub struct LevelCompletedEvent;
 /// Struct to manage a level
 #[derive(Clone, Debug)]
 pub struct Level {
+    /// Index of the current phase
     timeline_idx: usize,
     /// Timeline
     pub timeline: LevelTimeline,
@@ -107,6 +111,8 @@ impl Level {
         mob_reached_bottom: &mut EventReader<MobReachedBottomGateEvent>,
         formation_pools: &formation::FormationPoolsResource,
         end_game_trans_resource: &mut EndGameTransitionResource,
+        audio_channel: &AudioChannel<audio::BackgroundMusicAudioChannel>,
+        audio_assets: &GameAudioAssets,
     ) {
         // handle each of the objective types
         #[allow(clippy::single_match)]
@@ -181,7 +187,7 @@ impl Level {
                     is_defeated: _,
                 } => {
                     let mob_type = mob_type.clone();
-                    let position = position.clone();
+                    let position = *position;
 
                     // spawn the boss after the spawn timer has finished
                     if self
@@ -225,8 +231,22 @@ impl Level {
                     // set level to next phase in timeline
                     if self.timeline.phases.len() > self.timeline_idx + 1 {
                         self.timeline_idx += 1;
+                        // TODO: change background music
+                        let current_phase = self.get_current_phase().unwrap();
+
+                        if let Some(bg_music_transition) = &current_phase.bg_music_transition {
+                            audio_channel
+                                .stop()
+                                .fade_out(AudioTween::linear(Duration::from_secs_f32(5.0)));
+                            audio_channel
+                                .play(
+                                    audio_assets.get_bg_music_asset(&bg_music_transition.bg_music),
+                                )
+                                .loop_from(bg_music_transition.loop_from);
+                        }
                     } else {
                         // send level completed event when level is completed
+                        // TODO: stop background music
                         level_completed.send(LevelCompletedEvent);
                     }
                     // setup the next phase
@@ -293,6 +313,15 @@ pub struct LevelTimeline {
 pub struct LevelPhase {
     /// phase type
     pub phase_type: LevelPhaseType,
+    /// music to play during phase
+    pub bg_music_transition: Option<BGMusicTransition>,
+}
+
+/// Background music transition
+#[derive(Deserialize, Clone, Debug)]
+pub struct BGMusicTransition {
+    pub loop_from: f64,
+    pub bg_music: BGMusicType,
 }
 
 /// Describes a distinct portion of the level
@@ -326,6 +355,8 @@ pub fn level_system(
     formation_pools: Res<formation::FormationPoolsResource>,
     time: Res<Time>,
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
+    audio_channel: Res<AudioChannel<audio::BackgroundMusicAudioChannel>>,
+    audio_assets: Res<GameAudioAssets>,
 ) {
     // tick the run if ready and the game isn't over
     if run_resource.is_ready() && !end_game_trans_resource.start {
@@ -338,6 +369,8 @@ pub fn level_system(
             &mut mob_reached_bottom,
             &formation_pools,
             &mut end_game_trans_resource,
+            &audio_channel,
+            &audio_assets,
         );
     }
 }
@@ -354,8 +387,23 @@ pub fn next_level_system(
 }
 
 /// Setup first level of the game using values from the first level (phase timer spawn timer, etc)
-pub fn setup_first_level(mut run_resource: ResMut<super::RunResource>) {
+pub fn setup_first_level(
+    mut run_resource: ResMut<super::RunResource>,
+    audio_channel: Res<AudioChannel<audio::BackgroundMusicAudioChannel>>,
+    audio_assets: Res<GameAudioAssets>,
+) {
     if let Some(level) = &mut run_resource.level {
+        // start music for first phase
+
+        audio_channel
+            .stop()
+            .fade_out(AudioTween::linear(Duration::from_secs_f32(5.0)));
+        if let Some(bg_music_transition) = &level.timeline.phases[0].bg_music_transition {
+            audio_channel
+                .play(audio_assets.get_bg_music_asset(&bg_music_transition.bg_music))
+                .loop_from(bg_music_transition.loop_from);
+        }
+        // setup first phase
         match &level.timeline.phases[0].phase_type {
             LevelPhaseType::FormationSpawn {
                 time,

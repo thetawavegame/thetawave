@@ -3,7 +3,8 @@
 ## Controls
 
 - Movement: WASD or Arrow Keys
-- Fire Weapon: Left Click (can hold) or Spacebar
+- Fire weapon (can hold) : Spacebar or Left Click 
+- Special ability (when ready): Right Click or Shift
 
 ## Description
 
@@ -21,17 +22,7 @@ Thetawave is an open-source game, designed to be easily expandable. It is progra
 
 ## Credits
 
-### Music
-
-#### *Deflector*
-
- Deflector by [Ghostrifter Official](https://soundcloud.com/ghostrifter-official)
-
-Music promoted by https://www.chosic.com/free-music/all/
-
-Creative Commons CC BY-SA 3.0
-
-https://creativecommons.org/licenses/by-sa/3.0/
+### Music by Joel Schuman
 
 ### Sound Effects
 

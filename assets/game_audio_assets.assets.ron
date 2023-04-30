@@ -1,12 +1,21 @@
 ({
     "sounds.game_music": File (
-        path: "sounds/deflector_soundtrack.mp3",
+        path: "sounds/earth-orbit_soundtrack.mp3",
+    ),
+    "sounds.boss_music": File (
+        path: "sounds/boss_soundtrack.mp3",
+    ),
+    "sounds.boss_trans_music": File (
+        path: "sounds/boss_transition_soundtrack.mp3",
     ),
     "sounds.barrier_bounce": File (
         path: "sounds/barrier_bounce.wav",
     ),
     "sounds.collision": File (
         path: "sounds/collision.wav",
+    ),
+    "sounds.squishy_collision": File (
+        path: "sounds/squishy_collision.wav",
     ),
     "sounds.consumable_pickup": File (
         path: "sounds/consumable_pickup.wav",
@@ -37,5 +46,14 @@
     ),
     "sounds.player_hit": File (
         path: "sounds/player_hit.wav",
+    ),
+    "sounds.bullet_ding": File (
+        path: "sounds/bullet_ding.wav",
+    ),
+    "sounds.bullet_bounce": File (
+        path: "sounds/bullet_bounce.wav",
+    ),
+    "sounds.megablast_ability": File (
+        path: "sounds/megablast_ability.wav",
     ),
 })

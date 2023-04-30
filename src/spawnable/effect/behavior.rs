@@ -26,7 +26,7 @@ pub fn effect_execute_behavior_system(
             match behavior {
                 EffectBehavior::DespawnAfterAnimation => {
                     let texture_atlas = texture_atlases.get(texture_atlas_handle).unwrap();
-                    if sprite.index as usize == texture_atlas.textures.len() - 1 {
+                    if sprite.index == texture_atlas.textures.len() - 1 {
                         commands.entity(entity).despawn_recursive();
                     }
                 }

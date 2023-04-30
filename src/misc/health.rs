@@ -4,17 +4,34 @@ use serde::Deserialize;
 pub struct Health {
     max_health: f32,
     health: f32,
+    #[serde(default)]
     armor: usize,
+    #[serde(default)]
+    shields: f32,
+    #[serde(default)]
+    max_shields: f32,
+    #[serde(default)]
+    shields_recharge_rate: f32,
 }
 
 impl Health {
     #[allow(dead_code)]
     /// Create a new health struct from a maximum health value
-    pub fn new(health: f32) -> Self {
+    pub fn new(health: f32, shields: f32, shields_recharge_rate: f32) -> Self {
         Health {
             max_health: health,
             health,
+            max_shields: shields,
+            shields,
             armor: 0,
+            shields_recharge_rate,
+        }
+    }
+
+    pub fn regenerate_shields(&mut self) {
+        self.shields += self.shields_recharge_rate;
+        if self.shields > self.max_shields {
+            self.shields = self.max_shields;
         }
     }
 
@@ -23,12 +40,21 @@ impl Health {
         self.health <= 0.0
     }
 
-    /// Take damage (remove armor first if available)
+    /// Take damage (deplete armore, then shields, then health  in that order)
     pub fn take_damage(&mut self, damage: f32) {
         if self.armor == 0 {
-            self.health -= damage;
-            if self.health < 0.0 {
-                self.health = 0.0;
+            if self.shields > 0.0 {
+                self.shields -= damage;
+                if self.shields < 0.0 {
+                    let remaining_damage = -self.shields;
+                    self.health -= remaining_damage;
+                    self.shields = 0.0;
+                }
+            } else {
+                self.health -= damage;
+                if self.health < 0.0 {
+                    self.health = 0.0;
+                }
             }
         } else {
             self.armor -= 1;
@@ -43,6 +69,16 @@ impl Health {
     /// Get current health
     pub fn get_health(&self) -> f32 {
         self.health
+    }
+
+    /// Get maximum health
+    pub fn get_max_shields(&self) -> f32 {
+        self.max_shields
+    }
+
+    /// Get current health
+    pub fn get_shields(&self) -> f32 {
+        self.shields
     }
 
     /// Get available armor count

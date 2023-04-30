@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use serde::Deserialize;
 
 use crate::{misc::Health, player::Character, spawnable::ProjectileType};
 
@@ -25,7 +26,7 @@ pub struct PlayerComponent {
     pub projectile_offset_position: Vec2,
     /// Tracks time between firing blasts
     pub fire_timer: Timer,
-
+    /// Time between firing projectiles
     pub fire_period: f32,
     /// Health of the player
     pub health: Health,
@@ -39,6 +40,18 @@ pub struct PlayerComponent {
     pub attraction_acceleration: f32,
     /// Amount of money character has collected
     pub money: usize,
+    /// Timer for ability cooldown
+    pub ability_cooldown_timer: Timer,
+    /// Timer for ability action
+    pub ability_action_timer: Option<Timer>,
+    /// Type of ability
+    pub ability_type: AbilityType,
+    /// Whether the player responds to move inputs
+    pub movement_enabled: bool,
+    /// Multiplier for incoming damage
+    pub incoming_damage_multiplier: f32,
+    /// Index of the player
+    pub player_index: usize,
 }
 
 impl From<&Character> for PlayerComponent {
@@ -61,6 +74,18 @@ impl From<&Character> for PlayerComponent {
             attraction_distance: character.attraction_distance,
             attraction_acceleration: character.attraction_acceleration,
             money: character.money,
+            ability_cooldown_timer: Timer::from_seconds(character.ability_period, TimerMode::Once),
+            ability_action_timer: None,
+            ability_type: character.ability_type.clone(),
+            movement_enabled: true,
+            incoming_damage_multiplier: 1.0,
+            player_index: 0,
         }
     }
+}
+
+#[derive(Deserialize, Clone, Debug)]
+pub enum AbilityType {
+    Charge(f32),    // ability duration
+    MegaBlast(f32), // scale and damage multiplier
 }

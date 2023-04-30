@@ -60,6 +60,7 @@ pub fn intersection_collision_system(
                                         .clone()
                                     {
                                         ProjectileType::Blast(faction) => faction,
+                                        ProjectileType::Bullet(faction) => faction,
                                     },
                                     projectile_damage: projectile_component.damage,
                                 },
@@ -118,6 +119,7 @@ pub fn intersection_collision_system(
                                         .clone()
                                     {
                                         ProjectileType::Blast(faction) => faction,
+                                        ProjectileType::Bullet(faction) => faction,
                                     },
                                     projectile_damage: projectile_component.damage,
                                 },
@@ -165,6 +167,7 @@ pub fn intersection_collision_system(
                                         .clone()
                                     {
                                         ProjectileType::Blast(faction) => faction,
+                                        ProjectileType::Bullet(faction) => faction,
                                     },
                                     projectile_damage: projectile_component.damage,
                                 },

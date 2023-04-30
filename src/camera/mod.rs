@@ -1,6 +1,14 @@
 use crate::game;
 use bevy::{core_pipeline::clear_color::ClearColorConfig, prelude::*};
 
+pub struct CameraPlugin;
+
+impl Plugin for CameraPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_startup_system(setup_cameras_system);
+    }
+}
+
 pub fn setup_cameras_system(
     mut commands: Commands,
     game_parameters: Res<game::GameParametersResource>,
@@ -14,7 +22,7 @@ pub fn setup_cameras_system(
             clear_color: ClearColorConfig::None,
         },
         camera: Camera {
-            priority: 1,
+            order: 1,
             ..default()
         },
         ..default()

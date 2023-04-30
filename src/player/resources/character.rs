@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use serde::Deserialize;
 use std::collections::HashMap;
 
-use crate::{misc::Health, spawnable::ProjectileType};
+use crate::{misc::Health, player::components::AbilityType, spawnable::ProjectileType};
 
 /// Contains data necessary to create a player entity.
 /// A character is chosen at the beginning of the game.
@@ -44,10 +44,15 @@ pub struct Character {
     pub attraction_acceleration: f32,
     /// Amount of money character has collected
     pub money: usize,
+    /// Ability cooldown time
+    pub ability_period: f32,
+    /// Type of ability
+    pub ability_type: AbilityType,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum CharacterType {
+    Captain,
     Juggernaut,
 }
 
@@ -55,5 +60,5 @@ pub enum CharacterType {
 #[derive(Resource, Deserialize)]
 pub struct CharactersResource {
     /// Names mapped to characters for all characters
-    pub characters: HashMap<String, Character>,
+    pub characters: HashMap<CharacterType, Character>,
 }

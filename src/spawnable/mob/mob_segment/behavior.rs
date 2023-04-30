@@ -9,11 +9,12 @@ use crate::{
     assets::GameAudioAssets,
     audio,
     collision::SortedCollisionEvent,
+    game::GameParametersResource,
     loot::LootDropsResource,
     player::PlayerComponent,
     spawnable::{
-        behavior_sequence::EntityPair, mob::behavior::SpawnMobBehaviorData, EffectType,
-        MobDestroyedEvent, SpawnConsumableEvent, SpawnEffectEvent, SpawnMobEvent, SpawnPosition,
+        behavior_sequence::EntityPair, EffectType, InitialMotion, MobDestroyedEvent,
+        SpawnConsumableEvent, SpawnEffectEvent, SpawnMobEvent, SpawnPosition,
     },
 };
 
@@ -53,6 +54,8 @@ pub struct RandomRotationData {
     pub stiffness: f32,
 }
 
+/// Executes the behaviors of mob segments
+#[allow(clippy::too_many_arguments)]
 pub fn mob_segment_execute_behavior_system(
     mut commands: Commands,
     mut collision_events: EventReader<SortedCollisionEvent>,
@@ -71,6 +74,7 @@ pub fn mob_segment_execute_behavior_system(
     time: Res<Time>,
     mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
     mut mob_segment_destroyed_event_writer: EventWriter<MobSegmentDestroyedEvent>,
+    game_parameters: Res<GameParametersResource>,
 ) {
     let mut collision_events_vec = vec![];
     for collision_event in collision_events.iter() {
@@ -105,9 +109,16 @@ pub fn mob_segment_execute_behavior_system(
                         // spawn mob explosion
                         spawn_effect_event_writer.send(SpawnEffectEvent {
                             effect_type: EffectType::MobExplosion,
-                            position: mob_segment_transform.translation.xy(),
-                            scale: Vec2::ZERO,
-                            rotation: 0.0,
+                            transform: Transform {
+                                translation: mob_segment_transform.translation,
+                                scale: Vec3::new(
+                                    game_parameters.sprite_scale,
+                                    game_parameters.sprite_scale,
+                                    1.0,
+                                ),
+                                ..Default::default()
+                            },
+                            initial_motion: InitialMotion::default(),
                         });
 
                         // drop loot
@@ -188,10 +199,12 @@ pub fn mob_segment_execute_behavior_system(
     }
 }
 
+/// Event to be sent when a mob segment is destroyed
 pub struct MobSegmentDestroyedEvent {
     pub entity: Entity,
 }
 
+/// Applies disconnected behaviors to other parts of the mob when a mob segment is destroyed
 pub fn mob_segment_apply_disconnected_behaviors_system(
     mut mob_destroyed_event_reader: EventReader<MobDestroyedEvent>,
     mut mob_segment_destroyed_event_reader: EventReader<MobSegmentDestroyedEvent>,
@@ -222,7 +235,7 @@ pub fn mob_segment_apply_disconnected_behaviors_system(
 
         // collected joint mob entities
         let mut mob_segment_entities: Vec<Entity> = vec![];
-        while true {
+        loop {
             let mut remove_entities = vec![];
 
             for pair in entity_pairs.iter_mut() {
@@ -237,7 +250,7 @@ pub fn mob_segment_apply_disconnected_behaviors_system(
                 }
             }
 
-            if remove_entities.len() == 0 {
+            if remove_entities.is_empty() {
                 break;
             }
 

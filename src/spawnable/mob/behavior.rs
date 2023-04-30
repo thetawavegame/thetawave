@@ -3,12 +3,12 @@ use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
-use std::collections::HashMap;
 
 use crate::{
     assets::GameAudioAssets,
     audio,
     collision::SortedCollisionEvent,
+    game::GameParametersResource,
     loot::LootDropsResource,
     spawnable::{
         EffectType, InitialMotion, MobType, PlayerComponent, ProjectileType, SpawnConsumableEvent,
@@ -21,7 +21,7 @@ use super::{MobComponent, SpawnMobEvent, SpawnPosition};
 /// Types of behaviors that can be performed by mobs
 #[derive(Deserialize, Clone)]
 pub enum MobBehavior {
-    PeriodicFire(PeriodicFireBehaviorData),
+    PeriodicFire(String),
     SpawnMob(String),
     ExplodeOnImpact,
     DealDamageToPlayerOnImpact,
@@ -77,6 +77,7 @@ pub fn mob_execute_behavior_system(
     loot_drops_resource: Res<LootDropsResource>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
+    game_parameters: Res<GameParametersResource>,
 ) {
     // Get all contact events first (can't be read more than once within a system)
     let mut collision_events_vec = vec![];
@@ -89,22 +90,35 @@ pub fn mob_execute_behavior_system(
         let behaviors = mob_component.behaviors.clone();
         for behavior in behaviors {
             match behavior {
-                MobBehavior::PeriodicFire(data) => {
-                    // get data
-                    if mob_component.weapon_timer.is_none() {
-                        mob_component.weapon_timer =
-                            Some(Timer::from_seconds(data.period, TimerMode::Repeating));
-                    } else if let Some(timer) = &mut mob_component.weapon_timer {
-                        timer.tick(time.delta());
-                        if timer.just_finished() {
-                            // spawn blast
-                            let position = Vec2::new(
-                                mob_transform.translation.x + data.offset_position.x,
-                                mob_transform.translation.y + data.offset_position.y,
-                            );
+                MobBehavior::PeriodicFire(projectile_spawner_key) => {
+                    let attack_damage = mob_component.attack_damage;
+
+                    // get all the mob spawners under the given key
+                    let projectile_spawners = mob_component
+                        .projectile_spawners
+                        .get_mut(&projectile_spawner_key)
+                        .unwrap();
+
+                    for projectile_spawner in projectile_spawners.iter_mut() {
+                        projectile_spawner.timer.tick(time.delta());
+
+                        if projectile_spawner.timer.just_finished() {
+                            let projectile_transform = Transform {
+                                translation: match projectile_spawner.position {
+                                    SpawnPosition::Global(coords) => coords.extend(1.0),
+                                    SpawnPosition::Local(coords) => {
+                                        (mob_transform.translation.xy()
+                                            + mob_transform.local_x().xy() * coords.x
+                                            + mob_transform.local_y().xy() * coords.y)
+                                            .extend(1.0)
+                                    }
+                                },
+                                ..Default::default()
+                            };
 
                             // add mob velocity to initial blast velocity
-                            let mut modified_initial_motion = data.initial_motion.clone();
+                            let mut modified_initial_motion =
+                                projectile_spawner.initial_motion.clone();
 
                             if let Some(linvel) = &mut modified_initial_motion.linvel {
                                 linvel.x += mob_velocity.linvel.x;
@@ -115,10 +129,11 @@ pub fn mob_execute_behavior_system(
                             audio_channel.play(audio_assets.enemy_fire_blast.clone());
 
                             spawn_projectile_event_writer.send(SpawnProjectileEvent {
-                                projectile_type: data.projectile_type.clone(),
-                                position,
-                                damage: mob_component.attack_damage,
-                                despawn_time: data.despawn_time,
+                                projectile_type: projectile_spawner.projectile_type.clone(),
+                                transform: projectile_transform,
+                                damage: attack_damage,
+                                health: projectile_spawner.health.clone(),
+                                despawn_time: projectile_spawner.despawn_time,
                                 initial_motion: modified_initial_motion,
                             });
                         }
@@ -167,6 +182,7 @@ pub fn mob_execute_behavior_system(
                         mob_transform,
                         &audio_channel,
                         &audio_assets,
+                        &game_parameters,
                     );
                 }
                 MobBehavior::DealDamageToPlayerOnImpact => {
@@ -191,9 +207,16 @@ pub fn mob_execute_behavior_system(
                         // spawn mob explosion
                         spawn_effect_event_writer.send(SpawnEffectEvent {
                             effect_type: EffectType::MobExplosion,
-                            position: mob_transform.translation.xy(),
-                            scale: Vec2::ZERO,
-                            rotation: 0.0,
+                            transform: Transform {
+                                translation: mob_transform.translation,
+                                scale: Vec3::new(
+                                    game_parameters.sprite_scale,
+                                    game_parameters.sprite_scale,
+                                    1.0,
+                                ),
+                                ..Default::default()
+                            },
+                            initial_motion: InitialMotion::default(),
                         });
 
                         // drop loot
@@ -296,7 +319,10 @@ fn deal_damage_to_player_on_impact(
                 // deal damage to player
                 for (player_entity_q, mut player_component) in player_query.iter_mut() {
                     if player_entity_q == *player_entity {
-                        player_component.health.take_damage(*mob_damage);
+                        let damage_multiplier = player_component.incoming_damage_multiplier;
+                        player_component
+                            .health
+                            .take_damage(*mob_damage * damage_multiplier);
                     }
                 }
             }
@@ -314,6 +340,7 @@ fn explode_on_impact(
     transform: &Transform,
     audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
     audio_assets: &GameAudioAssets,
+    game_parameters: &GameParametersResource,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
@@ -330,9 +357,16 @@ fn explode_on_impact(
                     // spawn mob explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::MobExplosion,
-                        position: transform.translation.xy(),
-                        scale: Vec2::ZERO,
-                        rotation: 0.0,
+                        transform: Transform {
+                            translation: transform.translation,
+                            scale: Vec3::new(
+                                game_parameters.sprite_scale,
+                                game_parameters.sprite_scale,
+                                1.0,
+                            ),
+                            ..Default::default()
+                        },
+                        initial_motion: InitialMotion::default(),
                     });
                     // despawn mob
                     commands.entity(entity).despawn_recursive();
@@ -352,9 +386,16 @@ fn explode_on_impact(
                     // spawn mob explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::MobExplosion,
-                        position: transform.translation.xy(),
-                        scale: Vec2::ZERO,
-                        rotation: 0.0,
+                        transform: Transform {
+                            translation: transform.translation,
+                            scale: Vec3::new(
+                                game_parameters.sprite_scale,
+                                game_parameters.sprite_scale,
+                                1.0,
+                            ),
+                            ..Default::default()
+                        },
+                        initial_motion: InitialMotion::default(),
                     });
                     // despawn mob
                     commands.entity(entity).despawn_recursive();
@@ -373,9 +414,16 @@ fn explode_on_impact(
                 if entity == *mob_entity {
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::MobExplosion,
-                        position: transform.translation.xy(),
-                        scale: Vec2::ZERO,
-                        rotation: 0.0,
+                        transform: Transform {
+                            translation: transform.translation,
+                            scale: Vec3::new(
+                                game_parameters.sprite_scale,
+                                game_parameters.sprite_scale,
+                                1.0,
+                            ),
+                            ..Default::default()
+                        },
+                        initial_motion: InitialMotion::default(),
                     });
                     commands.entity(entity).despawn_recursive();
                     continue;

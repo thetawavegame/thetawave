@@ -1,13 +1,13 @@
 use bevy::prelude::*;
-use bevy_egui::{egui, EguiContext};
+use bevy_egui::{egui, EguiContexts};
 
 use crate::run::RunResource;
 
 /// Shows information about the run
-pub fn game_debug_ui(mut egui_context: ResMut<EguiContext>, run_resource: Res<RunResource>) {
+pub fn game_debug_ui(mut egui_contexts: EguiContexts, run_resource: Res<RunResource>) {
     egui::Window::new("Run Tracker")
         .default_pos([550.0, 16.0])
-        .show(egui_context.ctx_mut(), |ui| {
+        .show(egui_contexts.ctx_mut(), |ui| {
             ui.horizontal(|ui| {
                 ui.label("Level");
                 ui.monospace(format!("{:?}", run_resource.level_type));

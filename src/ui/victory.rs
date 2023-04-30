@@ -1,8 +1,12 @@
+use std::time::Duration;
+
 use bevy::prelude::*;
 
-use crate::states::{AppStateComponent, AppStates};
+use crate::audio::BackgroundMusicAudioChannel;
+use crate::states::VictoryCleanup;
 use crate::ui::BouncingPromptComponent;
 use crate::ui::EndGameTransitionResource;
+use bevy_kira_audio::prelude::*;
 
 #[derive(Component)]
 pub struct VictoryFadeComponent;
@@ -59,7 +63,15 @@ pub fn victory_fade_in_system(
     }
 }
 
-pub fn setup_victory_system(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn setup_victory_system(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
+) {
+    audio_channel
+        .stop()
+        .fade_out(AudioTween::linear(Duration::from_secs_f32(5.0)));
+
     commands
         .spawn(NodeBundle {
             style: Style {
@@ -69,7 +81,7 @@ pub fn setup_victory_system(mut commands: Commands, asset_server: Res<AssetServe
             background_color: Color::rgba(0.0, 0.0, 0.0, 0.0).into(),
             ..Default::default()
         })
-        .insert(AppStateComponent(AppStates::Victory))
+        .insert(VictoryCleanup)
         .insert(VictoryUI)
         .with_children(|parent| {
             parent
@@ -90,7 +102,11 @@ pub fn setup_victory_system(mut commands: Commands, asset_server: Res<AssetServe
                     parent
                         .spawn(ImageBundle {
                             image: asset_server
-                                .load("texture/restart_game_prompt_keyboard.png")
+                                .load(if cfg!(feature = "arcade") {
+                                    "texture/restart_game_prompt_arcade.png"
+                                } else {
+                                    "texture/restart_game_prompt_keyboard.png"
+                                })
                                 .into(),
                             style: Style {
                                 size: Size::new(Val::Px(400.0), Val::Px(100.0)),
@@ -106,27 +122,7 @@ pub fn setup_victory_system(mut commands: Commands, asset_server: Res<AssetServe
                         })
                         .insert(BouncingPromptComponent {
                             flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
-                        });
-
-                    parent
-                        .spawn(ImageBundle {
-                            image: asset_server
-                                .load("texture/exit_game_prompt_keyboard.png")
-                                .into(),
-                            style: Style {
-                                size: Size::new(Val::Px(400.0), Val::Px(100.0)),
-                                margin: UiRect {
-                                    left: Val::Auto,
-                                    right: Val::Auto,
-                                    top: Val::Percent(20.0),
-                                    ..Default::default()
-                                },
-                                ..Default::default()
-                            },
-                            ..Default::default()
-                        })
-                        .insert(BouncingPromptComponent {
-                            flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
+                            is_active: true,
                         });
                 });
         });

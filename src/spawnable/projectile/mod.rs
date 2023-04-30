@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
-use rand::{thread_rng, Rng};
 use serde::Deserialize;
 use std::{collections::HashMap, string::ToString};
 
@@ -8,27 +7,33 @@ use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::ProjectileAssets,
     game::GameParametersResource,
+    misc::Health,
     spawnable::InitialMotion,
     spawnable::{ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType},
-    states::{AppStateComponent, AppStates},
+    states::GameCleanup,
+    HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 
 mod behavior;
 
 pub use self::behavior::{projectile_execute_behavior_system, ProjectileBehavior};
 
+use super::ColliderData;
+
 /// Event for spawning projectiles
 pub struct SpawnProjectileEvent {
     /// Type of projectile to spawn
     pub projectile_type: ProjectileType,
     /// Position to spawn
-    pub position: Vec2,
+    pub transform: Transform,
     /// Damage of projectile
     pub damage: f32,
     /// Time until projectile despawns
     pub despawn_time: f32,
     /// Initial motion of the projectile
     pub initial_motion: InitialMotion,
+    /// Optional health of the projectile
+    pub health: Option<Health>,
 }
 
 /// Core component for projectiles
@@ -40,6 +45,10 @@ pub struct ProjectileComponent {
     pub behaviors: Vec<ProjectileBehavior>,
     /// Damage dealt to target
     pub damage: f32,
+    /// Health
+    pub health: Option<Health>,
+    /// Time the projectile has existed
+    pub time_alive: f32,
 }
 
 /// Data about mob entities that can be stored in data ron file
@@ -51,12 +60,16 @@ pub struct ProjectileData {
     pub spawnable_behaviors: Vec<SpawnableBehavior>,
     /// List of projectile behaviors that are performed
     pub projectile_behaviors: Vec<ProjectileBehavior>,
-    /// Dimensions of the projectile's hitbox
-    pub collider_dimensions: Vec2,
     /// Animation (currently loops single animation in specified direction)
     pub animation: AnimationData,
     /// Z level of transform of projectile
     pub z_level: f32,
+    /// Collider
+    pub collider: ColliderData,
+    /// If it has a contact collider
+    pub is_solid: bool,
+    /// Health
+    pub health: Option<Health>,
 }
 
 /// Stores data about mob entities
@@ -79,8 +92,9 @@ pub fn spawn_projectile_system(
             &event.projectile_type,
             &projectile_resource,
             &projectile_assets,
-            event.position,
+            event.transform,
             event.damage,
+            event.health.clone(),
             event.despawn_time,
             event.initial_motion.clone(),
             &mut commands,
@@ -95,8 +109,9 @@ pub fn spawn_projectile(
     projectile_type: &ProjectileType,
     projectile_resource: &ProjectileResource,
     projectile_assets: &ProjectileAssets,
-    position: Vec2,
+    transform: Transform,
     damage: f32,
+    health: Option<Health>,
     despawn_time: f32, // time before despawning
     initial_motion: InitialMotion,
     commands: &mut Commands,
@@ -105,22 +120,20 @@ pub fn spawn_projectile(
     // Get data from projectile resource
     let projectile_data = &projectile_resource.projectiles[projectile_type];
 
-    // scale collider to align with the sprite
-    let collider_size_hx =
-        projectile_data.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
-    let collider_size_hy =
-        projectile_data.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
-
     // create projectile entity
     let mut projectile = commands.spawn_empty();
 
     let mut projectile_behaviors = projectile_data.projectile_behaviors.clone();
-    projectile_behaviors.push(ProjectileBehavior::TimedDespawn {
-        despawn_time,
-        current_time: 0.0,
-    });
+    projectile_behaviors.push(ProjectileBehavior::TimedDespawn { despawn_time });
+
+    let mut projectile_transform = transform;
+    projectile_transform.translation.z = projectile_data.z_level;
+    projectile_transform.scale.x *= game_parameters.sprite_scale;
+    projectile_transform.scale.y *= game_parameters.sprite_scale;
+    projectile_transform.scale.z = 1.0;
 
     projectile
+        .insert(LockedAxes::ROTATION_LOCKED)
         .insert(SpriteSheetBundle {
             texture_atlas: projectile_assets.get_asset(projectile_type),
             ..Default::default()
@@ -133,34 +146,18 @@ pub fn spawn_projectile(
             direction: projectile_data.animation.direction.clone(),
         })
         .insert(RigidBody::Dynamic)
-        .insert(LockedAxes::ROTATION_LOCKED)
-        .insert(Velocity {
-            angvel: if let Some(random_angvel) = initial_motion.random_angvel {
-                thread_rng().gen_range(random_angvel.0..=random_angvel.1)
-            } else {
-                0.0
-            },
-            linvel: if let Some(linvel) = initial_motion.linvel {
-                linvel
-            } else {
-                Vec2::ZERO
-            },
-        })
-        .insert(Transform {
-            translation: position.extend(projectile_data.z_level),
-            scale: Vec3::new(
-                game_parameters.sprite_scale,
-                game_parameters.sprite_scale,
-                1.0,
-            ),
-            ..Default::default()
-        })
-        .insert(Collider::cuboid(collider_size_hx, collider_size_hy))
-        .insert(Sensor)
+        .insert(Velocity::from(initial_motion))
+        .insert(projectile_transform)
+        .insert(Collider::cuboid(
+            projectile_data.collider.dimensions.x,
+            projectile_data.collider.dimensions.y,
+        ))
         .insert(ProjectileComponent {
             projectile_type: projectile_data.projectile_type.clone(),
             behaviors: projectile_behaviors,
             damage,
+            health,
+            time_alive: 0.0,
         })
         .insert(SpawnableComponent {
             spawnable_type: SpawnableType::Projectile(projectile_data.projectile_type.clone()),
@@ -173,6 +170,14 @@ pub fn spawn_projectile(
             behaviors: projectile_data.spawnable_behaviors.clone(),
         })
         .insert(ActiveEvents::COLLISION_EVENTS)
-        .insert(AppStateComponent(AppStates::Game))
+        .insert(CollisionGroups {
+            memberships: SPAWNABLE_COL_GROUP_MEMBERSHIP,
+            filters: Group::ALL ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
+        })
+        .insert(GameCleanup)
         .insert(Name::new(projectile_data.projectile_type.to_string()));
+
+    if !projectile_data.is_solid {
+        projectile.insert(Sensor);
+    }
 }

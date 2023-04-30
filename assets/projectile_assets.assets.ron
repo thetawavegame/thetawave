@@ -19,5 +19,19 @@
         tile_size_y: 4.,
         columns: 1,
         rows: 1,
-    )
+    ),
+    "ally_bullet": TextureAtlas (
+        path: "texture/ally_bullet.png",
+        tile_size_x: 5.,
+        tile_size_y: 5.,
+        columns: 1,
+        rows: 1,
+    ),
+    "enemy_bullet": TextureAtlas (
+        path: "texture/enemy_bullet.png",
+        tile_size_x: 5.,
+        tile_size_y: 5.,
+        columns: 1,
+        rows: 1,
+    ),
 })

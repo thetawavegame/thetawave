@@ -1,10 +1,27 @@
-use crate::spawnable::Faction;
+use crate::{spawnable::Faction, states, GameUpdateSet};
 use bevy::prelude::*;
 
 mod contact;
 mod instersection;
 
 pub use self::{contact::*, instersection::*};
+
+pub struct CollisionPlugin;
+
+impl Plugin for CollisionPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_event::<SortedCollisionEvent>();
+
+        app.add_systems(
+            (
+                intersection_collision_system.in_set(GameUpdateSet::IntersectionCollision),
+                contact_collision_system.in_set(GameUpdateSet::ContactCollision),
+            )
+                .in_set(OnUpdate(states::AppStates::Game))
+                .in_set(OnUpdate(states::GameStates::Playing)),
+        );
+    }
+}
 
 /// Types of collisions
 #[derive(Debug)]
@@ -13,6 +30,13 @@ pub enum SortedCollisionEvent {
         player_entity: Entity,
         projectile_entity: Entity,
         projectile_faction: Faction,
+        projectile_damage: f32,
+    },
+    MobToProjectileContact {
+        mob_entity: Entity,
+        projectile_entity: Entity,
+        projectile_faction: Faction,
+        mob_damage: f32,
         projectile_damage: f32,
     },
     MobToProjectileIntersection {
@@ -46,6 +70,13 @@ pub enum SortedCollisionEvent {
         mob_segment_faction: Faction,
         player_damage: f32,
         mob_segment_damage: f32,
+    },
+    PlayerToProjectileContact {
+        player_entity: Entity,
+        projectile_entity: Entity,
+        projectile_faction: Faction,
+        player_damage: f32,
+        projectile_damage: f32,
     },
     MobToMobContact {
         mob_entity_1: Entity,

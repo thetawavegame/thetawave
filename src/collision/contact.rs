@@ -1,9 +1,12 @@
 use crate::{
     arena::ArenaBarrierComponent,
-    assets::GameAudioAssets,
+    assets::{CollisionSoundType, GameAudioAssets},
     audio,
     player::PlayerComponent,
-    spawnable::{Faction, MobComponent, MobSegmentComponent, MobSegmentType, MobType},
+    spawnable::{
+        Faction, MobComponent, MobSegmentComponent, MobSegmentType, MobType, ProjectileComponent,
+        ProjectileType,
+    },
 };
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
@@ -12,6 +15,7 @@ use bevy_rapier2d::prelude::*;
 use super::{CollidingEntityPair, SortedCollisionEvent};
 
 /// Creates events from contact collisions
+#[allow(clippy::too_many_arguments)]
 pub fn contact_collision_system(
     mut collision_event_writer: EventWriter<SortedCollisionEvent>,
     mut collision_events: EventReader<CollisionEvent>,
@@ -19,6 +23,7 @@ pub fn contact_collision_system(
     mob_query: Query<(Entity, &MobComponent)>,
     mob_segment_query: Query<(Entity, &MobSegmentComponent)>,
     barrier_query: Query<Entity, With<ArenaBarrierComponent>>,
+    projectile_query: Query<(Entity, &ProjectileComponent)>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
 ) {
@@ -48,7 +53,10 @@ pub fn contact_collision_system(
                     // check if player collided with a mob
                     for (mob_entity, mob_component) in mob_query.iter() {
                         if colliding_entities.secondary == mob_entity {
-                            audio_channel.play(audio_assets.collision.clone());
+                            audio_channel.play(
+                                audio_assets
+                                    .get_collision_sound_asset(&mob_component.collision_sound),
+                            );
                             collision_event_writer.send(SortedCollisionEvent::PlayerToMobContact {
                                 player_entity: colliding_entities.primary,
                                 mob_entity: colliding_entities.secondary,
@@ -77,7 +85,11 @@ pub fn contact_collision_system(
                     // check if player collided with segment
                     for (mob_segment_entity, mob_segment_component) in mob_segment_query.iter() {
                         if colliding_entities.secondary == mob_segment_entity {
-                            audio_channel.play(audio_assets.collision.clone());
+                            audio_channel.play(
+                                audio_assets.get_collision_sound_asset(
+                                    &mob_segment_component.collision_sound,
+                                ),
+                            );
                             collision_event_writer.send(
                                 SortedCollisionEvent::PlayerToMobSegmentContact {
                                     player_entity: colliding_entities.primary,
@@ -91,6 +103,28 @@ pub fn contact_collision_system(
                                     },
                                     player_damage: player_component.collision_damage,
                                     mob_segment_damage: mob_segment_component.collision_damage,
+                                },
+                            );
+                            continue 'collision_events;
+                        }
+                    }
+
+                    // check if player collided with a projectile
+                    for (projectile_entity, projectile_component) in projectile_query.iter() {
+                        if colliding_entities.secondary == projectile_entity {
+                            collision_event_writer.send(
+                                SortedCollisionEvent::PlayerToProjectileContact {
+                                    player_entity: colliding_entities.primary,
+                                    projectile_entity: colliding_entities.secondary,
+                                    projectile_faction: match projectile_component
+                                        .projectile_type
+                                        .clone()
+                                    {
+                                        ProjectileType::Blast(faction) => faction,
+                                        ProjectileType::Bullet(faction) => faction,
+                                    },
+                                    player_damage: player_component.collision_damage,
+                                    projectile_damage: projectile_component.damage,
                                 },
                             );
                             continue 'collision_events;
@@ -124,7 +158,24 @@ pub fn contact_collision_system(
                         // check if secondary entity is another mob
                         if colliding_entities.secondary == mob_entity_2 {
                             // play collision sound
-                            audio_channel.play(audio_assets.collision.clone());
+
+                            if mob_component_1.collision_sound != CollisionSoundType::default() {
+                                audio_channel.play(
+                                    audio_assets.get_collision_sound_asset(
+                                        &mob_component_1.collision_sound,
+                                    ),
+                                );
+                            } else if mob_component_2.collision_sound
+                                != CollisionSoundType::default()
+                            {
+                                audio_channel.play(
+                                    audio_assets.get_collision_sound_asset(
+                                        &mob_component_2.collision_sound,
+                                    ),
+                                );
+                            } else {
+                                audio_channel.play(audio_assets.collision.clone());
+                            }
 
                             // send two sorted collision events, swapping the position of the mobs in the struct
                             collision_event_writer.send(SortedCollisionEvent::MobToMobContact {
@@ -184,7 +235,21 @@ pub fn contact_collision_system(
                         // check if secondary entity is a mob segment
                         if colliding_entities.secondary == mob_segment_entity {
                             // send  a sorted collision event
-                            audio_channel.play(audio_assets.collision.clone());
+                            if mob_component_1.collision_sound != CollisionSoundType::default() {
+                                audio_channel.play(
+                                    audio_assets.get_collision_sound_asset(
+                                        &mob_component_1.collision_sound,
+                                    ),
+                                );
+                            } else if mob_segment_component.collision_sound
+                                != CollisionSoundType::default()
+                            {
+                                audio_channel.play(audio_assets.get_collision_sound_asset(
+                                    &mob_segment_component.collision_sound,
+                                ));
+                            } else {
+                                audio_channel.play(audio_assets.collision.clone());
+                            }
                             collision_event_writer.send(
                                 SortedCollisionEvent::MobToMobSegmentContact {
                                     mob_entity: colliding_entities.primary,
@@ -205,6 +270,14 @@ pub fn contact_collision_system(
                                 },
                             );
                             continue 'collision_events;
+                        }
+                    }
+
+                    // check if mob collided with projectile
+                    for (projectile_entity, _projectile_component) in projectile_query.iter() {
+                        // check if secondary entity is a projectile
+                        if colliding_entities.secondary == projectile_entity {
+                            audio_channel.play(audio_assets.bullet_bounce.clone());
                         }
                     }
                 }
@@ -235,7 +308,21 @@ pub fn contact_collision_system(
                     {
                         if colliding_entities.secondary == mob_segment_entity_2 {
                             // play collision sound
-                            audio_channel.play(audio_assets.collision.clone());
+                            if mob_segment_component_1.collision_sound
+                                != CollisionSoundType::default()
+                            {
+                                audio_channel.play(audio_assets.get_collision_sound_asset(
+                                    &mob_segment_component_1.collision_sound,
+                                ));
+                            } else if mob_segment_component_2.collision_sound
+                                != CollisionSoundType::default()
+                            {
+                                audio_channel.play(audio_assets.get_collision_sound_asset(
+                                    &mob_segment_component_2.collision_sound,
+                                ));
+                            } else {
+                                audio_channel.play(audio_assets.collision.clone());
+                            }
 
                             // send two sorted collision events, swapping the position of the mob segments in the struct
                             collision_event_writer.send(

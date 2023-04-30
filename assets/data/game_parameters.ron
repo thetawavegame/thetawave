@@ -5,4 +5,5 @@
 	camera_z: 950,
 	camera_zoom_out_scale: 3.0,
 	scan_range: 100.0,
+	player_spawn_distance: 200.0,
 )

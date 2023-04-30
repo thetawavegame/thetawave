@@ -2,34 +2,102 @@
 	Blast(Enemy): (
 		projectile_type: Blast(Enemy),
 		spawnable_behaviors: [],
-		projectile_behaviors: [ExplodeOnImpact],
-		collider_dimensions: (1.5, 1.5),
+		projectile_behaviors: [ExplodeOnIntersection, DealDamageOnIntersection],
 		z_level: 20.0,
 		animation: (
 			direction: None,
 			frame_duration: 1.0
 		),
+		collider: (
+			dimensions: (2.0, 2.0),
+			position: (0.0, 0.0),
+			rotation: 0.0,
+		),
+		is_solid: false,
 	),
 	Blast(Neutral): (
 		projectile_type: Blast(Neutral),
 		spawnable_behaviors: [],
-		projectile_behaviors: [ExplodeOnImpact],
+		projectile_behaviors: [ExplodeOnIntersection, DealDamageOnIntersection],
 		collider_dimensions: (1.5, 1.5),
 		z_level: 20.0,
 		animation: (
 			direction: None,
 			frame_duration: 1.0
 		),
+		collider: (
+			dimensions: (2.0, 2.0),
+			position: (0.0, 0.0),
+			rotation: 0.0,
+		),
+		is_solid: false,
 	),
 	Blast(Ally): (
 		projectile_type: Blast(Ally),
 		spawnable_behaviors: [],
-		projectile_behaviors: [ExplodeOnImpact],
+		projectile_behaviors: [ExplodeOnIntersection, DealDamageOnIntersection],
 		collider_dimensions: (1.5, 1.5),
 		z_level: 19.0,
 		animation: (
 			direction: None,
 			frame_duration: 1.0
 		),
+		collider: (
+			dimensions: (2.0, 2.0),
+			position: (0.0, 0.0),
+			rotation: 0.0,
+		),
+		is_solid: false,
+	),
+	Bullet(Enemy): (
+		projectile_type: Bullet(Enemy),
+		spawnable_behaviors: [],
+		projectile_behaviors: [DealDamageOnContact, ReceiveDamageOnContact, DieAtZeroHealth],
+		collider_dimensions: (1.5, 1.5),
+		z_level: 20.0,
+		animation: (
+			direction: None,
+			frame_duration: 1.0
+		),
+		collider: (
+			dimensions: (2.0, 2.0),
+			position: (0.0, 0.0),
+			rotation: 0.0,
+		),
+		is_solid: true,
+	),
+	Bullet(Neutral): (
+		projectile_type: Bullet(Neutral),
+		spawnable_behaviors: [],
+		projectile_behaviors: [DealDamageOnContact],
+		collider_dimensions: (1.5, 1.5),
+		z_level: 20.0,
+		animation: (
+			direction: None,
+			frame_duration: 1.0
+		),
+		collider: (
+			dimensions: (2.0, 2.0),
+			position: (0.0, 0.0),
+			rotation: 0.0,
+		),
+		is_solid: true,
+	),
+	Bullet(Ally): (
+		projectile_type: Bullet(Ally),
+		spawnable_behaviors: [],
+		projectile_behaviors: [DealDamageOnContact],
+		collider_dimensions: (1.5, 1.5),
+		z_level: 19.0,
+		animation: (
+			direction: None,
+			frame_duration: 1.0
+		),
+		collider: (
+			dimensions: (2.0, 2.0),
+			position: (0.0, 0.0),
+			rotation: 0.0,
+		),
+		is_solid: true,
 	)
 }

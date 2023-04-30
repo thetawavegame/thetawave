@@ -1,14 +1,17 @@
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
+use ron::de::from_bytes;
 use std::time::Duration;
 
 use crate::{
     arena::MobReachedBottomGateEvent,
     assets::GameAudioAssets,
     audio,
+    player::PlayersResource,
     spawnable::{MobDestroyedEvent, SpawnMobEvent},
-    states::AppStates,
+    states::{self, AppStates, GameStates},
     ui::EndGameTransitionResource,
+    GameEnterSet, GameUpdateSet,
 };
 
 mod formation;
@@ -21,6 +24,49 @@ pub use self::{
         LevelsResourceData, ObjectiveType,
     },
 };
+
+pub struct RunPlugin;
+
+impl Plugin for RunPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(
+            from_bytes::<FormationPoolsResource>(include_bytes!(
+                "../../assets/data/formation_pools.ron"
+            ))
+            .unwrap(),
+        )
+        .insert_resource(RunResource::from(
+            from_bytes::<RunResourceData>(include_bytes!("../../assets/data/run.ron")).unwrap(),
+        ))
+        .insert_resource(LevelsResource::from(
+            from_bytes::<LevelsResourceData>(include_bytes!("../../assets/data/levels.ron"))
+                .unwrap(),
+        ));
+
+        app.add_event::<SpawnFormationEvent>()
+            .add_event::<LevelCompletedEvent>();
+
+        app.add_systems(
+            (setup_first_level.in_set(GameEnterSet::BuildLevel),)
+                .in_schedule(OnEnter(states::AppStates::Game)),
+        );
+
+        app.add_systems(
+            (
+                level_system.in_set(GameUpdateSet::Level),
+                spawn_formation_system.in_set(GameUpdateSet::Spawn),
+                next_level_system.in_set(GameUpdateSet::NextLevel),
+            )
+                .in_set(OnUpdate(states::AppStates::Game))
+                .in_set(OnUpdate(states::GameStates::Playing)),
+        );
+
+        app.add_systems((reset_run_system,).in_set(OnUpdate(states::AppStates::GameOver)));
+
+        app.add_systems((reset_run_system,).in_set(OnUpdate(states::AppStates::Victory)));
+        app.add_systems((reset_run_system,).in_set(OnUpdate(states::GameStates::Paused)));
+    }
+}
 
 // TODO: set to a progression of levels
 /// Right now just set to one level
@@ -72,6 +118,8 @@ impl RunResource {
         mob_reached_bottom: &mut EventReader<MobReachedBottomGateEvent>,
         formation_pools: &formation::FormationPoolsResource,
         end_game_trans_resource: &mut EndGameTransitionResource,
+        audio_channel: &AudioChannel<audio::BackgroundMusicAudioChannel>,
+        audio_assets: &GameAudioAssets,
     ) {
         if let Some(level) = &mut self.level {
             level.tick(
@@ -83,19 +131,25 @@ impl RunResource {
                 mob_reached_bottom,
                 formation_pools,
                 end_game_trans_resource,
+                audio_channel,
+                audio_assets,
             );
         }
     }
 }
 
 /// Restarts the run reseting all of the values in the game
+#[allow(clippy::too_many_arguments)]
 pub fn reset_run_system(
     gamepads: Res<Gamepads>,
     mut gamepad_input: ResMut<Input<GamepadButton>>,
     mut keyboard_input: ResMut<Input<KeyCode>>,
-    mut app_state: ResMut<State<AppStates>>,
+    mut next_app_state: ResMut<NextState<AppStates>>,
+    mut next_game_state: ResMut<NextState<GameStates>>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::MenuAudioChannel>>,
+    bg_auido_channel: Res<AudioChannel<audio::BackgroundMusicAudioChannel>>,
+    mut players_resource: ResMut<PlayersResource>,
 ) {
     // get input
     let mut reset = keyboard_input.just_released(KeyCode::R);
@@ -110,11 +164,14 @@ pub fn reset_run_system(
     // if reset input provided reset th run
     if reset {
         // go to the main menu state
-        app_state.replace(AppStates::MainMenu).unwrap();
+        next_app_state.set(AppStates::MainMenu);
+        next_game_state.set(GameStates::Playing);
+        *players_resource = PlayersResource::default();
 
         // play menu input sound
         // TODO: change to using loaded assets
         audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
+        bg_auido_channel.stop();
 
         // reset the input
         keyboard_input.reset(KeyCode::R);

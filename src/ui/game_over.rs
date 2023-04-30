@@ -1,8 +1,12 @@
+use std::time::Duration;
+
 use bevy::prelude::*;
+use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::plugin::RapierConfiguration;
 
 use crate::{
-    states::{AppStateComponent, AppStates},
+    audio::BackgroundMusicAudioChannel,
+    states::{AppStates, GameOverCleanup},
     ui::BouncingPromptComponent,
 };
 
@@ -55,9 +59,9 @@ pub struct GameOverUI;
 
 #[cfg(not(target_arch = "wasm32"))]
 pub fn fade_out_system(
-    mut app_state: ResMut<State<AppStates>>,
+    mut next_app_state: ResMut<NextState<AppStates>>,
     mut rapier_config: ResMut<RapierConfiguration>,
-    mut framepace: ResMut<bevy_framepace::FramepaceSettings>,
+    //mut framepace: ResMut<bevy_framepace::FramepaceSettings>,
     time: Res<Time>,
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
     mut game_fade_query: Query<&mut Sprite, With<GameFadeComponent>>,
@@ -71,8 +75,8 @@ pub fn fade_out_system(
             + end_game_trans_resource.max_fps) as u16)
             .max(1);
 
-        use bevy_framepace::Limiter;
-        framepace.limiter = Limiter::from_framerate(framerate.into());
+        //use bevy_framepace::Limiter;
+        //framepace.limiter = Limiter::from_framerate(framerate.into());
 
         for mut fade_sprite in game_fade_query.iter_mut() {
             let alpha = (end_game_trans_resource.fade_out_speed
@@ -85,10 +89,8 @@ pub fn fade_out_system(
         if end_game_trans_resource.fade_out_timer.just_finished() {
             rapier_config.physics_pipeline_active = false;
             rapier_config.query_pipeline_active = false;
-            framepace.limiter = Limiter::Auto;
-            app_state
-                .set(end_game_trans_resource.next_state.as_ref().unwrap().clone())
-                .unwrap();
+            //framepace.limiter = Limiter::Auto;
+            next_app_state.set(end_game_trans_resource.next_state.as_ref().unwrap().clone());
         }
     }
 }
@@ -144,7 +146,14 @@ pub fn game_over_fade_in_system(
     }
 }
 
-pub fn setup_game_over_system(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn setup_game_over_system(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
+) {
+    audio_channel
+        .stop()
+        .fade_out(AudioTween::linear(Duration::from_secs_f32(5.0)));
     commands
         .spawn(NodeBundle {
             style: Style {
@@ -154,7 +163,7 @@ pub fn setup_game_over_system(mut commands: Commands, asset_server: Res<AssetSer
             background_color: Color::rgba(0.0, 0.0, 0.0, 0.0).into(),
             ..Default::default()
         })
-        .insert(AppStateComponent(AppStates::GameOver))
+        .insert(GameOverCleanup)
         .insert(GameOverUI)
         .with_children(|parent| {
             parent
@@ -175,7 +184,11 @@ pub fn setup_game_over_system(mut commands: Commands, asset_server: Res<AssetSer
                     parent
                         .spawn(ImageBundle {
                             image: asset_server
-                                .load("texture/restart_game_prompt_keyboard.png")
+                                .load(if cfg!(feature = "arcade") {
+                                    "texture/restart_game_prompt_arcade.png"
+                                } else {
+                                    "texture/restart_game_prompt_keyboard.png"
+                                })
                                 .into(),
                             style: Style {
                                 size: Size::new(Val::Px(400.0), Val::Px(100.0)),
@@ -191,26 +204,7 @@ pub fn setup_game_over_system(mut commands: Commands, asset_server: Res<AssetSer
                         })
                         .insert(BouncingPromptComponent {
                             flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
-                        });
-                    parent
-                        .spawn(ImageBundle {
-                            image: asset_server
-                                .load("texture/exit_game_prompt_keyboard.png")
-                                .into(),
-                            style: Style {
-                                size: Size::new(Val::Px(400.0), Val::Px(100.0)),
-                                margin: UiRect {
-                                    left: Val::Auto,
-                                    right: Val::Auto,
-                                    top: Val::Percent(20.0),
-                                    ..Default::default()
-                                },
-                                ..Default::default()
-                            },
-                            ..Default::default()
-                        })
-                        .insert(BouncingPromptComponent {
-                            flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
+                            is_active: true,
                         });
                 });
         });

@@ -1,5 +1,8 @@
 use crate::game::GameParametersResource;
-use bevy::{prelude::*, window::WindowMode};
+use bevy::{
+    prelude::*,
+    window::{PrimaryWindow, WindowMode},
+};
 use serde::Deserialize;
 
 /// Display settings of the window
@@ -13,13 +16,12 @@ pub struct DisplayConfig {
     pub fullscreen: bool,
 }
 
-impl From<DisplayConfig> for WindowDescriptor {
+impl From<DisplayConfig> for Window {
     fn from(display_config: DisplayConfig) -> Self {
-        WindowDescriptor {
+        Window {
             title: "Thetawave".to_string(),
-            width: display_config.width,
-            height: display_config.height,
-            cursor_visible: true,
+            resolution: (display_config.width, display_config.height).into(),
+            resizable: false,
             mode: if display_config.fullscreen {
                 WindowMode::SizedFullscreen
             } else {
@@ -32,27 +34,31 @@ impl From<DisplayConfig> for WindowDescriptor {
 
 // TODO: fix this function, doesn't toggle back to windowed correctly
 /// Toggles the window between full screen and windowed on key press
-pub fn toggle_fullscreen_system(keyboard_input: Res<Input<KeyCode>>, mut windows: ResMut<Windows>) {
+pub fn toggle_fullscreen_system(
+    keyboard_input: Res<Input<KeyCode>>,
+    mut window_query: Query<&mut Window, With<PrimaryWindow>>,
+) {
     // get primary window
-    let window = windows.get_primary_mut().unwrap();
+    //let window = windows.get_primary_mut().unwrap();
+    let mut primary_window = window_query.get_single_mut().unwrap();
     // get input for toggling full screen
     let fullscreen_input = keyboard_input.just_released(KeyCode::F);
 
     // set window mode to the mode it's not in
     if fullscreen_input {
-        let new_mode = match window.mode() {
+        let new_mode = match primary_window.mode {
             WindowMode::BorderlessFullscreen { .. } => {
-                window.set_maximized(false);
+                primary_window.set_maximized(false);
                 WindowMode::Windowed
             }
             WindowMode::Windowed => {
-                window.set_maximized(true);
+                primary_window.set_maximized(true);
                 WindowMode::BorderlessFullscreen
             }
-            _ => window.mode(),
+            _ => primary_window.mode,
         };
 
-        window.set_mode(new_mode);
+        primary_window.mode = new_mode;
     }
 }
 

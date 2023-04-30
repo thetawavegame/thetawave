@@ -2,10 +2,35 @@
 
 use bevy::prelude::Commands;
 use bevy::prelude::*;
+use ron::de::from_bytes;
 
 mod resources;
 
+use crate::{states, GameEnterSet};
+
 pub use self::resources::BackgroundsResource;
+
+pub struct BackgroundPlugin;
+
+impl Plugin for BackgroundPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(
+            from_bytes::<BackgroundsResource>(include_bytes!("../../assets/data/backgrounds.ron"))
+                .unwrap(),
+        );
+
+        app.add_systems(
+            (create_background_system.in_set(GameEnterSet::BuildLevel),)
+                .in_schedule(OnEnter(states::AppStates::Game)),
+        );
+
+        app.add_systems(
+            (rotate_planet_system,)
+                .in_set(OnUpdate(states::AppStates::Game))
+                .in_set(OnUpdate(states::GameStates::Playing)),
+        );
+    }
+}
 
 /// Component to manage movement of planets
 #[derive(Reflect, Default, Component)]

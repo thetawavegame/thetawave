@@ -4,26 +4,26 @@ version = "0.0.1"
 edition = "2021"
 
 [dependencies]
-bevy = { version = "0.9.1", features = ["serialize"]}
-bevy_rapier2d = { version = "0.19.0", features = ["simd-stable"] }
-bevy-inspector-egui = "0.14.0"
-bevy_egui = "0.17.1"
-bevy_asset_loader = { version = "0.14.1", features = [
+bevy = { version = "0.10.1", features = ["serialize"] }
+bevy_rapier2d = { version = "0.21.0", features = ["simd-stable"] }
+bevy_egui = "0.20.2"
+bevy_asset_loader = { version = "0.16.0", features = [
     "2d",
     "3d",
     "standard_dynamic_assets",
 ] }
-serde = "1.0.147"
+serde = "1.0.159"
 ron = "0.8.0"
 rand = "0.8.5"
 strum = "0.24.1"
 strum_macros = "0.24.3"
 console_error_panic_hook = "0.1.7"
-bevy_kira_audio = { version = "0.13.0", features = ["mp3", "wav"] }
+bevy_kira_audio = { version = "0.15.0", features = ["mp3", "wav"] }
+bevy_editor_pls = "0.4.0"
 
 # bevy_framespace currently does not support wasm
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-bevy_framepace = "0.9.1"
+bevy_framepace = "0.12.1"
 
 # optimize dev packages as we don't need them in debug version
 [profile.dev.package."*"]
@@ -31,3 +31,10 @@ opt-level = 3
 
 [profile.dev]
 opt-level = 1
+
+# For bevy-rapier2d
+[profile.release]
+codegen-units = 1
+
+[features]
+arcade = []

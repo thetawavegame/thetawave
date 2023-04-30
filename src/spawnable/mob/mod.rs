@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
-use rand::{thread_rng, Rng};
 use serde::Deserialize;
 use std::{
     collections::{hash_map::Entry, HashMap},
@@ -10,12 +9,12 @@ use std::{
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
-    assets::MobAssets,
+    assets::{CollisionSoundType, MobAssets},
     game::GameParametersResource,
     loot::ConsumableDropListType,
     misc::Health,
     spawnable::{InitialMotion, MobType, SpawnableBehavior, SpawnableComponent},
-    states::{AppStateComponent, AppStates},
+    states::GameCleanup,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 
@@ -23,8 +22,8 @@ mod behavior;
 mod mob_segment;
 pub use self::{behavior::*, mob_segment::*};
 
-use super::behavior_sequence::MobBehaviorSequenceType;
 use super::MobSegmentType;
+use super::{behavior_sequence::MobBehaviorSequenceType, ProjectileType};
 
 /// Core component for mobs
 #[derive(Component)]
@@ -45,12 +44,13 @@ pub struct MobComponent {
     pub behavior_sequence_tracker: Option<BehaviorSequenceTracker>,
     /// Tracks available mob spawning patterns for the mob
     pub mob_spawners: HashMap<String, Vec<MobSpawner>>,
-    /// Optional weapon timer
-    pub weapon_timer: Option<Timer>,
+    /// Tracks available mob spawning patterns for projectiles
+    pub projectile_spawners: HashMap<String, Vec<ProjectileSpawner>>,
     /// Damage dealt to other factions through attacks
     pub attack_damage: f32,
     /// Damage dealt to other factions on collision
     pub collision_damage: f32,
+    pub collision_sound: CollisionSoundType,
     /// Damage dealt to defense objective, after reaching bottom of arena
     pub defense_damage: f32,
     /// Health of the mob
@@ -76,6 +76,21 @@ impl From<&MobData> for MobComponent {
             }
         }
 
+        let mut projectile_spawners: HashMap<String, Vec<ProjectileSpawner>> = HashMap::new();
+
+        for (spawner_name, spawners) in mob_data.projectile_spawners.iter() {
+            for spawner in spawners.iter() {
+                match projectile_spawners.entry(spawner_name.clone()) {
+                    Entry::Occupied(mut e) => {
+                        e.get_mut().push(ProjectileSpawner::from(spawner.clone()));
+                    }
+                    Entry::Vacant(e) => {
+                        e.insert(vec![ProjectileSpawner::from(spawner.clone())]);
+                    }
+                }
+            }
+        }
+
         MobComponent {
             mob_type: mob_data.mob_type.clone(),
             behaviors: mob_data.mob_behaviors.clone(),
@@ -84,9 +99,10 @@ impl From<&MobData> for MobComponent {
             control_behaviors: mob_data.control_behaviors.clone(),
             behavior_sequence_tracker: None,
             mob_spawners,
-            weapon_timer: None,
+            projectile_spawners,
             attack_damage: mob_data.attack_damage,
             collision_damage: mob_data.collision_damage,
+            collision_sound: mob_data.collision_sound.clone(),
             defense_damage: mob_data.defense_damage,
             health: mob_data.health.clone(),
             consumable_drops: mob_data.consumable_drops.clone(),
@@ -109,6 +125,40 @@ impl From<MobSpawnerData> for MobSpawner {
             timer: Timer::from_seconds(value.period, TimerMode::Repeating),
         }
     }
+}
+
+#[derive(Deserialize, Clone)]
+
+pub struct ProjectileSpawner {
+    pub projectile_type: ProjectileType,
+    pub timer: Timer,
+    pub position: SpawnPosition,
+    pub initial_motion: InitialMotion,
+    pub despawn_time: f32,
+    pub health: Option<Health>,
+}
+
+impl From<ProjectileSpawnerData> for ProjectileSpawner {
+    fn from(value: ProjectileSpawnerData) -> Self {
+        ProjectileSpawner {
+            projectile_type: value.projectile_type.clone(),
+            timer: Timer::from_seconds(value.period, TimerMode::Repeating),
+            position: value.position.clone(),
+            initial_motion: value.initial_motion.clone(),
+            despawn_time: value.despawn_time,
+            health: value.health,
+        }
+    }
+}
+
+#[derive(Deserialize, Clone)]
+pub struct ProjectileSpawnerData {
+    pub projectile_type: ProjectileType,
+    pub period: f32,
+    pub position: SpawnPosition,
+    pub initial_motion: InitialMotion,
+    pub despawn_time: f32,
+    pub health: Option<Health>,
 }
 
 #[derive(Deserialize, Clone)]
@@ -184,6 +234,8 @@ pub struct MobData {
     pub collision_damage: f32,
     /// Damage dealt to defense objective, after reaching bottom of arena
     #[serde(default)]
+    pub collision_sound: CollisionSoundType,
+    #[serde(default)]
     pub defense_damage: f32,
     /// Health of the mob
     pub health: Health,
@@ -198,6 +250,9 @@ pub struct MobData {
     /// mob spawners that the mob can use
     #[serde(default)]
     pub mob_spawners: HashMap<String, Vec<MobSpawnerData>>,
+    /// projectile spawners that the mob can use
+    #[serde(default)]
+    pub projectile_spawners: HashMap<String, Vec<ProjectileSpawnerData>>,
 }
 
 #[derive(Deserialize, Clone)]
@@ -209,12 +264,12 @@ pub struct ColliderData {
 
 pub type CompoundColliderData = (Vec2, f32, Collider);
 
-impl Into<CompoundColliderData> for ColliderData {
-    fn into(self) -> CompoundColliderData {
+impl From<ColliderData> for CompoundColliderData {
+    fn from(val: ColliderData) -> Self {
         (
-            self.position,
-            self.rotation,
-            Collider::cuboid(self.dimensions.x, self.dimensions.y),
+            val.position,
+            val.rotation,
+            Collider::cuboid(val.dimensions.x, val.dimensions.y),
         )
     }
 }
@@ -287,6 +342,7 @@ pub struct MobsResource {
 }
 
 /// Spawn a mob entity
+#[allow(clippy::too_many_arguments)]
 pub fn spawn_mob(
     mob_type: &MobType,
     mob_resource: &MobsResource,
@@ -313,7 +369,6 @@ pub fn spawn_mob(
                 1.0,
             ),
             rotation,
-            ..Default::default()
         },
         ..Default::default()
     })
@@ -323,14 +378,7 @@ pub fn spawn_mob(
     })
     .insert(RigidBody::Dynamic)
     .insert(LockedAxes::ROTATION_LOCKED)
-    .insert(Velocity {
-        angvel: if let Some(random_angvel) = mob_data.initial_motion.random_angvel {
-            thread_rng().gen_range(random_angvel.0..=random_angvel.1)
-        } else {
-            0.0
-        },
-        ..Default::default()
-    })
+    .insert(Velocity::from(mob_data.initial_motion.clone()))
     .insert(Collider::compound(
         mob_data
             .colliders
@@ -350,7 +398,7 @@ pub fn spawn_mob(
     .insert(MobComponent::from(mob_data))
     .insert(SpawnableComponent::from(mob_data))
     .insert(ActiveEvents::COLLISION_EVENTS)
-    .insert(AppStateComponent(AppStates::Game))
+    .insert(GameCleanup)
     .insert(Name::new(mob_data.mob_type.to_string()));
 
     // spawn thruster as child if mob has thruster
@@ -373,7 +421,7 @@ pub fn spawn_mob(
         });
     }
 
-    let mob_entity = mob.id().clone();
+    let mob_entity = mob.id();
     // add mob segment if anchor point
 
     for anchor_point in mob_data.mob_segment_anchor_points.iter() {

@@ -1,6 +1,7 @@
 use crate::{
-    spawnable::{EffectType, SpawnEffectEvent},
-    states::{AppStateComponent, AppStates},
+    game::GameParametersResource,
+    spawnable::{EffectType, InitialMotion, SpawnEffectEvent},
+    states::GameCleanup,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 use bevy::prelude::*;
@@ -15,6 +16,7 @@ pub struct ArenaBarrierComponent;
 pub fn spawn_barriers_system(
     mut commands: Commands,
     mut spawn_effect: EventWriter<SpawnEffectEvent>,
+    game_parameters: Res<GameParametersResource>,
 ) {
     // TODO: move hard coded values to data file
     // spawn horizontal barriers at top and bottom of arena
@@ -28,27 +30,39 @@ pub fn spawn_barriers_system(
     // spawn barrier glow effect
     spawn_effect.send(SpawnEffectEvent {
         effect_type: EffectType::BarrierGlow,
-        position: Vec2::new(0.0, -355.0),
-        scale: Vec2::new(7.25, 0.0),
-        rotation: 0.0,
+        transform: Transform {
+            translation: Vec3::new(0.0, -355.0, 1.0),
+            scale: Vec3::new(10.0, game_parameters.sprite_scale, 1.0),
+            ..Default::default()
+        },
+        initial_motion: InitialMotion::default(),
     });
     spawn_effect.send(SpawnEffectEvent {
         effect_type: EffectType::BarrierGlow,
-        position: Vec2::new(0.0, 355.0),
-        scale: Vec2::new(7.25, 0.0),
-        rotation: 0.0,
+        transform: Transform {
+            translation: Vec3::new(0.0, 355.0, 1.0),
+            scale: Vec3::new(10.0, game_parameters.sprite_scale, 1.0),
+            ..Default::default()
+        },
+        initial_motion: InitialMotion::default(),
     });
     spawn_effect.send(SpawnEffectEvent {
         effect_type: EffectType::BarrierGlow,
-        position: Vec2::new(495.0, 0.0),
-        scale: Vec2::new(7.25, 0.0),
-        rotation: FRAC_PI_2,
+        transform: Transform {
+            translation: Vec3::new(495.0, 0.0, 1.0),
+            scale: Vec3::new(7.3, game_parameters.sprite_scale, 1.0),
+            rotation: Quat::from_rotation_z(FRAC_PI_2),
+        },
+        initial_motion: InitialMotion::default(),
     });
     spawn_effect.send(SpawnEffectEvent {
         effect_type: EffectType::BarrierGlow,
-        position: Vec2::new(-495.0, 0.0),
-        scale: Vec2::new(7.25, 0.0),
-        rotation: FRAC_PI_2,
+        transform: Transform {
+            translation: Vec3::new(-495.0, 0.0, 1.0),
+            scale: Vec3::new(7.3, game_parameters.sprite_scale, 1.0),
+            rotation: Quat::from_rotation_z(FRAC_PI_2),
+        },
+        initial_motion: InitialMotion::default(),
     });
 }
 
@@ -64,7 +78,7 @@ fn spawn_barrier(commands: &mut Commands, position: Vec2, width: f32, height: f3
         .insert(Restitution::new(1.0))
         .insert(Friction::new(0.0))
         .insert(ArenaBarrierComponent)
-        .insert(AppStateComponent(AppStates::Game))
+        .insert(GameCleanup)
         .insert(ActiveEvents::COLLISION_EVENTS)
         .insert(Name::new("Barrier"));
 }
@@ -84,7 +98,7 @@ fn spawn_spawnables_pass_barrier(commands: &mut Commands, position: Vec2, width:
             memberships: HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
             filters: Group::ALL ^ SPAWNABLE_COL_GROUP_MEMBERSHIP,
         })
-        .insert(AppStateComponent(AppStates::Game))
+        .insert(GameCleanup)
         .insert(ArenaBarrierComponent)
         .insert(ActiveEvents::COLLISION_EVENTS)
         .insert(Name::new("Spawnables-Pass Barrier"));

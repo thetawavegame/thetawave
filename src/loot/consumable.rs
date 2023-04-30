@@ -6,17 +6,12 @@ use strum_macros::Display;
 use crate::spawnable::{ConsumableType, SpawnConsumableEvent};
 
 /// Types of consumable drop lists
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display, Default)]
 pub enum ConsumableDropListType {
+    #[default]
     Nothing,
     Standard,
     MoneyAsteroid,
-}
-
-impl Default for ConsumableDropListType {
-    fn default() -> Self {
-        ConsumableDropListType::Nothing
-    }
 }
 
 /// Probability profile for a single consumable drop
@@ -29,6 +24,7 @@ pub struct ConsumableLootDrop {
 }
 
 impl ConsumableLootDrop {
+    /// Roll for loot drops and spawn consumables
     pub fn roll_and_spawn(
         &self,
         consumable_event_writer: &mut EventWriter<SpawnConsumableEvent>,

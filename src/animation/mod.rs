@@ -1,6 +1,20 @@
 use bevy::prelude::*;
 use serde::Deserialize;
 
+use crate::states;
+
+pub struct AnimationPlugin;
+
+impl Plugin for AnimationPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(
+            (animate_sprite_system,)
+                .in_set(OnUpdate(states::AppStates::Game))
+                .in_set(OnUpdate(states::GameStates::Playing)),
+        );
+    }
+}
+
 /// Describes how to change frames of animation
 #[derive(Deserialize, Clone)]
 pub enum AnimationDirection {
@@ -33,6 +47,7 @@ pub struct TextureData {
     pub animation_direction: AnimationDirection,
 }
 
+/// Describes an animation
 #[derive(Deserialize)]
 pub struct AnimationData {
     pub direction: AnimationDirection,
@@ -71,7 +86,7 @@ pub fn animate_sprite_system(
             match &animation.direction {
                 AnimationDirection::None => {}
                 AnimationDirection::Forward => {
-                    sprite.index = (sprite.index as usize + 1) % texture_atlas.textures.len()
+                    sprite.index = (sprite.index + 1) % texture_atlas.textures.len()
                 }
                 AnimationDirection::PingPong(direction) => match direction {
                     PingPongDirection::Forward => {

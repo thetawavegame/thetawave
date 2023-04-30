@@ -1,11 +1,24 @@
-use crate::spawnable::SpawnConsumableEvent;
 use bevy::prelude::*;
+use ron::de::from_bytes;
 use serde::Deserialize;
 use std::collections::HashMap;
 
 mod consumable;
 
+use crate::spawnable::SpawnConsumableEvent;
+
 pub use self::consumable::*;
+
+pub struct LootPlugin;
+
+impl Plugin for LootPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(
+            from_bytes::<LootDropsResource>(include_bytes!("../../assets/data/loot_drops.ron"))
+                .unwrap(),
+        );
+    }
+}
 
 /// Describes probability profiles for dropping consumables and items
 #[derive(Resource, Deserialize)]
