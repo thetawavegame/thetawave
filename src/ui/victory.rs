@@ -14,33 +14,6 @@ pub struct VictoryFadeComponent;
 #[derive(Component)]
 pub struct VictoryUI;
 
-#[cfg(target_arch = "wasm32")]
-pub fn victory_fade_out_system(
-    mut app_state: ResMut<State<AppStates>>,
-    mut rapier_config: ResMut<RapierConfiguration>,
-    time: Res<Time>,
-    mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
-    mut game_fade_query: Query<&mut Sprite, With<GameFadeComponent>>,
-) {
-    if end_game_trans_resource.start {
-        end_game_trans_resource.fade_out_timer.tick(time.delta());
-
-        for mut fade_sprite in game_fade_query.iter_mut() {
-            let alpha = (end_game_trans_resource.fade_out_speed
-                * end_game_trans_resource.fade_out_timer.elapsed_secs())
-            .min(1.0);
-
-            fade_sprite.color.set_a(alpha);
-        }
-
-        if end_game_trans_resource.fade_out_timer.just_finished() {
-            rapier_config.physics_pipeline_active = false;
-            rapier_config.query_pipeline_active = false;
-            app_state.set(AppStates::Victory).unwrap();
-        }
-    }
-}
-
 pub fn victory_fade_in_system(
     time: Res<Time>,
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
