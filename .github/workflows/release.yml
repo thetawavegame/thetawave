@@ -28,6 +28,14 @@ jobs:
       - name: ⬇️ Checkout
         uses: actions/checkout@v3
 
+      - name: 🧰 Install dependencies
+        if: matrix.config.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y -q \
+              libasound2-dev \
+              libudev-dev
+
       - name: 🦀 Setup Rust
         uses: actions-rs/toolchain@v1
         with:
