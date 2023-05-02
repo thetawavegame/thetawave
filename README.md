@@ -1,16 +1,35 @@
 # Thetawave
 
-**Play in browser on [itch](https://metalmancy.itch.io/thetawave)!**
+**Play in browser NOW on [itch](https://metalmancy.itch.io/thetawave)!**
 
 ## Controls
+
+### Keyboard
 
 - Movement: WASD or Arrow Keys
 - Fire weapon (can hold) : Spacebar or Left Click 
 - Special ability (when ready): Right Click or Shift
 
+### Xbox Controller
+
+- Movement: D-Pad
+- Fire weapon (can hold) : Right bumper
+- Special ability (when ready): Left bumper
+
 ## Description
 
-Thetawave is an open-source game, designed to be easily expandable. It is programmed in the Rust Language using the Bevy Engine.
+Thetawave is an open-source space shooter game, designed to be easily expandable. It is programmed in the Rust Language using the Bevy Engine.
+
+## Instructions
+
+Protect the Earth from invading enemies!
+
+The game is lost when all players have their health bars depleted from taking damage or when the blue defense bar is depleted from letting enemies reach the bottom of the arena.
+
+- Wrenches heal health
+- Gems increase fire rate
+- Armor negates damage
+- Allowing cargo hauler mobs to reach the bottom of the arena heals defense
 
 ## Gameplay
 
