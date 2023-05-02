@@ -40,7 +40,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --release --locked --target ${{ matrix.config.target }}
+          args: --release --target ${{ matrix.config.target }}
 
       - name: ⚙️ Prepare artifacts [Windows]
         shell: bash
