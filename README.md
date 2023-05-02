@@ -1,5 +1,7 @@
 # Thetawave
 
+**Play in browser on [itch](https://metalmancy.itch.io/thetawave)!**
+
 ## Controls
 
 - Movement: WASD or Arrow Keys
@@ -28,6 +30,10 @@ Thetawave is an open-source game, designed to be easily expandable. It is progra
 
 https://gamesupply.itch.io/ultimate-space-game-mega-asset-package
 
+### Assets
+
+#### [*Kadith's icons*](https://kadith.itch.io/kadiths-free-icons)
+
 ### Fonts
 
 #### *Space Madness*
@@ -36,4 +42,4 @@ https://gamesupply.itch.io/ultimate-space-game-mega-asset-package
 
 Licensed under Creative Commons: By Attribution 4.0 International.
 
-http://creativecommons.org/licenses/by/4.0/ 
+http://creativecommons.org/licenses/by/4.0/
