@@ -39,8 +39,8 @@ jobs:
       - name: 🧰 Install dependencies [MacOS]
         if: matrix.config.os == 'macos-latest'
         run: |
-          sudo brew update
-          sudo brew install llvm
+          brew update
+          brew install llvm
 
       - name: 🦀 Setup Rust
         uses: actions-rs/toolchain@v1
