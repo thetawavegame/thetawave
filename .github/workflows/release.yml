@@ -1,0 +1,101 @@
+name: 🚀 Release
+
+on: workflow_dispatch
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build_release:
+    name: 🔨 Build
+    runs-on: ${{ matrix.config.os }}
+    continue-on-error: true
+    outputs:
+      release_version: ${{ env.RELEASE_VERSION }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - { os: ubuntu-latest, target: "x86_64-unknown-linux-gnu" }
+          - { os: macos-latest, target: "x86_64-apple-darwin" }
+          - { os: macos-latest, target: "aarch64-apple-darwin" }
+          - { os: windows-latest, target: "x86_64-pc-windows-msvc" }
+    steps:
+      - name: 📠 Calculate Release Version
+        run: echo "RELEASE_VERSION=$0.1.0" >> $GITHUB_ENV
+      
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v3
+
+      - name: 🦀 Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          profile: minimal
+          target: ${{ matrix.config.target }}
+
+      - name: 🔨 Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --locked --target ${{ matrix.config.target }}
+
+      - name: ⚙️ Prepare artifacts [Windows]
+        shell: bash
+        if: matrix.config.os == 'windows-latest'
+        run: |
+          release_dir="thetawave-${{ env.RELEASE_VERSION }}"
+          artifact_path="thetawave-${{ env.RELEASE_VERSION }}-${{ matrix.config.target }}.zip"
+          echo "ARTIFACT_PATH=$artifact_path" >> $GITHUB_ENV
+          mkdir $release_dir
+          cp target/${{ matrix.config.target }}/release/thetawave.exe $release_dir/
+          cp -R assets/ $release_dir/
+          cp LICENSE $release_dir/
+          7z a -tzip $artifact_path $release_dir/
+
+      - name: ⚙️ Prepare artifacts [Unix]
+        shell: bash
+        if: matrix.config.os != 'windows-latest'
+        run: |
+          release_dir="thetawave-${{ env.RELEASE_VERSION }}"
+          artifact_path="thetawave-${{ env.RELEASE_VERSION }}-${{ matrix.config.target }}.tar.gz"
+          echo "ARTIFACT_PATH=$artifact_path" >> $GITHUB_ENV
+          mkdir $release_dir
+          cp target/${{ matrix.config.target }}/release/thetawave $release_dir/
+          cp -R assets $release_dir
+          cp LICENSE $release_dir
+          tar -czvf $artifact_path $release_dir/
+
+      - name: ⏫️ Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_PATH }}
+          path: ${{ env.ARTIFACT_PATH }}
+          if-no-files-found: error
+
+  publish_release:
+    name: 🚀 Publish
+    needs:
+      - build_release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Download Artifacts
+        uses: actions/download-artifact@v2
+
+      - name: 🔒 Generate Checksums
+        run: for file in thetawave-*/thetawave-*; do openssl dgst -sha256 -r "$file" | awk '{print $1}' > "${file}.sha256"; done
+
+      - name: 🚀 Publish Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          release_name: ${{ needs.build_release.outputs.release_version }}
+          file: thetawave-*/thetawave-*
+          file_glob: true
+          overwrite: true
+          prerelease: ${{ github.event_name != 'push' }}
+          body: ${{ needs.generate_changelog.outputs.release_body }}
+          tag: ${{ needs.build_release.outputs.release_version }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
