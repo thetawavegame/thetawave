@@ -23,7 +23,7 @@ jobs:
           - { os: windows-latest, target: "x86_64-pc-windows-msvc" }
     steps:
       - name: 📠 Calculate Release Version
-        run: echo "RELEASE_VERSION=$0.1.0" >> $GITHUB_ENV
+        run: echo "RELEASE_VERSION=$test" >> $GITHUB_ENV
       
       - name: ⬇️ Checkout
         uses: actions/checkout@v3
@@ -39,6 +39,8 @@ jobs:
       - name: 🧰 Install dependencies [MacOS]
         if: matrix.config.os == 'macos-latest'
         run: |
+          brew update
+          brew install llvm
           export PATH="/usr/local/opt/llvm/bin:$PATH"
 
       - name: 🦀 Setup Rust
