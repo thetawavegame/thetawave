@@ -1,6 +1,9 @@
 name: 🚀 Release
 
-on: workflow_dispatch
+on:
+  push:
+    tags:
+      - "v*.*.*"
 
 defaults:
   run:
@@ -22,8 +25,9 @@ jobs:
           - { os: macos-latest, target: "aarch64-apple-darwin" }
           - { os: windows-latest, target: "x86_64-pc-windows-msvc" }
     steps:
-      - name: 📠 Calculate Release Version
-        run: echo "RELEASE_VERSION=$test" >> $GITHUB_ENV
+      - name: 📠 Set Release Version
+        shell: bash
+        run: echo "RELEASE_VERSION=${GITHUB_REF:11}" >> $GITHUB_ENV
       
       - name: ⬇️ Checkout
         uses: actions/checkout@v3
@@ -90,8 +94,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v3
+
       - name: ⬇️ Download Artifacts
         uses: actions/download-artifact@v2
+
+      - name: 📠 Set Release Version
+        shell: bash
+        run: echo "RELEASE_VERSION=${GITHUB_REF:11}" >> $GITHUB_ENV
 
       - name: 🔒 Generate Checksums
         run: for file in thetawave-*/thetawave-*; do openssl dgst -sha256 -r "$file" | awk '{print $1}' > "${file}.sha256"; done
@@ -99,11 +111,10 @@ jobs:
       - name: 🚀 Publish Release
         uses: svenstaro/upload-release-action@v2
         with:
-          release_name: ${{ needs.build_release.outputs.release_version }}
+          release_name: Release ${{ env.RELEASE_VERSION }}
           file: thetawave-*/thetawave-*
           file_glob: true
           overwrite: true
-          prerelease: ${{ github.event_name != 'push' }}
-          body: ${{ needs.generate_changelog.outputs.release_body }}
-          tag: ${{ needs.build_release.outputs.release_version }}
+          body: 'Thetawave ${{ env.RELEASE_VERSION }}'
+          tag: ${{ github.ref }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
