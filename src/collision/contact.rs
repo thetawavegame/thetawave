@@ -274,10 +274,29 @@ pub fn contact_collision_system(
                     }
 
                     // check if mob collided with projectile
-                    for (projectile_entity, _projectile_component) in projectile_query.iter() {
+                    for (projectile_entity, projectile_component) in projectile_query.iter() {
                         // check if secondary entity is a projectile
                         if colliding_entities.secondary == projectile_entity {
                             audio_channel.play(audio_assets.bullet_bounce.clone());
+
+                            collision_event_writer.send(
+                                SortedCollisionEvent::MobToProjectileContact {
+                                    mob_entity: colliding_entities.primary,
+                                    projectile_entity: colliding_entities.secondary,
+                                    projectile_faction: match &projectile_component.projectile_type
+                                    {
+                                        ProjectileType::Blast(faction) => faction.clone(),
+                                        ProjectileType::Bullet(faction) => faction.clone(),
+                                    },
+                                    mob_faction: match mob_component_1.mob_type {
+                                        MobType::Enemy(_) => Faction::Enemy,
+                                        MobType::Ally(_) => Faction::Ally,
+                                        MobType::Neutral(_) => Faction::Neutral,
+                                    },
+                                    projectile_damage: projectile_component.damage,
+                                },
+                            );
+                            continue 'collision_events;
                         }
                     }
                 }
@@ -363,6 +382,34 @@ pub fn contact_collision_system(
                                         MobSegmentType::Enemy(_) => Faction::Enemy,
                                     },
                                     mob_segment_damage_2: mob_segment_component_1.collision_damage,
+                                },
+                            );
+                            continue 'collision_events;
+                        }
+                    }
+
+                    // check if mob segment collided with projectile
+                    for (projectile_entity, projectile_component) in projectile_query.iter() {
+                        // check if secondary entity is a projectile
+                        if colliding_entities.secondary == projectile_entity {
+                            audio_channel.play(audio_assets.bullet_bounce.clone());
+
+                            collision_event_writer.send(
+                                SortedCollisionEvent::MobSegmentToProjectileContact {
+                                    mob_segment_entity: colliding_entities.primary,
+                                    projectile_entity: colliding_entities.secondary,
+                                    projectile_faction: match &projectile_component.projectile_type
+                                    {
+                                        ProjectileType::Blast(faction) => faction.clone(),
+                                        ProjectileType::Bullet(faction) => faction.clone(),
+                                    },
+                                    mob_segment_faction: match mob_segment_component_1
+                                        .mob_segment_type
+                                    {
+                                        MobSegmentType::Enemy(_) => Faction::Enemy,
+                                        MobSegmentType::Neutral(_) => Faction::Neutral,
+                                    },
+                                    projectile_damage: projectile_component.damage,
                                 },
                             );
                             continue 'collision_events;

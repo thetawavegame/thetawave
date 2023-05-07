@@ -45,8 +45,6 @@ pub struct ProjectileComponent {
     pub behaviors: Vec<ProjectileBehavior>,
     /// Damage dealt to target
     pub damage: f32,
-    /// Health
-    pub health: Option<Health>,
     /// Time the projectile has existed
     pub time_alive: f32,
 }
@@ -68,8 +66,6 @@ pub struct ProjectileData {
     pub collider: ColliderData,
     /// If it has a contact collider
     pub is_solid: bool,
-    /// Health
-    pub health: Option<Health>,
 }
 
 /// Stores data about mob entities
@@ -156,7 +152,6 @@ pub fn spawn_projectile(
             projectile_type: projectile_data.projectile_type.clone(),
             behaviors: projectile_behaviors,
             damage,
-            health,
             time_alive: 0.0,
         })
         .insert(SpawnableComponent {

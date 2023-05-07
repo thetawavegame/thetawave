@@ -52,7 +52,7 @@
 	Bullet(Enemy): (
 		projectile_type: Bullet(Enemy),
 		spawnable_behaviors: [],
-		projectile_behaviors: [DealDamageOnContact, ReceiveDamageOnContact, DieAtZeroHealth],
+		projectile_behaviors: [DealDamageOnContact, ExplodeOnContact],
 		collider_dimensions: (1.5, 1.5),
 		z_level: 20.0,
 		animation: (
@@ -69,7 +69,7 @@
 	Bullet(Neutral): (
 		projectile_type: Bullet(Neutral),
 		spawnable_behaviors: [],
-		projectile_behaviors: [DealDamageOnContact],
+		projectile_behaviors: [DealDamageOnContact, ExplodeOnContact],
 		collider_dimensions: (1.5, 1.5),
 		z_level: 20.0,
 		animation: (
@@ -86,7 +86,7 @@
 	Bullet(Ally): (
 		projectile_type: Bullet(Ally),
 		spawnable_behaviors: [],
-		projectile_behaviors: [DealDamageOnContact],
+		projectile_behaviors: [DealDamageOnContact, ExplodeOnContact],
 		collider_dimensions: (1.5, 1.5),
 		z_level: 19.0,
 		animation: (
