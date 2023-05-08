@@ -274,10 +274,29 @@ pub fn contact_collision_system(
                     }
 
                     // check if mob collided with projectile
-                    for (projectile_entity, _projectile_component) in projectile_query.iter() {
+                    for (projectile_entity, projectile_component) in projectile_query.iter() {
                         // check if secondary entity is a projectile
                         if colliding_entities.secondary == projectile_entity {
                             audio_channel.play(audio_assets.bullet_bounce.clone());
+
+                            collision_event_writer.send(
+                                SortedCollisionEvent::MobToProjectileContact {
+                                    mob_entity: colliding_entities.primary,
+                                    projectile_entity: colliding_entities.secondary,
+                                    projectile_faction: match &projectile_component.projectile_type
+                                    {
+                                        ProjectileType::Blast(faction) => faction.clone(),
+                                        ProjectileType::Bullet(faction) => faction.clone(),
+                                    },
+                                    mob_faction: match mob_component_1.mob_type {
+                                        MobType::Enemy(_) => Faction::Enemy,
+                                        MobType::Ally(_) => Faction::Ally,
+                                        MobType::Neutral(_) => Faction::Neutral,
+                                    },
+                                    projectile_damage: projectile_component.damage,
+                                },
+                            );
+                            continue 'collision_events;
                         }
                     }
                 }
@@ -369,13 +388,115 @@ pub fn contact_collision_system(
                         }
                     }
 
-                    // check if mob collided with barrier
+                    // check if mob segment collided with projectile
+                    for (projectile_entity, projectile_component) in projectile_query.iter() {
+                        // check if secondary entity is a projectile
+                        if colliding_entities.secondary == projectile_entity {
+                            audio_channel.play(audio_assets.bullet_bounce.clone());
+
+                            collision_event_writer.send(
+                                SortedCollisionEvent::MobSegmentToProjectileContact {
+                                    mob_segment_entity: colliding_entities.primary,
+                                    projectile_entity: colliding_entities.secondary,
+                                    projectile_faction: match &projectile_component.projectile_type
+                                    {
+                                        ProjectileType::Blast(faction) => faction.clone(),
+                                        ProjectileType::Bullet(faction) => faction.clone(),
+                                    },
+                                    mob_segment_faction: match mob_segment_component_1
+                                        .mob_segment_type
+                                    {
+                                        MobSegmentType::Enemy(_) => Faction::Enemy,
+                                        MobSegmentType::Neutral(_) => Faction::Neutral,
+                                    },
+                                    projectile_damage: projectile_component.damage,
+                                },
+                            );
+                            continue 'collision_events;
+                        }
+                    }
+
+                    // check if mob segment collided with barrier
                     for barrier_entity in barrier_query.iter() {
                         // check if secondary entity is a barrier
                         if colliding_entities.secondary == barrier_entity {
                             // play the barrier bounce sound
                             audio_channel.play(audio_assets.barrier_bounce.clone());
                             continue 'collision_events;
+                        }
+                    }
+                }
+            }
+
+            // check if projectile was in collision
+            for (projectile_entity_1, projectile_component_1) in projectile_query.iter() {
+                // first entity is the projectile, the second entity is the other colliding entity
+                let colliding_entities: Option<CollidingEntityPair> =
+                    if projectile_entity_1 == *collider1_entity {
+                        Some(CollidingEntityPair {
+                            primary: *collider1_entity,
+                            secondary: *collider2_entity,
+                        })
+                    } else if projectile_entity_1 == *collider2_entity {
+                        Some(CollidingEntityPair {
+                            primary: *collider2_entity,
+                            secondary: *collider1_entity,
+                        })
+                    } else {
+                        None
+                    };
+
+                if let Some(colliding_entities) = colliding_entities {
+                    // check if the projectile collided with another projectile
+                    for (projectile_entity_2, projectile_component_2) in projectile_query.iter() {
+                        // check if secondary entity is a projectile
+                        if colliding_entities.secondary == projectile_entity_2 {
+                            //audio_channel.play(audio_assets.bullet_bounce.clone());
+                            if matches!(
+                                projectile_component_1.projectile_type,
+                                ProjectileType::Bullet(_)
+                            ) && matches!(
+                                projectile_component_2.projectile_type,
+                                ProjectileType::Bullet(_)
+                            ) {
+                                collision_event_writer.send(
+                                    SortedCollisionEvent::ProjectileToProjectileContact {
+                                        projectile_entity_1,
+                                        projectile_faction_1: match &projectile_component_1
+                                            .projectile_type
+                                        {
+                                            ProjectileType::Blast(faction) => faction.clone(),
+                                            ProjectileType::Bullet(faction) => faction.clone(),
+                                        },
+                                        projectile_entity_2,
+                                        projectile_faction_2: match &projectile_component_1
+                                            .projectile_type
+                                        {
+                                            ProjectileType::Blast(faction) => faction.clone(),
+                                            ProjectileType::Bullet(faction) => faction.clone(),
+                                        },
+                                    },
+                                );
+                                collision_event_writer.send(
+                                    SortedCollisionEvent::ProjectileToProjectileContact {
+                                        projectile_entity_1: projectile_entity_2,
+                                        projectile_faction_1: match &projectile_component_2
+                                            .projectile_type
+                                        {
+                                            ProjectileType::Blast(faction) => faction.clone(),
+                                            ProjectileType::Bullet(faction) => faction.clone(),
+                                        },
+                                        projectile_entity_2: projectile_entity_1,
+                                        projectile_faction_2: match &projectile_component_1
+                                            .projectile_type
+                                        {
+                                            ProjectileType::Blast(faction) => faction.clone(),
+                                            ProjectileType::Bullet(faction) => faction.clone(),
+                                        },
+                                    },
+                                );
+                                continue 'collision_events;
+                            }
                         }
                     }
                 }

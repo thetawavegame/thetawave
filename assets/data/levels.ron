@@ -65,27 +65,13 @@
 		)),
 		timeline: (
 			phases: [
-				/*
 				(
-					phase_type: Boss(
-						mob_type: Enemy(Repeater),
-						position: (0.0, 550.0),
-        				initial_delay: 5.0,
-        				is_defeated: false,			
+					phase_type: FormationSpawn(
+						time: 400000.0,
+						formation_pool: "medium",
+						initial_delay: 1.0,	 			
 					),
-					bg_music_transition: Some((
-						loop_from: 9.615,
-						bg_music: Boss,
-					)),	
 				),
-				*/
-				(
-					phase_type: Break( time: 5.0),
-					bg_music_transition: Some((
-						loop_from: 0.0,
-						bg_music: Game,
-					)),
-				)
 			],
 		),
 	),

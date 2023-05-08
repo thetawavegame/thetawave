@@ -253,6 +253,7 @@ pub enum EnemyMobType {
     CrustlingRight,
     CrustlingLeft,
     Repeater,
+    Shelly,
 }
 
 /// Type that encompasses all spawnable ally mobs
@@ -328,11 +329,11 @@ pub enum EffectType {
     ConsumableDespawn,
     EnemyBlastExplosion,
     EnemyBlastDespawn,
+    EnemyBulletExplosion,
     BarrierGlow,
     AllyBulletDespawn,
     EnemyBulletDespawn,
     AllyBulletExplosion,
-    EnemyBulletExplosion,
     //PoisonBlastExplosion,
     //CriticalBlastExplosion,
     //MobExplosion,
