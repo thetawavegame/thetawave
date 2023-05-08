@@ -5,6 +5,8 @@ use crate::spawnable::{EnemyMobType, MobSegmentType, MobType};
 
 #[derive(AssetCollection, Resource)]
 pub struct MobAssets {
+    #[asset(key = "shelly")]
+    pub shelly: Handle<TextureAtlas>,
     #[asset(key = "drone")]
     pub drone: Handle<TextureAtlas>,
     #[asset(key = "drone.thruster")]
@@ -74,6 +76,7 @@ impl MobAssets {
                     self.crustling_head.clone()
                 }
                 EnemyMobType::Repeater => self.repeater_head.clone(),
+                EnemyMobType::Shelly => self.shelly.clone(),
             },
             MobType::Ally(ally_type) => match ally_type {
                 crate::spawnable::AllyMobType::Hauler2 => self.hauler_front.clone(),
@@ -136,6 +139,7 @@ impl MobAssets {
                 EnemyMobType::Missile => Some(self.missile_thruster.clone()),
                 EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => None,
                 EnemyMobType::Repeater => None,
+                EnemyMobType::Shelly => None,
             },
             MobType::Ally(ally_type) => match ally_type {
                 crate::spawnable::AllyMobType::Hauler2 => Some(self.hauler_thruster.clone()),

@@ -253,6 +253,7 @@ pub enum EnemyMobType {
     CrustlingRight,
     CrustlingLeft,
     Repeater,
+    Shelly,
 }
 
 /// Type that encompasses all spawnable ally mobs

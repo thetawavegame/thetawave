@@ -104,6 +104,24 @@
 			(
 				formation_spawnables: [
 					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (-150.0, 500.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (0.0, 500.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (150.0, 500.0),
+					),
+				],
+				weight: 1.0,
+				period: 13.0,
+			),
+			(
+				formation_spawnables: [
+					(
 						spawnable_type: Mob(Enemy(CrustlingRight)),
 						position: (-150.0, 900.0),
 					),
@@ -117,7 +135,7 @@
 					),
 				],
 				weight: 1.0,
-				period: 13.0,
+				period: 12.0,
 			),
 			(
 				formation_spawnables: [
@@ -325,6 +343,32 @@
 			),
 		],
 		"hard": [
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (-250.0, 500.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (-150.0, 500.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (0.0, 500.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (150.0, 500.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (250.0, 500.0),
+					),
+				],
+				weight: 1.0,
+				period: 13.0,
+			),
 			(
 				formation_spawnables: [
 					(

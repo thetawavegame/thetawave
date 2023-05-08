@@ -119,6 +119,14 @@ pub enum SortedCollisionEvent {
         mob_segment_damage_2: f32,
     },
 
+    // Projectile to projectile
+    ProjectileToProjectileContact {
+        projectile_entity_1: Entity,
+        projectile_faction_1: Faction,
+        projectile_entity_2: Entity,
+        projectile_faction_2: Faction,
+    },
+
     // Mob to barrier
     MobToBarrierContact {
         mob_entity: Entity,

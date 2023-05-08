@@ -605,6 +605,48 @@ fn explode_on_contact(
                     continue;
                 }
             }
+
+            SortedCollisionEvent::ProjectileToProjectileContact {
+                projectile_entity_1,
+                projectile_faction_1,
+                projectile_entity_2,
+                projectile_faction_2,
+            } => {
+                if entity == *projectile_entity_1 {
+                    //audio_channel.play(audio_assets.mob_hit.clone());
+                    match projectile_faction_1 {
+                        Faction::Ally => {
+                            // spawn explosion
+                            spawn_effect_event_writer.send(SpawnEffectEvent {
+                                effect_type: EffectType::AllyBulletExplosion,
+                                transform: Transform {
+                                    translation: transform.translation,
+                                    scale: transform.scale,
+                                    ..Default::default()
+                                },
+                                initial_motion: InitialMotion::default(),
+                            });
+                        }
+                        Faction::Enemy => {
+                            // spawn explosion
+                            spawn_effect_event_writer.send(SpawnEffectEvent {
+                                effect_type: EffectType::EnemyBulletExplosion,
+                                transform: Transform {
+                                    translation: transform.translation,
+                                    scale: transform.scale,
+                                    ..Default::default()
+                                },
+                                initial_motion: InitialMotion::default(),
+                            });
+                        }
+                        Faction::Neutral => {}
+                    }
+
+                    // despawn blast
+                    commands.entity(entity).despawn_recursive();
+                    continue;
+                }
+            }
             _ => {}
         }
     }
