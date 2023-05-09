@@ -18,6 +18,7 @@ pub struct OptionsPlugin;
 
 impl Plugin for OptionsPlugin {
     fn build(&self, app: &mut App) {
+        #[cfg(not(target_arch = "wasm32"))]
         app.add_startup_systems((set_window_icon,));
 
         app.add_system(toggle_fullscreen_system);
