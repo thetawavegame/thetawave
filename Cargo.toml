@@ -22,6 +22,7 @@ bevy_kira_audio = { version = "0.15.0", features = ["mp3", "wav"] }
 bevy_editor_pls = "0.4.0"
 winit = "0.28.4"
 image = "0.24.6"
+bevy_serialport = { git = "https://github.com/foxzool/bevy_serialport" }
 
 # optimize dev packages as we don't need them in debug version
 [profile.dev.package."*"]
