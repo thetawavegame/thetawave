@@ -40,6 +40,8 @@ pub struct Player2Description;
 #[derive(Component)]
 pub struct StartGamePrompt;
 
+pub struct PlayerJoinEvent(pub usize);
+
 /// Setup the character selection UI
 pub fn setup_character_selection_system(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
@@ -518,6 +520,7 @@ pub fn player_join_system(
         Query<&mut Style, With<Player1CharacterSelection>>,
         Query<&mut Style, With<Player2CharacterSelection>>,
     )>,
+    mut player_join_event: EventWriter<PlayerJoinEvent>,
 ) {
     // get all of the already used inputs
     let used_inputs: Vec<PlayerInput> = players_resource
@@ -536,6 +539,9 @@ pub fn player_join_system(
         for (idx, player_input) in players_resource.player_inputs.iter_mut().enumerate() {
             if player_input.is_none() && !used_inputs.contains(&PlayerInput::Keyboard) {
                 *player_input = Some(PlayerInput::Keyboard);
+
+                // send event that player joined
+                player_join_event.send(PlayerJoinEvent(idx));
 
                 // remove the player join prompt
                 if idx == 0 {
@@ -573,6 +579,9 @@ pub fn player_join_system(
                     && !used_inputs.contains(&PlayerInput::Gamepad(*gamepad_id))
                 {
                     *player_input = Some(PlayerInput::Gamepad(*gamepad_id));
+
+                    // send event that player joined
+                    player_join_event.send(PlayerJoinEvent(idx));
 
                     // remove the player join prompt
                     if idx == 0 {

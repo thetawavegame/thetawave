@@ -11,8 +11,8 @@ mod main_menu;
 mod pause_menu;
 mod victory;
 
-use self::character_selection::{
-    player_join_system, select_character_system, setup_character_selection_system,
+pub use self::character_selection::{
+    player_join_system, select_character_system, setup_character_selection_system, PlayerJoinEvent,
 };
 use self::instructions::setup_instructions_system;
 pub use self::{
@@ -30,6 +30,8 @@ pub struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
+        app.add_event::<PlayerJoinEvent>();
+
         app.insert_resource(EndGameTransitionResource::new(
             2.0, 3.0, 2.5, 0.5, 0.5, 30.0,
         ));
