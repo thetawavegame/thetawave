@@ -8,6 +8,8 @@ use bevy_serialport::{
 
 use crate::{player::PlayersResource, states, ui::PlayerJoinEvent};
 
+use bytes::Bytes;
+
 pub struct ArcadePlugin;
 
 impl Plugin for ArcadePlugin {
@@ -45,7 +47,7 @@ impl Plugin for ArcadePlugin {
         );
 
         app.add_systems(
-            (enter_gameover_button_leds_system,).in_schedule(OnEnter(states::AppStates::Victory)),
+            (enter_victory_button_leds_system,).in_schedule(OnEnter(states::AppStates::Victory)),
         );
 
         app.add_systems(
@@ -73,16 +75,125 @@ fn setup_serial_system(
         .expect("Error opening serial port");
 }
 
-fn send_test_data_system(mut serial_res: ResMut<SerialResource>) {
-    serial_res.send_message("COM3", vec![1, 1, 1, 1, 2, 255].into());
+enum ButtonLEDByte {
+    EndMarker = 255,
+    Prefix = 254,
+    Off = 0,
+    On = 1,
+    Fade = 2,
+}
+
+impl ButtonLEDByte {
+    fn enter_main_menu() -> Bytes {
+        vec![
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Fade as u8,
+            ButtonLEDByte::EndMarker as u8,
+        ]
+        .into()
+    }
+
+    fn enter_character_selection() -> Bytes {
+        vec![
+            ButtonLEDByte::Fade as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::EndMarker as u8,
+        ]
+        .into()
+    }
+
+    fn player_one_joined() -> Bytes {
+        vec![
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Fade as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Fade as u8,
+            ButtonLEDByte::EndMarker as u8,
+        ]
+        .into()
+    }
+
+    fn player_two_joined() -> Bytes {
+        vec![
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Fade as u8,
+            ButtonLEDByte::EndMarker as u8,
+        ]
+        .into()
+    }
+
+    fn enter_game() -> Bytes {
+        vec![
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::On as u8,
+            ButtonLEDByte::EndMarker as u8,
+        ]
+        .into()
+    }
+
+    fn enter_pause() -> Bytes {
+        vec![
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Fade as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Fade as u8,
+            ButtonLEDByte::Fade as u8,
+            ButtonLEDByte::EndMarker as u8,
+        ]
+        .into()
+    }
+
+    fn enter_gameover() -> Bytes {
+        vec![
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Fade as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Fade as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::EndMarker as u8,
+        ]
+        .into()
+    }
+
+    fn enter_victory() -> Bytes {
+        vec![
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Fade as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::Fade as u8,
+            ButtonLEDByte::Off as u8,
+            ButtonLEDByte::EndMarker as u8,
+        ]
+        .into()
+    }
+}
+
+enum NeopixelStripByte {
+    EndMarker = 255,
+    RightPrefix = 252,
+    LeftPrefix = 253,
+    Off = 0,
 }
 
 fn enter_main_menu_button_leds_system(mut serial_resource: ResMut<SerialResource>) {
-    serial_resource.send_message("COM3", vec![0, 0, 0, 0, 2, 255].into());
+    serial_resource.send_message("COM3", ButtonLEDByte::enter_main_menu());
 }
 
 fn enter_character_selection_button_leds_system(mut serial_resource: ResMut<SerialResource>) {
-    serial_resource.send_message("COM3", vec![2, 0, 0, 0, 0, 255].into());
+    serial_resource.send_message("COM3", ButtonLEDByte::enter_character_selection());
 }
 
 fn character_selection_button_leds_system(
@@ -91,21 +202,25 @@ fn character_selection_button_leds_system(
 ) {
     for event in player_join_event.iter() {
         if event.0 == 0 {
-            serial_resource.send_message("COM3", vec![0, 0, 2, 0, 2, 255].into());
+            serial_resource.send_message("COM3", ButtonLEDByte::player_one_joined());
         } else if event.0 == 1 {
-            serial_resource.send_message("COM3", vec![0, 0, 0, 0, 2, 255].into());
+            serial_resource.send_message("COM3", ButtonLEDByte::player_two_joined());
         }
     }
 }
 
 fn enter_game_button_leds_system(mut serial_resource: ResMut<SerialResource>) {
-    serial_resource.send_message("COM3", vec![0, 0, 0, 0, 1, 255].into());
+    serial_resource.send_message("COM3", ButtonLEDByte::enter_game());
 }
 
 fn enter_pause_button_leds_system(mut serial_resource: ResMut<SerialResource>) {
-    serial_resource.send_message("COM3", vec![0, 2, 0, 2, 2, 255].into());
+    serial_resource.send_message("COM3", ButtonLEDByte::enter_pause());
 }
 
 fn enter_gameover_button_leds_system(mut serial_resource: ResMut<SerialResource>) {
-    serial_resource.send_message("COM3", vec![0, 2, 0, 2, 0, 255].into());
+    serial_resource.send_message("COM3", ButtonLEDByte::enter_gameover());
+}
+
+fn enter_victory_button_leds_system(mut serial_resource: ResMut<SerialResource>) {
+    serial_resource.send_message("COM3", ButtonLEDByte::enter_victory());
 }
