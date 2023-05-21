@@ -5,27 +5,15 @@
 				formation_spawnables: [
 					(
 						spawnable_type: Mob(Enemy(Pawn)),
-						position: (-300.0, 600.0),
+						position: (-300.0, 500.0),
 					),
 					(
 						spawnable_type: Mob(Enemy(Drone)),
-						position: (-250.0, 750.0),
+						position: (0.0, 1100.0),
 					),
 					(
 						spawnable_type: Mob(Enemy(Pawn)),
-						position: (-200.0, 600.0),
-					),
-					(
-						spawnable_type: Mob(Enemy(Drone)),
-						position: (200.0, 500.0),
-					),
-										(
-						spawnable_type: Mob(Enemy(Pawn)),
-						position: (250.0, 600.0),
-					),
-					(
-						spawnable_type: Mob(Enemy(Drone)),
-						position: (300.0, 500.0),
+						position: (300.0, 800.0),
 					),
 				],
 				weight: 1.0,
