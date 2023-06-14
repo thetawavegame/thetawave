@@ -55,6 +55,13 @@
         columns: 3,
         rows: 1,
     ),
+    "shelly": TextureAtlas (
+        path: "texture/shelly_spritesheet.png",
+        tile_size_x: 24.,
+        tile_size_y: 25.,
+        columns: 3,
+        rows: 1,
+    ),
     "hauler.front": TextureAtlas (
         path: "texture/hauler_front.png",
         tile_size_x: 18.,

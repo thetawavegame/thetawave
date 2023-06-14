@@ -38,7 +38,7 @@
 			collider_dimensions: (4.0 , 5.5),
 			collider_density: 1.5,
 			character_type: Juggernaut,
-			projectile_type: Blast(Ally),
+			projectile_type: Bullet(Ally),
 			projectile_despawn_time: 0.7,
 			projectile_velocity: (0.0, 400.0),
 			projectile_offset_position: (0.0, 45.0),

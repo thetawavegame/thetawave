@@ -26,30 +26,10 @@ impl Plugin for CollisionPlugin {
 /// Types of collisions
 #[derive(Debug)]
 pub enum SortedCollisionEvent {
+    // Player
     PlayerToProjectileIntersection {
         player_entity: Entity,
         projectile_entity: Entity,
-        projectile_faction: Faction,
-        projectile_damage: f32,
-    },
-    MobToProjectileContact {
-        mob_entity: Entity,
-        projectile_entity: Entity,
-        projectile_faction: Faction,
-        mob_damage: f32,
-        projectile_damage: f32,
-    },
-    MobToProjectileIntersection {
-        mob_entity: Entity,
-        projectile_entity: Entity,
-        mob_faction: Faction,
-        projectile_faction: Faction,
-        projectile_damage: f32,
-    },
-    MobSegmentToProjectileIntersection {
-        mob_segment_entity: Entity,
-        projectile_entity: Entity,
-        mob_segment_faction: Faction,
         projectile_faction: Faction,
         projectile_damage: f32,
     },
@@ -78,6 +58,40 @@ pub enum SortedCollisionEvent {
         player_damage: f32,
         projectile_damage: f32,
     },
+
+    // Mob to projectile
+    MobToProjectileIntersection {
+        mob_entity: Entity,
+        projectile_entity: Entity,
+        mob_faction: Faction,
+        projectile_faction: Faction,
+        projectile_damage: f32,
+    },
+    MobToProjectileContact {
+        mob_entity: Entity,
+        projectile_entity: Entity,
+        projectile_faction: Faction,
+        mob_faction: Faction,
+        projectile_damage: f32,
+    },
+
+    // Mob segment to projectile
+    MobSegmentToProjectileIntersection {
+        mob_segment_entity: Entity,
+        projectile_entity: Entity,
+        mob_segment_faction: Faction,
+        projectile_faction: Faction,
+        projectile_damage: f32,
+    },
+    MobSegmentToProjectileContact {
+        mob_segment_entity: Entity,
+        projectile_entity: Entity,
+        mob_segment_faction: Faction,
+        projectile_faction: Faction,
+        projectile_damage: f32,
+    },
+
+    // Mob to mob
     MobToMobContact {
         mob_entity_1: Entity,
         mob_faction_1: Faction,
@@ -94,6 +108,8 @@ pub enum SortedCollisionEvent {
         mob_segment_faction: Faction,
         mob_segment_damage: f32,
     },
+
+    // Mob segment to mob segment
     MobSegmentToMobSegmentContact {
         mob_segment_entity_1: Entity,
         mob_segment_faction_1: Faction,
@@ -102,6 +118,16 @@ pub enum SortedCollisionEvent {
         mob_segment_faction_2: Faction,
         mob_segment_damage_2: f32,
     },
+
+    // Projectile to projectile
+    ProjectileToProjectileContact {
+        projectile_entity_1: Entity,
+        projectile_faction_1: Faction,
+        projectile_entity_2: Entity,
+        projectile_faction_2: Faction,
+    },
+
+    // Mob to barrier
     MobToBarrierContact {
         mob_entity: Entity,
         barrier_entity: Entity,

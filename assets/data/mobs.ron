@@ -349,7 +349,7 @@
 		deceleration: (2.0, 1.0),
 		speed: (0.0, 100.0),
 		collision_damage: 12.0,
-		defense_damage: 10.0,
+		defense_damage: 8.0,
 		colliders: [
 			(
 				dimensions: (6.5, 6.5),
@@ -446,6 +446,54 @@
 					),
 				)
 			]
+		}
+	),
+	Enemy(Shelly): (
+		mob_type: Enemy(Shelly),
+		spawnable_behaviors: [MoveDown, BrakeHorizontal],
+		mob_behaviors: [
+			ReceiveDamageOnImpact,
+			DealDamageToPlayerOnImpact,
+			DieAtZeroHealth,
+			PeriodicFire("bullet"),
+		],
+		acceleration: (0.0, 2.0),
+		deceleration: (2.0, 1.0),
+		speed: (0.0, 75.0),
+		attack_damage: 10.0,
+		collision_damage: 8.0,
+		defense_damage: 8.0,
+		colliders: [
+			(
+				dimensions: (7.0, 7.5),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
+		z_level: 5.0,
+		consumable_drops: Standard,
+		health: (
+			max_health: 25.0,
+			health: 25.0,
+			armor: 0,
+		),
+		animation: (
+			direction: PingPong(Forward),
+			frame_duration: 0.25,
+		),
+		projectile_spawners: {
+			"bullet": [
+				(
+					projectile_type: Bullet(Enemy),
+					period: 3.0,
+					position: Local((0.0, -40.0)),
+					despawn_time: 2.5,
+					initial_motion: (
+						random_angvel: None,
+						linvel: Some((0.0, -400.0)),
+					),
+				)
+			],
 		}
 	),
 	Ally(Hauler3): (

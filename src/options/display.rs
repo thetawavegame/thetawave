@@ -2,8 +2,10 @@ use crate::game::GameParametersResource;
 use bevy::{
     prelude::*,
     window::{PrimaryWindow, WindowMode},
+    winit::WinitWindows,
 };
 use serde::Deserialize;
+use winit::window::Icon;
 
 /// Display settings of the window
 #[derive(Deserialize)]
@@ -81,4 +83,28 @@ pub fn toggle_zoom_system(
             }
         }
     }
+}
+
+// set the window icon
+pub fn set_window_icon(
+    windows: NonSend<WinitWindows>,
+    window_query: Query<Entity, With<PrimaryWindow>>,
+) {
+    let window = windows
+        .get_window(window_query.get_single().unwrap())
+        .unwrap();
+
+    // set icon using image crate
+    let (icon_rgba, icon_width, icon_height) = {
+        let image = image::open("assets/texture/window_icon.png")
+            .expect("Failed to open icon path")
+            .into_rgba8();
+        let (width, height) = image.dimensions();
+        let rgba = image.into_raw();
+        (rgba, width, height)
+    };
+
+    let icon = Icon::from_rgba(icon_rgba, icon_width, icon_height).unwrap();
+
+    window.set_window_icon(Some(icon));
 }

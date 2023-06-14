@@ -10,12 +10,17 @@ mod display;
 
 use crate::states;
 
-pub use self::display::{toggle_fullscreen_system, toggle_zoom_system, DisplayConfig};
+pub use self::display::{
+    set_window_icon, toggle_fullscreen_system, toggle_zoom_system, DisplayConfig,
+};
 
 pub struct OptionsPlugin;
 
 impl Plugin for OptionsPlugin {
     fn build(&self, app: &mut App) {
+        #[cfg(not(target_arch = "wasm32"))]
+        app.add_startup_systems((set_window_icon,));
+
         app.add_system(toggle_fullscreen_system);
 
         app.add_systems((toggle_zoom_system,).in_set(OnUpdate(states::AppStates::Game)));

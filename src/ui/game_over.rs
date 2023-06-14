@@ -57,7 +57,6 @@ impl EndGameTransitionResource {
 #[derive(Component)]
 pub struct GameOverUI;
 
-#[cfg(not(target_arch = "wasm32"))]
 pub fn fade_out_system(
     mut next_app_state: ResMut<NextState<AppStates>>,
     mut rapier_config: ResMut<RapierConfiguration>,
@@ -68,15 +67,6 @@ pub fn fade_out_system(
 ) {
     if end_game_trans_resource.start {
         end_game_trans_resource.fade_out_timer.tick(time.delta());
-
-        let framerate: u16 = ((-((end_game_trans_resource.frame_slowdown_speed
-            * end_game_trans_resource.fade_out_timer.elapsed_secs())
-        .powf(2.0))
-            + end_game_trans_resource.max_fps) as u16)
-            .max(1);
-
-        //use bevy_framepace::Limiter;
-        //framepace.limiter = Limiter::from_framerate(framerate.into());
 
         for mut fade_sprite in game_fade_query.iter_mut() {
             let alpha = (end_game_trans_resource.fade_out_speed
@@ -91,35 +81,6 @@ pub fn fade_out_system(
             rapier_config.query_pipeline_active = false;
             //framepace.limiter = Limiter::Auto;
             next_app_state.set(end_game_trans_resource.next_state.as_ref().unwrap().clone());
-        }
-    }
-}
-
-#[cfg(target_arch = "wasm32")]
-pub fn fade_out_system(
-    mut app_state: ResMut<State<AppStates>>,
-    mut rapier_config: ResMut<RapierConfiguration>,
-    time: Res<Time>,
-    mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
-    mut game_fade_query: Query<&mut Sprite, With<GameFadeComponent>>,
-) {
-    if end_game_trans_resource.start {
-        end_game_trans_resource.fade_out_timer.tick(time.delta());
-
-        for mut fade_sprite in game_fade_query.iter_mut() {
-            let alpha = (end_game_trans_resource.fade_out_speed
-                * end_game_trans_resource.fade_out_timer.elapsed_secs())
-            .min(1.0);
-
-            fade_sprite.color.set_a(alpha);
-        }
-
-        if end_game_trans_resource.fade_out_timer.just_finished() {
-            rapier_config.physics_pipeline_active = false;
-            rapier_config.query_pipeline_active = false;
-            app_state
-                .set(end_game_trans_resource.next_state.as_ref().unwrap().clone())
-                .unwrap();
         }
     }
 }
