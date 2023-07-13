@@ -1,6 +1,9 @@
-use bevy::prelude::*;
+use std::time::Duration;
 
-use crate::states;
+use bevy::prelude::*;
+use bevy_kira_audio::{AudioChannel, AudioControl, AudioEasing, AudioTween};
+
+use crate::{assets::GameAudioAssets, audio, states};
 
 #[derive(Component)]
 pub struct MainMenuUI;
@@ -11,7 +14,16 @@ pub struct BouncingPromptComponent {
     pub is_active: bool,
 }
 
-pub fn setup_main_menu_system(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn setup_main_menu_system(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    audio_channel: Res<AudioChannel<audio::BackgroundMusicAudioChannel>>,
+    audio_assets: Res<GameAudioAssets>,
+) {
+    audio_channel
+        .play(audio_assets.get_bg_music_asset(&crate::assets::BGMusicType::Main))
+        .looped()
+        .fade_in(AudioTween::new(Duration::from_secs(2), AudioEasing::Linear));
     commands
         .spawn(NodeBundle {
             style: Style {

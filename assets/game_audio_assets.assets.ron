@@ -1,4 +1,7 @@
 ({
+    "sounds.main_music": File (
+        path: "sounds/main_theme.mp3",
+    ),
     "sounds.game_music": File (
         path: "sounds/earth-orbit_soundtrack.mp3",
     ),
