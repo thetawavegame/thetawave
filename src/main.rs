@@ -13,6 +13,7 @@ pub const HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_2;
 pub const VERTICAL_BARRIER_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_3;
 
 mod animation;
+mod arcade;
 mod arena;
 mod assets;
 mod audio;
@@ -154,7 +155,8 @@ fn main() {
             .in_schedule(OnEnter(states::AppStates::Game)),
     );
 
-    if cfg!(arcade) {}
+    #[cfg(feature = "arcade")]
+    app.add_plugin(arcade::ArcadePlugin);
 
     if cfg!(debug_assertions) {
         app.add_plugin(EditorPlugin::new())

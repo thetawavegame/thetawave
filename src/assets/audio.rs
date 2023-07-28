@@ -9,6 +9,7 @@ pub enum BGMusicType {
     Game,
     Boss,
     BossTransition,
+    Main,
 }
 
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display, Default)]
@@ -20,6 +21,8 @@ pub enum CollisionSoundType {
 
 #[derive(AssetCollection, Resource)]
 pub struct GameAudioAssets {
+    #[asset(key = "sounds.main_music")]
+    pub main_music: Handle<AudioSource>,
     #[asset(key = "sounds.game_music")]
     pub game_music: Handle<AudioSource>,
     #[asset(key = "sounds.boss_music")]
@@ -66,6 +69,7 @@ impl GameAudioAssets {
             BGMusicType::Game => self.game_music.clone(),
             BGMusicType::Boss => self.boss_music.clone(),
             BGMusicType::BossTransition => self.boss_trans_music.clone(),
+            BGMusicType::Main => self.main_music.clone(),
         }
     }
 
