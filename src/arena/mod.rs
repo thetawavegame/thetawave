@@ -15,17 +15,15 @@ impl Plugin for ArenaPlugin {
         app.add_event::<MobReachedBottomGateEvent>();
 
         app.add_systems(
-            (
-                spawn_barriers_system.in_set(GameEnterSet::BuildLevel),
-                spawn_despawn_gates_system.in_set(GameEnterSet::BuildLevel),
-            )
-                .in_schedule(OnEnter(states::AppStates::Game)),
+            OnEnter(states::AppStates::Game),
+            (spawn_barriers_system, spawn_despawn_gates_system).in_set(GameEnterSet::BuildLevel),
         );
 
         app.add_systems(
-            (despawn_gates_system,)
-                .in_set(OnUpdate(states::AppStates::Game))
-                .in_set(OnUpdate(states::GameStates::Playing)),
+            Update,
+            despawn_gates_system
+                .run_if(in_state(states::AppStates::Game))
+                .run_if(in_state(states::GameStates::Playing)),
         );
     }
 }

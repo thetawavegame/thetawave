@@ -200,6 +200,7 @@ pub fn mob_segment_execute_behavior_system(
 }
 
 /// Event to be sent when a mob segment is destroyed
+#[derive(Event)]
 pub struct MobSegmentDestroyedEvent {
     pub entity: Entity,
 }

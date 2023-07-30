@@ -1,5 +1,5 @@
 use bevy::{pbr::AmbientLight, prelude::*};
-use bevy_editor_pls::prelude::*;
+//use bevy_editor_pls::prelude::*;
 use bevy_kira_audio::prelude::*;
 
 use bevy_rapier2d::geometry::Group;
@@ -122,45 +122,43 @@ fn main() {
             })
             .set(ImagePlugin::default_nearest()),
     )
-    .add_plugin(player::PlayerPlugin)
-    .add_plugin(spawnable::SpawnablePlugin)
-    .add_plugin(run::RunPlugin)
-    .add_plugin(loot::LootPlugin)
-    .add_plugin(game::GamePlugin)
-    .add_plugin(background::BackgroundPlugin)
-    .add_plugin(audio::ThetawaveAudioPlugin)
-    .add_plugin(options::OptionsPlugin)
-    .add_plugin(camera::CameraPlugin)
-    .add_plugin(ui::UiPlugin)
-    .add_plugin(arena::ArenaPlugin)
-    .add_plugin(collision::CollisionPlugin)
-    .add_plugin(scanner::ScannerPlugin)
-    .add_plugin(animation::AnimationPlugin)
-    .add_plugin(states::StatesPlugin)
+    .add_plugins(player::PlayerPlugin)
+    .add_plugins(spawnable::SpawnablePlugin)
+    .add_plugins(run::RunPlugin)
+    .add_plugins(loot::LootPlugin)
+    .add_plugins(game::GamePlugin)
+    .add_plugins(background::BackgroundPlugin)
+    .add_plugins(audio::ThetawaveAudioPlugin)
+    .add_plugins(options::OptionsPlugin)
+    .add_plugins(camera::CameraPlugin)
+    .add_plugins(ui::UiPlugin)
+    .add_plugins(arena::ArenaPlugin)
+    .add_plugins(collision::CollisionPlugin)
+    .add_plugins(scanner::ScannerPlugin)
+    .add_plugins(animation::AnimationPlugin)
+    .add_plugins(states::StatesPlugin)
     .insert_resource(ClearColor(Color::BLACK))
     .insert_resource(AmbientLight {
         color: Color::WHITE,
         brightness: 0.1,
     })
-    .add_plugin(AudioPlugin)
-    .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
+    .add_plugins(AudioPlugin)
+    .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
         PHYSICS_SCALE,
     ));
 
     app.add_systems(
-        (
-            setup_game.in_set(GameEnterSet::Initialize),
-            setup_physics.in_set(GameEnterSet::Initialize),
-        )
-            .in_schedule(OnEnter(states::AppStates::Game)),
+        OnEnter(states::AppStates::Game),
+        (setup_game, setup_physics).in_set(GameEnterSet::Initialize),
     );
 
     #[cfg(feature = "arcade")]
     app.add_plugin(arcade::ArcadePlugin);
 
     if cfg!(debug_assertions) {
-        app.add_plugin(EditorPlugin::new())
-            .add_plugin(RapierDebugRenderPlugin::default());
+        app
+            //.add_plugin(EditorPlugin::new())
+            .add_plugins(RapierDebugRenderPlugin::default());
     }
 
     app.run();

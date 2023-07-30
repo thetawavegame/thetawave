@@ -9,7 +9,9 @@ pub fn setup_pause_system(mut commands: Commands, asset_server: Res<AssetServer>
     commands
         .spawn(NodeBundle {
             style: Style {
-                size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
+                //size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
                 ..Default::default()
             },
             background_color: Color::rgba(0.5, 0.5, 0.5, 0.1).into(),
@@ -28,7 +30,9 @@ pub fn setup_pause_system(mut commands: Commands, asset_server: Res<AssetServer>
                         })
                         .into(),
                     style: Style {
-                        size: Size::new(Val::Px(400.0), Val::Px(100.0)),
+                        //size: Size::new(Val::Px(400.0), Val::Px(100.0)),
+                        width: Val::Px(400.0),
+                        height: Val::Px(100.0),
                         margin: UiRect {
                             left: Val::Auto,
                             right: Val::Auto,

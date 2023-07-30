@@ -241,6 +241,7 @@ pub fn mob_execute_behavior_system(
     }
 }
 
+#[derive(Event)]
 pub struct MobDestroyedEvent {
     pub mob_type: MobType,
     pub entity: Entity,

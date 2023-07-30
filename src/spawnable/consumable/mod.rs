@@ -38,6 +38,7 @@ pub struct ConsumableComponent {
 }
 
 /// Event for spawning a consumable
+#[derive(Event)]
 pub struct SpawnConsumableEvent {
     /// Type of the consumable to spawn
     pub consumable_type: ConsumableType,

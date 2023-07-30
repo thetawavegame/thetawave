@@ -20,14 +20,15 @@ impl Plugin for BackgroundPlugin {
         );
 
         app.add_systems(
-            (create_background_system.in_set(GameEnterSet::BuildLevel),)
-                .in_schedule(OnEnter(states::AppStates::Game)),
+            OnEnter(states::AppStates::Game),
+            create_background_system.in_set(GameEnterSet::BuildLevel),
         );
 
         app.add_systems(
-            (rotate_planet_system,)
-                .in_set(OnUpdate(states::AppStates::Game))
-                .in_set(OnUpdate(states::GameStates::Playing)),
+            Update,
+            rotate_planet_system
+                .run_if(in_state(states::AppStates::Game))
+                .run_if(in_state(states::GameStates::Playing)),
         );
     }
 }

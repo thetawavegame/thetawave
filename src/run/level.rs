@@ -47,6 +47,7 @@ pub struct LevelData {
 }
 
 /// Event to alert when level has been completed
+#[derive(Event)]
 pub struct LevelCompletedEvent;
 
 /// Struct to manage a level

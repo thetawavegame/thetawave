@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use bevy::{
-    diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin},
+    diagnostic::{Diagnostics, DiagnosticsStore, FrameTimeDiagnosticsPlugin},
     prelude::*,
 };
 
@@ -65,15 +65,18 @@ pub fn setup_game_ui_system(
     commands
         .spawn(NodeBundle {
             style: Style {
+                /*
                 size: Size {
                     width: Val::Px(800.0),
                     height: Val::Px(30.0),
                 },
-                position: UiRect {
-                    left: Val::Percent(19.0),
-                    bottom: Val::Percent(2.0),
-                    ..UiRect::default()
-                },
+                */
+                width: Val::Px(800.0),
+                height: Val::Px(30.0),
+
+                left: Val::Percent(19.0),
+                bottom: Val::Percent(2.0),
+
                 position_type: PositionType::Absolute,
                 ..Style::default()
             },
@@ -87,11 +90,9 @@ pub fn setup_game_ui_system(
         .spawn(ImageBundle {
             image: asset_server.load("texture/defense_bar_label.png").into(),
             style: Style {
-                position: UiRect {
-                    left: Val::Percent(42.5),
-                    bottom: Val::Percent(1.7),
-                    ..default()
-                },
+                left: Val::Percent(42.5),
+                bottom: Val::Percent(1.7),
+
                 position_type: PositionType::Absolute,
                 ..default()
             },
@@ -105,15 +106,18 @@ pub fn setup_game_ui_system(
     commands
         .spawn(NodeBundle {
             style: Style {
+                /*
                 size: Size {
                     width: Val::Px(80.0),
                     height: Val::Px(15.0),
                 },
-                position: UiRect {
-                    left: Val::Percent(1.5),
-                    bottom: Val::Percent(65.0),
-                    ..UiRect::default()
-                },
+                */
+                width: Val::Px(80.0),
+                height: Val::Px(15.0),
+
+                left: Val::Percent(1.5),
+                bottom: Val::Percent(65.0),
+
                 position_type: PositionType::Absolute,
                 ..Style::default()
             },
@@ -128,11 +132,9 @@ pub fn setup_game_ui_system(
         .spawn(ImageBundle {
             image: asset_server.load("texture/ability_charging.png").into(),
             style: Style {
-                position: UiRect {
-                    left: Val::Percent(0.3),
-                    bottom: Val::Percent(63.0),
-                    ..default()
-                },
+                left: Val::Percent(0.3),
+                bottom: Val::Percent(63.0),
+
                 position_type: PositionType::Absolute,
                 ..default()
             },
@@ -148,11 +150,9 @@ pub fn setup_game_ui_system(
         .spawn(ImageBundle {
             image: asset_server.load("texture/ability_ready.png").into(),
             style: Style {
-                position: UiRect {
-                    left: Val::Percent(1.5),
-                    bottom: Val::Percent(65.0),
-                    ..default()
-                },
+                left: Val::Percent(1.5),
+                bottom: Val::Percent(65.0),
+
                 position_type: PositionType::Absolute,
                 ..default()
             },
@@ -171,15 +171,18 @@ pub fn setup_game_ui_system(
     commands
         .spawn(NodeBundle {
             style: Style {
+                /*
                 size: Size {
                     width: Val::Px(15.0),
                     height: Val::Px(200.0),
                 },
-                position: UiRect {
-                    left: Val::Percent(3.5),
-                    bottom: Val::Percent(67.0),
-                    ..UiRect::default()
-                },
+                */
+                width: Val::Px(15.0),
+                height: Val::Px(200.0),
+
+                left: Val::Percent(3.5),
+                bottom: Val::Percent(67.0),
+
                 position_type: PositionType::Absolute,
                 ..Style::default()
             },
@@ -193,15 +196,18 @@ pub fn setup_game_ui_system(
     commands
         .spawn(NodeBundle {
             style: Style {
+                /*
                 size: Size {
                     width: Val::Px(15.0),
                     height: Val::Px(200.0),
                 },
-                position: UiRect {
-                    left: Val::Percent(4.5),
-                    bottom: Val::Percent(67.0),
-                    ..UiRect::default()
-                },
+                */
+                width: Val::Px(15.0),
+                height: Val::Px(200.0),
+
+                left: Val::Percent(4.5),
+                bottom: Val::Percent(67.0),
+
                 position_type: PositionType::Absolute,
                 ..Style::default()
             },
@@ -222,11 +228,9 @@ pub fn setup_game_ui_system(
         .spawn(ImageBundle {
             image: asset_server.load("texture/health_bar_label.png").into(),
             style: Style {
-                position: UiRect {
-                    left: Val::Percent(3.5),
-                    bottom: Val::Percent(71.5),
-                    ..default()
-                },
+                left: Val::Percent(3.5),
+                bottom: Val::Percent(71.5),
+
                 position_type: PositionType::Absolute,
                 ..default()
             },
@@ -241,12 +245,13 @@ pub fn setup_game_ui_system(
         .spawn(ImageBundle {
             image: asset_server.load("texture/armor_spritesheet.png").into(),
             style: Style {
-                size: Size::new(Val::Px(10.0), Val::Px(10.0)),
-                position: UiRect {
-                    left: Val::Percent(4.2),
-                    bottom: Val::Percent(90.0),
-                    ..default()
-                },
+                //size: Size::new(Val::Px(10.0), Val::Px(10.0)),
+                width: Val::Px(10.0),
+                height: Val::Px(10.0),
+
+                left: Val::Percent(4.2),
+                bottom: Val::Percent(90.0),
+
                 position_type: PositionType::Absolute,
                 ..default()
             },
@@ -263,11 +268,9 @@ pub fn setup_game_ui_system(
         .spawn(ImageBundle {
             image: asset_server.load("texture/power_container.png").into(),
             style: Style {
-                position: UiRect {
-                    left: Val::Percent(4.5),
-                    bottom: Val::Percent(55.0),
-                    ..default()
-                },
+                left: Val::Percent(4.5),
+                bottom: Val::Percent(55.0),
+
                 position_type: PositionType::Absolute,
                 ..default()
             },
@@ -282,11 +285,9 @@ pub fn setup_game_ui_system(
         .spawn(ImageBundle {
             image: asset_server.load("texture/power_glow.png").into(),
             style: Style {
-                position: UiRect {
-                    left: Val::Percent(4.5),
-                    bottom: Val::Percent(55.0),
-                    ..default()
-                },
+                left: Val::Percent(4.5),
+                bottom: Val::Percent(55.0),
+
                 position_type: PositionType::Absolute,
                 ..default()
             },
@@ -304,11 +305,9 @@ pub fn setup_game_ui_system(
         .spawn(ImageBundle {
             image: asset_server.load("texture/power_label.png").into(),
             style: Style {
-                position: UiRect {
-                    left: Val::Percent(3.0),
-                    bottom: Val::Percent(49.0),
-                    ..default()
-                },
+                left: Val::Percent(3.0),
+                bottom: Val::Percent(49.0),
+
                 position_type: PositionType::Absolute,
                 ..default()
             },
@@ -324,15 +323,18 @@ pub fn setup_game_ui_system(
         commands
             .spawn(NodeBundle {
                 style: Style {
+                    /*
                     size: Size {
                         width: Val::Px(80.0),
                         height: Val::Px(15.0),
                     },
-                    position: UiRect {
-                        left: Val::Percent(91.5),
-                        bottom: Val::Percent(65.0),
-                        ..UiRect::default()
-                    },
+                    */
+                    width: Val::Px(80.0),
+                    height: Val::Px(15.0),
+
+                    left: Val::Percent(91.5),
+                    bottom: Val::Percent(65.0),
+
                     position_type: PositionType::Absolute,
                     ..Style::default()
                 },
@@ -347,11 +349,9 @@ pub fn setup_game_ui_system(
             .spawn(ImageBundle {
                 image: asset_server.load("texture/ability_charging.png").into(),
                 style: Style {
-                    position: UiRect {
-                        left: Val::Percent(90.5),
-                        bottom: Val::Percent(63.0),
-                        ..default()
-                    },
+                    left: Val::Percent(90.5),
+                    bottom: Val::Percent(63.0),
+
                     position_type: PositionType::Absolute,
                     ..default()
                 },
@@ -367,11 +367,9 @@ pub fn setup_game_ui_system(
             .spawn(ImageBundle {
                 image: asset_server.load("texture/ability_ready.png").into(),
                 style: Style {
-                    position: UiRect {
-                        left: Val::Percent(91.5),
-                        bottom: Val::Percent(65.0),
-                        ..default()
-                    },
+                    left: Val::Percent(91.5),
+                    bottom: Val::Percent(65.0),
+
                     position_type: PositionType::Absolute,
                     ..default()
                 },
@@ -390,15 +388,18 @@ pub fn setup_game_ui_system(
         commands
             .spawn(NodeBundle {
                 style: Style {
+                    /*
                     size: Size {
                         width: Val::Px(15.0),
                         height: Val::Px(200.0),
                     },
-                    position: UiRect {
-                        left: Val::Percent(94.5),
-                        bottom: Val::Percent(67.0),
-                        ..UiRect::default()
-                    },
+                    */
+                    width: Val::Px(15.0),
+                    height: Val::Px(200.0),
+
+                    left: Val::Percent(94.5),
+                    bottom: Val::Percent(67.0),
+
                     position_type: PositionType::Absolute,
                     ..Style::default()
                 },
@@ -412,15 +413,18 @@ pub fn setup_game_ui_system(
         commands
             .spawn(NodeBundle {
                 style: Style {
+                    /*
                     size: Size {
                         width: Val::Px(15.0),
                         height: Val::Px(200.0),
                     },
-                    position: UiRect {
-                        left: Val::Percent(93.5),
-                        bottom: Val::Percent(67.0),
-                        ..UiRect::default()
-                    },
+                    */
+                    width: Val::Px(15.0),
+                    height: Val::Px(200.0),
+
+                    left: Val::Percent(93.5),
+                    bottom: Val::Percent(67.0),
+
                     position_type: PositionType::Absolute,
                     ..Style::default()
                 },
@@ -441,11 +445,9 @@ pub fn setup_game_ui_system(
             .spawn(ImageBundle {
                 image: asset_server.load("texture/health_bar_label.png").into(),
                 style: Style {
-                    position: UiRect {
-                        left: Val::Percent(94.5),
-                        bottom: Val::Percent(71.5),
-                        ..default()
-                    },
+                    left: Val::Percent(94.5),
+                    bottom: Val::Percent(71.5),
+
                     position_type: PositionType::Absolute,
                     ..default()
                 },
@@ -460,12 +462,13 @@ pub fn setup_game_ui_system(
             .spawn(ImageBundle {
                 image: asset_server.load("texture/armor_spritesheet.png").into(),
                 style: Style {
-                    size: Size::new(Val::Px(10.0), Val::Px(10.0)),
-                    position: UiRect {
-                        left: Val::Percent(94.3),
-                        bottom: Val::Percent(90.0),
-                        ..default()
-                    },
+                    //size: Size::new(Val::Px(10.0), Val::Px(10.0)),
+                    width: Val::Px(10.0),
+                    height: Val::Px(10.0),
+
+                    left: Val::Percent(94.3),
+                    bottom: Val::Percent(90.0),
+
                     position_type: PositionType::Absolute,
                     ..default()
                 },
@@ -482,11 +485,9 @@ pub fn setup_game_ui_system(
             .spawn(ImageBundle {
                 image: asset_server.load("texture/power_container.png").into(),
                 style: Style {
-                    position: UiRect {
-                        left: Val::Percent(93.5),
-                        bottom: Val::Percent(55.0),
-                        ..default()
-                    },
+                    left: Val::Percent(93.5),
+                    bottom: Val::Percent(55.0),
+
                     position_type: PositionType::Absolute,
                     ..default()
                 },
@@ -501,11 +502,9 @@ pub fn setup_game_ui_system(
             .spawn(ImageBundle {
                 image: asset_server.load("texture/power_glow.png").into(),
                 style: Style {
-                    position: UiRect {
-                        left: Val::Percent(93.5),
-                        bottom: Val::Percent(55.0),
-                        ..default()
-                    },
+                    left: Val::Percent(93.5),
+                    bottom: Val::Percent(55.0),
+
                     position_type: PositionType::Absolute,
                     ..default()
                 },
@@ -523,11 +522,9 @@ pub fn setup_game_ui_system(
             .spawn(ImageBundle {
                 image: asset_server.load("texture/power_label.png").into(),
                 style: Style {
-                    position: UiRect {
-                        left: Val::Percent(92.5),
-                        bottom: Val::Percent(49.0),
-                        ..default()
-                    },
+                    left: Val::Percent(92.5),
+                    bottom: Val::Percent(49.0),
+
                     position_type: PositionType::Absolute,
                     ..default()
                 },
@@ -547,12 +544,9 @@ pub fn setup_fps_ui_system(mut commands: Commands, asset_server: ResMut<AssetSer
     commands
         .spawn(TextBundle {
             style: Style {
-                size: Size::default(),
-                position: UiRect {
-                    left: Val::Percent(90.0),
-                    bottom: Val::Percent(5.0),
-                    ..UiRect::default()
-                },
+                left: Val::Percent(90.0),
+                bottom: Val::Percent(5.0),
+
                 position_type: PositionType::Absolute,
                 ..Style::default()
             },
@@ -570,7 +564,7 @@ pub fn setup_fps_ui_system(mut commands: Commands, asset_server: ResMut<AssetSer
         .insert(FPSUI);
 }
 
-pub fn fps_system(diagnostics: Res<Diagnostics>, mut query: Query<&mut Text, With<FPSUI>>) {
+pub fn fps_system(diagnostics: Res<DiagnosticsStore>, mut query: Query<&mut Text, With<FPSUI>>) {
     let mut text = query.single_mut();
 
     if let Some(fps) = diagnostics.get(FrameTimeDiagnosticsPlugin::FPS) {
@@ -602,7 +596,7 @@ pub fn update_player1_ui(
     for mut style_component in player1_ui_queries.p0().iter_mut() {
         for player_component in player_query.iter() {
             if player_component.player_index == 0 {
-                style_component.size.height = Val::Px(
+                style_component.height = Val::Px(
                     200.0
                         * (player_component.health.get_health()
                             / player_component.health.get_max_health()),
@@ -614,7 +608,7 @@ pub fn update_player1_ui(
     for mut style_component in player1_ui_queries.p7().iter_mut() {
         for player_component in player_query.iter() {
             if player_component.player_index == 0 {
-                style_component.size.height = Val::Px(
+                style_component.height = Val::Px(
                     200.0
                         * (player_component.health.get_shields()
                             / player_component.health.get_max_shields()),
@@ -627,7 +621,7 @@ pub fn update_player1_ui(
         if let Some(level) = &run_resource.level {
             match &level.objective {
                 crate::run::ObjectiveType::Defense(health) => {
-                    style_component.size.width =
+                    style_component.width =
                         Val::Px(800.0 * (health.get_health() / health.get_max_health()));
                 }
             }
@@ -671,7 +665,7 @@ pub fn update_player1_ui(
                         .duration()
                         .as_secs_f32();
 
-                style_component.size.width = Val::Px(80.0 * cooldown_ratio);
+                style_component.width = Val::Px(80.0 * cooldown_ratio);
             }
         }
     }
@@ -733,7 +727,7 @@ pub fn update_player2_ui(
     for mut style_component in player2_ui_queries.p0().iter_mut() {
         for player_component in player_query.iter() {
             if player_component.player_index == 1 {
-                style_component.size.height = Val::Px(
+                style_component.height = Val::Px(
                     200.0
                         * (player_component.health.get_health()
                             / player_component.health.get_max_health()),
@@ -745,7 +739,7 @@ pub fn update_player2_ui(
     for mut style_component in player2_ui_queries.p6().iter_mut() {
         for player_component in player_query.iter() {
             if player_component.player_index == 1 {
-                style_component.size.height = Val::Px(
+                style_component.height = Val::Px(
                     200.0
                         * (player_component.health.get_shields()
                             / player_component.health.get_max_shields()),
@@ -791,7 +785,7 @@ pub fn update_player2_ui(
                         .duration()
                         .as_secs_f32();
 
-                style_component.size.width = Val::Px(80.0 * cooldown_ratio);
+                style_component.width = Val::Px(80.0 * cooldown_ratio);
             }
         }
     }

@@ -4,10 +4,13 @@ version = "0.1.1"
 edition = "2021"
 
 [dependencies]
-bevy = { version = "0.10.1", features = ["serialize"] }
-bevy_rapier2d = { version = "0.21.0", features = ["simd-stable"] }
-bevy_egui = "0.20.2"
-bevy_asset_loader = { version = "0.16.0", features = [
+bevy = { version = "0.11.0", features = ["serialize"] }
+bevy_rapier2d = { version = "0.22.0", features = [
+    "simd-stable",
+    "debug-render-2d",
+] }
+bevy_egui = "0.21.0"
+bevy_asset_loader = { version = "0.17.0", features = [
     "2d",
     "3d",
     "standard_dynamic_assets",
@@ -15,14 +18,14 @@ bevy_asset_loader = { version = "0.16.0", features = [
 serde = "1.0.159"
 ron = "0.8.0"
 rand = "0.8.5"
-strum = "0.24.1"
-strum_macros = "0.24.3"
+strum = "0.25.0"
+strum_macros = "0.25.1"
 console_error_panic_hook = "0.1.7"
-bevy_kira_audio = { version = "0.15.0", features = ["mp3", "wav"] }
-bevy_editor_pls = "0.4.0"
+bevy_kira_audio = { version = "0.16.0", features = ["mp3", "wav"] }
+#bevy_editor_pls = "0.4.0"
 winit = "0.28.4"
 image = "0.24.6"
-bevy_serialport = { git = "https://github.com/foxzool/bevy_serialport" }
+bevy_serialport = "0.4.0"
 bytes = "1.4.0"
 
 # optimize dev packages as we don't need them in debug version

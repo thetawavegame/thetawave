@@ -64,6 +64,7 @@ impl Formation {
 }
 
 /// Event for spawning formations
+#[derive(Event)]
 pub struct SpawnFormationEvent {
     //pub formation_pool: FormationPoolType,
     pub formation: Formation,

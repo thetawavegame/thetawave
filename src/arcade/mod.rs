@@ -1,12 +1,10 @@
-use std::time::Duration;
-
-use bevy::{app::ScheduleRunnerSettings, log::LogPlugin, prelude::*};
+use bevy::prelude::*;
 use bevy_serialport::{
     DataBits, FlowControl, Parity, SerialPortPlugin, SerialPortRuntime, SerialPortSetting,
     SerialResource, StopBits,
 };
 
-use crate::{player::PlayersResource, states, ui::PlayerJoinEvent};
+use crate::{states, ui::PlayerJoinEvent};
 
 use bytes::Bytes;
 
@@ -14,44 +12,52 @@ pub struct ArcadePlugin;
 
 impl Plugin for ArcadePlugin {
     fn build(&self, app: &mut App) {
-        //app.insert_resource(ScheduleRunnerSettings::run_loop(Duration::from_millis(10)));
-
-        app.add_plugin(SerialPortPlugin)
-            .add_startup_system(setup_serial_system)
-            .add_startup_system(enter_main_menu_button_leds_system);
+        app.add_plugins(SerialPortPlugin);
 
         app.add_systems(
-            (enter_main_menu_button_leds_system,).in_schedule(OnEnter(states::AppStates::MainMenu)),
+            Startup,
+            (setup_serial_system, enter_main_menu_button_leds_system),
         );
 
         app.add_systems(
-            (enter_character_selection_button_leds_system,)
-                .in_schedule(OnEnter(states::AppStates::CharacterSelection)),
+            OnEnter(states::AppStates::MainMenu),
+            enter_main_menu_button_leds_system,
         );
 
         app.add_systems(
-            (character_selection_button_leds_system,)
-                .in_set(OnUpdate(states::AppStates::CharacterSelection)),
+            OnEnter(states::AppStates::CharacterSelection),
+            enter_character_selection_button_leds_system,
         );
 
         app.add_systems(
-            (enter_game_button_leds_system,).in_schedule(OnEnter(states::AppStates::Game)),
+            Update,
+            character_selection_button_leds_system
+                .run_if(in_state(states::AppStates::CharacterSelection)),
         );
 
         app.add_systems(
-            (enter_pause_button_leds_system,).in_schedule(OnEnter(states::GameStates::Paused)),
+            OnEnter(states::AppStates::Game),
+            enter_game_button_leds_system,
         );
 
         app.add_systems(
-            (enter_game_button_leds_system,).in_schedule(OnExit(states::GameStates::Paused)),
+            OnEnter(states::GameStates::Paused),
+            enter_pause_button_leds_system,
         );
 
         app.add_systems(
-            (enter_victory_button_leds_system,).in_schedule(OnEnter(states::AppStates::Victory)),
+            OnExit(states::GameStates::Paused),
+            enter_game_button_leds_system,
         );
 
         app.add_systems(
-            (enter_gameover_button_leds_system,).in_schedule(OnEnter(states::AppStates::GameOver)),
+            OnEnter(states::AppStates::Victory),
+            enter_victory_button_leds_system,
+        );
+
+        app.add_systems(
+            OnEnter(states::AppStates::GameOver),
+            enter_gameover_button_leds_system,
         );
     }
 }

@@ -30,12 +30,13 @@ impl Plugin for PlayerPlugin {
 
         app.insert_resource(PlayersResource::default());
 
-        app.add_system(
-            spawn_players_system
-                .in_set(GameEnterSet::SpawnPlayer)
-                .in_schedule(OnEnter(states::AppStates::Game)),
-        )
-        .add_systems(
+        app.add_systems(
+            OnEnter(states::AppStates::Game),
+            spawn_players_system.in_set(GameEnterSet::SpawnPlayer),
+        );
+
+        app.add_systems(
+            Update,
             (
                 player_fire_weapon_system,
                 player_death_system,
@@ -44,8 +45,8 @@ impl Plugin for PlayerPlugin {
                 player_movement_system.in_set(GameUpdateSet::Movement),
                 player_ability_system.in_set(GameUpdateSet::Abilities),
             )
-                .in_set(OnUpdate(states::AppStates::Game))
-                .in_set(OnUpdate(states::GameStates::Playing)),
+                .run_if(in_state(states::AppStates::Game))
+                .run_if(in_state(states::GameStates::Playing)),
         );
     }
 }

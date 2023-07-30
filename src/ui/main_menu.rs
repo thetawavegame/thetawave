@@ -27,7 +27,8 @@ pub fn setup_main_menu_system(
     commands
         .spawn(NodeBundle {
             style: Style {
-                size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
+                width: Val::Percent(100.),
+                height: Val::Percent(100.),
                 ..Default::default()
             },
             ..Default::default()
@@ -42,7 +43,8 @@ pub fn setup_main_menu_system(
                         .load("texture/main_menu_background_54.png")
                         .into(), // not using assetsmanager as we don't load everything on the main menu
                     style: Style {
-                        size: Size::new(Val::Percent(100.), Val::Percent(100.)),
+                        width: Val::Percent(100.),
+                        height: Val::Percent(100.),
                         align_items: AlignItems::Center,
                         ..Default::default()
                     },
@@ -59,7 +61,8 @@ pub fn setup_main_menu_system(
                                 })
                                 .into(),
                             style: Style {
-                                size: Size::new(Val::Px(400.0), Val::Px(100.0)),
+                                width: Val::Px(400.),
+                                height: Val::Px(100.),
                                 margin: UiRect {
                                     left: Val::Auto,
                                     right: Val::Auto,

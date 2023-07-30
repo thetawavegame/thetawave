@@ -62,6 +62,7 @@ impl Plugin for StatesPlugin {
         });
 
         app.configure_sets(
+            Update,
             (
                 //GameUpdateSet::Enter,
                 GameUpdateSet::Level,
@@ -82,48 +83,63 @@ impl Plugin for StatesPlugin {
         );
 
         app.add_systems(
-            (open_pause_menu_system,)
-                .in_set(OnUpdate(AppStates::Game))
-                .in_set(OnUpdate(GameStates::Playing)),
-        );
-
-        app.add_systems((start_instructions_system,).in_set(OnUpdate(AppStates::MainMenu)));
-
-        app.add_systems(
-            (start_character_selection_system,).in_set(OnUpdate(AppStates::Instructions)),
-        );
-
-        app.add_systems((start_game_system,).in_set(OnUpdate(AppStates::CharacterSelection)));
-
-        app.add_systems(
-            (clear_state_system::<MainMenuCleanup>,).in_schedule(OnExit(AppStates::MainMenu)),
-        );
-
-        app.add_systems((clear_state_system::<GameCleanup>,).in_schedule(OnExit(AppStates::Game)));
-
-        app.add_systems(
-            (clear_state_system::<GameOverCleanup>,).in_schedule(OnExit(AppStates::GameOver)),
+            Update,
+            open_pause_menu_system
+                .run_if(in_state(AppStates::Game))
+                .run_if(in_state(GameStates::Playing)),
         );
 
         app.add_systems(
-            (clear_state_system::<VictoryCleanup>,).in_schedule(OnExit(AppStates::Victory)),
+            Update,
+            start_instructions_system.run_if(in_state(AppStates::MainMenu)),
         );
 
         app.add_systems(
-            (clear_state_system::<CharacterSelectionCleanup>,)
-                .in_schedule(OnExit(AppStates::CharacterSelection)),
+            Update,
+            start_character_selection_system.run_if(in_state(AppStates::Instructions)),
         );
 
         app.add_systems(
-            (clear_state_system::<PauseCleanup>,).in_schedule(OnExit(GameStates::Paused)),
+            Update,
+            start_game_system.run_if(in_state(AppStates::CharacterSelection)),
         );
 
         app.add_systems(
-            (clear_state_system::<InstructionsCleanup>,)
-                .in_schedule(OnExit(AppStates::Instructions)),
+            OnExit(AppStates::MainMenu),
+            clear_state_system::<MainMenuCleanup>,
         );
 
-        app.add_systems((close_pause_menu_system,).in_set(OnUpdate(GameStates::Paused)));
+        app.add_systems(OnExit(AppStates::Game), clear_state_system::<GameCleanup>);
+
+        app.add_systems(
+            OnExit(AppStates::GameOver),
+            clear_state_system::<GameOverCleanup>,
+        );
+
+        app.add_systems(
+            OnExit(AppStates::Victory),
+            clear_state_system::<VictoryCleanup>,
+        );
+
+        app.add_systems(
+            OnExit(AppStates::CharacterSelection),
+            clear_state_system::<CharacterSelectionCleanup>,
+        );
+
+        app.add_systems(
+            OnExit(GameStates::Paused),
+            clear_state_system::<PauseCleanup>,
+        );
+
+        app.add_systems(
+            OnExit(AppStates::Instructions),
+            clear_state_system::<InstructionsCleanup>,
+        );
+
+        app.add_systems(
+            Update,
+            close_pause_menu_system.run_if(in_state(GameStates::Paused)),
+        );
     }
 }
 
