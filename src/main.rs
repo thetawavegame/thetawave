@@ -20,6 +20,7 @@ mod audio;
 mod background;
 mod camera;
 mod collision;
+mod db;
 mod game;
 mod loot;
 mod misc;
@@ -31,7 +32,6 @@ mod spawnable;
 mod states;
 mod tools;
 mod ui;
-mod db;
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone, SystemSet)]
 pub enum GameEnterSet {
