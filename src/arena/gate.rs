@@ -110,4 +110,5 @@ pub fn despawn_gates_system(
 }
 
 // Event for sending damage dealt from mob reaching bottom of arena
+#[derive(Event)]
 pub struct MobReachedBottomGateEvent(pub f32);

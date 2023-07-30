@@ -43,6 +43,7 @@ pub struct EffectsResource {
 }
 
 /// Event for spawning effect
+#[derive(Event)]
 pub struct SpawnEffectEvent {
     /// Type of the effect
     pub effect_type: EffectType,

@@ -11,7 +11,9 @@ pub fn setup_instructions_system(mut commands: Commands, asset_server: Res<Asset
     commands
         .spawn(NodeBundle {
             style: Style {
-                size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
+                //size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
                 ..Default::default()
             },
             ..Default::default()
@@ -29,7 +31,9 @@ pub fn setup_instructions_system(mut commands: Commands, asset_server: Res<Asset
                         })
                         .into(),
                     style: Style {
-                        size: Size::new(Val::Percent(100.), Val::Percent(100.)),
+                        //size: Size::new(Val::Percent(100.), Val::Percent(100.)),
+                        width: Val::Percent(100.0),
+                        height: Val::Percent(100.0),
                         align_items: AlignItems::Center,
                         ..Default::default()
                     },
@@ -46,7 +50,9 @@ pub fn setup_instructions_system(mut commands: Commands, asset_server: Res<Asset
                                 })
                                 .into(),
                             style: Style {
-                                size: Size::new(Val::Px(350.0), Val::Px(87.5)),
+                                //size: Size::new(Val::Px(350.0), Val::Px(87.5)),
+                                width: Val::Px(350.0),
+                                height: Val::Px(87.5),
                                 margin: UiRect {
                                     left: Val::Auto,
                                     right: Val::Percent(18.0),

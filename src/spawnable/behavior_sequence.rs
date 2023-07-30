@@ -101,6 +101,7 @@ pub fn mob_behavior_sequence_tracker_system(
     }
 }
 
+#[derive(Event)]
 pub struct MobBehaviorUpdateEvent {
     pub mob_behaviors: Vec<MobBehavior>,
     pub control_behaviors: Vec<MobSegmentControlBehavior>,

@@ -6,7 +6,10 @@ pub struct ScannerPlugin;
 
 impl Plugin for ScannerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems((scanner_system,).in_set(OnUpdate(states::AppStates::Game)));
+        app.add_systems(
+            Update,
+            scanner_system.run_if(in_state(states::AppStates::Game)),
+        );
     }
 }
 

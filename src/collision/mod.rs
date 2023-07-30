@@ -13,18 +13,19 @@ impl Plugin for CollisionPlugin {
         app.add_event::<SortedCollisionEvent>();
 
         app.add_systems(
+            Update,
             (
                 intersection_collision_system.in_set(GameUpdateSet::IntersectionCollision),
                 contact_collision_system.in_set(GameUpdateSet::ContactCollision),
             )
-                .in_set(OnUpdate(states::AppStates::Game))
-                .in_set(OnUpdate(states::GameStates::Playing)),
+                .run_if(in_state(states::AppStates::Game))
+                .run_if(in_state(states::GameStates::Playing)),
         );
     }
 }
 
 /// Types of collisions
-#[derive(Debug)]
+#[derive(Debug, Event)]
 pub enum SortedCollisionEvent {
     // Player
     PlayerToProjectileIntersection {

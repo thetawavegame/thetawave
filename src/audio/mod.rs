@@ -9,7 +9,7 @@ impl Plugin for ThetawaveAudioPlugin {
             .add_audio_channel::<MenuAudioChannel>()
             .add_audio_channel::<SoundEffectsAudioChannel>();
 
-        app.add_startup_system(set_audio_volume_system);
+        app.add_systems(Startup, set_audio_volume_system);
     }
 }
 

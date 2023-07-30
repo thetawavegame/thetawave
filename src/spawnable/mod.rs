@@ -90,6 +90,7 @@ impl Plugin for SpawnablePlugin {
             .add_event::<MobSegmentDestroyedEvent>();
 
         app.add_systems(
+            Update,
             (
                 despawn_timer_system,
                 spawnable_set_target_behavior_system.in_set(GameUpdateSet::SetTargetBehavior),
@@ -108,8 +109,8 @@ impl Plugin for SpawnablePlugin {
                 spawn_consumable_system, // event generated in mob execute behavior
                 spawn_mob_system,        // event generated in mob execute behavior
             )
-                .in_set(OnUpdate(states::AppStates::Game))
-                .in_set(OnUpdate(states::GameStates::Playing)),
+                .run_if(in_state(states::AppStates::Game))
+                .run_if(in_state(states::GameStates::Playing)),
         );
     }
 }

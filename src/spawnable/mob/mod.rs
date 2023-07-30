@@ -290,6 +290,7 @@ pub enum JointType {
 }
 
 /// Event for spawning mobs
+#[derive(Event)]
 pub struct SpawnMobEvent {
     /// Type of mob to spawn
     pub mob_type: MobType,

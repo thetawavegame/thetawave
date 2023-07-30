@@ -47,24 +47,35 @@ impl Plugin for RunPlugin {
             .add_event::<LevelCompletedEvent>();
 
         app.add_systems(
-            (setup_first_level.in_set(GameEnterSet::BuildLevel),)
-                .in_schedule(OnEnter(states::AppStates::Game)),
+            OnEnter(states::AppStates::Game),
+            setup_first_level.in_set(GameEnterSet::BuildLevel),
         );
 
         app.add_systems(
+            Update,
             (
                 level_system.in_set(GameUpdateSet::Level),
                 spawn_formation_system.in_set(GameUpdateSet::Spawn),
                 next_level_system.in_set(GameUpdateSet::NextLevel),
             )
-                .in_set(OnUpdate(states::AppStates::Game))
-                .in_set(OnUpdate(states::GameStates::Playing)),
+                .run_if(in_state(states::AppStates::Game))
+                .run_if(in_state(states::GameStates::Playing)),
         );
 
-        app.add_systems((reset_run_system,).in_set(OnUpdate(states::AppStates::GameOver)));
+        app.add_systems(
+            Update,
+            reset_run_system.run_if(in_state(states::AppStates::GameOver)),
+        );
 
-        app.add_systems((reset_run_system,).in_set(OnUpdate(states::AppStates::Victory)));
-        app.add_systems((reset_run_system,).in_set(OnUpdate(states::GameStates::Paused)));
+        app.add_systems(
+            Update,
+            reset_run_system.run_if(in_state(states::AppStates::Victory)),
+        );
+
+        app.add_systems(
+            Update,
+            reset_run_system.run_if(in_state(states::GameStates::Paused)),
+        );
     }
 }
 
