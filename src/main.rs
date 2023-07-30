@@ -31,6 +31,7 @@ mod spawnable;
 mod states;
 mod tools;
 mod ui;
+mod db;
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone, SystemSet)]
 pub enum GameEnterSet {
@@ -137,6 +138,7 @@ fn main() {
     .add_plugins(scanner::ScannerPlugin)
     .add_plugins(animation::AnimationPlugin)
     .add_plugins(states::StatesPlugin)
+    .add_plugins(db::DBPlugin)
     .insert_resource(ClearColor(Color::BLACK))
     .insert_resource(AmbientLight {
         color: Color::WHITE,
