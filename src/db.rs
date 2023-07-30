@@ -1,7 +1,8 @@
+use crate::spawnable::{EnemyMobType, MobDestroyedEvent};
 use crate::states;
 use bevy::prelude::*;
 use dirs::data_dir;
-use rusqlite::{Connection, Error, Result};
+use rusqlite::{params, Connection, Error, Result};
 use std::env::var_os;
 use std::ffi::OsStr;
 use std::path::PathBuf;
@@ -10,6 +11,8 @@ use thiserror::Error;
 const THETAWAVE_DB_PATH_ENVVAR: &'static str = "THETAWAVE_DB_PATH";
 const THETAWAVE_DB_FILE: &'static str = "thetawave.sqlite";
 const USERSTAT: &'static str = "UserStat";
+const ENEMY_KILL_HISTORY_TABLE_NAME: &'static str = "EnemiesKilled";
+
 pub const DEFAULT_USER_ID: isize = 0;
 #[derive(Error, Debug)]
 enum OurDBError {
@@ -46,9 +49,20 @@ pub fn setup_db(conn: Connection) -> Result<()> {
         totalGamesLost INTEGER NOT NULL DEFAULT 0
     )"
     );
-    let res = conn.execute(&create_user_stats_sql, []).map(|_| ());
-    println!("Created sqlite db");
-    res
+
+    let create_enemies_killed_table_sql = format!(
+        "CREATE TABLE IF NOT EXISTS {ENEMY_KILL_HISTORY_TABLE_NAME} (
+        userId INTEGER NOT NULL,
+        enemyMobType VARCHAR(255) NOT NULL,
+        nKilled INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY (userId, enemyMobType)
+    )"
+    );
+    conn.execute(&create_user_stats_sql, []).map(|_| ())?;
+    conn.execute(&create_enemies_killed_table_sql, [])
+        .map(|_| ())?;
+    info!("Created sqlite db");
+    Ok(())
 }
 
 fn get_db() -> Result<Connection, OurDBError> {
@@ -69,18 +83,77 @@ impl Plugin for DBPlugin {
             OnEnter(states::AppStates::GameOver),
             inc_games_played_stat_system,
         );
+        app.add_systems(Update, count_enemies_destroyed_system);
     }
 }
 
 fn db_setup_system() {
     match get_db() {
         Ok(conn) => setup_db(conn).unwrap_or_else(|e| {
-            println!("{e}");
+            error!("{e}");
         }),
         Err(e) => {
-            println!("{e}");
+            error!("{e}");
         }
     };
+}
+
+fn inc_mob_killed_count_for_user(
+    user_id: isize,
+    mob_type: &EnemyMobType,
+) -> Result<(), OurDBError> {
+    let stmt_raw = format!(
+        "
+    INSERT OR REPLACE INTO {ENEMY_KILL_HISTORY_TABLE_NAME} (userId, enemyMobType, nKilled)
+    VALUES (?1,  ?2, 1)
+    ON CONFLICT DO UPDATE SET nKilled=nKilled+1"
+    );
+    let conn = get_db()?;
+    conn.prepare(&stmt_raw)?
+        .execute(params![DEFAULT_USER_ID, mob_type.to_string()])?;
+    Ok(())
+}
+
+fn get_mob_killed_counts_for_user(user_id: isize) -> Result<Vec<(String, isize)>, OurDBError> {
+    let stmt_raw = format!(
+        "
+    SELECT enemyMobType, nKilled FROM  {ENEMY_KILL_HISTORY_TABLE_NAME} 
+    WHERE userId=?1
+    ORDER BY enemyMobType LIMIT 50"
+    );
+    let conn = get_db()?;
+    let mut stmt = conn.prepare(&stmt_raw)?;
+    let rows = stmt.query([user_id])?;
+    rows.mapped(|r| {
+        let a = r.get::<usize, String>(0)?;
+        let b = r.get::<usize, isize>(1)?;
+        Ok((a, b))
+    })
+    .collect::<Result<Vec<(String, isize)>, Error>>()
+    .map_err(OurDBError::from)
+}
+
+pub fn print_mob_kills(user_id: isize) -> String {
+    match get_mob_killed_counts_for_user(user_id) {
+        Ok(mob_kills) => mob_kills
+            .into_iter()
+            .map(|(mobtype, n)| format!("{mobtype}: {n}"))
+            .collect::<Vec<String>>()
+            .join("\n"),
+        Err(e) => {
+            error!("{e}");
+            String::default()
+        }
+    }
+}
+
+fn count_enemies_destroyed_system(mut mob_destroyed_event_reader: EventReader<MobDestroyedEvent>) {
+    for event in mob_destroyed_event_reader.iter() {
+        if let crate::spawnable::MobType::Enemy(enemy_type) = &event.mob_type {
+            inc_mob_killed_count_for_user(DEFAULT_USER_ID, &enemy_type)
+                .unwrap_or_else(|e| error!("Error incrementing mob kill count: {e}"));
+        }
+    }
 }
 
 fn _inc_games_played_stat_impl() -> Result<(), OurDBError> {
@@ -98,7 +171,7 @@ fn inc_games_played_stat_system() {
     match _inc_games_played_stat_impl() {
         Ok(_) => {}
         Err(e) => {
-            println!("{e}");
+            println!("Error updating game stats: {e}");
         }
     };
 }

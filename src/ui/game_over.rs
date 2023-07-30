@@ -6,9 +6,9 @@ use bevy_rapier2d::plugin::RapierConfiguration;
 
 use crate::{
     audio::BackgroundMusicAudioChannel,
+    db::{get_games_lost_count_by_id, print_mob_kills, DEFAULT_USER_ID},
     states::{AppStates, GameOverCleanup},
     ui::BouncingPromptComponent,
-    db::{DEFAULT_USER_ID, get_games_lost_count_by_id},
 };
 
 #[derive(Component)]
@@ -176,26 +176,46 @@ pub fn setup_game_over_system(
                             flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
                             is_active: true,
                         });
-                        parent.spawn(
-                            TextBundle {
-                                style: Style {
-                                    left: Val::Percent(80.0),
-                                    bottom: Val::Percent(5.0),
-                    
-                                    position_type: PositionType::Absolute,
-                                    ..Style::default()
-                                },
-                                text: Text::from_section(
-                                    format!("Games Lost: {}", get_games_lost_count_by_id(DEFAULT_USER_ID)),
-                                    TextStyle {
-                                        font,
-                                        font_size: 18.0,
-                                        color: Color::WHITE,
-                                    },
-                                ),
-                                ..Default::default()
-                            }
-                        );
+                    parent.spawn(TextBundle {
+                        style: Style {
+                            left: Val::Percent(80.0),
+                            bottom: Val::Percent(5.0),
+
+                            position_type: PositionType::Absolute,
+                            ..Style::default()
+                        },
+                        text: Text::from_section(
+                            format!(
+                                "Games Lost: {}",
+                                get_games_lost_count_by_id(DEFAULT_USER_ID)
+                            ),
+                            TextStyle {
+                                font: font.clone(),
+                                font_size: 18.0,
+                                color: Color::WHITE,
+                            },
+                        ),
+                        ..Default::default()
+                    });
+
+                    parent.spawn(TextBundle {
+                        style: Style {
+                            left: Val::Percent(20.0),
+                            bottom: Val::Percent(50.0),
+
+                            position_type: PositionType::Absolute,
+                            ..Style::default()
+                        },
+                        text: Text::from_section(
+                            format!("Enemies destroyed:\n {}", print_mob_kills(DEFAULT_USER_ID)),
+                            TextStyle {
+                                font,
+                                font_size: 18.0,
+                                color: Color::WHITE,
+                            },
+                        ),
+                        ..Default::default()
+                    });
                 });
         });
 }
