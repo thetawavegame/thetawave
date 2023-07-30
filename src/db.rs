@@ -9,6 +9,7 @@ use std::path::PathBuf;
 const THETAWAVE_DB_PATH_ENVVAR: &'static str = "THETAWAVE_DB_PATH";
 const THETAWAVE_DB_FILE: &'static str = "thetawave.sqlite";
 const USERSTAT: &'static str = "UserStat";
+pub const DEFAULT_USER_ID: isize = 0;
 
 fn default_db_path() -> PathBuf {
     let data_dir = data_dir().unwrap();
@@ -62,5 +63,21 @@ pub fn inc_games_played_stat_system() {
     ON CONFLICT DO UPDATE SET totalGamesLost=totalGamesLost+?2"
     );
     let conn = get_db().unwrap();
-    conn.prepare(&stmt_raw).unwrap().execute([0, 1]).unwrap();
+    conn.prepare(&stmt_raw).unwrap().execute([DEFAULT_USER_ID, 1]).unwrap();
+}
+fn _get_games_lost_count_by_id(user_id: isize) -> Result<isize>{
+    let conn = get_db()?;
+    let stmt_raw = format!(
+        "
+    SELECT totalGamesLost FROM  {USERSTAT} 
+    WHERE userId=?1"
+    );
+    let mut stmt = conn.prepare(&stmt_raw)?;
+    let mut rows = stmt.query([user_id])?;
+    let maybe_row = rows.next()?;
+    maybe_row.unwrap().get(0)
+}
+
+pub fn get_games_lost_count_by_id(user_id: isize) -> isize{
+    _get_games_lost_count_by_id(user_id).unwrap_or(0)
 }
