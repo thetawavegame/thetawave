@@ -7,6 +7,7 @@ use bevy_rapier2d::prelude::*;
 use crate::{
     assets::GameAudioAssets,
     audio,
+    game::CurrentGameMetrics,
     player::{PlayerComponent, PlayerInput, PlayersResource},
     spawnable::{InitialMotion, SpawnProjectileEvent},
 };
@@ -26,7 +27,7 @@ pub fn player_fire_weapon_system(
     gamepad_input: Res<Input<GamepadButton>>,
     mouse_input: Res<Input<MouseButton>>,
     keyboard_input: Res<Input<KeyCode>>,
-    mut player_query: Query<(&mut PlayerComponent, &Velocity, &Transform)>,
+    mut player_query: Query<(&mut PlayerComponent, &Velocity, &Transform, Entity)>,
     time: Res<Time>,
     mut spawn_projectile: EventWriter<SpawnProjectileEvent>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
@@ -51,7 +52,7 @@ pub fn player_fire_weapon_system(
         })
         .collect();
 
-    for (mut player_component, rb_vels, transform) in player_query.iter_mut() {
+    for (mut player_component, rb_vels, transform, entity) in player_query.iter_mut() {
         // check if player matches input
         let player_input = players_resource.player_inputs[player_component.player_index]
             .clone()
@@ -94,6 +95,7 @@ pub fn player_fire_weapon_system(
                 health: None,
                 despawn_time: player_component.projectile_despawn_time,
                 initial_motion,
+                source: entity,
             });
 
             // play firing blast sound effect

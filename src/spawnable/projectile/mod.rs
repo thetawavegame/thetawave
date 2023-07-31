@@ -35,6 +35,7 @@ pub struct SpawnProjectileEvent {
     pub initial_motion: InitialMotion,
     /// Optional health of the projectile
     pub health: Option<Health>,
+    pub source: Entity,
 }
 
 /// Core component for projectiles

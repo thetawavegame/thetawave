@@ -135,6 +135,7 @@ pub fn mob_execute_behavior_system(
                                 health: projectile_spawner.health.clone(),
                                 despawn_time: projectile_spawner.despawn_time,
                                 initial_motion: modified_initial_motion,
+                                source: entity,
                             });
                         }
                     }
