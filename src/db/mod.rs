@@ -1,13 +1,6 @@
-use self::user_stats::get_mob_killed_counts_for_user;
-
+/// CRUD operations to persist data to disk so that it can be safely+portably retrieved across user sessions and
+/// thetawave releases. There are public functions to read data (exposing as few db implementation details as possible),
+/// while all upserts/mutations/deletions are handled via a Bevy plugin.
 pub mod core;
 pub mod plugin;
 pub mod user_stats;
-
-pub fn print_mob_kills(user_id: isize) -> String {
-    get_mob_killed_counts_for_user(user_id)
-        .into_iter()
-        .map(|(mobtype, n)| format!("{mobtype}: {n}"))
-        .collect::<Vec<String>>()
-        .join("\n")
-}

@@ -8,8 +8,7 @@ use crate::{
     audio::BackgroundMusicAudioChannel,
     db::{
         core::DEFAULT_USER_ID,
-        print_mob_kills,
-        user_stats::{get_games_lost_count_by_id, get_user_stats},
+        user_stats::{get_games_lost_count_by_id, get_mob_killed_counts_for_user, get_user_stats},
     },
     game::CurrentGameMetrics,
     states::{AppStates, GameOverCleanup},
@@ -111,6 +110,14 @@ pub fn game_over_fade_in_system(
             color.0.set_a(1.0);
         }
     }
+}
+
+fn pprint_mob_kills(user_id: isize) -> String {
+    get_mob_killed_counts_for_user(user_id)
+        .into_iter()
+        .map(|(mobtype, n)| format!("{mobtype}: {n}"))
+        .collect::<Vec<String>>()
+        .join("\n")
 }
 
 pub fn setup_game_over_system(
@@ -219,7 +226,7 @@ pub fn setup_game_over_system(
                         text: Text::from_section(
                             format!(
                                 "Enemies destroyed in previous games:\n{}",
-                                print_mob_kills(DEFAULT_USER_ID)
+                                pprint_mob_kills(DEFAULT_USER_ID)
                             ),
                             TextStyle {
                                 font: font.clone(),
