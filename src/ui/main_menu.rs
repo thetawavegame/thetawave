@@ -41,7 +41,7 @@ pub fn setup_main_menu_system(
                 .spawn(ImageBundle {
                     image: asset_server
                         .load("texture/main_menu_background_54.png")
-                        .into(), // not using assetsmanager as we don't load everything on the main menu
+                        .into(),
                     style: Style {
                         width: Val::Percent(100.),
                         height: Val::Percent(100.),

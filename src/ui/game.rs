@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use bevy::{
-    diagnostic::{Diagnostics, DiagnosticsStore, FrameTimeDiagnosticsPlugin},
+    diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin},
     prelude::*,
 };
 
@@ -65,18 +65,10 @@ pub fn setup_game_ui_system(
     commands
         .spawn(NodeBundle {
             style: Style {
-                /*
-                size: Size {
-                    width: Val::Px(800.0),
-                    height: Val::Px(30.0),
-                },
-                */
                 width: Val::Px(800.0),
                 height: Val::Px(30.0),
-
                 left: Val::Percent(19.0),
                 bottom: Val::Percent(2.0),
-
                 position_type: PositionType::Absolute,
                 ..Style::default()
             },
@@ -92,7 +84,6 @@ pub fn setup_game_ui_system(
             style: Style {
                 left: Val::Percent(42.5),
                 bottom: Val::Percent(1.7),
-
                 position_type: PositionType::Absolute,
                 ..default()
             },
@@ -106,18 +97,10 @@ pub fn setup_game_ui_system(
     commands
         .spawn(NodeBundle {
             style: Style {
-                /*
-                size: Size {
-                    width: Val::Px(80.0),
-                    height: Val::Px(15.0),
-                },
-                */
                 width: Val::Px(80.0),
                 height: Val::Px(15.0),
-
                 left: Val::Percent(1.5),
                 bottom: Val::Percent(65.0),
-
                 position_type: PositionType::Absolute,
                 ..Style::default()
             },
@@ -134,7 +117,6 @@ pub fn setup_game_ui_system(
             style: Style {
                 left: Val::Percent(0.3),
                 bottom: Val::Percent(63.0),
-
                 position_type: PositionType::Absolute,
                 ..default()
             },
@@ -152,7 +134,6 @@ pub fn setup_game_ui_system(
             style: Style {
                 left: Val::Percent(1.5),
                 bottom: Val::Percent(65.0),
-
                 position_type: PositionType::Absolute,
                 ..default()
             },
@@ -171,18 +152,10 @@ pub fn setup_game_ui_system(
     commands
         .spawn(NodeBundle {
             style: Style {
-                /*
-                size: Size {
-                    width: Val::Px(15.0),
-                    height: Val::Px(200.0),
-                },
-                */
                 width: Val::Px(15.0),
                 height: Val::Px(200.0),
-
                 left: Val::Percent(3.5),
                 bottom: Val::Percent(67.0),
-
                 position_type: PositionType::Absolute,
                 ..Style::default()
             },
@@ -196,18 +169,10 @@ pub fn setup_game_ui_system(
     commands
         .spawn(NodeBundle {
             style: Style {
-                /*
-                size: Size {
-                    width: Val::Px(15.0),
-                    height: Val::Px(200.0),
-                },
-                */
                 width: Val::Px(15.0),
                 height: Val::Px(200.0),
-
                 left: Val::Percent(4.5),
                 bottom: Val::Percent(67.0),
-
                 position_type: PositionType::Absolute,
                 ..Style::default()
             },
@@ -230,7 +195,6 @@ pub fn setup_game_ui_system(
             style: Style {
                 left: Val::Percent(3.5),
                 bottom: Val::Percent(71.5),
-
                 position_type: PositionType::Absolute,
                 ..default()
             },
@@ -245,13 +209,10 @@ pub fn setup_game_ui_system(
         .spawn(ImageBundle {
             image: asset_server.load("texture/armor_spritesheet.png").into(),
             style: Style {
-                //size: Size::new(Val::Px(10.0), Val::Px(10.0)),
                 width: Val::Px(10.0),
                 height: Val::Px(10.0),
-
                 left: Val::Percent(4.2),
                 bottom: Val::Percent(90.0),
-
                 position_type: PositionType::Absolute,
                 ..default()
             },
@@ -270,7 +231,6 @@ pub fn setup_game_ui_system(
             style: Style {
                 left: Val::Percent(4.5),
                 bottom: Val::Percent(55.0),
-
                 position_type: PositionType::Absolute,
                 ..default()
             },
@@ -287,7 +247,6 @@ pub fn setup_game_ui_system(
             style: Style {
                 left: Val::Percent(4.5),
                 bottom: Val::Percent(55.0),
-
                 position_type: PositionType::Absolute,
                 ..default()
             },
@@ -307,7 +266,6 @@ pub fn setup_game_ui_system(
             style: Style {
                 left: Val::Percent(3.0),
                 bottom: Val::Percent(49.0),
-
                 position_type: PositionType::Absolute,
                 ..default()
             },
@@ -323,18 +281,10 @@ pub fn setup_game_ui_system(
         commands
             .spawn(NodeBundle {
                 style: Style {
-                    /*
-                    size: Size {
-                        width: Val::Px(80.0),
-                        height: Val::Px(15.0),
-                    },
-                    */
                     width: Val::Px(80.0),
                     height: Val::Px(15.0),
-
                     left: Val::Percent(91.5),
                     bottom: Val::Percent(65.0),
-
                     position_type: PositionType::Absolute,
                     ..Style::default()
                 },
@@ -351,7 +301,6 @@ pub fn setup_game_ui_system(
                 style: Style {
                     left: Val::Percent(90.5),
                     bottom: Val::Percent(63.0),
-
                     position_type: PositionType::Absolute,
                     ..default()
                 },
@@ -369,7 +318,6 @@ pub fn setup_game_ui_system(
                 style: Style {
                     left: Val::Percent(91.5),
                     bottom: Val::Percent(65.0),
-
                     position_type: PositionType::Absolute,
                     ..default()
                 },
@@ -388,18 +336,10 @@ pub fn setup_game_ui_system(
         commands
             .spawn(NodeBundle {
                 style: Style {
-                    /*
-                    size: Size {
-                        width: Val::Px(15.0),
-                        height: Val::Px(200.0),
-                    },
-                    */
                     width: Val::Px(15.0),
                     height: Val::Px(200.0),
-
                     left: Val::Percent(94.5),
                     bottom: Val::Percent(67.0),
-
                     position_type: PositionType::Absolute,
                     ..Style::default()
                 },
@@ -413,18 +353,10 @@ pub fn setup_game_ui_system(
         commands
             .spawn(NodeBundle {
                 style: Style {
-                    /*
-                    size: Size {
-                        width: Val::Px(15.0),
-                        height: Val::Px(200.0),
-                    },
-                    */
                     width: Val::Px(15.0),
                     height: Val::Px(200.0),
-
                     left: Val::Percent(93.5),
                     bottom: Val::Percent(67.0),
-
                     position_type: PositionType::Absolute,
                     ..Style::default()
                 },
@@ -447,7 +379,6 @@ pub fn setup_game_ui_system(
                 style: Style {
                     left: Val::Percent(94.5),
                     bottom: Val::Percent(71.5),
-
                     position_type: PositionType::Absolute,
                     ..default()
                 },
@@ -462,13 +393,10 @@ pub fn setup_game_ui_system(
             .spawn(ImageBundle {
                 image: asset_server.load("texture/armor_spritesheet.png").into(),
                 style: Style {
-                    //size: Size::new(Val::Px(10.0), Val::Px(10.0)),
                     width: Val::Px(10.0),
                     height: Val::Px(10.0),
-
                     left: Val::Percent(94.3),
                     bottom: Val::Percent(90.0),
-
                     position_type: PositionType::Absolute,
                     ..default()
                 },
@@ -487,7 +415,6 @@ pub fn setup_game_ui_system(
                 style: Style {
                     left: Val::Percent(93.5),
                     bottom: Val::Percent(55.0),
-
                     position_type: PositionType::Absolute,
                     ..default()
                 },
@@ -504,7 +431,6 @@ pub fn setup_game_ui_system(
                 style: Style {
                     left: Val::Percent(93.5),
                     bottom: Val::Percent(55.0),
-
                     position_type: PositionType::Absolute,
                     ..default()
                 },
@@ -524,7 +450,6 @@ pub fn setup_game_ui_system(
                 style: Style {
                     left: Val::Percent(92.5),
                     bottom: Val::Percent(49.0),
-
                     position_type: PositionType::Absolute,
                     ..default()
                 },
@@ -537,6 +462,7 @@ pub fn setup_game_ui_system(
     }
 }
 
+#[allow(dead_code)]
 pub fn setup_fps_ui_system(mut commands: Commands, asset_server: ResMut<AssetServer>) {
     // setup font
     let font = asset_server.load("fonts/SpaceMadness.ttf");
@@ -564,6 +490,7 @@ pub fn setup_fps_ui_system(mut commands: Commands, asset_server: ResMut<AssetSer
         .insert(FPSUI);
 }
 
+#[allow(dead_code)]
 pub fn fps_system(diagnostics: Res<DiagnosticsStore>, mut query: Query<&mut Text, With<FPSUI>>) {
     let mut text = query.single_mut();
 

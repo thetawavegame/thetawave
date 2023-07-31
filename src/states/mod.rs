@@ -195,6 +195,7 @@ pub fn clear_state_system<T: Component>(
     }
 }
 
+#[allow(dead_code)]
 pub fn unload_game_assets(mut commands: Commands) {
     commands.remove_resource::<assets::PlayerAssets>();
     commands.remove_resource::<assets::ProjectileAssets>();

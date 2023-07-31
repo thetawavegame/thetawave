@@ -118,7 +118,6 @@ pub fn setup_game_over_system(
     commands
         .spawn(NodeBundle {
             style: Style {
-                //size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
                 width: Val::Percent(100.0),
                 height: Val::Percent(100.0),
                 ..Default::default()
@@ -133,9 +132,8 @@ pub fn setup_game_over_system(
                 .spawn(ImageBundle {
                     image: asset_server
                         .load("texture/game_over_background_54.png")
-                        .into(), // not using assetsmanager as we don't load everything on the main menu
+                        .into(),
                     style: Style {
-                        //size: Size::new(Val::Percent(100.), Val::Percent(100.)),
                         width: Val::Percent(100.0),
                         height: Val::Percent(100.0),
                         align_items: AlignItems::Center,
@@ -156,7 +154,6 @@ pub fn setup_game_over_system(
                                 })
                                 .into(),
                             style: Style {
-                                //size: Size::new(Val::Px(400.0), Val::Px(100.0)),
                                 width: Val::Px(400.0),
                                 height: Val::Px(100.0),
                                 margin: UiRect {

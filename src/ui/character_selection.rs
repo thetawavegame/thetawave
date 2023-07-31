@@ -48,7 +48,6 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
     commands
         .spawn(NodeBundle {
             style: Style {
-                //size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
                 width: Val::Percent(100.0),
                 height: Val::Percent(100.0),
                 ..Default::default()
@@ -64,7 +63,6 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                         .load("texture/character_selection_54.png")
                         .into(),
                     style: Style {
-                        //size: Size::new(Val::Percent(100.), Val::Percent(100.)),
                         width: Val::Percent(100.0),
                         height: Val::Percent(100.0),
                         align_items: AlignItems::Center,
@@ -76,7 +74,6 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                     parent
                         .spawn(NodeBundle {
                             style: Style {
-                                //size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
                                 width: Val::Percent(100.0),
                                 height: Val::Percent(100.0),
                                 flex_direction: FlexDirection::Column,
@@ -89,7 +86,6 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                             parent
                                 .spawn(NodeBundle {
                                     style: Style {
-                                        //size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
                                         width: Val::Percent(100.0),
                                         height: Val::Percent(100.0),
                                         margin: UiRect {
@@ -112,13 +108,11 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                                 })
                                                 .into(),
                                             style: Style {
-                                                //size: Size::new(Val::Px(400.0), Val::Px(100.0)),
                                                 width: Val::Px(400.0),
                                                 height: Val::Px(100.0),
                                                 margin: UiRect {
                                                     right: Val::Auto,
                                                     left: Val::Auto,
-                                                    //top: Val::Percent(65.0),
                                                     ..Default::default()
                                                 },
                                                 ..Default::default()
@@ -144,7 +138,6 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                                     ..Default::default()
                                                 },
                                                 flex_direction: FlexDirection::Row,
-                                                //size: Size::new(Val::Px(400.0), Val::Px(100.0)),
                                                 width: Val::Px(400.0),
                                                 height: Val::Px(100.0),
                                                 ..Default::default()
@@ -160,18 +153,11 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                                         .into(),
                                                     background_color: BackgroundColor(Color::WHITE),
                                                     style: Style {
-                                                        /*
-                                                        size: Size::new(
-                                                            Val::Px(18.0 * 5.0),
-                                                            Val::Px(18.0 * 5.0),
-                                                        ),
-                                                        */
                                                         width: Val::Px(18.0 * 5.0),
                                                         height: Val::Px(18.0 * 5.0),
                                                         margin: UiRect {
                                                             right: Val::Auto,
                                                             left: Val::Auto,
-                                                            //top: Val::Percent(65.0),
                                                             ..Default::default()
                                                         },
                                                         ..Default::default()
@@ -199,18 +185,11 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                                         Color::DARK_GRAY,
                                                     ),
                                                     style: Style {
-                                                        /*
-                                                        size: Size::new(
-                                                            Val::Px(18.0 * 5.0),
-                                                            Val::Px(18.0 * 5.0),
-                                                        ),
-                                                        */
                                                         width: Val::Px(18.0 * 5.0),
                                                         height: Val::Px(18.0 * 5.0),
                                                         margin: UiRect {
                                                             right: Val::Auto,
                                                             left: Val::Auto,
-                                                            //top: Val::Percent(65.0),
                                                             ..Default::default()
                                                         },
                                                         ..Default::default()
@@ -240,13 +219,11 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                                 })
                                                 .into(),
                                             style: Style {
-                                                //size: Size::new(Val::Px(400.0), Val::Px(100.0)),
                                                 width: Val::Px(400.0),
                                                 height: Val::Px(100.0),
                                                 margin: UiRect {
                                                     right: Val::Auto,
                                                     left: Val::Auto,
-                                                    //top: Val::Percent(65.0),
                                                     ..Default::default()
                                                 },
                                                 ..Default::default()
@@ -272,7 +249,6 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                                     ..Default::default()
                                                 },
                                                 flex_direction: FlexDirection::Row,
-                                                //size: Size::new(Val::Px(400.0), Val::Px(100.0)),
                                                 width: Val::Px(400.0),
                                                 height: Val::Px(100.0),
                                                 ..Default::default()
@@ -288,18 +264,11 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                                         .into(),
                                                     background_color: BackgroundColor(Color::WHITE),
                                                     style: Style {
-                                                        /*
-                                                        size: Size::new(
-                                                            Val::Px(18.0 * 5.0),
-                                                            Val::Px(18.0 * 5.0),
-                                                        ),
-                                                        */
                                                         width: Val::Px(18.0 * 5.0),
                                                         height: Val::Px(18.0 * 5.0),
                                                         margin: UiRect {
                                                             right: Val::Auto,
                                                             left: Val::Auto,
-                                                            //top: Val::Percent(65.0),
                                                             ..Default::default()
                                                         },
                                                         ..Default::default()
@@ -327,18 +296,11 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                                         Color::DARK_GRAY,
                                                     ),
                                                     style: Style {
-                                                        /*
-                                                        size: Size::new(
-                                                            Val::Px(18.0 * 5.0),
-                                                            Val::Px(18.0 * 5.0),
-                                                        ),
-                                                        */
                                                         width: Val::Px(18.0 * 5.0),
                                                         height: Val::Px(18.0 * 5.0),
                                                         margin: UiRect {
                                                             right: Val::Auto,
                                                             left: Val::Auto,
-                                                            //top: Val::Percent(65.0),
                                                             ..Default::default()
                                                         },
                                                         ..Default::default()
@@ -362,7 +324,6 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                             parent
                                 .spawn(NodeBundle {
                                     style: Style {
-                                        //size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
                                         width: Val::Percent(100.0),
                                         height: Val::Percent(100.0),
                                         margin: UiRect {
@@ -380,13 +341,11 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                                 .load("texture/captain_description.png")
                                                 .into(),
                                             style: Style {
-                                                //size: Size::new(Val::Px(400.0), Val::Px(300.0)),
                                                 width: Val::Px(400.0),
                                                 height: Val::Px(300.0),
                                                 margin: UiRect {
                                                     right: Val::Auto,
                                                     left: Val::Auto,
-                                                    //top: Val::Percent(65.0),
                                                     ..Default::default()
                                                 },
                                                 display: Display::None,
@@ -405,13 +364,11 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                                 .load("texture/juggernaut_description.png")
                                                 .into(),
                                             style: Style {
-                                                //size: Size::new(Val::Px(400.0), Val::Px(300.0)),
                                                 width: Val::Px(400.0),
                                                 height: Val::Px(300.0),
                                                 margin: UiRect {
                                                     right: Val::Auto,
                                                     left: Val::Auto,
-                                                    //top: Val::Percent(65.0),
                                                     ..Default::default()
                                                 },
                                                 display: Display::None,
@@ -430,13 +387,11 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                                 .load("texture/blank_description.png")
                                                 .into(),
                                             style: Style {
-                                                //size: Size::new(Val::Px(400.0), Val::Px(300.0)),
                                                 width: Val::Px(400.0),
                                                 height: Val::Px(300.0),
                                                 margin: UiRect {
                                                     right: Val::Auto,
                                                     left: Val::Auto,
-                                                    //top: Val::Percent(65.0),
                                                     ..Default::default()
                                                 },
                                                 display: Display::None,
@@ -453,13 +408,11 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                                 .load("texture/captain_description.png")
                                                 .into(),
                                             style: Style {
-                                                //size: Size::new(Val::Px(400.0), Val::Px(300.0)),
                                                 width: Val::Px(400.0),
                                                 height: Val::Px(300.0),
                                                 margin: UiRect {
                                                     right: Val::Auto,
                                                     left: Val::Auto,
-                                                    //top: Val::Percent(65.0),
                                                     ..Default::default()
                                                 },
                                                 display: Display::None,
@@ -478,13 +431,11 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                                 .load("texture/juggernaut_description.png")
                                                 .into(),
                                             style: Style {
-                                                //size: Size::new(Val::Px(400.0), Val::Px(300.0)),
                                                 width: Val::Px(400.0),
                                                 height: Val::Px(300.0),
                                                 margin: UiRect {
                                                     right: Val::Auto,
                                                     left: Val::Auto,
-                                                    //top: Val::Percent(65.0),
                                                     ..Default::default()
                                                 },
                                                 display: Display::None,
@@ -503,13 +454,11 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                                 .load("texture/blank_description.png")
                                                 .into(),
                                             style: Style {
-                                                //size: Size::new(Val::Px(400.0), Val::Px(300.0)),
                                                 width: Val::Px(400.0),
                                                 height: Val::Px(300.0),
                                                 margin: UiRect {
                                                     right: Val::Auto,
                                                     left: Val::Auto,
-                                                    //top: Val::Percent(65.0),
                                                     ..Default::default()
                                                 },
                                                 display: Display::None,
@@ -530,17 +479,14 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                         })
                                         .into(),
                                     style: Style {
-                                        //size: Size::new(Val::Px(400.0), Val::Px(100.0)),
                                         width: Val::Px(400.0),
                                         height: Val::Px(100.0),
                                         margin: UiRect {
                                             left: Val::Auto,
                                             right: Val::Auto,
                                             bottom: Val::Percent(2.0),
-                                            //top: Val::Percent(65.0),
                                             ..Default::default()
                                         },
-                                        //align_content: AlignContent::Center,
                                         ..Default::default()
                                     },
                                     visibility: Visibility::Hidden,
@@ -559,8 +505,8 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
 /// Handles players joining the game
 pub fn player_join_system(
     gamepads: Res<Gamepads>,
-    mut keyboard_input: ResMut<Input<KeyCode>>,
-    mut gamepad_input: ResMut<Input<GamepadButton>>,
+    keyboard_input: Res<Input<KeyCode>>,
+    gamepad_input: Res<Input<GamepadButton>>,
     mut players_resource: ResMut<PlayersResource>,
     mut start_game_prompt: Query<&mut Visibility, With<StartGamePrompt>>,
     mut ui_queries: ParamSet<(

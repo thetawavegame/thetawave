@@ -176,10 +176,8 @@ fn apply_effects_on_impact(
                                 }
                                 ConsumableEffect::GainDefense(defense) => {
                                     if let Some(level) = &mut run_resource.level {
-                                        if let ObjectiveType::Defense(health) = &mut level.objective
-                                        {
-                                            health.heal(*defense);
-                                        }
+                                        let ObjectiveType::Defense(health) = &mut level.objective;
+                                        health.heal(*defense);
                                     }
                                 }
                                 ConsumableEffect::GainArmor(armor) => {

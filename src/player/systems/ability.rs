@@ -199,7 +199,6 @@ pub fn player_ability_system(
                         projectile_type: player_component.projectile_type.clone(),
                         transform: projectile_transform,
                         damage: player_component.attack_damage * multiplier,
-                        health: None,
                         despawn_time: player_component.projectile_despawn_time,
                         initial_motion,
                     });

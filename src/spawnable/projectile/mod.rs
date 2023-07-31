@@ -7,7 +7,6 @@ use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::ProjectileAssets,
     game::GameParametersResource,
-    misc::Health,
     spawnable::InitialMotion,
     spawnable::{ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType},
     states::GameCleanup,
@@ -33,8 +32,6 @@ pub struct SpawnProjectileEvent {
     pub despawn_time: f32,
     /// Initial motion of the projectile
     pub initial_motion: InitialMotion,
-    /// Optional health of the projectile
-    pub health: Option<Health>,
 }
 
 /// Core component for projectiles
@@ -91,7 +88,6 @@ pub fn spawn_projectile_system(
             &projectile_assets,
             event.transform,
             event.damage,
-            event.health.clone(),
             event.despawn_time,
             event.initial_motion.clone(),
             &mut commands,
@@ -108,7 +104,6 @@ pub fn spawn_projectile(
     projectile_assets: &ProjectileAssets,
     transform: Transform,
     damage: f32,
-    health: Option<Health>,
     despawn_time: f32, // time before despawning
     initial_motion: InitialMotion,
     commands: &mut Commands,

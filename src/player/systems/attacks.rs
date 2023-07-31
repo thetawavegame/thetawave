@@ -91,7 +91,6 @@ pub fn player_fire_weapon_system(
                 projectile_type: player_component.projectile_type.clone(),
                 transform: projectile_transform,
                 damage: player_component.attack_damage,
-                health: None,
                 despawn_time: player_component.projectile_despawn_time,
                 initial_motion,
             });

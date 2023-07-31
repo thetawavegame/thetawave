@@ -132,7 +132,6 @@ pub fn mob_execute_behavior_system(
                                 projectile_type: projectile_spawner.projectile_type.clone(),
                                 transform: projectile_transform,
                                 damage: attack_damage,
-                                health: projectile_spawner.health.clone(),
                                 despawn_time: projectile_spawner.despawn_time,
                                 initial_motion: modified_initial_motion,
                             });
