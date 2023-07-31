@@ -20,3 +20,9 @@ pub struct GameParametersResource {
 
     pub player_spawn_distance: f32,
 }
+
+/// Stats about the ongoing game. Reinitialized for each new game (e.x. after each game over).
+#[derive(Resource, Default)]
+pub struct CurrentGameMetrics {
+    pub n_shots_fired: usize,
+}
