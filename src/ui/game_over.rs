@@ -6,7 +6,7 @@ use bevy_rapier2d::plugin::RapierConfiguration;
 
 use crate::{
     audio::BackgroundMusicAudioChannel,
-    db::{get_games_lost_count_by_id, print_mob_kills, DEFAULT_USER_ID},
+    db::{core::DEFAULT_USER_ID, print_mob_kills, user_stats::get_games_lost_count_by_id},
     states::{AppStates, GameOverCleanup},
     ui::BouncingPromptComponent,
 };

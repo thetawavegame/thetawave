@@ -138,7 +138,7 @@ fn main() {
     .add_plugins(scanner::ScannerPlugin)
     .add_plugins(animation::AnimationPlugin)
     .add_plugins(states::StatesPlugin)
-    .add_plugins(db::DBPlugin)
+    .add_plugins(db::plugin::DBPlugin)
     .insert_resource(ClearColor(Color::BLACK))
     .insert_resource(AmbientLight {
         color: Color::WHITE,
