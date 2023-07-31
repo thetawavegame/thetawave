@@ -39,6 +39,13 @@ fn default_db_path() -> Result<PathBuf, OurDBError> {
     std::fs::create_dir_all(&game_data_dir)?;
     Ok(game_data_dir.join(THETAWAVE_DB_FILE))
 }
+/// The 'model' of the UserStat Sqlite table.
+#[derive(Debug, Default)]
+pub struct UserStat {
+    pub user_id: usize,
+    pub total_shots_fired: usize,
+    pub total_games_lost: usize,
+}
 pub(super) fn setup_db(conn: Connection) -> Result<()> {
     let create_user_stats_sql = format!(
         "CREATE TABLE IF NOT EXISTS {USERSTAT} (
