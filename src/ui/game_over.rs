@@ -6,7 +6,11 @@ use bevy_rapier2d::plugin::RapierConfiguration;
 
 use crate::{
     audio::BackgroundMusicAudioChannel,
-    db::{core::DEFAULT_USER_ID, print_mob_kills, user_stats::get_games_lost_count_by_id},
+    db::{
+        core::DEFAULT_USER_ID,
+        user_stats::{get_games_lost_count_by_id, get_mob_killed_counts_for_user, get_user_stats},
+    },
+    game::CurrentGameMetrics,
     states::{AppStates, GameOverCleanup},
     ui::BouncingPromptComponent,
 };
@@ -108,11 +112,24 @@ pub fn game_over_fade_in_system(
     }
 }
 
+fn pprint_mob_kills(user_id: isize) -> String {
+    get_mob_killed_counts_for_user(user_id)
+        .into_iter()
+        .map(|(mobtype, n)| format!("{mobtype}: {n}"))
+        .collect::<Vec<String>>()
+        .join("\n")
+}
+
 pub fn setup_game_over_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
+    current_game_metrics: Res<CurrentGameMetrics>,
 ) {
+    let total_shots_fired_in_previous_games = match get_user_stats(DEFAULT_USER_ID) {
+        Some(stat) => stat.total_shots_fired,
+        None => 0,
+    };
     audio_channel
         .stop()
         .fade_out(AudioTween::linear(Duration::from_secs_f32(5.0)));
@@ -207,7 +224,32 @@ pub fn setup_game_over_system(
                             ..Style::default()
                         },
                         text: Text::from_section(
-                            format!("Enemies destroyed:\n {}", print_mob_kills(DEFAULT_USER_ID)),
+                            format!(
+                                "Enemies destroyed in previous games:\n{}",
+                                pprint_mob_kills(DEFAULT_USER_ID)
+                            ),
+                            TextStyle {
+                                font: font.clone(),
+                                font_size: 18.0,
+                                color: Color::WHITE,
+                            },
+                        ),
+                        ..Default::default()
+                    });
+                    parent.spawn(TextBundle {
+                        style: Style {
+                            right: Val::Percent(20.0),
+                            bottom: Val::Percent(50.0),
+
+                            position_type: PositionType::Absolute,
+                            ..Style::default()
+                        },
+                        text: Text::from_section(
+                            format!(
+                                "Shots fired this game: {}\nShots fired in previous games: {}",
+                                current_game_metrics.n_shots_fired,
+                                total_shots_fired_in_previous_games
+                            ),
                             TextStyle {
                                 font,
                                 font_size: 18.0,
