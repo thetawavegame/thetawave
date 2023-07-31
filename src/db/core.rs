@@ -20,6 +20,8 @@ pub(super) enum OurDBError {
     SqliteError(Error),
     #[error("Failed to access sqlite file: {0}")]
     LocalFilesystemError(std::io::Error),
+    #[error("Internal database error. Please report as a bug. {0}")]
+    InternalError(String),
 }
 impl From<Error> for OurDBError {
     fn from(value: Error) -> Self {
