@@ -1,7 +1,9 @@
 use crate::db::core::{get_db, OurDBError, ENEMY_KILL_HISTORY_TABLE_NAME, USERSTAT};
 use crate::spawnable::EnemyMobType;
-use bevy::prelude::error;
+use bevy::prelude::{error, info};
 use rusqlite::{params, Error, Result};
+
+use super::core::UserStat;
 pub(super) fn inc_games_played_stat(user_id: isize) -> Result<(), OurDBError> {
     let stmt_raw = format!(
         "
@@ -11,6 +13,26 @@ pub(super) fn inc_games_played_stat(user_id: isize) -> Result<(), OurDBError> {
     );
     let conn = get_db()?;
     conn.prepare(&stmt_raw)?.execute([user_id, 1])?;
+    Ok(())
+}
+
+pub(super) fn inc_n_shots_fired_for_user_id(
+    user_id: isize,
+    n_shots: usize,
+) -> Result<(), OurDBError> {
+    let stmt_raw = format!(
+        "
+    INSERT OR REPLACE INTO {USERSTAT} (userId, totalShotsFired)
+    VALUES (?1,  ?2)
+    ON CONFLICT DO UPDATE SET totalShotsFired=totalShotsFired+?2"
+    );
+    let conn = get_db()?;
+    info!(
+        "Preparing db upsert {} with param n_shots={}",
+        &stmt_raw, n_shots
+    );
+    conn.prepare(&stmt_raw)?
+        .execute(params![user_id, n_shots])?;
     Ok(())
 }
 fn _get_games_lost_count_by_id(user_id: isize) -> Result<isize, OurDBError> {
@@ -25,6 +47,45 @@ fn _get_games_lost_count_by_id(user_id: isize) -> Result<isize, OurDBError> {
     match rows.next()? {
         Some(r) => r.get(0).map_err(OurDBError::from),
         None => Ok(0),
+    }
+}
+
+fn _get_user_stats(user_id: isize) -> Result<UserStat, OurDBError> {
+    let conn = get_db()?;
+    let stmt_raw = format!(
+        "
+    SELECT userId, totalGamesLost, totalShotsFired FROM  {USERSTAT} 
+    WHERE userId=?1"
+    );
+    let mut stmt = conn.prepare(&stmt_raw)?;
+    let mut rows = stmt.query([user_id])?;
+    match rows.next()? {
+        Some(r) => {
+            let user_id: usize = r.get(0)?;
+            let total_games_lost = r.get(1)?;
+            let total_shots_fired = r.get(2)?;
+            Ok(UserStat {
+                user_id,
+                total_games_lost,
+                total_shots_fired,
+            })
+        }
+
+        None => Err(OurDBError::InternalError(String::from("User not found"))),
+    }
+}
+
+/// Returns the user stats for games that have already been completed and flushed to the db.
+pub fn get_user_stats(user_id: isize) -> Option<UserStat> {
+    match _get_user_stats(user_id) {
+        Err(err) => {
+            error!(
+                "Could not read user stats. Falling back to zeroed out defaults. {}",
+                err
+            );
+            None
+        }
+        Ok(user_stat) => Some(user_stat),
     }
 }
 
