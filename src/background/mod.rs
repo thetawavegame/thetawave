@@ -53,6 +53,7 @@ pub fn create_background_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     backgrounds: Res<BackgroundsResource>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    backgrounds.backgrounds["solar_system"].spawn(&mut commands, &asset_server);
+    backgrounds.backgrounds["solar_system"].spawn(&mut commands, &asset_server, &mut materials);
 }

@@ -7,8 +7,10 @@
 					scale: (450.0, 450.0, 450.0),
 					rotation: (0.0, 0.0, 0.20356716, 0.979061),
 					rotation_speed: 0.0002,
-					mesh_path: "models/earth.glb#Mesh0/Primitive0",
-					material_path: "models/earth.glb#Material0",
+					model_data: Some((
+						mesh_path: "models/earth.glb#Mesh0/Primitive0",
+						material_path: Some("models/earth.glb#Material0"),
+					)),
 					light: None,
 				),
 				(
@@ -16,8 +18,10 @@
 					scale: (70.0, 70.0, 70.0),
 					rotation: (0.0, 0.0, 0.0, 0.0),
 					rotation_speed: 0.00005,
-					mesh_path: "models/sun.glb#Mesh0/Primitive0",
-					material_path: "models/sun.glb#Material0",
+					model_data: Some((
+						mesh_path: "models/sun.glb#Mesh0/Primitive0",
+						material_path: None,
+					 )),
 					light: Some((
 						color: Rgba (
             				red: 0.7,

@@ -28,16 +28,26 @@ pub struct PlanetData {
     /// Speed of axis rotation
     pub rotation_speed: f32,
     /// Path to mesh of model
+    pub model_data: Option<ModelData>,
+    pub light: Option<LightData>,
+}
+
+#[derive(Deserialize)]
+pub struct ModelData {
+    /// Path to mesh of model
     pub mesh_path: String,
     /// Path of material of model
-    pub material_path: String,
-    /// Optional light data
-    pub light: Option<LightData>,
+    pub material_path: Option<String>,
 }
 
 impl PlanetData {
     /// Spawn planet with optional light
-    pub fn spawn(&self, commands: &mut Commands, asset_server: &Res<AssetServer>) {
+    pub fn spawn(
+        &self,
+        commands: &mut Commands,
+        asset_server: &Res<AssetServer>,
+        materials: &mut Assets<StandardMaterial>,
+    ) {
         // create transform
         let transform = Transform {
             translation: self.translation,
@@ -49,11 +59,21 @@ impl PlanetData {
         commands
             .spawn((transform, GlobalTransform::IDENTITY))
             .with_children(|parent| {
-                parent.spawn(PbrBundle {
-                    mesh: asset_server.load(&self.mesh_path[..]),
-                    material: asset_server.load(&self.material_path[..]),
-                    ..Default::default()
-                });
+                if let Some(model_data) = &self.model_data {
+                    parent.spawn(PbrBundle {
+                        mesh: asset_server.load(&model_data.mesh_path[..]),
+                        //material: asset_server.load(&model_data.material_path[..]),
+                        material: if let Some(material_path) = &model_data.material_path {
+                            asset_server.load(&material_path[..])
+                        } else {
+                            materials.add(StandardMaterial {
+                                emissive: Color::rgb_linear(8.0, 5.0, 0.0),
+                                ..default()
+                            })
+                        },
+                        ..Default::default()
+                    });
+                }
             })
             .insert(PlanetComponent {
                 rotation_speed: self.rotation_speed,
@@ -91,9 +111,14 @@ pub struct Background {
 
 impl Background {
     /// Spawn all of the models for the background
-    pub fn spawn(&self, commands: &mut Commands, asset_server: &Res<AssetServer>) {
+    pub fn spawn(
+        &self,
+        commands: &mut Commands,
+        asset_server: &Res<AssetServer>,
+        materials: &mut Assets<StandardMaterial>,
+    ) {
         for planet in self.planets.iter() {
-            planet.spawn(commands, asset_server);
+            planet.spawn(commands, asset_server, materials);
         }
     }
 }
