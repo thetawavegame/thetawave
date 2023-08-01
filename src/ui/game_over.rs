@@ -10,7 +10,7 @@ use crate::{
         core::DEFAULT_USER_ID,
         user_stats::{get_games_lost_count_by_id, get_mob_killed_counts_for_user, get_user_stats},
     },
-    game::CurrentGameMetrics,
+    game::counters::current_game_metrics::ShotCounters,
     states::{AppStates, GameOverCleanup},
     ui::BouncingPromptComponent,
 };
@@ -124,8 +124,16 @@ pub fn setup_game_over_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
-    current_game_metrics: Res<CurrentGameMetrics>,
+    current_game_shot_counts: Res<ShotCounters>,
 ) {
+    let accuracy_rate: f32 = match current_game_shot_counts.n_shots_fired {
+        0 => 100.0,
+        _ => {
+            (current_game_shot_counts.n_shots_hit as f32
+                / current_game_shot_counts.n_shots_fired as f32)
+                * 100.0
+        }
+    };
     let total_shots_fired_in_previous_games = match get_user_stats(DEFAULT_USER_ID) {
         Some(stat) => stat.total_shots_fired,
         None => 0,
@@ -246,8 +254,9 @@ pub fn setup_game_over_system(
                         },
                         text: Text::from_section(
                             format!(
-                                "Shots fired this game: {}\nShots fired in previous games: {}",
-                                current_game_metrics.n_shots_fired,
+                                "Shots fired this game: {}\nAccuracy Rate: {:.2}%\nShots fired in previous games: {}",
+                                current_game_shot_counts.n_shots_fired,
+                                accuracy_rate,
                                 total_shots_fired_in_previous_games
                             ),
                             TextStyle {
