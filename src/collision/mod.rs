@@ -62,6 +62,7 @@ pub enum SortedCollisionEvent {
 
     // Mob to projectile
     MobToProjectileIntersection {
+        projectile_source: Entity,
         mob_entity: Entity,
         projectile_entity: Entity,
         mob_faction: Faction,
@@ -69,6 +70,7 @@ pub enum SortedCollisionEvent {
         projectile_damage: f32,
     },
     MobToProjectileContact {
+        projectile_source: Entity,
         mob_entity: Entity,
         projectile_entity: Entity,
         projectile_faction: Faction,
