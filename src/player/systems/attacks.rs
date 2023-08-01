@@ -7,7 +7,6 @@ use bevy_rapier2d::prelude::*;
 use crate::{
     assets::GameAudioAssets,
     audio,
-    game::CurrentGameMetrics,
     player::{PlayerComponent, PlayerInput, PlayersResource},
     spawnable::{InitialMotion, SpawnProjectileEvent},
 };
