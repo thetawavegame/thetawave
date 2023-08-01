@@ -10,7 +10,7 @@ use crate::{
         core::DEFAULT_USER_ID,
         user_stats::{get_games_lost_count_by_id, get_mob_killed_counts_for_user, get_user_stats},
     },
-    game::counters::current_game_metrics::ShotCounters,
+    game::counters::current_game_metrics::{EnemiesKilledCounter, ShotCounters},
     states::{AppStates, GameOverCleanup},
     ui::BouncingPromptComponent,
 };
@@ -112,9 +112,14 @@ pub fn game_over_fade_in_system(
     }
 }
 
-fn pprint_mob_kills(user_id: isize) -> String {
-    get_mob_killed_counts_for_user(user_id)
-        .into_iter()
+fn pprint_mob_kills_from_db(user_id: isize) -> String {
+    pprint_mob_kils_from_data(&get_mob_killed_counts_for_user(user_id))
+}
+// Consistently format mob+kill-count pairs.
+fn pprint_mob_kils_from_data<MobType: std::fmt::Display, KillCountNumberType: std::fmt::Display>(
+    data: &Vec<(MobType, KillCountNumberType)>,
+) -> String {
+    data.into_iter()
         .map(|(mobtype, n)| format!("{mobtype}: {n}"))
         .collect::<Vec<String>>()
         .join("\n")
@@ -125,6 +130,7 @@ pub fn setup_game_over_system(
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
     current_game_shot_counts: Res<ShotCounters>,
+    current_game_enemy_mob_kill_counts: Res<EnemiesKilledCounter>,
 ) {
     let accuracy_rate: f32 = match current_game_shot_counts.n_shots_fired {
         0 => 100.0,
@@ -203,38 +209,17 @@ pub fn setup_game_over_system(
                         });
                     parent.spawn(TextBundle {
                         style: Style {
-                            left: Val::Percent(80.0),
-                            bottom: Val::Percent(5.0),
+                            left: Val::Percent(5.0),
+                            bottom: Val::Percent(25.0),
 
                             position_type: PositionType::Absolute,
                             ..Style::default()
                         },
                         text: Text::from_section(
                             format!(
-                                "Games Lost: {}",
-                                get_games_lost_count_by_id(DEFAULT_USER_ID)
-                            ),
-                            TextStyle {
-                                font: font.clone(),
-                                font_size: 18.0,
-                                color: Color::WHITE,
-                            },
-                        ),
-                        ..Default::default()
-                    });
-
-                    parent.spawn(TextBundle {
-                        style: Style {
-                            left: Val::Percent(20.0),
-                            bottom: Val::Percent(50.0),
-
-                            position_type: PositionType::Absolute,
-                            ..Style::default()
-                        },
-                        text: Text::from_section(
-                            format!(
-                                "Enemies destroyed in previous games:\n{}",
-                                pprint_mob_kills(DEFAULT_USER_ID)
+                                "Enemies destroyed in this game:\n{}\n\nEnemies destroyed in previous games:\n{}",
+                                pprint_mob_kils_from_data(&(current_game_enemy_mob_kill_counts.0.iter().collect())),
+                                pprint_mob_kills_from_db(DEFAULT_USER_ID),
                             ),
                             TextStyle {
                                 font: font.clone(),
@@ -246,18 +231,19 @@ pub fn setup_game_over_system(
                     });
                     parent.spawn(TextBundle {
                         style: Style {
-                            right: Val::Percent(20.0),
-                            bottom: Val::Percent(50.0),
+                            right: Val::Percent(5.0),
+                            bottom: Val::Percent(25.0),
 
                             position_type: PositionType::Absolute,
                             ..Style::default()
                         },
                         text: Text::from_section(
                             format!(
-                                "Shots fired this game: {}\nAccuracy Rate: {:.2}%\nShots fired in previous games: {}",
+                                "Shots fired this game: {}\nAccuracy Rate: {:.2}%\nShots fired in previous games: {}\nGames Lost: {}",
                                 current_game_shot_counts.n_shots_fired,
                                 accuracy_rate,
-                                total_shots_fired_in_previous_games
+                                total_shots_fired_in_previous_games,
+                                get_games_lost_count_by_id(DEFAULT_USER_ID)
                             ),
                             TextStyle {
                                 font,
