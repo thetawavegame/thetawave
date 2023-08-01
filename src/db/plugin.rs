@@ -1,6 +1,5 @@
-use crate::game::CurrentGameMetrics;
 /// Exposes a single Plugin that links the game and our persistence layer.
-use crate::spawnable::{MobDestroyedEvent, MobType};
+use crate::game::counters::current_game_metrics::{EnemiesKilledCounter, ShotCounters};
 use crate::states;
 use bevy::prelude::*;
 
@@ -20,26 +19,30 @@ fn inc_games_played_stat_system() {
         }
     };
 }
-fn count_enemies_destroyed_system(mut mob_destroyed_event_reader: EventReader<MobDestroyedEvent>) {
-    for event in mob_destroyed_event_reader.iter() {
-        if let MobType::Enemy(enemy_type) = &event.mob_type {
-            inc_mob_killed_count_for_user(DEFAULT_USER_ID, &enemy_type)
-                .unwrap_or_else(|e| error!("Error incrementing mob kill count: {e}"));
-        }
-    }
-}
 
 fn flush_to_db_and_reset_current_game_metrics_system(
-    mut current_game_metrics: ResMut<CurrentGameMetrics>,
+    mut shot_counters_for_current_game: ResMut<ShotCounters>,
 ) {
-    inc_n_shots_fired_for_user_id(DEFAULT_USER_ID, current_game_metrics.n_shots_fired)
-        .unwrap_or_else(|e| {
-            error!(
-                "Failed to flush per-run/game metrics to the database. Skipping. {}",
-                e
-            )
-        });
-    *current_game_metrics = CurrentGameMetrics::default();
+    inc_n_shots_fired_for_user_id(
+        DEFAULT_USER_ID,
+        shot_counters_for_current_game.n_shots_fired,
+    )
+    .unwrap_or_else(|e| {
+        error!(
+            "Failed to flush per-run/game metrics to the database. Skipping. {}",
+            e
+        )
+    });
+    *shot_counters_for_current_game = ShotCounters::default();
+}
+fn flush_mobs_killed_for_current_game_to_db_and_reset_counters(
+    mut mobs_killed_for_current_game: ResMut<EnemiesKilledCounter>,
+) {
+    for (mob_type, n_killed) in mobs_killed_for_current_game.0.iter() {
+        inc_mob_killed_count_for_user(DEFAULT_USER_ID, &mob_type, n_killed.clone())
+            .unwrap_or_else(|e| error!("Error incrementing mob kill count: {e}"));
+    }
+    *mobs_killed_for_current_game = EnemiesKilledCounter::default();
 }
 impl Plugin for DBPlugin {
     fn build(&self, app: &mut App) {
@@ -48,10 +51,12 @@ impl Plugin for DBPlugin {
             OnEnter(states::AppStates::GameOver),
             inc_games_played_stat_system,
         );
-        app.add_systems(Update, count_enemies_destroyed_system);
         app.add_systems(
             OnExit(states::AppStates::GameOver),
-            flush_to_db_and_reset_current_game_metrics_system,
+            (
+                flush_to_db_and_reset_current_game_metrics_system,
+                flush_mobs_killed_for_current_game_to_db_and_reset_counters,
+            ),
         );
     }
 }
