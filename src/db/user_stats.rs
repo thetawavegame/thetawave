@@ -96,16 +96,17 @@ pub fn get_games_lost_count_by_id(user_id: isize) -> isize {
 pub(super) fn inc_mob_killed_count_for_user(
     user_id: isize,
     mob_type: &EnemyMobType,
+    amount: usize,
 ) -> Result<(), OurDBError> {
     let stmt_raw = format!(
         "
     INSERT OR REPLACE INTO {ENEMY_KILL_HISTORY_TABLE_NAME} (userId, enemyMobType, nKilled)
-    VALUES (?1,  ?2, 1)
-    ON CONFLICT DO UPDATE SET nKilled=nKilled+1"
+    VALUES (?1,  ?2, ?3)
+    ON CONFLICT DO UPDATE SET nKilled=nKilled+?3"
     );
     let conn = get_db()?;
     conn.prepare(&stmt_raw)?
-        .execute(params![user_id, mob_type.to_string()])?;
+        .execute(params![user_id, mob_type.to_string(), amount])?;
     Ok(())
 }
 
