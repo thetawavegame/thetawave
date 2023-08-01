@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 rm -rf ./out/
 mkdir ./out
 cargo build --release --target wasm32-unknown-unknown
