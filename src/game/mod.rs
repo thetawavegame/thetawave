@@ -1,6 +1,7 @@
 //! `thetawave` game module
 use bevy::prelude::*;
 use ron::de::from_bytes;
+pub mod counters;
 mod resources;
 
 pub use self::resources::GameParametersResource;

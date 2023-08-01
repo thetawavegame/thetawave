@@ -1,4 +1,5 @@
 //! Resources for managing the game
+
 use bevy::prelude::*;
 use serde::Deserialize;
 
@@ -19,10 +20,4 @@ pub struct GameParametersResource {
     pub scan_range: f32,
 
     pub player_spawn_distance: f32,
-}
-
-/// Stats about the ongoing game. Reinitialized for each new game (e.x. after each game over).
-#[derive(Resource, Default)]
-pub struct CurrentGameMetrics {
-    pub n_shots_fired: usize,
 }
