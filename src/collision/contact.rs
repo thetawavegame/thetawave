@@ -281,6 +281,7 @@ pub fn contact_collision_system(
 
                             collision_event_writer.send(
                                 SortedCollisionEvent::MobToProjectileContact {
+                                    projectile_source: projectile_component.source,
                                     mob_entity: colliding_entities.primary,
                                     projectile_entity: colliding_entities.secondary,
                                     projectile_faction: match &projectile_component.projectile_type
