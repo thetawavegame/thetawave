@@ -113,5 +113,7 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
+      - name: Build wasm assets
+        run: ./build_wasm.sh
       - name: Check
         run: cargo check --target wasm32-unknown-unknown
