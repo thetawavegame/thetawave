@@ -25,8 +25,11 @@ bevy_kira_audio = { version = "0.16.0", features = ["mp3", "wav"] }
 #bevy_editor_pls = "0.4.0"
 winit = "0.28.4"
 image = "0.24.6"
-bevy_serialport = "0.4.0"
 bytes = "1.4.0"
+
+# Serial ports do not work in in the browser.
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+bevy_serialport = {version = "0.4.0", optional = true}
 
 # optimize dev packages as we don't need them in debug version
 [profile.dev.package."*"]
@@ -40,4 +43,4 @@ opt-level = 1
 codegen-units = 1
 
 [features]
-arcade = []
+arcade = ["bevy_serialport"]

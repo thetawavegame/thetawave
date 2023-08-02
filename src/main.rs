@@ -152,8 +152,7 @@ fn main() {
         (setup_game, setup_physics).in_set(GameEnterSet::Initialize),
     );
 
-    #[cfg(feature = "arcade")]
-    app.add_plugin(arcade::ArcadePlugin);
+    app.add_plugins(arcade::ArcadePlugin);
 
     if cfg!(debug_assertions) {
         app
