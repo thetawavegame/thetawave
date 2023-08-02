@@ -32,6 +32,7 @@ pub fn player_death_system(
     // end the game if no players are alive
     if player_query.iter().count() == 0 {
         // transition to the game over state
+        // TODO: remove and send event
         end_game_trans_resource.start(AppStates::GameOver);
     }
 

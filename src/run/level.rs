@@ -14,7 +14,7 @@ use crate::{
     ui::EndGameTransitionResource,
 };
 
-use super::formation;
+use super::{formation, RunDefeatType, RunEndEvent, RunOutcomeType};
 
 /// Structure stored in data file to describe level
 pub type LevelsResourceData = HashMap<String, LevelData>;
@@ -112,6 +112,7 @@ impl Level {
         mob_reached_bottom: &mut EventReader<MobReachedBottomGateEvent>,
         formation_pools: &formation::FormationPoolsResource,
         end_game_trans_resource: &mut EndGameTransitionResource,
+        run_end_event_writer: &mut EventWriter<RunEndEvent>,
         audio_channel: &AudioChannel<audio::BackgroundMusicAudioChannel>,
         audio_assets: &GameAudioAssets,
     ) {
@@ -130,6 +131,10 @@ impl Level {
 
                     // end the game if defense dies
                     if health.is_dead() {
+                        // TODO: remove and use event instead
+                        run_end_event_writer.send(RunEndEvent {
+                            outcome: RunOutcomeType::Defeat(RunDefeatType::DefenseDestroyed),
+                        });
                         end_game_trans_resource.start(AppStates::GameOver);
                     }
                 }
@@ -357,6 +362,7 @@ pub fn level_system(
     time: Res<Time>,
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
     audio_channel: Res<AudioChannel<audio::BackgroundMusicAudioChannel>>,
+    mut run_end_event_writer: EventWriter<RunEndEvent>,
     audio_assets: Res<GameAudioAssets>,
 ) {
     // tick the run if ready and the game isn't over
@@ -370,6 +376,7 @@ pub fn level_system(
             &mut mob_reached_bottom,
             &formation_pools,
             &mut end_game_trans_resource,
+            &mut run_end_event_writer,
             &audio_channel,
             &audio_assets,
         );

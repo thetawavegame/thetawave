@@ -8,6 +8,7 @@ use rand::{seq::IteratorRandom, Rng};
 use ron::de::from_bytes;
 
 use crate::{
+    run::{RunDefeatType, RunEndEvent, RunOutcomeType},
     states::{self, GameCleanup},
     GameEnterSet,
 };
@@ -16,6 +17,8 @@ pub struct BackgroundPlugin;
 
 impl Plugin for BackgroundPlugin {
     fn build(&self, app: &mut App) {
+        app.insert_resource(StarExplodeResource::default());
+
         app.add_systems(
             OnEnter(states::AppStates::Game),
             create_background_system.in_set(GameEnterSet::BuildLevel),
@@ -23,11 +26,16 @@ impl Plugin for BackgroundPlugin {
 
         app.add_systems(
             Update,
-            rotate_planet_system
+            (rotate_planet_system, on_defeat_star_explode_system)
                 .run_if(in_state(states::AppStates::Game))
                 .run_if(in_state(states::GameStates::Playing)),
         );
     }
+}
+
+#[derive(Resource, Default)]
+pub struct StarExplodeResource {
+    pub started: bool,
 }
 
 /// Component to manage movement of planets
@@ -38,10 +46,33 @@ pub struct PlanetComponent {
     pub rotation_speed: f32,
 }
 
+#[derive(Component)]
+pub struct StarLightComponent;
+
 /// Rotate planets about their z axis
-pub fn rotate_planet_system(mut query: Query<(&mut Transform, &PlanetComponent)>) {
+pub fn rotate_planet_system(mut query: Query<(&mut Transform, &PlanetComponent)>, time: Res<Time>) {
     for (mut transform, planet) in query.iter_mut() {
-        transform.rotation *= Quat::from_rotation_y(planet.rotation_speed);
+        transform.rotation *= Quat::from_rotation_y(planet.rotation_speed * time.delta_seconds());
+    }
+}
+
+/// Execute the exploding star effect if the game is lost through defense being destroyed
+pub fn on_defeat_star_explode_system(
+    mut run_end_event_reader: EventReader<RunEndEvent>,
+    mut point_light_query: Query<&mut PointLight, With<StarLightComponent>>,
+    mut star_explode_res: ResMut<StarExplodeResource>,
+    time: Res<Time>,
+) {
+    for event in run_end_event_reader.iter() {
+        if let RunOutcomeType::Defeat(RunDefeatType::DefenseDestroyed) = event.outcome {
+            star_explode_res.started = true;
+        }
+    }
+
+    if star_explode_res.started {
+        for mut point_light in point_light_query.iter_mut() {
+            point_light.intensity *= 65.0 * time.delta_seconds();
+        }
     }
 }
 
@@ -51,7 +82,11 @@ pub fn create_background_system(
     asset_server: Res<AssetServer>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    mut star_explode_res: ResMut<StarExplodeResource>,
 ) {
+    // reset the star explode reource
+    *star_explode_res = StarExplodeResource::default();
+
     let mut rng = rand::thread_rng();
 
     // positions
@@ -166,7 +201,7 @@ pub fn create_background_system(
             ..default()
         })
         .insert(PlanetComponent {
-            rotation_speed: rng.gen_range(0.0002..0.0006),
+            rotation_speed: rng.gen_range(0.01..0.05),
         })
         .insert(GameCleanup)
         .insert(Visibility::default())
@@ -185,5 +220,6 @@ pub fn create_background_system(
             ..Default::default()
         })
         .insert(GameCleanup)
-        .insert(Name::new("Planet Light"));
+        .insert(StarLightComponent)
+        .insert(Name::new("Star Point Light"));
 }
