@@ -69,6 +69,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Install bevy deps
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          set -euxo pipefail
+          sudo apt install -y lld g++ pkg-config libx11-dev libasound2-dev libudev-dev
+        shell: bash
       - name: Install rust
         uses: dtolnay/rust-toolchain@nightly
         with:
