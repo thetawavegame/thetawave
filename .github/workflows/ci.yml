@@ -57,6 +57,7 @@ jobs:
         include:
           - name: linux / nightly
             rust: nightly
+            os: ubuntu-latest
           - name: macOS / nightly
             os: macOS-latest
             rust: nightly
@@ -100,6 +101,12 @@ jobs:
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@nightly
+
+      - name: Install bevy deps
+        run: |
+          set -euxo pipefail
+          sudo apt install -y lld g++ pkg-config libx11-dev libasound2-dev libudev-dev
+        shell: bash
 
       - name: Check documentation
         run: cargo doc --no-deps --document-private-items --all-features
