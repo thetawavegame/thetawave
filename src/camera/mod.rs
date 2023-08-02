@@ -30,6 +30,7 @@ pub fn setup_cameras_system(
         },
         camera: Camera {
             order: 1,
+            hdr: true,
             ..default()
         },
         ..default()
@@ -40,7 +41,8 @@ pub fn setup_cameras_system(
     // 3d cemate for background objects
     let camera_3d = Camera3dBundle {
         camera: Camera {
-            //hdr: true,
+            order: 0,
+            hdr: true,
             ..default()
         },
         tonemapping: Tonemapping::TonyMcMapface,
