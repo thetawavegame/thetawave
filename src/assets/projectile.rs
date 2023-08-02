@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
-
-use crate::spawnable::{Faction, ProjectileType};
+use thetawave_interface::spawnable::{Faction, ProjectileType};
 
 #[derive(AssetCollection, Resource)]
 pub struct ProjectileAssets {

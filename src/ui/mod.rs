@@ -72,7 +72,10 @@ impl Plugin for UiPlugin {
                 .run_if(in_state(states::AppStates::CharacterSelection)),
         );
 
-        app.add_systems(OnEnter(states::AppStates::GameOver), setup_game_over_system);
+        app.add_systems(
+            OnEnter(thetawave_interface::states::AppStates::GameOver),
+            setup_game_over_system,
+        );
 
         app.add_systems(
             Update,

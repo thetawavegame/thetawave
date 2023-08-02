@@ -3,14 +3,14 @@ use crate::{
     audio,
     collision::SortedCollisionEvent,
     spawnable::{
-        EffectType, Faction, InitialMotion, MobComponent, MobSegmentComponent, PlayerComponent,
-        ProjectileType, SpawnEffectEvent,
+        InitialMotion, MobComponent, MobSegmentComponent, PlayerComponent, SpawnEffectEvent,
     },
 };
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::Velocity;
 use serde::Deserialize;
+use thetawave_interface::spawnable::{EffectType, Faction, ProjectileType};
 
 use super::ProjectileComponent;
 

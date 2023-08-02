@@ -1,13 +1,11 @@
 use crate::{
-    collision::SortedCollisionEvent,
-    game::GameParametersResource,
-    player::PlayerComponent,
-    spawnable::{EnemyMobType, MobType, SpawnableComponent, SpawnableType},
-    tools::signed_modulo,
+    collision::SortedCollisionEvent, game::GameParametersResource, player::PlayerComponent,
+    spawnable::SpawnableComponent, tools::signed_modulo,
 };
 use bevy::{math::Vec3Swizzles, prelude::*};
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
+use thetawave_interface::spawnable::{EnemyMobType, MobType, SpawnableType};
 
 /// Types of behaviors that can be performed by spawnables
 #[derive(Deserialize, Clone)]

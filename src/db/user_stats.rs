@@ -1,7 +1,7 @@
 use crate::db::core::{get_db, OurDBError, ENEMY_KILL_HISTORY_TABLE_NAME, USERSTAT};
-use crate::spawnable::EnemyMobType;
 use bevy::prelude::{error, info};
 use rusqlite::{params, Error, Result};
+use thetawave_interface::spawnable::EnemyMobType;
 
 use super::core::UserStat;
 pub(super) fn inc_games_played_stat(user_id: isize) -> Result<(), OurDBError> {

@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
+pub use thetawave_interface::states::{AppStates, GameStates};
 
 mod game;
 mod pause_menu;
@@ -141,27 +142,6 @@ impl Plugin for StatesPlugin {
             close_pause_menu_system.run_if(in_state(GameStates::Paused)),
         );
     }
-}
-
-// states of the game
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, States)]
-pub enum AppStates {
-    #[default]
-    LoadingAssets,
-    MainMenu,
-    Instructions,
-    CharacterSelection,
-    //LoadingGame, // assets can currently only be loaded once
-    Game,
-    GameOver,
-    Victory,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, States)]
-pub enum GameStates {
-    #[default]
-    Playing,
-    Paused,
 }
 
 #[derive(Component)]

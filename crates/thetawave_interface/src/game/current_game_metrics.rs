@@ -1,8 +1,10 @@
 /// Singletons for the 'current running game'. We assume there is only 1 current running game for
 /// 1 invocation of thetawave. Reinitialized for each new game.
-use crate::spawnable::{ConsumableType, EnemyMobType};
-use bevy::prelude::*;
+use bevy::prelude::Resource;
 use std::collections::HashMap;
+use crate::spawnable::ConsumableType;
+use crate::spawnable::EnemyMobType;
+
 /// Stats about the ongoing game. Reinitialized for each new game (e.x. after each game over).
 #[derive(Resource, Default, Debug)]
 pub struct ShotCounters {

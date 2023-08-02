@@ -1,5 +1,6 @@
-use crate::{spawnable::Faction, states, GameUpdateSet};
+use crate::{states, GameUpdateSet};
 use bevy::prelude::*;
+use thetawave_interface::spawnable::Faction;
 
 mod contact;
 mod instersection;

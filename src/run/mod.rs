@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use ron::de::from_bytes;
 use std::time::Duration;
+use thetawave_interface::states::{AppStates, GameStates};
 
 use crate::{
     arena::MobReachedBottomGateEvent,
@@ -9,7 +10,7 @@ use crate::{
     audio,
     player::PlayersResource,
     spawnable::{MobDestroyedEvent, SpawnMobEvent},
-    states::{self, AppStates, GameStates},
+    states::{self},
     ui::EndGameTransitionResource,
     GameEnterSet, GameUpdateSet,
 };

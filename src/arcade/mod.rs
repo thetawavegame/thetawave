@@ -43,7 +43,7 @@ mod arcade_impl {
             );
 
             app.add_systems(
-                OnEnter(states::AppStates::Game),
+                OnEnter(thetawave_interface::states::AppStates::Game),
                 enter_game_button_leds_system,
             );
 
