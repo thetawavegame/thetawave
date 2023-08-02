@@ -1,8 +1,6 @@
 use serde::Deserialize;
 use strum_macros::Display;
 
-pub const MyVal: usize = 1;
-
 /// Type that encompasses all spawnable enemy mobs
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum EnemyMobType {
