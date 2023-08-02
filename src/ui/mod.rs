@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+pub use thetawave_interface::character_selection::PlayerJoinEvent;
 
 use crate::{states, GameEnterSet, GameUpdateSet};
 
@@ -12,11 +13,10 @@ mod pause_menu;
 mod victory;
 
 pub use self::character_selection::{
-    player_join_system, select_character_system, setup_character_selection_system, PlayerJoinEvent,
+    player_join_system, select_character_system, setup_character_selection_system,
 };
 use self::instructions::setup_instructions_system;
 pub use self::{
-    debug::game_debug_ui,
     game_over::{
         fade_out_system, game_over_fade_in_system, setup_game_over_system,
         EndGameTransitionResource, GameFadeComponent,
@@ -72,10 +72,7 @@ impl Plugin for UiPlugin {
                 .run_if(in_state(states::AppStates::CharacterSelection)),
         );
 
-        app.add_systems(
-            OnEnter(thetawave_interface::states::AppStates::GameOver),
-            setup_game_over_system,
-        );
+        app.add_systems(OnEnter(states::AppStates::GameOver), setup_game_over_system);
 
         app.add_systems(
             Update,

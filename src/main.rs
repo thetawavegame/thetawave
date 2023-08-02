@@ -14,7 +14,6 @@ pub const HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_2;
 pub const VERTICAL_BARRIER_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_3;
 
 mod animation;
-mod arcade;
 mod arena;
 mod assets;
 mod audio;
@@ -153,8 +152,8 @@ fn main() {
         OnEnter(AppStates::Game),
         (setup_game, setup_physics).in_set(GameEnterSet::Initialize),
     );
-
-    app.add_plugins(arcade::ArcadePlugin);
+    #[cfg(feature = "arcade")]
+    app.add_plugins(thetawave_arcade::plugin::ArcadePlugin);
 
     #[cfg(feature = "storage")]
     app.add_plugins(thetawave_storage::plugin::DBPlugin);
