@@ -1,0 +1,117 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  ci-pass:
+    name: CI is green
+    runs-on: ubuntu-latest
+    needs:
+      - style
+      - test
+      - wasm
+      - docs
+    steps:
+      - run: exit 0
+
+  style:
+    name: Check Style
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install rust
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rustfmt
+
+      - name: cargo fmt -- --check
+        run: cargo fmt -- --check
+
+      - name: temporary workaround - fmt all files under src
+        # Workaround for rust-lang/cargo#7732
+        run: cargo fmt -- --check $(find . -name '*.rs' -print)
+
+  test:
+    name: ${{ matrix.name }}
+    needs: [style]
+
+    runs-on: ${{ matrix.os || 'ubuntu-latest' }}
+
+    # The build matrix does not yet support 'allow failures' at job level.
+    # See `jobs.nightly` for the active nightly job definition.
+    strategy:
+      matrix:
+        name:
+          - linux / nightly
+          - macOS / nightly
+          - windows / nightly
+
+        include:
+          - name: linux / nightly
+            rust: nightly
+          - name: macOS / nightly
+            os: macOS-latest
+            rust: nightly
+          - name: windows / nightly
+            os: windows-latest
+            rust: nightly
+            target: x86_64-pc-windows-msvc
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install rust
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          toolchain: ${{ matrix.rust || 'stable' }}
+          targets: ${{ matrix.target }}
+
+      - name: Create Cargo.lock
+        run: cargo update
+
+      - name: Run tests
+        run: |
+          set -euxo pipefail
+          echo "No tests. skipping"
+        shell: bash
+
+  docs:
+    name: Docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@nightly
+
+      - name: Check documentation
+        run: cargo doc --no-deps --document-private-items --all-features
+
+  wasm:
+    name: WASM
+    needs: [style]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install rust
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Check
+        run: cargo check --target wasm32-unknown-unknown
