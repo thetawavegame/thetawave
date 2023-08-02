@@ -6,8 +6,8 @@ use crate::{
 };
 use bevy::prelude::{debug, App, Entity, EventReader, OnEnter, Plugin, Query, ResMut, Update};
 
-use super::current_game_metrics::{EnemiesKilledCounter, ShotCounters};
 use std::collections::HashMap;
+use thetawave_interface::game::counters::{EnemiesKilledCounter, ShotCounters};
 /// Expose all of the mutations for the within-game metric counters via a bevy plugin.
 use thetawave_interface::spawnable::MobType;
 /// Expose all of the mutations for the within-game metric counters via a bevy plugin.

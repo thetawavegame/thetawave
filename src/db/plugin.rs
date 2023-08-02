@@ -1,6 +1,6 @@
-/// Exposes a single Plugin that links the game and our persistence layer.
-use crate::game::counters::current_game_metrics::{EnemiesKilledCounter, ShotCounters};
 use bevy::prelude::*;
+/// Exposes a single Plugin that links the game and our persistence layer.
+use thetawave_interface::game::counters::{EnemiesKilledCounter, ShotCounters};
 use thetawave_interface::states;
 
 use super::core::{get_db, setup_db, DEFAULT_USER_ID};
