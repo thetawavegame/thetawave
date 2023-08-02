@@ -4,8 +4,10 @@ use std::fs;
 
 use bevy::prelude::Commands;
 use bevy::prelude::*;
-use rand::{seq::IteratorRandom, Rng};
+use rand::{distributions::uniform::SampleRange, seq::IteratorRandom, Rng};
 use ron::de::from_bytes;
+use serde::Deserialize;
+use std::ops::Range;
 
 use crate::{
     run::{RunDefeatType, RunEndEvent, RunOutcomeType},
@@ -18,6 +20,10 @@ pub struct BackgroundPlugin;
 impl Plugin for BackgroundPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(StarExplodeResource::default());
+        app.insert_resource(
+            from_bytes::<BackgroundsResource>(include_bytes!("../../assets/data/backgrounds.ron"))
+                .unwrap(),
+        );
 
         app.add_systems(
             OnEnter(states::AppStates::Game),
@@ -31,6 +37,24 @@ impl Plugin for BackgroundPlugin {
                 .run_if(in_state(states::GameStates::Playing)),
         );
     }
+}
+
+#[derive(Resource, Deserialize)]
+pub struct BackgroundsResource {
+    pub star_explode_intensity: f32,
+    pub background_transation: Vec3,
+    pub star_position_x_range: Range<f32>,
+    pub star_position_z_range: Range<f32>,
+    pub planet_translation: Vec3,
+    pub color_range: Range<f32>,
+    pub background_quad_width: f32,
+    pub background_quad_height: f32,
+    pub background_alpha: f32,
+    pub star_radius: f32,
+    pub star_subdivisions: usize,
+    pub rotation_speed_range: Range<f32>,
+    pub star_light_intensity: f32,
+    pub star_light_range: f32,
 }
 
 #[derive(Resource, Default)]
@@ -62,6 +86,7 @@ pub fn on_defeat_star_explode_system(
     mut point_light_query: Query<&mut PointLight, With<StarLightComponent>>,
     mut star_explode_res: ResMut<StarExplodeResource>,
     time: Res<Time>,
+    backgrounds_res: Res<BackgroundsResource>,
 ) {
     for event in run_end_event_reader.iter() {
         if let RunOutcomeType::Defeat(RunDefeatType::DefenseDestroyed) = event.outcome {
@@ -71,7 +96,7 @@ pub fn on_defeat_star_explode_system(
 
     if star_explode_res.started {
         for mut point_light in point_light_query.iter_mut() {
-            point_light.intensity *= 65.0 * time.delta_seconds();
+            point_light.intensity *= backgrounds_res.star_explode_intensity * time.delta_seconds();
         }
     }
 }
@@ -83,6 +108,7 @@ pub fn create_background_system(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut star_explode_res: ResMut<StarExplodeResource>,
+    backgrounds_res: Res<BackgroundsResource>,
 ) {
     // reset the star explode reource
     *star_explode_res = StarExplodeResource::default();
@@ -90,13 +116,13 @@ pub fn create_background_system(
     let mut rng = rand::thread_rng();
 
     // positions
-    let background_transform = Transform::from_xyz(0.0, 0.0, -300.0);
+    let background_transform = Transform::from_translation(backgrounds_res.background_transation);
     let star_transform = Transform::from_xyz(
-        rng.gen_range(-90.0..-30.0),
+        rng.gen_range(backgrounds_res.star_position_x_range.clone()),
         0.0,
-        rng.gen_range(-250.0..-150.0),
+        rng.gen_range(backgrounds_res.star_position_z_range.clone()),
     );
-    let planet_transform = Transform::from_xyz(8.0, -8.0, 30.0);
+    let planet_transform = Transform::from_translation(backgrounds_res.planet_translation);
 
     // randomly generate attributes
     let random_planet_file = fs::read_dir("./assets/models/planets")
@@ -122,31 +148,25 @@ pub fn create_background_system(
     let random_background_path = format!("texture/backgrounds/{random_background_filename}",);
     let random_planet_path = format!("models/planets/{random_planet_filename}#Scene0");
     let star_color = Color::rgb_linear(
-        rng.gen_range(0.0..15.0),
-        rng.gen_range(0.0..15.0),
-        rng.gen_range(0.0..15.0),
+        rng.gen_range(backgrounds_res.color_range.clone()),
+        rng.gen_range(backgrounds_res.color_range.clone()),
+        rng.gen_range(backgrounds_res.color_range.clone()),
     );
 
     //background
     let background_texture_handle = asset_server.load(random_background_path);
-    let aspect = 1.0;
 
     let quad_width = 375.0;
     let quad_handle = meshes.add(Mesh::from(shape::Quad::new(Vec2::new(
-        quad_width,
-        quad_width * aspect,
+        backgrounds_res.background_quad_width,
+        backgrounds_res.background_quad_height,
     ))));
 
     // this material renders the texture normally
     let material_handle = materials.add(StandardMaterial {
-        base_color_texture: Some(background_texture_handle.clone()),
+        base_color_texture: Some(background_texture_handle),
         alpha_mode: AlphaMode::Blend,
-        base_color: Color::Rgba {
-            red: 1.0,
-            green: 1.0,
-            blue: 1.0,
-            alpha: 0.06,
-        },
+        base_color: Color::default().with_a(backgrounds_res.background_alpha),
         unlit: true,
         ..default()
     });
@@ -154,7 +174,7 @@ pub fn create_background_system(
     // textured quad - normal
     commands
         .spawn(PbrBundle {
-            mesh: quad_handle.clone(),
+            mesh: quad_handle,
             material: material_handle,
             transform: background_transform,
             ..default()
@@ -172,8 +192,8 @@ pub fn create_background_system(
 
     let mesh = meshes.add(
         shape::Icosphere {
-            radius: 10.0,
-            subdivisions: 5,
+            radius: backgrounds_res.star_radius,
+            subdivisions: backgrounds_res.star_subdivisions,
         }
         .try_into()
         .unwrap(),
@@ -201,7 +221,7 @@ pub fn create_background_system(
             ..default()
         })
         .insert(PlanetComponent {
-            rotation_speed: rng.gen_range(0.01..0.05),
+            rotation_speed: rng.gen_range(backgrounds_res.rotation_speed_range.clone()),
         })
         .insert(GameCleanup)
         .insert(Visibility::default())
@@ -212,8 +232,8 @@ pub fn create_background_system(
         .spawn(PointLightBundle {
             point_light: PointLight {
                 color: star_color,
-                intensity: 5000000.0,
-                range: 10000.0,
+                intensity: backgrounds_res.star_light_intensity,
+                range: backgrounds_res.star_light_range,
                 ..Default::default()
             },
             transform: star_transform,
