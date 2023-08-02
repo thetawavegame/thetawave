@@ -4,7 +4,8 @@ use bevy_kira_audio::prelude::*;
 
 use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
-use states::{AppStates, GameCleanup, GameStates};
+use states::GameCleanup;
+use thetawave_interface::states::{AppStates, GameStates};
 use ui::EndGameTransitionResource;
 
 pub const PHYSICS_SCALE: f32 = 10.0;
@@ -151,7 +152,7 @@ fn main() {
     ));
 
     app.add_systems(
-        OnEnter(states::AppStates::Game),
+        OnEnter(AppStates::Game),
         (setup_game, setup_physics).in_set(GameEnterSet::Initialize),
     );
 

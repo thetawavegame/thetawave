@@ -3,6 +3,7 @@ use std::time::Duration;
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::plugin::RapierConfiguration;
+use thetawave_interface::states::AppStates;
 
 use crate::{
     audio::BackgroundMusicAudioChannel,
@@ -11,7 +12,7 @@ use crate::{
         user_stats::{get_games_lost_count_by_id, get_mob_killed_counts_for_user, get_user_stats},
     },
     game::counters::current_game_metrics::{EnemiesKilledCounter, ShotCounters},
-    states::{AppStates, GameOverCleanup},
+    states::GameOverCleanup,
     ui::BouncingPromptComponent,
 };
 

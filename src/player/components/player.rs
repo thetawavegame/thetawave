@@ -1,7 +1,8 @@
 use bevy::prelude::*;
 use serde::Deserialize;
+use thetawave_interface::spawnable::ProjectileType;
 
-use crate::{misc::Health, player::Character, spawnable::ProjectileType};
+use crate::{misc::Health, player::Character};
 
 /// Component for managing core attributes of the player
 #[derive(Component, Debug)]

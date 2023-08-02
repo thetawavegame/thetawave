@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 
-use crate::spawnable::ConsumableType;
+use thetawave_interface::spawnable::ConsumableType;
 
 #[derive(AssetCollection, Resource)]
 pub struct ConsumableAssets {

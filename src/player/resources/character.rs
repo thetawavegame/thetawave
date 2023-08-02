@@ -1,8 +1,9 @@
 use bevy::prelude::*;
 use serde::Deserialize;
 use std::collections::HashMap;
+use thetawave_interface::spawnable::ProjectileType;
 
-use crate::{misc::Health, player::components::AbilityType, spawnable::ProjectileType};
+use crate::{misc::Health, player::components::AbilityType};
 
 /// Contains data necessary to create a player entity.
 /// A character is chosen at the beginning of the game.

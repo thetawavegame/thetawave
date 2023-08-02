@@ -2,14 +2,13 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 use std::collections::HashMap;
+use thetawave_interface::spawnable::{ConsumableType, SpawnableType};
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::ConsumableAssets,
     game::GameParametersResource,
-    spawnable::{
-        ConsumableType, InitialMotion, SpawnableBehavior, SpawnableComponent, SpawnableType,
-    },
+    spawnable::{InitialMotion, SpawnableBehavior, SpawnableComponent},
     states::GameCleanup,
 };
 

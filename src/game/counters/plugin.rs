@@ -2,13 +2,16 @@
 use crate::{
     collision::SortedCollisionEvent,
     player::PlayerComponent,
-    spawnable::{MobDestroyedEvent, MobType, SpawnProjectileEvent},
-    states::AppStates,
+    spawnable::{MobDestroyedEvent, SpawnProjectileEvent},
 };
 use bevy::prelude::{debug, App, Entity, EventReader, OnEnter, Plugin, Query, ResMut, Update};
 
 use super::current_game_metrics::{EnemiesKilledCounter, ShotCounters};
 use std::collections::HashMap;
+/// Expose all of the mutations for the within-game metric counters via a bevy plugin.
+use thetawave_interface::spawnable::MobType;
+/// Expose all of the mutations for the within-game metric counters via a bevy plugin.
+use thetawave_interface::states::AppStates;
 
 /// Maintains/mutates singleton resources that keep track of metrics for the current game. These are reset on each new game.
 pub struct CurrentGameMetricsPlugin;
