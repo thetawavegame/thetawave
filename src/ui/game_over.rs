@@ -1,21 +1,33 @@
+use std::collections::HashMap;
 use std::time::Duration;
 
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::plugin::RapierConfiguration;
 use thetawave_interface::game::counters::{EnemiesKilledCounter, ShotCounters};
+use thetawave_interface::historical_metrics::{UserStat, DEFAULT_USER_ID};
 use thetawave_interface::states::AppStates;
 
 use crate::{
-    audio::BackgroundMusicAudioChannel,
-    db::{
-        core::DEFAULT_USER_ID,
-        user_stats::{get_games_lost_count_by_id, get_mob_killed_counts_for_user, get_user_stats},
-    },
-    states::GameOverCleanup,
-    ui::BouncingPromptComponent,
+    audio::BackgroundMusicAudioChannel, states::GameOverCleanup, ui::BouncingPromptComponent,
 };
 
+#[cfg(not(feature = "storage"))]
+fn get_user_stats(user_id: usize) -> Option<UserStat> {
+    None
+}
+#[cfg(feature = "storage")]
+fn get_user_stats(user_id: usize) -> Option<UserStat> {
+    thetawave_storage::user_stats::get_user_stats(user_id)
+}
+#[cfg(not(feature = "storage"))]
+fn get_mob_killed_counts_for_user(user_id: usize) -> HashMap<String, usize> {
+    HashMap::default()
+}
+#[cfg(feature = "storage")]
+fn get_mob_killed_counts_for_user(user_id: usize) -> HashMap<String, usize> {
+    thetawave_storage::user_stats::get_mob_killed_counts_for_user(user_id)
+}
 #[derive(Component)]
 pub struct GameFadeComponent;
 #[derive(Component)]
@@ -113,8 +125,12 @@ pub fn game_over_fade_in_system(
     }
 }
 
-fn pprint_mob_kills_from_db(user_id: isize) -> String {
-    pprint_mob_kils_from_data(&get_mob_killed_counts_for_user(user_id))
+fn pprint_mob_kills_from_db(user_id: usize) -> String {
+    pprint_mob_kils_from_data(
+        &get_mob_killed_counts_for_user(user_id)
+            .into_iter()
+            .collect(),
+    )
 }
 // Consistently format mob+kill-count pairs.
 fn pprint_mob_kils_from_data<MobType: std::fmt::Display, KillCountNumberType: std::fmt::Display>(
@@ -141,9 +157,10 @@ pub fn setup_game_over_system(
                 * 100.0
         }
     };
-    let total_shots_fired_in_previous_games = match get_user_stats(DEFAULT_USER_ID) {
-        Some(stat) => stat.total_shots_fired,
-        None => 0,
+    let maybe_user_stats = get_user_stats(DEFAULT_USER_ID);
+    let (total_shots_fired_in_previous_games, total_games_lost) = match maybe_user_stats {
+        Some(stat) => (stat.total_shots_fired, stat.total_games_lost),
+        None => (0, 1),
     };
     audio_channel
         .stop()
@@ -244,7 +261,7 @@ pub fn setup_game_over_system(
                                 current_game_shot_counts.n_shots_fired,
                                 accuracy_rate,
                                 total_shots_fired_in_previous_games,
-                                get_games_lost_count_by_id(DEFAULT_USER_ID)
+                                total_games_lost,
                             ),
                             TextStyle {
                                 font,

@@ -1,10 +1,11 @@
-use crate::db::core::{get_db, OurDBError, ENEMY_KILL_HISTORY_TABLE_NAME, USERSTAT};
+use crate::core::{get_db, OurDBError, ENEMY_KILL_HISTORY_TABLE_NAME, USERSTAT};
 use bevy::prelude::{error, info};
 use rusqlite::{params, Error, Result};
+use std::collections::HashMap;
 use thetawave_interface::spawnable::EnemyMobType;
 
-use super::core::UserStat;
-pub(super) fn inc_games_played_stat(user_id: isize) -> Result<(), OurDBError> {
+use thetawave_interface::historical_metrics::UserStat;
+pub(super) fn inc_games_played_stat(user_id: usize) -> Result<(), OurDBError> {
     let stmt_raw = format!(
         "
     INSERT OR REPLACE INTO {USERSTAT} (userId, totalGamesLost)
@@ -17,7 +18,7 @@ pub(super) fn inc_games_played_stat(user_id: isize) -> Result<(), OurDBError> {
 }
 
 pub(super) fn inc_n_shots_fired_for_user_id(
-    user_id: isize,
+    user_id: usize,
     n_shots: usize,
 ) -> Result<(), OurDBError> {
     let stmt_raw = format!(
@@ -35,7 +36,7 @@ pub(super) fn inc_n_shots_fired_for_user_id(
         .execute(params![user_id, n_shots])?;
     Ok(())
 }
-fn _get_games_lost_count_by_id(user_id: isize) -> Result<isize, OurDBError> {
+fn _get_games_lost_count_by_id(user_id: usize) -> Result<usize, OurDBError> {
     let conn = get_db()?;
     let stmt_raw = format!(
         "
@@ -50,7 +51,7 @@ fn _get_games_lost_count_by_id(user_id: isize) -> Result<isize, OurDBError> {
     }
 }
 
-fn _get_user_stats(user_id: isize) -> Result<UserStat, OurDBError> {
+fn _get_user_stats(user_id: usize) -> Result<UserStat, OurDBError> {
     let conn = get_db()?;
     let stmt_raw = format!(
         "
@@ -76,7 +77,7 @@ fn _get_user_stats(user_id: isize) -> Result<UserStat, OurDBError> {
 }
 
 /// Returns the user stats for games that have already been completed and flushed to the db.
-pub fn get_user_stats(user_id: isize) -> Option<UserStat> {
+pub fn get_user_stats(user_id: usize) -> Option<UserStat> {
     match _get_user_stats(user_id) {
         Err(err) => {
             error!(
@@ -89,12 +90,12 @@ pub fn get_user_stats(user_id: isize) -> Option<UserStat> {
     }
 }
 
-pub fn get_games_lost_count_by_id(user_id: isize) -> isize {
+pub fn get_games_lost_count_by_id(user_id: usize) -> usize {
     _get_games_lost_count_by_id(user_id).unwrap_or(0)
 }
 
 pub(super) fn inc_mob_killed_count_for_user(
-    user_id: isize,
+    user_id: usize,
     mob_type: &EnemyMobType,
     amount: usize,
 ) -> Result<(), OurDBError> {
@@ -110,7 +111,7 @@ pub(super) fn inc_mob_killed_count_for_user(
     Ok(())
 }
 
-fn _get_mob_killed_counts_for_user(user_id: isize) -> Result<Vec<(String, isize)>, OurDBError> {
+fn _get_mob_killed_counts_for_user(user_id: usize) -> Result<HashMap<String, usize>, OurDBError> {
     let stmt_raw = format!(
         "
     SELECT enemyMobType, nKilled FROM  {ENEMY_KILL_HISTORY_TABLE_NAME} 
@@ -122,19 +123,19 @@ fn _get_mob_killed_counts_for_user(user_id: isize) -> Result<Vec<(String, isize)
     let rows = stmt.query([user_id])?;
     rows.mapped(|r| {
         let a = r.get::<usize, String>(0)?;
-        let b = r.get::<usize, isize>(1)?;
+        let b = r.get::<usize, usize>(1)?;
         Ok((a, b))
     })
-    .collect::<Result<Vec<(String, isize)>, Error>>()
+    .collect::<Result<HashMap<String, usize>, Error>>()
     .map_err(OurDBError::from)
 }
 
-pub fn get_mob_killed_counts_for_user(user_id: isize) -> Vec<(String, isize)> {
+pub fn get_mob_killed_counts_for_user(user_id: usize) -> HashMap<String, usize> {
     _get_mob_killed_counts_for_user(user_id).unwrap_or_else(|e| {
         error!(
             "Failed to get mob kill counts from db. Empty result fallback. {}",
             e
         );
-        Vec::default()
+        HashMap::default()
     })
 }
