@@ -81,7 +81,7 @@ jobs:
       - name: Run tests
         run: |
           set -euxo pipefail
-          echo "No tests. skipping"
+          cargo check
         shell: bash
 
   docs:
