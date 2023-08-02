@@ -4,6 +4,7 @@ use crate::{
     states,
 };
 use bevy::{prelude::*, utils::hashbrown::HashMap};
+use thetawave_interface::character_selection::PlayerJoinEvent;
 
 #[derive(Component)]
 pub struct CharacterSelectionUI;
@@ -39,9 +40,6 @@ pub struct Player2Description;
 
 #[derive(Component)]
 pub struct StartGamePrompt;
-
-#[derive(Event)]
-pub struct PlayerJoinEvent(pub usize);
 
 /// Setup the character selection UI
 pub fn setup_character_selection_system(mut commands: Commands, asset_server: Res<AssetServer>) {
