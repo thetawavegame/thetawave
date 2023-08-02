@@ -1,9 +1,11 @@
-use bevy::prelude::*;
 /// Exposes a single Plugin that links the game and our persistence layer.
+use bevy::prelude::*;
+
 use thetawave_interface::game::counters::{EnemiesKilledCounter, ShotCounters};
+use thetawave_interface::historical_metrics::DEFAULT_USER_ID;
 use thetawave_interface::states;
 
-use super::core::{get_db, setup_db, DEFAULT_USER_ID};
+use super::core::{get_db, setup_db};
 use super::user_stats::{
     inc_games_played_stat, inc_mob_killed_count_for_user, inc_n_shots_fired_for_user_id,
 };

@@ -1,6 +1,7 @@
 use bevy::prelude::info;
 use dirs::data_dir;
-use rusqlite::{Connection, Error, Result};
+use rusqlite;
+use rusqlite::Connection;
 use std::env::var_os;
 use std::ffi::OsStr;
 use std::path::PathBuf;
@@ -9,7 +10,7 @@ const THETAWAVE_DB_PATH_ENVVAR: &'static str = "THETAWAVE_DB_PATH";
 const THETAWAVE_DB_FILE: &'static str = "thetawave.sqlite";
 pub(super) const USERSTAT: &'static str = "UserStat";
 pub(super) const ENEMY_KILL_HISTORY_TABLE_NAME: &'static str = "EnemiesKilled";
-pub const DEFAULT_USER_ID: isize = 0;
+
 #[derive(Error, Debug)]
 pub(super) enum OurDBError {
     #[error(
@@ -17,14 +18,14 @@ pub(super) enum OurDBError {
     )]
     NoDBPathFound,
     #[error("Sqlite Error: {0}")]
-    SqliteError(Error),
+    SqliteError(rusqlite::Error),
     #[error("Failed to access sqlite file: {0}")]
     LocalFilesystemError(std::io::Error),
     #[error("Internal database error. Please report as a bug. {0}")]
     InternalError(String),
 }
-impl From<Error> for OurDBError {
-    fn from(value: Error) -> Self {
+impl From<rusqlite::Error> for OurDBError {
+    fn from(value: rusqlite::Error) -> Self {
         OurDBError::SqliteError(value)
     }
 }
@@ -39,14 +40,8 @@ fn default_db_path() -> Result<PathBuf, OurDBError> {
     std::fs::create_dir_all(&game_data_dir)?;
     Ok(game_data_dir.join(THETAWAVE_DB_FILE))
 }
-/// The 'model' of the UserStat Sqlite table.
-#[derive(Debug, Default)]
-pub struct UserStat {
-    pub user_id: usize,
-    pub total_shots_fired: usize,
-    pub total_games_lost: usize,
-}
-pub(super) fn setup_db(conn: Connection) -> Result<()> {
+
+pub(super) fn setup_db(conn: Connection) -> rusqlite::Result<()> {
     let create_user_stats_sql = format!(
         "CREATE TABLE IF NOT EXISTS {USERSTAT} (
         userId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ,

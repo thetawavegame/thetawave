@@ -21,7 +21,6 @@ mod audio;
 mod background;
 mod camera;
 mod collision;
-mod db;
 mod game;
 mod loot;
 mod misc;
@@ -140,7 +139,6 @@ fn main() {
     .add_plugins(animation::AnimationPlugin)
     .add_plugins(states::StatesPlugin)
     .add_plugins(game::counters::plugin::CurrentGameMetricsPlugin)
-    .add_plugins(db::plugin::DBPlugin)
     .insert_resource(ClearColor(Color::BLACK))
     .insert_resource(AmbientLight {
         color: Color::WHITE,
@@ -157,6 +155,9 @@ fn main() {
     );
 
     app.add_plugins(arcade::ArcadePlugin);
+
+    #[cfg(feature = "storage")]
+    app.add_plugins(thetawave_storage::plugin::DBPlugin);
 
     if cfg!(debug_assertions) {
         app
