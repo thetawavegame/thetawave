@@ -45,10 +45,6 @@ jobs:
       - name: cargo fmt -- --check
         run: cargo fmt -- --check
 
-      - name: temporary workaround - fmt all files under src
-        # Workaround for rust-lang/cargo#7732
-        run: cargo fmt -- --check $(find . -name '*.rs' -print)
-
   test:
     name: ${{ matrix.name }}
     needs: [style]
