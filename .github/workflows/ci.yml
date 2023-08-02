@@ -54,9 +54,6 @@ jobs:
     needs: [style]
 
     runs-on: ${{ matrix.os || 'ubuntu-latest' }}
-
-    # The build matrix does not yet support 'allow failures' at job level.
-    # See `jobs.nightly` for the active nightly job definition.
     strategy:
       matrix:
         name:
@@ -110,6 +107,7 @@ jobs:
         run: |
           set -euxo pipefail
           cargo check
+          cargo check --features arcade
         shell: bash
 
   docs:
