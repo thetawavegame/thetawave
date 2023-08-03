@@ -185,34 +185,66 @@ fn roll_current_game_counters_into_completed_game_metrics(
     }
     current_game_user_stats.clear();
 }
+
+#[cfg(test)]
 mod test {
     use crate::collision::SortedCollisionEvent;
     use crate::game::counters::plugin::CountingMetricsPlugin;
     use crate::player::{
         Character, CharacterType, CharactersResource, PlayerComponent, PlayerPlugin,
-        PlayersResource,
     };
     use crate::spawnable::{MobDestroyedEvent, SpawnProjectileEvent};
-    use bevy::prelude::{apply_state_transition, App, NextState};
-    use std::collections::HashMap;
+    use bevy::prelude::{App, Commands, Component, EventWriter, Update};
     use thetawave_interface::game::historical_metrics::{
-        MobKillsByPlayerForCompletedGames, UserStat, UserStatsByPlayerForCompletedGamesCache,
-        UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
+        MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
     };
-    use thetawave_interface::spawnable::{EnemyMobType, Faction, ProjectileType};
+    use thetawave_interface::spawnable::{EnemyMobType, Faction, MobType, ProjectileType};
     use thetawave_interface::states::{AppStates, GameStates};
 
+    fn base_app_required_for_counting_metrics() -> App {
+        let mut app = App::new();
+        app.add_state::<AppStates>()
+            .add_state::<GameStates>()
+            .add_event::<SortedCollisionEvent>()
+            .add_event::<MobDestroyedEvent>()
+            .add_event::<SpawnProjectileEvent>()
+            .insert_resource(UserStatsByPlayerForCurrentGameCache::default())
+            .add_plugins((PlayerPlugin, CountingMetricsPlugin));
+        app
+    }
+    #[derive(Component, Default, Copy, Clone)]
+    struct NullComponent;
+    fn send_mob_drone_destroyed_by_dummy_entity_event(
+        mut commands: Commands,
+        mut mob_destroyed_event_writer: EventWriter<MobDestroyedEvent>,
+    ) {
+        let entity = commands.spawn(NullComponent::default()).id();
+
+        mob_destroyed_event_writer.send(MobDestroyedEvent {
+            mob_type: MobType::Enemy(EnemyMobType::Drone),
+            entity,
+        });
+    }
+    #[test]
+    fn test_increment_player_1_mobs_killed_counter() {
+        let mut app = base_app_required_for_counting_metrics();
+        app.insert_resource(MobKillsByPlayerForCurrentGame::default());
+        app.add_event::<MobDestroyedEvent>();
+        app.add_systems(Update, send_mob_drone_destroyed_by_dummy_entity_event);
+        app.update();
+        let got_mob_kills = app
+            .world
+            .get_resource::<MobKillsByPlayerForCurrentGame>()
+            .unwrap()
+            .get(&DEFAULT_USER_ID)
+            .unwrap();
+        assert_eq!(got_mob_kills.get(&EnemyMobType::Drone).unwrap(), &1);
+        app.update();
+    }
     #[test]
     fn test_increment_player_1_shot_counter() {
-        let mut app = App::new();
-        app.add_state::<AppStates>();
-        app.add_state::<GameStates>();
-        app.add_event::<SortedCollisionEvent>()
-            .add_event::<MobDestroyedEvent>();
-        app.insert_resource(UserStatsByPlayerForCurrentGameCache::default());
-        app.add_plugins((PlayerPlugin, CountingMetricsPlugin));
+        let mut app = base_app_required_for_counting_metrics();
 
-        app.add_event::<SpawnProjectileEvent>();
         let player_1_character: Character = app
             .world
             .get_resource::<CharactersResource>()
