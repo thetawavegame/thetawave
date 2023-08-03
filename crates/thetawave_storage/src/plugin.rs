@@ -5,28 +5,16 @@ use std::collections::BTreeMap;
 use crate::user_stats::{
     get_mob_killed_counts_for_user, get_user_stats, set_user_stats_for_user_id,
 };
-use thetawave_interface::game::counters::{EnemiesKilledCounter, ShotCounters};
 use thetawave_interface::game::historical_metrics::{
     MobKillsByPlayerForCompletedGames, UserStatsByPlayerForCompletedGamesCache, DEFAULT_USER_ID,
 };
 use thetawave_interface::states;
 
 use super::core::{get_db, setup_db};
-use super::user_stats::{
-    inc_games_played_stat, set_mob_killed_count_for_user, set_n_shots_fired_for_user_id,
-};
+use super::user_stats::set_mob_killed_count_for_user;
 
 /// Persist some user-specific stats and game state to a local SQLite database.
 pub struct DBPlugin;
-
-fn inc_games_played_stat_system() {
-    match inc_games_played_stat(DEFAULT_USER_ID) {
-        Ok(_) => {}
-        Err(e) => {
-            println!("Error updating game stats: {e}");
-        }
-    };
-}
 
 fn flush_user_stats_for_completed_games_to_db(
     shot_counters_for_current_game: Res<UserStatsByPlayerForCompletedGamesCache>,
@@ -56,10 +44,6 @@ impl Plugin for DBPlugin {
         app.add_systems(
             OnExit(states::AppStates::LoadingAssets),
             (load_user_stats_cache_from_db, load_mob_kills_cache_from_db),
-        );
-        app.add_systems(
-            OnEnter(states::AppStates::GameOver),
-            inc_games_played_stat_system,
         );
         app.add_systems(
             OnExit(states::AppStates::GameOver),

@@ -1,33 +1,18 @@
-use std::collections::HashMap;
 use std::time::Duration;
 
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::plugin::RapierConfiguration;
-use thetawave_interface::game::counters::{EnemiesKilledCounter, ShotCounters};
-use thetawave_interface::historical_metrics::{UserStat, DEFAULT_USER_ID};
+use thetawave_interface::game::historical_metrics::{
+    MobKillsByPlayerForCompletedGames, MobKillsByPlayerForCurrentGame, MobsKilledByPlayerCacheT,
+    UserStatsByPlayerForCompletedGamesCache, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
+};
 use thetawave_interface::states::AppStates;
 
 use crate::{
     audio::BackgroundMusicAudioChannel, states::GameOverCleanup, ui::BouncingPromptComponent,
 };
 
-#[cfg(not(feature = "storage"))]
-fn get_user_stats(user_id: usize) -> Option<UserStat> {
-    None
-}
-#[cfg(feature = "storage")]
-fn get_user_stats(user_id: usize) -> Option<UserStat> {
-    thetawave_storage::user_stats::get_user_stats(user_id)
-}
-#[cfg(not(feature = "storage"))]
-fn get_mob_killed_counts_for_user(user_id: usize) -> HashMap<String, usize> {
-    HashMap::default()
-}
-#[cfg(feature = "storage")]
-fn get_mob_killed_counts_for_user(user_id: usize) -> HashMap<EnemyMobType, usize> {
-    thetawave_storage::user_stats::get_mob_killed_counts_for_user(user_id)
-}
 #[derive(Component)]
 pub struct GameFadeComponent;
 #[derive(Component)]
@@ -125,39 +110,39 @@ pub fn game_over_fade_in_system(
     }
 }
 
-fn pprint_mob_kills_from_db(user_id: usize) -> String {
-    pprint_mob_kils_from_data(
-        &get_mob_killed_counts_for_user(user_id)
-            .into_iter()
-            .collect(),
-    )
-}
 // Consistently format mob+kill-count pairs.
-fn pprint_mob_kils_from_data<MobType: std::fmt::Display, KillCountNumberType: std::fmt::Display>(
-    data: &Vec<(MobType, KillCountNumberType)>,
-) -> String {
-    data.into_iter()
-        .map(|(mobtype, n)| format!("{mobtype}: {n}"))
-        .collect::<Vec<String>>()
-        .join("\n")
+fn pprint_mob_kills_from_data(data: &MobsKilledByPlayerCacheT) -> String {
+    match (*data).get(&DEFAULT_USER_ID) {
+        None => String::from("No mobs killed"),
+        Some(mob_kill_counts) => mob_kill_counts
+            .iter()
+            .map(|(mobtype, n)| format!("{mobtype}: {n}"))
+            .collect::<Vec<String>>()
+            .join("\n"),
+    }
 }
 
 pub fn setup_game_over_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
-    current_game_shot_counts: Res<ShotCounters>,
-    current_game_enemy_mob_kill_counts: Res<EnemiesKilledCounter>,
+    current_game_shot_counts: Res<UserStatsByPlayerForCurrentGameCache>,
+    current_game_enemy_mob_kill_counts: Res<MobKillsByPlayerForCurrentGame>,
+    historical_games_shot_counts: Res<UserStatsByPlayerForCompletedGamesCache>,
+    historical_games_enemy_mob_kill_counts: Res<MobKillsByPlayerForCompletedGames>,
 ) {
-    let accuracy_rate: f32 = match current_game_shot_counts.n_shots_fired {
-        0 => 100.0,
-        _ => {
-            (current_game_shot_counts.n_shots_hit as f32
-                / current_game_shot_counts.n_shots_fired as f32)
-                * 100.0
+    let maybe_current_game_stats = (**current_game_shot_counts).get(&DEFAULT_USER_ID);
+    let maybe_completed_games_stats = (**historical_games_shot_counts).get(&DEFAULT_USER_ID);
+    let (accuracy_rate, total_shots_fired): (f32, usize) = match maybe_current_game_stats {
+        None => (100.0, 0),
+        Some(current_game_shot_counts) => {
+            let accuracy = (current_game_shot_counts.total_shots_hit as f32
+                / current_game_shot_counts.total_shots_fired as f32)
+                * 100.0;
+            (accuracy, current_game_shot_counts.total_shots_fired)
         }
     };
-    let maybe_user_stats = get_user_stats(DEFAULT_USER_ID);
+    let maybe_user_stats = (**historical_games_shot_counts).get(&DEFAULT_USER_ID);
     let (total_shots_fired_in_previous_games, total_games_lost) = match maybe_user_stats {
         Some(stat) => (stat.total_shots_fired, stat.total_games_lost),
         None => (0, 1),
@@ -236,8 +221,8 @@ pub fn setup_game_over_system(
                         text: Text::from_section(
                             format!(
                                 "Enemies destroyed in this game:\n{}\n\nEnemies destroyed in previous games:\n{}",
-                                pprint_mob_kils_from_data(&(current_game_enemy_mob_kill_counts.0.iter().collect())),
-                                pprint_mob_kills_from_db(DEFAULT_USER_ID),
+                                pprint_mob_kills_from_data(&(**current_game_enemy_mob_kill_counts)),
+                                pprint_mob_kills_from_data(&(**historical_games_enemy_mob_kill_counts)),
                             ),
                             TextStyle {
                                 font: font.clone(),
@@ -258,7 +243,7 @@ pub fn setup_game_over_system(
                         text: Text::from_section(
                             format!(
                                 "Shots fired this game: {}\nAccuracy Rate: {:.2}%\nShots fired in previous games: {}\nGames Lost: {}",
-                                current_game_shot_counts.n_shots_fired,
+                                total_shots_fired,
                                 accuracy_rate,
                                 total_shots_fired_in_previous_games,
                                 total_games_lost,
