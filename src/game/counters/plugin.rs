@@ -30,12 +30,15 @@ impl Plugin for CountingMetricsPlugin {
                 inc_in_memory_mob_destroyed_for_current_game_cache,
                 count_shots_fired_by_player_1_system,
                 inc_in_memory_projectile_hits_counter_system,
-                inc_completed_games_played_counter,
             ),
         );
         app.add_systems(
             OnEnter(AppStates::Game),
             roll_current_game_counters_into_completed_game_metrics,
+        );
+        app.add_systems(
+            OnEnter(AppStates::GameOver),
+            inc_completed_games_played_counter,
         );
     }
 }
