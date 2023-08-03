@@ -182,3 +182,76 @@ fn roll_current_game_counters_into_completed_game_metrics(
     }
     current_game_user_stats.clear();
 }
+mod test {
+    use crate::collision::SortedCollisionEvent;
+    use crate::game::counters::plugin::CountingMetricsPlugin;
+    use crate::player::{
+        Character, CharacterType, CharactersResource, PlayerComponent, PlayerPlugin,
+        PlayersResource,
+    };
+    use crate::spawnable::{MobDestroyedEvent, SpawnProjectileEvent};
+    use bevy::prelude::{apply_state_transition, App, NextState};
+    use std::collections::HashMap;
+    use thetawave_interface::game::historical_metrics::{
+        MobKillsByPlayerForCompletedGames, UserStat, UserStatsByPlayerForCompletedGamesCache,
+        UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
+    };
+    use thetawave_interface::spawnable::{EnemyMobType, Faction, ProjectileType};
+    use thetawave_interface::states::{AppStates, GameStates};
+
+    #[test]
+    fn test_increment_player_1_shot_counter() {
+        let mut app = App::new();
+        app.add_state::<AppStates>();
+        app.add_state::<GameStates>();
+        app.add_event::<SortedCollisionEvent>()
+            .add_event::<MobDestroyedEvent>();
+        app.insert_resource(UserStatsByPlayerForCurrentGameCache::default());
+        app.add_plugins((PlayerPlugin, CountingMetricsPlugin));
+
+        app.add_event::<SpawnProjectileEvent>();
+        let player_1_character: Character = app
+            .world
+            .get_resource::<CharactersResource>()
+            .unwrap()
+            .characters
+            .get(&CharacterType::Captain)
+            .cloned()
+            .unwrap();
+        let player_1: PlayerComponent = PlayerComponent::from(&player_1_character);
+
+        let player_1_entity = app.world.spawn(player_1.clone());
+        let player_1_projectile_event = SpawnProjectileEvent {
+            projectile_type: ProjectileType::Bullet(Faction::Ally),
+            transform: Default::default(),
+            damage: 0.0,
+            despawn_time: 0.0,
+            initial_motion: Default::default(),
+            health: None,
+            source: player_1_entity.id(),
+        };
+        app.world.send_event(player_1_projectile_event.clone());
+        app.update();
+        let n_p1_shots_fired = app
+            .world
+            .get_resource::<UserStatsByPlayerForCurrentGameCache>()
+            .unwrap()
+            .0
+            .get(&DEFAULT_USER_ID)
+            .unwrap()
+            .total_shots_fired;
+        assert_eq!(n_p1_shots_fired, 1);
+        app.world.send_event(player_1_projectile_event.clone());
+        app.update();
+        // apply_state_transition(&mut app.world);
+        let n_p1_shots_fired_2 = app
+            .world
+            .get_resource::<UserStatsByPlayerForCurrentGameCache>()
+            .unwrap()
+            .0
+            .get(&DEFAULT_USER_ID)
+            .unwrap()
+            .total_shots_fired;
+        assert_eq!(n_p1_shots_fired_2, 2);
+    }
+}
