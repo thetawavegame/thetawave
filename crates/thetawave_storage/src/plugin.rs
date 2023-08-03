@@ -86,3 +86,81 @@ fn db_setup_system() {
         }
     };
 }
+
+#[cfg(test)]
+mod test {
+    use crate::user_stats::{get_mob_killed_counts_for_user, get_user_stats};
+    use bevy::prelude::{apply_state_transition, App, NextState};
+    use thetawave_interface::game::historical_metrics::{
+        MobKillsByPlayerForCompletedGames, MobsKilledBy1PlayerCacheT, UserStat,
+        UserStatsByPlayerForCompletedGamesCache, DEFAULT_USER_ID,
+    };
+    use thetawave_interface::spawnable::EnemyMobType;
+    use thetawave_interface::states::AppStates;
+
+    #[test]
+    fn test_recover_resources_from_db_after_mock_program_restart() {
+        let mut app = App::new();
+        app.add_state::<AppStates>(); // start game in the main menu state
+
+        app.insert_resource(MobKillsByPlayerForCompletedGames::default());
+        app.insert_resource(UserStatsByPlayerForCompletedGamesCache::default());
+        assert_eq!(
+            get_mob_killed_counts_for_user(DEFAULT_USER_ID),
+            MobsKilledBy1PlayerCacheT::default()
+        );
+        assert_eq!(
+            get_user_stats(DEFAULT_USER_ID).unwrap(),
+            UserStat::default()
+        );
+        let mut state = NextState::<AppStates>::default();
+        state.set(AppStates::LoadingAssets); // Trigger db init/setup
+        apply_state_transition(&mut app.world);
+        app.update();
+
+        let mut some_mob_kills_after_1_game = MobKillsByPlayerForCompletedGames::default();
+        some_mob_kills_after_1_game.0.insert(
+            DEFAULT_USER_ID,
+            MobsKilledBy1PlayerCacheT::from([(EnemyMobType::Drone, 15)]),
+        );
+        app.insert_resource(some_mob_kills_after_1_game.clone());
+        state.set(AppStates::LoadingAssets); // repull "forgotten" data from db
+
+        apply_state_transition(&mut app.world);
+        app.update();
+
+        assert_eq!(
+            &get_mob_killed_counts_for_user(DEFAULT_USER_ID),
+            &some_mob_kills_after_1_game
+                .0
+                .get(&DEFAULT_USER_ID)
+                .unwrap()
+                .clone()
+        );
+        // By clearing the resource, we can only recover it if it was remembered somehow.
+
+        // pretend that we just restarted the game.
+        app.insert_resource(MobKillsByPlayerForCompletedGames::default());
+        state.set(AppStates::LoadingAssets); // repull "forgotten" data from db
+        apply_state_transition(&mut app.world);
+        app.update();
+
+        assert_eq!(
+            &get_mob_killed_counts_for_user(DEFAULT_USER_ID),
+            &some_mob_kills_after_1_game
+                .0
+                .get(&DEFAULT_USER_ID)
+                .unwrap()
+                .clone()
+        );
+
+        assert_eq!(
+            &get_mob_killed_counts_for_user(DEFAULT_USER_ID),
+            app.world
+                .get_resource::<MobKillsByPlayerForCompletedGames>()
+                .unwrap()
+                .get(&DEFAULT_USER_ID)
+                .unwrap()
+        );
+    }
+}
