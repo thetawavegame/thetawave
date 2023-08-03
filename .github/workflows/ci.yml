@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+env:
+  RUST_BACKTRACE: 1
 
 jobs:
   ci-pass:
@@ -107,7 +109,7 @@ jobs:
         run: |
           set -euxo pipefail
           cargo check
-          cargo check --features arcade
+          cargo test --all-features
         shell: bash
 
   docs:
