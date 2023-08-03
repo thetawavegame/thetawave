@@ -194,7 +194,7 @@ mod test {
         Character, CharacterType, CharactersResource, PlayerComponent, PlayerPlugin,
     };
     use crate::spawnable::{MobDestroyedEvent, SpawnProjectileEvent};
-    use bevy::prelude::{App, Commands, Component, EventWriter, Update};
+    use bevy::prelude::{App, Component, Events};
     use thetawave_interface::game::historical_metrics::{
         MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
     };
@@ -214,23 +214,19 @@ mod test {
     }
     #[derive(Component, Default, Copy, Clone)]
     struct NullComponent;
-    fn send_mob_drone_destroyed_by_dummy_entity_event(
-        mut commands: Commands,
-        mut mob_destroyed_event_writer: EventWriter<MobDestroyedEvent>,
-    ) {
-        let entity = commands.spawn(NullComponent::default()).id();
-
-        mob_destroyed_event_writer.send(MobDestroyedEvent {
-            mob_type: MobType::Enemy(EnemyMobType::Drone),
-            entity,
-        });
-    }
     #[test]
     fn test_increment_player_1_mobs_killed_counter() {
         let mut app = base_app_required_for_counting_metrics();
         app.insert_resource(MobKillsByPlayerForCurrentGame::default());
         app.add_event::<MobDestroyedEvent>();
-        app.add_systems(Update, send_mob_drone_destroyed_by_dummy_entity_event);
+        // app.add_systems(Update, send_mob_drone_destroyed_by_dummy_entity_event);
+
+        let entity = app.world.spawn(NullComponent::default()).id();
+        let mut events = app.world.resource_mut::<Events<MobDestroyedEvent>>();
+        events.send(MobDestroyedEvent {
+            mob_type: MobType::Enemy(EnemyMobType::Drone),
+            entity,
+        });
         app.update();
         let got_mob_kills = app
             .world
@@ -239,7 +235,6 @@ mod test {
             .get(&DEFAULT_USER_ID)
             .unwrap();
         assert_eq!(got_mob_kills.get(&EnemyMobType::Drone).unwrap(), &1);
-        app.update();
     }
     #[test]
     fn test_increment_player_1_shot_counter() {
