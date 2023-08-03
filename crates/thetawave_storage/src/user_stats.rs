@@ -28,26 +28,6 @@ pub(super) fn set_user_stats_for_user_id(
     ])?;
     Ok(())
 }
-pub(super) fn set_n_shots_fired_for_user_id(
-    user_id: usize,
-    n_shots: usize,
-) -> Result<(), OurDBError> {
-    let stmt_raw = format!(
-        "
-    INSERT OR REPLACE INTO {USERSTAT} (userId, totalShotsFired)
-    VALUES (?1,  ?2)
-    ON CONFLICT DO UPDATE SET ?2"
-    );
-    let conn = get_db()?;
-    info!(
-        "Preparing db upsert {} with param n_shots={}",
-        &stmt_raw, n_shots
-    );
-    conn.prepare(&stmt_raw)?
-        .execute(params![user_id, n_shots])?;
-    Ok(())
-}
-
 fn _get_user_stats(user_id: usize) -> Result<UserStat, OurDBError> {
     let conn = get_db()?;
     let stmt_raw = format!(

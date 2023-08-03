@@ -11,7 +11,7 @@ use thetawave_interface::game::historical_metrics::{
 use thetawave_interface::states;
 
 use super::core::{get_db, setup_db};
-use super::user_stats::{set_mob_killed_count_for_user, set_n_shots_fired_for_user_id};
+use super::user_stats::set_mob_killed_count_for_user;
 
 /// Persist some user-specific stats and game state to a local SQLite database.
 pub struct DBPlugin;
