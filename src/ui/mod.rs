@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 pub use thetawave_interface::character_selection::PlayerJoinEvent;
+use thetawave_interface::game::historical_metrics::{MobsKilledByPlayerCacheT, DEFAULT_USER_ID};
 
 use crate::{states, GameEnterSet, GameUpdateSet};
 
@@ -10,6 +11,7 @@ mod game_over;
 mod instructions;
 mod main_menu;
 mod pause_menu;
+mod stats;
 mod victory;
 
 pub use self::character_selection::{
@@ -23,6 +25,7 @@ pub use self::{
     },
     main_menu::{bouncing_prompt_system, setup_main_menu_system, BouncingPromptComponent},
     pause_menu::setup_pause_system,
+    stats::setup_stats_ui_system,
     victory::{setup_victory_system, victory_fade_in_system},
 };
 
@@ -61,6 +64,8 @@ impl Plugin for UiPlugin {
             setup_instructions_system,
         );
 
+        app.add_systems(OnEnter(states::AppStates::Stats), setup_stats_ui_system);
+
         app.add_systems(
             OnEnter(states::AppStates::CharacterSelection),
             setup_character_selection_system,
@@ -87,5 +92,17 @@ impl Plugin for UiPlugin {
         );
 
         app.add_systems(OnEnter(states::GameStates::Paused), setup_pause_system);
+    }
+}
+
+// Consistently format mob+kill-count pairs.
+fn pprint_mob_kills_from_data(data: &MobsKilledByPlayerCacheT) -> String {
+    match (*data).get(&DEFAULT_USER_ID) {
+        None => String::from("No mobs killed"),
+        Some(mob_kill_counts) => mob_kill_counts
+            .iter()
+            .map(|(mobtype, n)| format!("{mobtype}: {n}"))
+            .collect::<Vec<String>>()
+            .join("\n"),
     }
 }

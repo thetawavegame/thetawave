@@ -110,18 +110,6 @@ pub fn game_over_fade_in_system(
     }
 }
 
-// Consistently format mob+kill-count pairs.
-fn pprint_mob_kills_from_data(data: &MobsKilledByPlayerCacheT) -> String {
-    match (*data).get(&DEFAULT_USER_ID) {
-        None => String::from("No mobs killed"),
-        Some(mob_kill_counts) => mob_kill_counts
-            .iter()
-            .map(|(mobtype, n)| format!("{mobtype}: {n}"))
-            .collect::<Vec<String>>()
-            .join("\n"),
-    }
-}
-
 pub fn setup_game_over_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -221,8 +209,8 @@ pub fn setup_game_over_system(
                         text: Text::from_section(
                             format!(
                                 "Enemies destroyed in this game:\n{}\n\nEnemies destroyed in previous games:\n{}",
-                                pprint_mob_kills_from_data(&(**current_game_enemy_mob_kill_counts)),
-                                pprint_mob_kills_from_data(&(**historical_games_enemy_mob_kill_counts)),
+                                super::pprint_mob_kills_from_data(&(**current_game_enemy_mob_kill_counts)),
+                                super::pprint_mob_kills_from_data(&(**historical_games_enemy_mob_kill_counts)),
                             ),
                             TextStyle {
                                 font: font.clone(),
