@@ -137,7 +137,7 @@ fn main() {
     .add_plugins(scanner::ScannerPlugin)
     .add_plugins(animation::AnimationPlugin)
     .add_plugins(states::StatesPlugin)
-    .add_plugins(game::counters::plugin::CurrentGameMetricsPlugin)
+    .add_plugins(game::counters::plugin::CountingMetricsPlugin)
     .insert_resource(ClearColor(Color::BLACK))
     .insert_resource(AmbientLight {
         color: Color::WHITE,

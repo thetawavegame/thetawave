@@ -2,10 +2,11 @@
 //! corresponding systems are not 'online' to mutate the resources.
 use crate::spawnable::EnemyMobType;
 use bevy_ecs_macros::Resource;
+use derive_more;
 use std::collections::{BTreeMap, HashMap};
 
 /// The 'model' of the UserStat Sqlite table. Persisted user stats about past games.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone, derive_more::AddAssign)]
 pub struct UserStat {
     pub total_shots_fired: usize,
     pub total_shots_hit: usize,
