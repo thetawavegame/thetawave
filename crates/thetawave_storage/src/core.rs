@@ -46,6 +46,7 @@ pub(super) fn setup_db(conn: Connection) -> rusqlite::Result<()> {
         "CREATE TABLE IF NOT EXISTS {USERSTAT} (
         userId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ,
         totalShotsFired  INTEGER NOT NULL DEFAULT 0,
+        totalShotsHit  INTEGER NOT NULL DEFAULT 0,
         totalGamesLost INTEGER NOT NULL DEFAULT 0
     )"
     );
