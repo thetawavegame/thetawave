@@ -25,7 +25,7 @@ fn get_mob_killed_counts_for_user(user_id: usize) -> HashMap<String, usize> {
     HashMap::default()
 }
 #[cfg(feature = "storage")]
-fn get_mob_killed_counts_for_user(user_id: usize) -> HashMap<String, usize> {
+fn get_mob_killed_counts_for_user(user_id: usize) -> HashMap<EnemyMobType, usize> {
     thetawave_storage::user_stats::get_mob_killed_counts_for_user(user_id)
 }
 #[derive(Component)]

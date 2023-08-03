@@ -1,10 +1,10 @@
 use crate::core::{get_db, OurDBError, ENEMY_KILL_HISTORY_TABLE_NAME, USERSTAT};
 use bevy::prelude::{error, info};
-use rusqlite::{params, Error, Result};
+use rusqlite::{params, Result};
 use std::collections::HashMap;
 use thetawave_interface::spawnable::EnemyMobType;
 
-use thetawave_interface::historical_metrics::UserStat;
+use thetawave_interface::game::historical_metrics::UserStat;
 pub(super) fn inc_games_played_stat(user_id: usize) -> Result<(), OurDBError> {
     let stmt_raw = format!(
         "
@@ -17,7 +17,29 @@ pub(super) fn inc_games_played_stat(user_id: usize) -> Result<(), OurDBError> {
     Ok(())
 }
 
-pub(super) fn inc_n_shots_fired_for_user_id(
+pub(super) fn set_user_stats_for_user_id(
+    user_id: usize,
+    user_stats: &UserStat,
+) -> Result<(), OurDBError> {
+    let stmt_raw = format!(
+        "
+    INSERT OR REPLACE INTO {USERSTAT} (userId, totalShotsFired, totalGamesLost)
+    VALUES (?1,  ?2, ?3)
+    ON CONFLICT DO UPDATE SET totalShotsFires=?2, totalGamesLost=?3"
+    );
+    let conn = get_db()?;
+    info!(
+        "Preparing db upsert {} with param n_shots={}",
+        &stmt_raw, user_stats.total_shots_fired
+    );
+    conn.prepare(&stmt_raw)?.execute(params![
+        user_id,
+        user_stats.total_shots_fired,
+        user_stats.total_games_lost
+    ])?;
+    Ok(())
+}
+pub(super) fn set_n_shots_fired_for_user_id(
     user_id: usize,
     n_shots: usize,
 ) -> Result<(), OurDBError> {
@@ -25,7 +47,7 @@ pub(super) fn inc_n_shots_fired_for_user_id(
         "
     INSERT OR REPLACE INTO {USERSTAT} (userId, totalShotsFired)
     VALUES (?1,  ?2)
-    ON CONFLICT DO UPDATE SET totalShotsFired=totalShotsFired+?2"
+    ON CONFLICT DO UPDATE SET ?2"
     );
     let conn = get_db()?;
     info!(
@@ -55,20 +77,20 @@ fn _get_user_stats(user_id: usize) -> Result<UserStat, OurDBError> {
     let conn = get_db()?;
     let stmt_raw = format!(
         "
-    SELECT userId, totalGamesLost, totalShotsFired FROM  {USERSTAT} 
+    SELECT totalGamesLost, totalShotsFired, totalShotsHit FROM  {USERSTAT}
     WHERE userId=?1"
     );
     let mut stmt = conn.prepare(&stmt_raw)?;
     let mut rows = stmt.query([user_id])?;
     match rows.next()? {
         Some(r) => {
-            let user_id: usize = r.get(0)?;
             let total_games_lost = r.get(1)?;
             let total_shots_fired = r.get(2)?;
+            let total_shots_hit = r.get(3)?;
             Ok(UserStat {
-                user_id,
                 total_games_lost,
                 total_shots_fired,
+                total_shots_hit,
             })
         }
 
@@ -94,7 +116,7 @@ pub fn get_games_lost_count_by_id(user_id: usize) -> usize {
     _get_games_lost_count_by_id(user_id).unwrap_or(0)
 }
 
-pub(super) fn inc_mob_killed_count_for_user(
+pub(super) fn set_mob_killed_count_for_user(
     user_id: usize,
     mob_type: &EnemyMobType,
     amount: usize,
@@ -103,7 +125,7 @@ pub(super) fn inc_mob_killed_count_for_user(
         "
     INSERT OR REPLACE INTO {ENEMY_KILL_HISTORY_TABLE_NAME} (userId, enemyMobType, nKilled)
     VALUES (?1,  ?2, ?3)
-    ON CONFLICT DO UPDATE SET nKilled=nKilled+?3"
+    ON CONFLICT DO UPDATE SET nKilled=?3"
     );
     let conn = get_db()?;
     conn.prepare(&stmt_raw)?
@@ -111,7 +133,9 @@ pub(super) fn inc_mob_killed_count_for_user(
     Ok(())
 }
 
-fn _get_mob_killed_counts_for_user(user_id: usize) -> Result<HashMap<String, usize>, OurDBError> {
+fn _get_mob_killed_counts_for_user(
+    user_id: usize,
+) -> Result<HashMap<EnemyMobType, usize>, OurDBError> {
     let stmt_raw = format!(
         "
     SELECT enemyMobType, nKilled FROM  {ENEMY_KILL_HISTORY_TABLE_NAME} 
@@ -121,16 +145,29 @@ fn _get_mob_killed_counts_for_user(user_id: usize) -> Result<HashMap<String, usi
     let conn = get_db()?;
     let mut stmt = conn.prepare(&stmt_raw)?;
     let rows = stmt.query([user_id])?;
-    rows.mapped(|r| {
-        let a = r.get::<usize, String>(0)?;
-        let b = r.get::<usize, usize>(1)?;
-        Ok((a, b))
-    })
-    .collect::<Result<HashMap<String, usize>, Error>>()
-    .map_err(OurDBError::from)
+    Ok(rows
+        .mapped(|r| {
+            let a = r.get::<usize, String>(0)?;
+            let b = r.get::<usize, usize>(1)?;
+            Ok((a, b))
+        })
+        .collect::<Result<Vec<(String, usize)>, rusqlite::Error>>()?
+        .into_iter()
+        .map(|(mob, n)| {
+            Ok((
+                mob.parse::<EnemyMobType>().map_err(|e| {
+                    OurDBError::InternalError(format!("Failed to read mob data from db {}", e))
+                })?,
+                n,
+            ))
+        })
+        .collect::<Result<Vec<(EnemyMobType, usize)>, OurDBError>>()?
+        .into_iter()
+        // The DB primary key guarantees that translating from a vec -> hashmap doesnt lose elements
+        .collect())
 }
 
-pub fn get_mob_killed_counts_for_user(user_id: usize) -> HashMap<String, usize> {
+pub fn get_mob_killed_counts_for_user(user_id: usize) -> HashMap<EnemyMobType, usize> {
     _get_mob_killed_counts_for_user(user_id).unwrap_or_else(|e| {
         error!(
             "Failed to get mob kill counts from db. Empty result fallback. {}",
