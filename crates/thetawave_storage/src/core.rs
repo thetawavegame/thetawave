@@ -11,29 +11,22 @@ const THETAWAVE_DB_FILE: &'static str = "thetawave.sqlite";
 pub(super) const USERSTAT: &'static str = "UserStat";
 pub(super) const ENEMY_KILL_HISTORY_TABLE_NAME: &'static str = "EnemiesKilled";
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, derive_more::From)]
 pub(super) enum OurDBError {
     #[error(
         "No suitable location found for the user stats database. Is this a supported platform?"
     )]
+    #[from(ignore)]
     NoDBPathFound,
     #[error("Sqlite Error: {0}")]
     SqliteError(rusqlite::Error),
     #[error("Failed to access sqlite file: {0}")]
     LocalFilesystemError(std::io::Error),
     #[error("Internal database error. Please report as a bug. {0}")]
+    #[from(ignore)]
     InternalError(String),
 }
-impl From<rusqlite::Error> for OurDBError {
-    fn from(value: rusqlite::Error) -> Self {
-        OurDBError::SqliteError(value)
-    }
-}
-impl From<std::io::Error> for OurDBError {
-    fn from(value: std::io::Error) -> Self {
-        OurDBError::LocalFilesystemError(value)
-    }
-}
+
 fn default_db_path() -> Result<PathBuf, OurDBError> {
     let data_dir = data_dir().ok_or(OurDBError::NoDBPathFound)?;
     let game_data_dir = data_dir.join("thetawave");

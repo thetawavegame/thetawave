@@ -1,8 +1,8 @@
 use serde::Deserialize;
-use strum_macros::Display;
+use strum_macros::{Display, EnumString};
 
 /// Type that encompasses all spawnable enemy mobs
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+#[derive(Deserialize, EnumString, Display, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum EnemyMobType {
     Pawn,
     Drone,
