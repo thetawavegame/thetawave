@@ -7,28 +7,36 @@ use crate::{
 use bevy::prelude::{debug, App, Entity, EventReader, OnEnter, Plugin, Query, ResMut, Update};
 
 use std::collections::HashMap;
-use thetawave_interface::game::counters::{EnemiesKilledCounter, ShotCounters};
-/// Expose all of the mutations for the within-game metric counters via a bevy plugin.
+use thetawave_interface::game::historical_metrics::{
+    MobKillsByPlayerForCompletedGames, MobKillsByPlayerForCurrentGame, UserStat,
+    UserStatsByPlayerForCompletedGamesCache, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
+};
 use thetawave_interface::spawnable::MobType;
-/// Expose all of the mutations for the within-game metric counters via a bevy plugin.
 use thetawave_interface::states::AppStates;
 
-/// Maintains/mutates singleton resources that keep track of metrics for the current game. These are reset on each new game.
-pub struct CurrentGameMetricsPlugin;
+/// Maintains/mutates singleton resources that keep track of metrics for the current game. Mostly
+/// incrementing a reseting counters.
+pub struct CountingMetricsPlugin;
 
-impl Plugin for CurrentGameMetricsPlugin {
+impl Plugin for CountingMetricsPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(EnemiesKilledCounter::default());
-        app.insert_resource(ShotCounters::default());
+        app.insert_resource(MobKillsByPlayerForCompletedGames::default());
+        app.insert_resource(MobKillsByPlayerForCurrentGame::default());
+        app.insert_resource(UserStatsByPlayerForCompletedGamesCache::default());
+        app.insert_resource(UserStatsByPlayerForCurrentGameCache::default());
         app.add_systems(
             Update,
             (
-                count_enemies_destroyed_system,
+                inc_in_memory_mob_destroyed_for_current_game_cache,
                 count_shots_fired_by_player_1_system,
-                inc_p1_projectile_hits_counter_system,
+                inc_in_memory_projectile_hits_counter_system,
+                inc_completed_games_played_counter,
             ),
         );
-        app.add_systems(OnEnter(AppStates::Game), reset_game_metric_counters);
+        app.add_systems(
+            OnEnter(AppStates::Game),
+            roll_current_game_counters_into_completed_game_metrics,
+        );
     }
 }
 
@@ -42,52 +50,75 @@ fn inc_usize_map<T: std::hash::Hash + std::cmp::Eq>(map: &mut HashMap<T, usize>,
         }
     }
 }
+fn inc_completed_games_played_counter(
+    mut user_stats: ResMut<UserStatsByPlayerForCompletedGamesCache>,
+) {
+    (**user_stats)
+        .entry(DEFAULT_USER_ID)
+        .or_default()
+        .total_games_lost += 1;
+}
 
-fn count_enemies_destroyed_system(
-    mut mobs_destroyed_counters: ResMut<EnemiesKilledCounter>,
+fn inc_in_memory_mob_destroyed_for_current_game_cache(
+    mut mobs_destroyed_counters_by_player: ResMut<MobKillsByPlayerForCurrentGame>,
     mut mob_destroyed_event_reader: EventReader<MobDestroyedEvent>,
 ) {
+    let player_1_mob_counters = (**mobs_destroyed_counters_by_player)
+        .entry(DEFAULT_USER_ID)
+        .or_insert_with(|| Default::default());
     for event in mob_destroyed_event_reader.iter() {
         if let MobType::Enemy(enemy_type) = &event.mob_type {
-            inc_usize_map(&mut mobs_destroyed_counters.as_mut().0, enemy_type.clone());
+            inc_usize_map(player_1_mob_counters, enemy_type.clone());
         }
     }
 }
-fn inc_p1_projectile_hits_counter_system(
-    mut shot_counters: ResMut<ShotCounters>,
-    mut collision_event_reader: EventReader<SortedCollisionEvent>,
-    player_query: Query<(Entity, &PlayerComponent)>,
-) {
-    if let Some(player_1_entity_id) = player_query
+fn find_player_1<'a, 'b: 'a>(
+    player_query: &'a Query<(Entity, &'b PlayerComponent)>,
+) -> Option<Entity> {
+    player_query
         .iter()
         .find(|(_, pc)| pc.player_index == 0)
-        .map(|(x, _)| x)
-    {
+        .map(|(entity, _)| entity)
+}
+fn mob_projectile_collision_originates_from_entity(
+    collision: &SortedCollisionEvent,
+    entity: &Entity,
+) -> bool {
+    if let Some(projectile_source_id) = match collision {
+        SortedCollisionEvent::MobToProjectileIntersection {
+            projectile_source, ..
+        } => Some(projectile_source),
+        SortedCollisionEvent::MobToProjectileContact {
+            projectile_source, ..
+        } => Some(projectile_source),
+        _ => None,
+    } {
+        return *projectile_source_id == *entity;
+    }
+    false
+}
+fn inc_in_memory_projectile_hits_counter_system<'b>(
+    mut current_game_user_stats: ResMut<UserStatsByPlayerForCurrentGameCache>,
+    mut collision_event_reader: EventReader<SortedCollisionEvent>,
+    player_query: Query<(Entity, &'b PlayerComponent)>,
+) {
+    if let Some(player_1_entity_id) = find_player_1(&player_query) {
         let n_player_1_hit_shots = collision_event_reader
             .iter()
-            .filter(|c| {
-                if let Some(projectile_source_id) = match c {
-                    SortedCollisionEvent::MobToProjectileIntersection {
-                        projectile_source, ..
-                    } => Some(projectile_source),
-                    SortedCollisionEvent::MobToProjectileContact {
-                        projectile_source, ..
-                    } => Some(projectile_source),
-                    _ => None,
-                } {
-                    return *projectile_source_id == player_1_entity_id;
-                }
-                false
-            })
+            .filter(|c| mob_projectile_collision_originates_from_entity(c, &player_1_entity_id))
             .count();
-        shot_counters.n_shots_hit += n_player_1_hit_shots;
+        if let Some(ref mut player_1_user_stats) =
+            (**current_game_user_stats).get_mut(&DEFAULT_USER_ID)
+        {
+            player_1_user_stats.total_shots_hit += n_player_1_hit_shots;
+        }
     }
 }
 
 fn count_shots_fired_by_player_1_system(
+    mut current_game_user_stats: ResMut<UserStatsByPlayerForCurrentGameCache>,
     mut shots_fired_event_reader: EventReader<SpawnProjectileEvent>,
     query: Query<(Entity, &PlayerComponent)>,
-    mut shot_counters: ResMut<ShotCounters>,
 ) {
     let maybe_player_1_entity_id = query
         .iter()
@@ -105,19 +136,49 @@ fn count_shots_fired_by_player_1_system(
             "Incrementing total player 1 shots by {}, n_p1_shots_fired",
             n_p1_shots_fired
         );
-        shot_counters.n_shots_fired += n_p1_shots_fired;
+        current_game_user_stats
+            .entry(DEFAULT_USER_ID)
+            .and_modify(|x| {
+                x.total_shots_fired += n_p1_shots_fired;
+            })
+            .or_insert_with(|| {
+                let mut stat = UserStat::default();
+                stat.total_shots_fired = n_p1_shots_fired;
+                stat
+            });
     }
 }
-/// Zero-out all within-game/run metric counters to prepare for the next game.
-fn reset_game_metric_counters(
-    mut shot_counters: ResMut<ShotCounters>,
-    mut mobs_descroyed_counters: ResMut<EnemiesKilledCounter>,
+/// Analagous to "log rolling" except we merge counters and add integers.
+fn roll_current_game_counters_into_completed_game_metrics(
+    mut current_game_user_stats: ResMut<UserStatsByPlayerForCurrentGameCache>,
+    mut mobs_destroyed_counters_by_player: ResMut<MobKillsByPlayerForCurrentGame>,
+    mut historical_games_shot_counts: ResMut<UserStatsByPlayerForCompletedGamesCache>,
+    mut historical_games_enemy_mob_kill_counts: ResMut<MobKillsByPlayerForCompletedGames>,
 ) {
-    debug!("mobs killed: {:?}", &shot_counters);
     debug!(
-        "mobs_descroyed_counters killed: {:?}",
-        &mobs_descroyed_counters
+        "mobs_destroyed_counters_by_player : {:?}",
+        &mobs_destroyed_counters_by_player
     );
-    *shot_counters = ShotCounters::default();
-    *mobs_descroyed_counters = EnemiesKilledCounter::default();
+    for (user_id, current_game_mob_kills) in (**mobs_destroyed_counters_by_player).iter() {
+        for (mob_type, n_mobs) in current_game_mob_kills.iter() {
+            (*historical_games_enemy_mob_kill_counts)
+                .entry(user_id.clone())
+                .or_default()
+                .entry(mob_type.clone())
+                .and_modify(|x| {
+                    *x += n_mobs;
+                })
+                .or_insert(*n_mobs);
+        }
+    }
+    mobs_destroyed_counters_by_player.clear();
+    for (user_id, current_game_stats) in (**current_game_user_stats).iter() {
+        (*historical_games_shot_counts)
+            .entry(user_id.clone())
+            .and_modify(|x| {
+                *x += current_game_stats.clone();
+            })
+            .or_insert(current_game_stats.clone());
+    }
+    current_game_user_stats.clear();
 }
