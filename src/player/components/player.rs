@@ -5,7 +5,7 @@ use thetawave_interface::spawnable::ProjectileType;
 use crate::{misc::Health, player::Character};
 
 /// Component for managing core attributes of the player
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Clone)]
 pub struct PlayerComponent {
     /// Acceleration of the player
     pub acceleration: Vec2,

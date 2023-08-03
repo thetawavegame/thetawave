@@ -22,7 +22,7 @@ pub use self::behavior::{projectile_execute_behavior_system, ProjectileBehavior}
 use super::ColliderData;
 
 /// Event for spawning projectiles
-#[derive(Event)]
+#[derive(Event, Clone)]
 pub struct SpawnProjectileEvent {
     /// Type of projectile to spawn
     pub projectile_type: ProjectileType,

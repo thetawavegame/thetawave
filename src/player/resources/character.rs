@@ -9,7 +9,7 @@ use crate::{misc::Health, player::components::AbilityType};
 /// A character is chosen at the beginning of the game.
 /// The base stats of the player are provided from the character.
 /// Other data such as sprite sheets are also included with the character.
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct Character {
     /// Base acceleration
     pub acceleration: Vec2,
