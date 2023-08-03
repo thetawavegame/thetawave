@@ -1,12 +1,12 @@
 /// Exposes a single Plugin that links the game and our persistence layer.
 use bevy::prelude::*;
-use std::collections::BTreeMap;
 
 use crate::user_stats::{
     get_mob_killed_counts_for_user, get_user_stats, set_user_stats_for_user_id,
 };
 use thetawave_interface::game::historical_metrics::{
-    MobKillsByPlayerForCompletedGames, UserStatsByPlayerForCompletedGamesCache, DEFAULT_USER_ID,
+    MobKillsByPlayerForCompletedGames, MobsKilledByPlayerCacheT, UserStatsByPlayerCacheT,
+    UserStatsByPlayerForCompletedGamesCache, DEFAULT_USER_ID,
 };
 use thetawave_interface::states;
 
@@ -63,16 +63,18 @@ fn load_user_stats_cache_from_db(
             user_stats_cache
         );
     }
-    user_stats_cache.0 = BTreeMap::from([(0, get_user_stats(DEFAULT_USER_ID).unwrap_or_default())]);
+    user_stats_cache.0 =
+        UserStatsByPlayerCacheT::from([(0, get_user_stats(DEFAULT_USER_ID).unwrap_or_default())]);
 }
 fn load_mob_kills_cache_from_db(mut mob_kills_cache: ResMut<MobKillsByPlayerForCompletedGames>) {
-    if !mob_kills_cache.0.is_empty() {
+    if !(**mob_kills_cache).is_empty() {
         warn!(
             "evicting data from the in-memory mob kills cache. Is this right? {:?}",
             mob_kills_cache
         );
     }
-    mob_kills_cache.0 = BTreeMap::from([(0, get_mob_killed_counts_for_user(DEFAULT_USER_ID))]);
+    (**mob_kills_cache) =
+        MobsKilledByPlayerCacheT::from([(0, get_mob_killed_counts_for_user(DEFAULT_USER_ID))]);
 }
 fn db_setup_system() {
     match get_db() {
