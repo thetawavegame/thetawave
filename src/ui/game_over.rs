@@ -6,6 +6,7 @@ use bevy_rapier2d::plugin::RapierConfiguration;
 
 use crate::{
     audio::BackgroundMusicAudioChannel,
+    db::{core::DEFAULT_USER_ID, print_mob_kills, user_stats::get_games_lost_count_by_id},
     states::{AppStates, GameOverCleanup},
     ui::BouncingPromptComponent,
 };
@@ -146,6 +147,8 @@ pub fn setup_game_over_system(
                 })
                 .insert(GameOverFadeComponent)
                 .with_children(|parent| {
+                    let font = asset_server.load("fonts/SpaceMadness.ttf");
+
                     parent
                         .spawn(ImageBundle {
                             image: asset_server
@@ -173,6 +176,46 @@ pub fn setup_game_over_system(
                             flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
                             is_active: true,
                         });
+                    parent.spawn(TextBundle {
+                        style: Style {
+                            left: Val::Percent(80.0),
+                            bottom: Val::Percent(5.0),
+
+                            position_type: PositionType::Absolute,
+                            ..Style::default()
+                        },
+                        text: Text::from_section(
+                            format!(
+                                "Games Lost: {}",
+                                get_games_lost_count_by_id(DEFAULT_USER_ID)
+                            ),
+                            TextStyle {
+                                font: font.clone(),
+                                font_size: 18.0,
+                                color: Color::WHITE,
+                            },
+                        ),
+                        ..Default::default()
+                    });
+
+                    parent.spawn(TextBundle {
+                        style: Style {
+                            left: Val::Percent(20.0),
+                            bottom: Val::Percent(50.0),
+
+                            position_type: PositionType::Absolute,
+                            ..Style::default()
+                        },
+                        text: Text::from_section(
+                            format!("Enemies destroyed:\n {}", print_mob_kills(DEFAULT_USER_ID)),
+                            TextStyle {
+                                font,
+                                font_size: 18.0,
+                                color: Color::WHITE,
+                            },
+                        ),
+                        ..Default::default()
+                    });
                 });
         });
 }
