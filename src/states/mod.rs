@@ -97,16 +97,6 @@ impl Plugin for StatesPlugin {
 
         app.add_systems(
             Update,
-            start_stats_system.run_if(in_state(AppStates::MainMenu)),
-        );
-
-        app.add_systems(
-            Update,
-            start_mainmenu_system.run_if(in_state(AppStates::Stats)),
-        );
-
-        app.add_systems(
-            Update,
             start_character_selection_system.run_if(in_state(AppStates::Instructions)),
         );
 
@@ -146,7 +136,6 @@ impl Plugin for StatesPlugin {
             OnExit(AppStates::Instructions),
             clear_state_system::<InstructionsCleanup>,
         );
-        app.add_systems(OnExit(AppStates::Stats), clear_state_system::<StatsCleanup>);
 
         app.add_systems(
             Update,

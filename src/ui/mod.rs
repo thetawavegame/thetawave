@@ -11,7 +11,6 @@ mod game_over;
 mod instructions;
 mod main_menu;
 mod pause_menu;
-mod stats;
 mod victory;
 
 pub use self::character_selection::{
@@ -25,7 +24,6 @@ pub use self::{
     },
     main_menu::{bouncing_prompt_system, setup_main_menu_system, BouncingPromptComponent},
     pause_menu::setup_pause_system,
-    stats::setup_stats_ui_system,
     victory::{setup_victory_system, victory_fade_in_system},
 };
 
@@ -63,8 +61,6 @@ impl Plugin for UiPlugin {
             OnEnter(states::AppStates::Instructions),
             setup_instructions_system,
         );
-
-        app.add_systems(OnEnter(states::AppStates::Stats), setup_stats_ui_system);
 
         app.add_systems(
             OnEnter(states::AppStates::CharacterSelection),

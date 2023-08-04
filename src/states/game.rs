@@ -88,45 +88,6 @@ pub fn start_instructions_system(
 }
 
 // Start the game by entering the Game state
-pub fn start_stats_system(
-    gamepads: Res<Gamepads>,
-    mut gamepad_input: ResMut<Input<GamepadButton>>,
-    mut keyboard_input: ResMut<Input<KeyCode>>,
-    mut next_app_state: ResMut<NextState<AppStates>>,
-    asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<audio::MenuAudioChannel>>,
-) {
-    // check for keyboard or gamepad input
-    let mut start_input = keyboard_input.just_released(KeyCode::S);
-
-    for gamepad in gamepads.iter() {
-        start_input |= gamepad_input.just_released(GamepadButton {
-            gamepad,
-            button_type: GamepadButtonType::Select,
-        });
-    }
-
-    // if input read enter the game state
-    if start_input {
-        // set the state to game
-        next_app_state.set(AppStates::Stats);
-
-        // play sound effect
-        audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
-
-        // reset input
-        keyboard_input.reset(KeyCode::S);
-
-        for gamepad in gamepads.iter() {
-            gamepad_input.reset(GamepadButton {
-                gamepad,
-                button_type: GamepadButtonType::Select,
-            });
-        }
-    }
-}
-
-// Start the game by entering the Game state
 pub fn start_mainmenu_system(
     gamepads: Res<Gamepads>,
     mut gamepad_input: ResMut<Input<GamepadButton>>,
