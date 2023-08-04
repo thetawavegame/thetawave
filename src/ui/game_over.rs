@@ -142,8 +142,8 @@ pub fn setup_game_over_system(
             (accuracy, current_game_shot_counts.total_shots_fired)
         }
     };
-    let maybe_user_stats = (**historical_games_shot_counts).get(&DEFAULT_USER_ID);
-    let (total_shots_fired_in_previous_games, total_games_lost) = match maybe_user_stats {
+    let (total_shots_fired_in_previous_games, total_games_lost) = match maybe_completed_games_stats
+    {
         Some(stat) => (stat.total_shots_fired, stat.total_games_lost),
         None => (0, 1),
     };
