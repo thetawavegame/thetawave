@@ -31,7 +31,10 @@ fn flush_user_stats_for_completed_games_to_db(
 fn flush_mobs_killed_for_completed_games_counters_to_db(
     mobs_killed_for_current_game: Res<MobKillsByPlayerForCompletedGames>,
 ) {
-    info!("Flushing mob kills to db {:?}", **mobs_killed_for_current_game);
+    info!(
+        "Flushing mob kills to db {:?}",
+        **mobs_killed_for_current_game
+    );
     if let Some(mob_kills) = (**mobs_killed_for_current_game).get(&DEFAULT_USER_ID) {
         for (mob_type, n_killed) in mob_kills {
             set_mob_killed_count_for_user(DEFAULT_USER_ID, &mob_type, n_killed.clone())
