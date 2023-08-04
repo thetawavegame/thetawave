@@ -20,7 +20,7 @@ pub fn intersection_collision_system(
 ) {
     // loop through all collision events
     'collision_events: for collision_event in collision_events.iter() {
-        println!("{collision_event:?}");
+        debug!("{collision_event:?}");
         if let CollisionEvent::Started(
             collider1_entity,
             collider2_entity,
