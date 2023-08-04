@@ -3,5 +3,4 @@
 /// 0 for each new game.
 
 /// Resources/singletons with the within-game/run counts/metrics.
-pub mod counters;
 pub mod historical_metrics;
