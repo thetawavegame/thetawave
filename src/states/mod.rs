@@ -163,9 +163,6 @@ pub struct PauseCleanup;
 pub struct InstructionsCleanup;
 
 #[derive(Component)]
-pub struct StatsCleanup;
-
-#[derive(Component)]
 pub struct CharacterSelectionCleanup;
 
 // remove entities tagged for the current app state
