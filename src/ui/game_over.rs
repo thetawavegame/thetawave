@@ -200,7 +200,7 @@ pub fn setup_game_over_system(
                                     ),
                                     TextStyle {
                                         font,
-                                        font_size: 36.0,
+                                        font_size: 32.0,
                                         color: Color::WHITE,
                                     },
                                 )
