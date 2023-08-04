@@ -6,7 +6,7 @@ use std::env::var_os;
 use std::ffi::OsStr;
 use std::path::PathBuf;
 use thiserror::Error;
-const THETAWAVE_DB_PATH_ENVVAR: &'static str = "THETAWAVE_DB_PATH";
+pub(super) const THETAWAVE_DB_PATH_ENVVAR: &'static str = "THETAWAVE_DB_PATH";
 const THETAWAVE_DB_FILE: &'static str = "thetawave.sqlite";
 pub(super) const USERSTAT: &'static str = "UserStat";
 pub(super) const ENEMY_KILL_HISTORY_TABLE_NAME: &'static str = "EnemiesKilled";
