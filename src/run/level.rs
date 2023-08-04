@@ -2,14 +2,15 @@ use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use serde::Deserialize;
 use std::{collections::HashMap, time::Duration};
+use thetawave_interface::spawnable::MobType;
+use thetawave_interface::states::AppStates;
 
 use crate::{
     arena::MobReachedBottomGateEvent,
     assets::{BGMusicType, GameAudioAssets},
     audio,
     misc::Health,
-    spawnable::{MobDestroyedEvent, MobType, SpawnMobEvent},
-    states::AppStates,
+    spawnable::{MobDestroyedEvent, SpawnMobEvent},
     tools::weighted_rng,
     ui::EndGameTransitionResource,
 };

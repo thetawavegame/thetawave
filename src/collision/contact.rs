@@ -3,14 +3,12 @@ use crate::{
     assets::{CollisionSoundType, GameAudioAssets},
     audio,
     player::PlayerComponent,
-    spawnable::{
-        Faction, MobComponent, MobSegmentComponent, MobSegmentType, MobType, ProjectileComponent,
-        ProjectileType,
-    },
+    spawnable::{MobComponent, MobSegmentComponent, ProjectileComponent},
 };
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
+use thetawave_interface::spawnable::{Faction, MobSegmentType, MobType, ProjectileType};
 
 use super::{CollidingEntityPair, SortedCollisionEvent};
 
@@ -281,6 +279,7 @@ pub fn contact_collision_system(
 
                             collision_event_writer.send(
                                 SortedCollisionEvent::MobToProjectileContact {
+                                    projectile_source: projectile_component.source,
                                     mob_entity: colliding_entities.primary,
                                     projectile_entity: colliding_entities.secondary,
                                     projectile_faction: match &projectile_component.projectile_type

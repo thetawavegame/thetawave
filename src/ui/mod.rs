@@ -1,4 +1,6 @@
 use bevy::prelude::*;
+pub use thetawave_interface::character_selection::PlayerJoinEvent;
+use thetawave_interface::game::historical_metrics::{MobsKilledByPlayerCacheT, DEFAULT_USER_ID};
 
 use crate::{states, GameEnterSet, GameUpdateSet};
 
@@ -12,11 +14,10 @@ mod pause_menu;
 mod victory;
 
 pub use self::character_selection::{
-    player_join_system, select_character_system, setup_character_selection_system, PlayerJoinEvent,
+    player_join_system, select_character_system, setup_character_selection_system,
 };
 use self::instructions::setup_instructions_system;
 pub use self::{
-    debug::game_debug_ui,
     game_over::{
         fade_out_system, game_over_fade_in_system, setup_game_over_system,
         EndGameTransitionResource, GameFadeComponent,
@@ -87,5 +88,17 @@ impl Plugin for UiPlugin {
         );
 
         app.add_systems(OnEnter(states::GameStates::Paused), setup_pause_system);
+    }
+}
+
+// Consistently format mob+kill-count pairs.
+fn pprint_mob_kills_from_data(data: &MobsKilledByPlayerCacheT) -> String {
+    match (*data).get(&DEFAULT_USER_ID) {
+        None => String::from("No mobs killed"),
+        Some(mob_kill_counts) => mob_kill_counts
+            .iter()
+            .map(|(mobtype, n)| format!("{mobtype}: {n}"))
+            .collect::<Vec<String>>()
+            .join("\n"),
     }
 }

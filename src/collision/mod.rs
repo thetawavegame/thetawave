@@ -1,5 +1,6 @@
-use crate::{spawnable::Faction, states, GameUpdateSet};
+use crate::{states, GameUpdateSet};
 use bevy::prelude::*;
+use thetawave_interface::spawnable::Faction;
 
 mod contact;
 mod instersection;
@@ -62,6 +63,7 @@ pub enum SortedCollisionEvent {
 
     // Mob to projectile
     MobToProjectileIntersection {
+        projectile_source: Entity,
         mob_entity: Entity,
         projectile_entity: Entity,
         mob_faction: Faction,
@@ -69,6 +71,7 @@ pub enum SortedCollisionEvent {
         projectile_damage: f32,
     },
     MobToProjectileContact {
+        projectile_source: Entity,
         mob_entity: Entity,
         projectile_entity: Entity,
         projectile_faction: Faction,

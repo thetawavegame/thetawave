@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
+use thetawave_interface::spawnable::{EffectType, MobType, ProjectileType};
 
 use crate::{
     assets::GameAudioAssets,
@@ -11,8 +12,8 @@ use crate::{
     game::GameParametersResource,
     loot::LootDropsResource,
     spawnable::{
-        EffectType, InitialMotion, MobType, PlayerComponent, ProjectileType, SpawnConsumableEvent,
-        SpawnEffectEvent, SpawnProjectileEvent,
+        InitialMotion, PlayerComponent, SpawnConsumableEvent, SpawnEffectEvent,
+        SpawnProjectileEvent,
     },
 };
 
@@ -134,6 +135,7 @@ pub fn mob_execute_behavior_system(
                                 damage: attack_damage,
                                 despawn_time: projectile_spawner.despawn_time,
                                 initial_motion: modified_initial_motion,
+                                source: entity,
                             });
                         }
                     }

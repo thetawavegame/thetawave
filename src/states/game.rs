@@ -1,6 +1,6 @@
-use super::AppStates;
 use bevy::{app::AppExit, prelude::*};
 use bevy_kira_audio::prelude::*;
+use thetawave_interface::states::AppStates;
 
 use crate::{audio, player::PlayersResource};
 

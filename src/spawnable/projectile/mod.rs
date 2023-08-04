@@ -2,13 +2,14 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 use std::{collections::HashMap, string::ToString};
+use thetawave_interface::spawnable::{ProjectileType, SpawnableType};
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::ProjectileAssets,
     game::GameParametersResource,
     spawnable::InitialMotion,
-    spawnable::{ProjectileType, SpawnableBehavior, SpawnableComponent, SpawnableType},
+    spawnable::{SpawnableBehavior, SpawnableComponent},
     states::GameCleanup,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
@@ -20,7 +21,7 @@ pub use self::behavior::{projectile_execute_behavior_system, ProjectileBehavior}
 use super::ColliderData;
 
 /// Event for spawning projectiles
-#[derive(Event)]
+#[derive(Event, Clone)]
 pub struct SpawnProjectileEvent {
     /// Type of projectile to spawn
     pub projectile_type: ProjectileType,
@@ -32,6 +33,7 @@ pub struct SpawnProjectileEvent {
     pub despawn_time: f32,
     /// Initial motion of the projectile
     pub initial_motion: InitialMotion,
+    pub source: Entity,
 }
 
 /// Core component for projectiles
@@ -45,6 +47,8 @@ pub struct ProjectileComponent {
     pub damage: f32,
     /// Time the projectile has existed
     pub time_alive: f32,
+    /// Entity that fired the projectile
+    pub source: Entity,
 }
 
 /// Data about mob entities that can be stored in data ron file
@@ -92,6 +96,7 @@ pub fn spawn_projectile_system(
             event.initial_motion.clone(),
             &mut commands,
             &game_parameters,
+            event.source,
         );
     }
 }
@@ -108,6 +113,7 @@ pub fn spawn_projectile(
     initial_motion: InitialMotion,
     commands: &mut Commands,
     game_parameters: &GameParametersResource,
+    source: Entity,
 ) {
     // Get data from projectile resource
     let projectile_data = &projectile_resource.projectiles[projectile_type];
@@ -149,6 +155,7 @@ pub fn spawn_projectile(
             behaviors: projectile_behaviors,
             damage,
             time_alive: 0.0,
+            source,
         })
         .insert(SpawnableComponent {
             spawnable_type: SpawnableType::Projectile(projectile_data.projectile_type.clone()),

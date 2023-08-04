@@ -1,0 +1,12 @@
+[package]
+name = "thetawave_arcade"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bevy_serialport = {version = "0.4.0"}
+bytes = "1.4.0"
+bevy = {workspace = true}
+thetawave_interface = {path = "../thetawave_interface"}

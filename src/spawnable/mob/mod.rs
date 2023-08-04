@@ -13,7 +13,7 @@ use crate::{
     game::GameParametersResource,
     loot::ConsumableDropListType,
     misc::Health,
-    spawnable::{InitialMotion, MobType, SpawnableBehavior, SpawnableComponent},
+    spawnable::{InitialMotion, SpawnableBehavior, SpawnableComponent},
     states::GameCleanup,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
@@ -22,8 +22,8 @@ mod behavior;
 mod mob_segment;
 pub use self::{behavior::*, mob_segment::*};
 
-use super::MobSegmentType;
-use super::{behavior_sequence::MobBehaviorSequenceType, ProjectileType};
+use super::behavior_sequence::MobBehaviorSequenceType;
+use thetawave_interface::spawnable::{MobSegmentType, MobType, ProjectileType};
 
 /// Core component for mobs
 #[derive(Component)]

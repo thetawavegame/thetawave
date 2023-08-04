@@ -7,11 +7,12 @@ mod movement;
 use crate::assets::GameAudioAssets;
 use crate::audio;
 use crate::game::GameParametersResource;
-use crate::spawnable::{EffectType, InitialMotion, SpawnEffectEvent};
-use crate::states::AppStates;
+use crate::spawnable::{InitialMotion, SpawnEffectEvent};
 use crate::ui::EndGameTransitionResource;
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
+use thetawave_interface::spawnable::EffectType;
+use thetawave_interface::states::AppStates;
 
 pub use self::ability::*;
 pub use self::attacks::{player_fire_weapon_system, player_scale_fire_rate_system};

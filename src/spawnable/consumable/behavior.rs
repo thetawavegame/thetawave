@@ -4,13 +4,14 @@ use crate::{
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     run::{ObjectiveType, RunResource},
-    spawnable::{EffectType, InitialMotion, PlayerComponent, SpawnEffectEvent},
+    spawnable::{InitialMotion, PlayerComponent, SpawnEffectEvent},
 };
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
+use thetawave_interface::spawnable::EffectType;
 
 use super::ConsumableEffect;
 

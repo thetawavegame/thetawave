@@ -45,11 +45,13 @@ impl Formation {
             // TODO: add cases for items, consumables, etc, as they are added
             // call the appropriate spawn function for the spawnable
             match &formation_spawnable.spawnable_type {
-                spawnable::SpawnableType::Mob(mob_type) => spawn_mob.send(SpawnMobEvent {
-                    mob_type: mob_type.clone(),
-                    position: formation_spawnable.position,
-                    rotation: Quat::default(),
-                }),
+                thetawave_interface::spawnable::SpawnableType::Mob(mob_type) => {
+                    spawn_mob.send(SpawnMobEvent {
+                        mob_type: mob_type.clone(),
+                        position: formation_spawnable.position,
+                        rotation: Quat::default(),
+                    })
+                }
 
                 spawnable::SpawnableType::Consumable(consumable_type) => {
                     spawn_consumable.send(SpawnConsumableEvent {

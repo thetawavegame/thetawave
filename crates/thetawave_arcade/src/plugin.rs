@@ -4,10 +4,12 @@ use bevy_serialport::{
     SerialResource, StopBits,
 };
 
-use crate::{states, ui::PlayerJoinEvent};
+use thetawave_interface::states;
 
 use bytes::Bytes;
+use thetawave_interface::character_selection::PlayerJoinEvent;
 
+/// The entrypoint for accepting game input from an arcade machine.
 pub struct ArcadePlugin;
 
 impl Plugin for ArcadePlugin {
@@ -36,7 +38,7 @@ impl Plugin for ArcadePlugin {
         );
 
         app.add_systems(
-            OnEnter(states::AppStates::Game),
+            OnEnter(thetawave_interface::states::AppStates::Game),
             enter_game_button_leds_system,
         );
 
@@ -61,7 +63,6 @@ impl Plugin for ArcadePlugin {
         );
     }
 }
-
 fn setup_serial_system(
     mut serial_resource: ResMut<SerialResource>,
     runtime: Res<SerialPortRuntime>,

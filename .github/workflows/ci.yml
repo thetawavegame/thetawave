@@ -1,0 +1,173 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+env:
+  RUST_BACKTRACE: 1
+
+jobs:
+  ci-pass:
+    name: CI is green
+    runs-on: ubuntu-latest
+    needs:
+      - style
+      - test
+      - wasm
+      - docs
+    steps:
+      - run: exit 0
+
+  style:
+    name: Check Style
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Cache deps
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install rust
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rustfmt
+
+      - name: cargo fmt -- --check
+        run: cargo fmt -- --check
+
+      - name: temporary workaround - fmt all files under src
+        # Workaround for rust-lang/cargo#7732
+        run: cargo fmt -- --check $(find . -name '*.rs' -print)
+
+  test:
+    name: ${{ matrix.name }}
+    needs: [style]
+
+    runs-on: ${{ matrix.os || 'ubuntu-latest' }}
+    strategy:
+      matrix:
+        name:
+          - linux / nightly
+          - macOS / nightly
+          - windows / nightly
+
+        include:
+          - name: linux / nightly
+            rust: nightly
+            os: ubuntu-latest
+          - name: macOS / nightly
+            os: macOS-latest
+            rust: nightly
+          - name: windows / nightly
+            os: windows-latest
+            rust: nightly
+            target: x86_64-pc-windows-msvc
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install bevy deps
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          set -euxo pipefail
+          sudo apt install -y lld g++ pkg-config libx11-dev libasound2-dev libudev-dev
+        shell: bash
+      - name: Cache deps
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install rust
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          toolchain: ${{ matrix.rust || 'stable' }}
+          targets: ${{ matrix.target }}
+
+      - name: Create Cargo.lock
+        run: cargo update
+
+      - name: Run tests
+        run: |
+          set -euxo pipefail
+          cargo check --tests
+          cargo test --all-features --workspace
+        shell: bash
+
+  docs:
+    name: Docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Cache deps
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@nightly
+
+      - name: Install bevy deps
+        run: |
+          set -euxo pipefail
+          sudo apt install -y lld g++ pkg-config libx11-dev libasound2-dev libudev-dev
+        shell: bash
+
+      - name: Check documentation
+        run: cargo doc --no-deps --document-private-items --all-features
+
+  wasm:
+    name: WASM
+    needs: [style]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Cache deps
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Install rust
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Build wasm assets
+        run: ./build_wasm.sh

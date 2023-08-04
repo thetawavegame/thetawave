@@ -18,6 +18,7 @@ pub fn player_ability_system(
         &mut Velocity,
         &Transform,
         &mut ExternalImpulse,
+        Entity,
     )>,
     time: Res<Time>,
     mut spawn_projectile: EventWriter<SpawnProjectileEvent>,
@@ -111,7 +112,7 @@ pub fn player_ability_system(
         })
         .collect();
 
-    for (mut player_component, mut player_vel, player_trans, mut player_ext_impulse) in
+    for (mut player_component, mut player_vel, player_trans, mut player_ext_impulse, entity) in
         player_query.iter_mut()
     {
         // get the input for the queried player
@@ -201,6 +202,7 @@ pub fn player_ability_system(
                         damage: player_component.attack_damage * multiplier,
                         despawn_time: player_component.projectile_despawn_time,
                         initial_motion,
+                        source: entity,
                     });
                 }
             }

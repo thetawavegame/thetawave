@@ -4,6 +4,7 @@ use bevy_kira_audio::{AudioChannel, AudioControl};
 use bevy_rapier2d::{prelude::*, rapier::prelude::JointAxis};
 use rand::{thread_rng, Rng};
 use serde::Deserialize;
+use thetawave_interface::spawnable::EffectType;
 
 use crate::{
     assets::GameAudioAssets,
@@ -13,8 +14,8 @@ use crate::{
     loot::LootDropsResource,
     player::PlayerComponent,
     spawnable::{
-        behavior_sequence::EntityPair, EffectType, InitialMotion, MobDestroyedEvent,
-        SpawnConsumableEvent, SpawnEffectEvent, SpawnMobEvent, SpawnPosition,
+        behavior_sequence::EntityPair, InitialMotion, MobDestroyedEvent, SpawnConsumableEvent,
+        SpawnEffectEvent, SpawnMobEvent, SpawnPosition,
     },
 };
 

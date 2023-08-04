@@ -3,11 +3,13 @@ use std::time::Duration;
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::plugin::RapierConfiguration;
+use thetawave_interface::game::historical_metrics::{
+    MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
+};
+use thetawave_interface::states::AppStates;
 
 use crate::{
-    audio::BackgroundMusicAudioChannel,
-    states::{AppStates, GameOverCleanup},
-    ui::BouncingPromptComponent,
+    audio::BackgroundMusicAudioChannel, states::GameOverCleanup, ui::BouncingPromptComponent,
 };
 
 #[derive(Component)]
@@ -111,7 +113,19 @@ pub fn setup_game_over_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
+    current_game_shot_counts: Res<UserStatsByPlayerForCurrentGameCache>,
+    current_game_enemy_mob_kill_counts: Res<MobKillsByPlayerForCurrentGame>,
 ) {
+    let maybe_current_game_stats = (**current_game_shot_counts).get(&DEFAULT_USER_ID);
+    let (accuracy_rate, total_shots_fired): (f32, usize) = match maybe_current_game_stats {
+        None => (100.0, 0),
+        Some(current_game_shot_counts) => {
+            let accuracy = (current_game_shot_counts.total_shots_hit as f32
+                / current_game_shot_counts.total_shots_fired as f32)
+                * 100.0;
+            (accuracy, current_game_shot_counts.total_shots_fired)
+        }
+    };
     audio_channel
         .stop()
         .fade_out(AudioTween::linear(Duration::from_secs_f32(5.0)));
@@ -130,13 +144,12 @@ pub fn setup_game_over_system(
         .with_children(|parent| {
             parent
                 .spawn(ImageBundle {
-                    image: asset_server
-                        .load("texture/game_over_background_54.png")
-                        .into(),
+                    image: asset_server.load("texture/game_over_background.png").into(),
                     style: Style {
                         width: Val::Percent(100.0),
+                        flex_direction: FlexDirection::Column,
                         height: Val::Percent(100.0),
-                        align_items: AlignItems::Center,
+                        justify_content: JustifyContent::FlexEnd,
                         ..Default::default()
                     },
                     background_color: Color::rgba(1.0, 1.0, 1.0, 0.0).into(),
@@ -144,6 +157,57 @@ pub fn setup_game_over_system(
                 })
                 .insert(GameOverFadeComponent)
                 .with_children(|parent| {
+                    let font = asset_server.load("fonts/wibletown-regular.otf");
+
+                    parent
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Auto,
+                                height: Val::Auto,
+                                margin: UiRect {
+                                    bottom: Val::Auto,
+                                    top: Val::Percent(25.0),
+                                    right: Val::Auto,
+                                    left: Val::Auto,
+                                },
+                                padding: UiRect::all(Val::Px(10.0)),
+
+                                justify_content: JustifyContent::Center,
+                                ..Default::default()
+                            },
+                            background_color: BackgroundColor::from(Color::BLACK.with_a(0.9)),
+                            ..default()
+                        })
+                        .with_children(|parent| {
+                            parent.spawn(TextBundle {
+                                style: Style {
+                                    width: Val::Auto,
+                                    height: Val::Auto,
+                                    margin: UiRect::all(Val::Auto),
+                                    ..Default::default()
+                                },
+
+                                text: Text::from_section(
+                                    format!(
+                                        "Projectiles fired: {}\nAccuracy: {:.2}%\n\nEnemies destroyed:\n{}",
+                                        total_shots_fired,
+                                        accuracy_rate,
+                                        super::pprint_mob_kills_from_data(
+                                            &(**current_game_enemy_mob_kill_counts)
+                                        ),
+                                    ),
+                                    TextStyle {
+                                        font,
+                                        font_size: 32.0,
+                                        color: Color::WHITE,
+                                    },
+                                )
+                                .with_alignment(TextAlignment::Center),
+
+                                ..default()
+                            });
+                        });
+
                     parent
                         .spawn(ImageBundle {
                             image: asset_server
@@ -157,11 +221,12 @@ pub fn setup_game_over_system(
                                 width: Val::Px(400.0),
                                 height: Val::Px(100.0),
                                 margin: UiRect {
-                                    left: Val::Auto,
+                                    bottom: Val::Percent(10.0),
+                                    top: Val::Auto,
                                     right: Val::Auto,
-                                    top: Val::Percent(20.0),
-                                    ..Default::default()
+                                    left: Val::Auto,
                                 },
+                                justify_content: JustifyContent::Center,
                                 ..Default::default()
                             },
                             ..Default::default()

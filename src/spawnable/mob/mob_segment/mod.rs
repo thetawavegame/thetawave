@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 use std::collections::{hash_map::Entry, HashMap};
+use thetawave_interface::spawnable::{MobSegmentType, SpawnableType};
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
@@ -9,7 +10,7 @@ use crate::{
     game::GameParametersResource,
     loot::ConsumableDropListType,
     misc::Health,
-    spawnable::{MobSegmentType, SpawnableComponent, SpawnableType},
+    spawnable::SpawnableComponent,
     states::GameCleanup,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
