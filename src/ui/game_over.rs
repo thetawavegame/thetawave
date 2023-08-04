@@ -4,8 +4,7 @@ use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::plugin::RapierConfiguration;
 use thetawave_interface::game::historical_metrics::{
-    MobKillsByPlayerForCompletedGames, MobKillsByPlayerForCurrentGame, MobsKilledByPlayerCacheT,
-    UserStatsByPlayerForCompletedGamesCache, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
+    MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
 };
 use thetawave_interface::states::AppStates;
 
@@ -116,11 +115,8 @@ pub fn setup_game_over_system(
     audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
     current_game_shot_counts: Res<UserStatsByPlayerForCurrentGameCache>,
     current_game_enemy_mob_kill_counts: Res<MobKillsByPlayerForCurrentGame>,
-    historical_games_shot_counts: Res<UserStatsByPlayerForCompletedGamesCache>,
-    historical_games_enemy_mob_kill_counts: Res<MobKillsByPlayerForCompletedGames>,
 ) {
     let maybe_current_game_stats = (**current_game_shot_counts).get(&DEFAULT_USER_ID);
-    let maybe_completed_games_stats = (**historical_games_shot_counts).get(&DEFAULT_USER_ID);
     let (accuracy_rate, total_shots_fired): (f32, usize) = match maybe_current_game_stats {
         None => (100.0, 0),
         Some(current_game_shot_counts) => {
@@ -129,11 +125,6 @@ pub fn setup_game_over_system(
                 * 100.0;
             (accuracy, current_game_shot_counts.total_shots_fired)
         }
-    };
-    let (total_shots_fired_in_previous_games, total_games_lost) = match maybe_completed_games_stats
-    {
-        Some(stat) => (stat.total_shots_fired, stat.total_games_lost),
-        None => (0, 1),
     };
     audio_channel
         .stop()
@@ -154,14 +145,13 @@ pub fn setup_game_over_system(
         .with_children(|parent| {
             parent
                 .spawn(ImageBundle {
-                    image: asset_server
-                        .load("texture/game_over_background_54.png")
-                        .into(), // not using assetsmanager as we don't load everything on the main menu
+                    image: asset_server.load("texture/game_over_background.png").into(),
                     style: Style {
                         //size: Size::new(Val::Percent(100.), Val::Percent(100.)),
                         width: Val::Percent(100.0),
+                        flex_direction: FlexDirection::Column,
                         height: Val::Percent(100.0),
-                        align_items: AlignItems::Center,
+                        justify_content: JustifyContent::FlexEnd,
                         ..Default::default()
                     },
                     background_color: Color::rgba(1.0, 1.0, 1.0, 0.0).into(),
@@ -169,7 +159,56 @@ pub fn setup_game_over_system(
                 })
                 .insert(GameOverFadeComponent)
                 .with_children(|parent| {
-                    let font = asset_server.load("fonts/SpaceMadness.ttf");
+                    let font = asset_server.load("fonts/wibletown-regular.otf");
+
+                    parent
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Auto,
+                                height: Val::Auto,
+                                margin: UiRect {
+                                    bottom: Val::Auto,
+                                    top: Val::Percent(25.0),
+                                    right: Val::Auto,
+                                    left: Val::Auto,
+                                },
+                                padding: UiRect::all(Val::Px(10.0)),
+
+                                justify_content: JustifyContent::Center,
+                                ..Default::default()
+                            },
+                            background_color: BackgroundColor::from(Color::BLACK.with_a(0.9)),
+                            ..default()
+                        })
+                        .with_children(|parent| {
+                            parent.spawn(TextBundle {
+                                style: Style {
+                                    width: Val::Auto,
+                                    height: Val::Auto,
+                                    margin: UiRect::all(Val::Auto),
+                                    ..Default::default()
+                                },
+
+                                text: Text::from_section(
+                                    format!(
+                                        "Projectiles fired: {}\nAccuracy: {:.2}%\n\nEnemies destroyed:\n{}",
+                                        total_shots_fired,
+                                        accuracy_rate,
+                                        super::pprint_mob_kills_from_data(
+                                            &(**current_game_enemy_mob_kill_counts)
+                                        ),
+                                    ),
+                                    TextStyle {
+                                        font,
+                                        font_size: 36.0,
+                                        color: Color::WHITE,
+                                    },
+                                )
+                                .with_alignment(TextAlignment::Center),
+
+                                ..default()
+                            });
+                        });
 
                     parent
                         .spawn(ImageBundle {
@@ -181,15 +220,15 @@ pub fn setup_game_over_system(
                                 })
                                 .into(),
                             style: Style {
-                                //size: Size::new(Val::Px(400.0), Val::Px(100.0)),
                                 width: Val::Px(400.0),
                                 height: Val::Px(100.0),
                                 margin: UiRect {
-                                    left: Val::Auto,
+                                    bottom: Val::Percent(10.0),
+                                    top: Val::Auto,
                                     right: Val::Auto,
-                                    top: Val::Percent(20.0),
-                                    ..Default::default()
+                                    left: Val::Auto,
                                 },
+                                justify_content: JustifyContent::Center,
                                 ..Default::default()
                             },
                             ..Default::default()
@@ -198,52 +237,6 @@ pub fn setup_game_over_system(
                             flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
                             is_active: true,
                         });
-                    parent.spawn(TextBundle {
-                        style: Style {
-                            left: Val::Percent(5.0),
-                            bottom: Val::Percent(25.0),
-
-                            position_type: PositionType::Absolute,
-                            ..Style::default()
-                        },
-                        text: Text::from_section(
-                            format!(
-                                "Enemies destroyed in this game:\n{}\n\nEnemies destroyed in previous games:\n{}",
-                                super::pprint_mob_kills_from_data(&(**current_game_enemy_mob_kill_counts)),
-                                super::pprint_mob_kills_from_data(&(**historical_games_enemy_mob_kill_counts)),
-                            ),
-                            TextStyle {
-                                font: font.clone(),
-                                font_size: 18.0,
-                                color: Color::WHITE,
-                            },
-                        ),
-                        ..Default::default()
-                    });
-                    parent.spawn(TextBundle {
-                        style: Style {
-                            right: Val::Percent(5.0),
-                            bottom: Val::Percent(25.0),
-
-                            position_type: PositionType::Absolute,
-                            ..Style::default()
-                        },
-                        text: Text::from_section(
-                            format!(
-                                "Shots fired this game: {}\nAccuracy Rate: {:.2}%\nShots fired in previous games: {}\nGames Lost: {}",
-                                total_shots_fired,
-                                accuracy_rate,
-                                total_shots_fired_in_previous_games,
-                                total_games_lost,
-                            ),
-                            TextStyle {
-                                font,
-                                font_size: 18.0,
-                                color: Color::WHITE,
-                            },
-                        ),
-                        ..Default::default()
-                    });
                 });
         });
 }

@@ -61,9 +61,7 @@ pub fn setup_victory_system(
         .with_children(|parent| {
             parent
                 .spawn(ImageBundle {
-                    image: asset_server
-                        .load("texture/victory_background_54.png")
-                        .into(), // not using assetsmanager as we don't load everything on the main menu
+                    image: asset_server.load("texture/victory_background.png").into(),
                     style: Style {
                         //size: Size::new(Val::Percent(100.), Val::Percent(100.)),
                         width: Val::Percent(100.0),

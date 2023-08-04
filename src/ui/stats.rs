@@ -37,7 +37,7 @@ pub fn setup_stats_ui_system(
                     ..default()
                 })
                 .with_children(|parent| {
-                    let font = asset_server.load("fonts/SpaceMadness.ttf");
+                    let font = asset_server.load("fonts/wibletown-regular.otf");
 
                     parent.spawn(TextBundle {
                         style: Style {
