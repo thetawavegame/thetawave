@@ -12,3 +12,6 @@ derive_more = {workspace = true}
 rusqlite = { version = "0.29.0", features = ["bundled"] }
 dirs = "5.0.1"
 thetawave_interface = {path = "../thetawave_interface"}
+
+[dev-dependencies]
+tempdir = "0.3.7"
