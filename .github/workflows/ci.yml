@@ -108,8 +108,8 @@ jobs:
       - name: Run tests
         run: |
           set -euxo pipefail
-          cargo check
-          cargo test --all-features
+          cargo check --tests
+          cargo test --all-features --workspace
         shell: bash
 
   docs:
