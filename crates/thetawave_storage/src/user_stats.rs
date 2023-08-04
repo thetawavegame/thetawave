@@ -13,7 +13,7 @@ pub(super) fn set_user_stats_for_user_id(
         "
     INSERT OR REPLACE INTO {USERSTAT} (userId, totalShotsFired, totalGamesLost)
     VALUES (?1,  ?2, ?3)
-    ON CONFLICT DO UPDATE SET totalShotsFires=?2, totalGamesLost=?3"
+    ON CONFLICT DO UPDATE SET totalShotsFired=?2, totalGamesLost=?3"
     );
     let conn = get_db()?;
     info!(
