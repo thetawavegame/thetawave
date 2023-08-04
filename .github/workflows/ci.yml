@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+env:
+  RUST_BACKTRACE: 1
 
 jobs:
   ci-pass:
@@ -106,8 +108,8 @@ jobs:
       - name: Run tests
         run: |
           set -euxo pipefail
-          cargo check
-          cargo check --features arcade
+          cargo check --tests
+          cargo test --all-features --workspace
         shell: bash
 
   docs:

@@ -1,4 +1,5 @@
 //! Resources for managing the game
+
 use bevy::prelude::*;
 use serde::Deserialize;
 

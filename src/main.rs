@@ -4,7 +4,8 @@ use bevy_kira_audio::prelude::*;
 
 use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
-use states::{AppStates, GameCleanup, GameStates};
+use states::GameCleanup;
+use thetawave_interface::states::{AppStates, GameStates};
 use ui::EndGameTransitionResource;
 
 pub const PHYSICS_SCALE: f32 = 10.0;
@@ -13,7 +14,6 @@ pub const HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_2;
 pub const VERTICAL_BARRIER_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_3;
 
 mod animation;
-mod arcade;
 mod arena;
 mod assets;
 mod audio;
@@ -137,6 +137,7 @@ fn main() {
     .add_plugins(scanner::ScannerPlugin)
     .add_plugins(animation::AnimationPlugin)
     .add_plugins(states::StatesPlugin)
+    .add_plugins(game::counters::plugin::CountingMetricsPlugin)
     .insert_resource(ClearColor(Color::BLACK))
     .insert_resource(AmbientLight {
         color: Color::WHITE,
@@ -148,11 +149,14 @@ fn main() {
     ));
 
     app.add_systems(
-        OnEnter(states::AppStates::Game),
+        OnEnter(AppStates::Game),
         (setup_game, setup_physics).in_set(GameEnterSet::Initialize),
     );
+    #[cfg(feature = "arcade")]
+    app.add_plugins(thetawave_arcade::plugin::ArcadePlugin);
 
-    app.add_plugins(arcade::ArcadePlugin);
+    #[cfg(feature = "storage")]
+    app.add_plugins(thetawave_storage::plugin::DBPlugin);
 
     if cfg!(debug_assertions) {
         app

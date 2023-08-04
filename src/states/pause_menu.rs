@@ -1,7 +1,7 @@
-use super::GameStates;
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
+use thetawave_interface::states::GameStates;
 
 use crate::audio;
 

@@ -1,12 +1,10 @@
 use crate::{
     player::PlayerComponent,
-    spawnable::{
-        ConsumableComponent, Faction, MobComponent, MobSegmentComponent, MobSegmentType, MobType,
-        ProjectileComponent, ProjectileType,
-    },
+    spawnable::{ConsumableComponent, MobComponent, MobSegmentComponent, ProjectileComponent},
 };
 use bevy::prelude::*;
 use bevy_rapier2d::{prelude::*, rapier::prelude::CollisionEventFlags};
+use thetawave_interface::spawnable::{Faction, MobSegmentType, MobType, ProjectileType};
 
 use super::{CollidingEntityPair, SortedCollisionEvent};
 
@@ -107,6 +105,7 @@ pub fn intersection_collision_system(
                         if colliding_entities.secondary == projectile_entity {
                             collision_event_writer.send(
                                 SortedCollisionEvent::MobToProjectileIntersection {
+                                    projectile_source: projectile_component.source,
                                     mob_entity: colliding_entities.primary,
                                     projectile_entity: colliding_entities.secondary,
                                     mob_faction: match mob_component.mob_type {

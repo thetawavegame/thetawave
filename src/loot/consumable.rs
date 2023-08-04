@@ -2,8 +2,9 @@ use bevy::prelude::*;
 use rand::Rng;
 use serde::Deserialize;
 use strum_macros::Display;
+use thetawave_interface::spawnable::ConsumableType;
 
-use crate::spawnable::{ConsumableType, SpawnConsumableEvent};
+use crate::spawnable::SpawnConsumableEvent;
 
 /// Types of consumable drop lists
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display, Default)]

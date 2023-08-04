@@ -7,8 +7,9 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 use std::collections::HashMap;
+use thetawave_interface::spawnable::EffectType;
 
-use super::{EffectType, InitialMotion};
+use super::InitialMotion;
 
 mod behavior;
 pub use self::behavior::effect_execute_behavior_system;
@@ -26,7 +27,7 @@ pub struct EffectComponent {
 #[derive(Deserialize)]
 pub struct EffectData {
     /// Type of the effect
-    pub effect_type: super::EffectType,
+    pub effect_type: EffectType,
     /// Sprite texture
     pub animation: AnimationData,
     /// Behaviors specific to effects

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 
-use crate::spawnable::EffectType;
+use thetawave_interface::spawnable::EffectType;
 
 #[derive(AssetCollection, Resource)]
 pub struct EffectAssets {
