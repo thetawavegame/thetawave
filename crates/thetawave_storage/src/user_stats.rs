@@ -27,7 +27,7 @@ pub(super) fn set_user_stats_for_user_id(
     ])?;
     Ok(())
 }
-fn _get_user_stats(user_id: usize) -> Result<UserStat, OurDBError> {
+fn _get_user_stats(user_id: usize) -> Result<Option<UserStat>, OurDBError> {
     let conn = get_db()?;
     let stmt_raw = format!(
         "
@@ -38,32 +38,29 @@ fn _get_user_stats(user_id: usize) -> Result<UserStat, OurDBError> {
     let mut rows = stmt.query([user_id])?;
     match rows.next()? {
         Some(r) => {
-            let total_games_lost = r.get(1)?;
-            let total_shots_fired = r.get(2)?;
-            let total_shots_hit = r.get(3)?;
-            Ok(UserStat {
+            let total_games_lost = r.get(0)?;
+            let total_shots_fired = r.get(1)?;
+            let total_shots_hit = r.get(2)?;
+            Ok(Some(UserStat {
                 total_games_lost,
                 total_shots_fired,
                 total_shots_hit,
-            })
+            }))
         }
 
-        None => Err(OurDBError::InternalError(String::from("User not found"))),
+        None => Ok(None),
     }
 }
 
 /// Returns the user stats for games that have already been completed and flushed to the db.
 pub fn get_user_stats(user_id: usize) -> Option<UserStat> {
-    match _get_user_stats(user_id) {
-        Err(err) => {
-            error!(
-                "Could not read user stats. Falling back to zeroed out defaults. {}",
-                err
-            );
-            None
-        }
-        Ok(user_stat) => Some(user_stat),
-    }
+    _get_user_stats(user_id).unwrap_or_else(|err| {
+        error!(
+            "Could not read user stats. Falling back to zeroed out defaults. {}",
+            &err
+        );
+        None
+    })
 }
 
 pub(super) fn set_mob_killed_count_for_user(
