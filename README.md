@@ -1,6 +1,36 @@
 # Thetawave
+[![Demo](https://img.shields.io/badge/Demo-Play%20Now%21-blue)](https://metalmancy.itch.io/thetawave)
+[![Build](https://github.com/thetawavegame/thetawave/actions/workflows/ci.yml/badge.svg?)](https://github.com/thetawavegame/thetawave/actions/workflows/ci.yml)
+[![Discord](https://img.shields.io/badge/chat-on%20discord-green.svg?logo=discord&logoColor=fff&labelColor=1e1c24&color=8d5b3f)](https://discord.gg/4smxjcheE5)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+- [Thetawave](#thetawave)
+  - [Gameplay](#gameplay)
+  - [Description](#description)
+  - [Controls](#controls)
+    - [Keyboard](#keyboard)
+    - [Xbox Controller](#xbox-controller)
+  - [Instructions](#instructions)
+  - [Credits](#credits)
+    - [Music by Joel Schuman](#music-by-joel-schuman)
+    - [Sound Effects](#sound-effects)
+      - [*Space Ultimate Megapack*](#space-ultimate-megapack)
+    - [Assets](#assets)
+      - [*Kadith's icons*](#kadiths-icons)
+    - [Fonts](#fonts)
+      - [*Space Madness*](#space-madness)
 
 **Play in browser NOW on [itch](https://metalmancy.itch.io/thetawave)!**
+
+## Gameplay
+
+![formation_spawn](assets/images/formation_spawn.gif)
+
+![boss](assets/images/boss.gif)
+
+## Description
+
+Thetawave is an open-source space shooter game, designed to be easily expandable. It is programmed in the Rust Language using the Bevy Engine.
 
 ## Controls
 
@@ -16,9 +46,6 @@
 - Fire weapon (can hold) : Right bumper
 - Special ability (when ready): Left bumper
 
-## Description
-
-Thetawave is an open-source space shooter game, designed to be easily expandable. It is programmed in the Rust Language using the Bevy Engine.
 
 ## Instructions
 
@@ -30,14 +57,6 @@ The game is lost when all players have their health bars depleted from taking da
 - Gems increase fire rate
 - Armor negates damage
 - Allowing cargo hauler mobs to reach the bottom of the arena heals defense
-
-## Gameplay
-
-[![Discord](https://img.shields.io/badge/chat-on%20discord-green.svg?logo=discord&logoColor=fff&labelColor=1e1c24&color=8d5b3f)](https://discord.gg/4smxjcheE5)
-
-![formation_spawn](assets/images/formation_spawn.gif)
-
-![boss](assets/images/boss.gif)
 
 ## Credits
 
