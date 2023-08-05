@@ -32,9 +32,8 @@ pub fn scanner_system(
                 .distance(transform.translation.xy())
                 < game_params.scan_range
             {
-                // print the mobs entity and health
-                println!(
-                    "Entity: {:?}\t Health: {}/{}",
+                debug!(
+                    "Mob near mouse: Entity: {:?}\t Health: {}/{}",
                     mob_entity,
                     mob_component.health.get_health(),
                     mob_component.health.get_max_health()

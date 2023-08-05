@@ -147,7 +147,6 @@ mod test {
     }
 
     fn set_loading_assets(mut s: ResMut<NextState<AppStates>>) {
-        println!("Transitioning State {:?}", &s);
         (*s).set(AppStates::LoadingAssets);
     }
     fn set_game_state(mut s: ResMut<NextState<AppStates>>) {
