@@ -124,7 +124,7 @@ pub fn on_defeat_star_explode_system(
 }
 
 #[derive(Error, Debug)]
-pub enum OurGetRandomAssetError {
+enum OurGetRandomAssetError {
     #[error("Path does not exist.")]
     NoPathFound,
     #[error("No files found to choose in path.")]
@@ -217,8 +217,8 @@ pub fn create_background_system(
                             ..default()
                         });
                     }
-                    Err(_) => {
-                        error!("Could not construct icosphere for planet. No planet model will be spawned.");
+                    Err(e) => {
+                        error!("{e}\nCould not construct icosphere for planet. No planet model will be spawned.");
                     }
                 };
             }
