@@ -8,6 +8,7 @@ use rand::{seq::IteratorRandom, Rng};
 use ron::de::from_bytes;
 use serde::Deserialize;
 use std::ops::Range;
+use thiserror::Error;
 
 use crate::{
     run::{RunDefeatType, RunEndEvent, RunOutcomeType},
@@ -122,6 +123,35 @@ pub fn on_defeat_star_explode_system(
     }
 }
 
+#[derive(Error, Debug)]
+
+pub enum OurGetRandomAssetError {
+    #[error("Path does not exist.")]
+    NoPathFound,
+    #[error("No files found to choose in path.")]
+    NoFilesInPath,
+    #[error("Invalid file name.")]
+    InvalidFileName,
+}
+
+fn get_random_asset_file(path: String) -> Result<String, OurGetRandomAssetError> {
+    let mut rng = rand::thread_rng();
+
+    let read_dir = fs::read_dir(path).map_err(|_e| OurGetRandomAssetError::NoPathFound)?;
+    let random_asset = read_dir
+        .choose(&mut rng)
+        .ok_or(OurGetRandomAssetError::NoFilesInPath)?;
+    let chosen_filename = random_asset
+        .map_err(|_e| OurGetRandomAssetError::InvalidFileName)?
+        .path()
+        .file_name()
+        .ok_or(OurGetRandomAssetError::InvalidFileName)?
+        .to_string_lossy()
+        .to_string();
+
+    Ok(chosen_filename)
+}
+
 /// Create a procedurally generated 3D background for a level
 pub fn create_background_system(
     mut commands: Commands,
@@ -157,23 +187,10 @@ pub fn create_background_system(
             .insert(ComputedVisibility::default())
             .insert(Name::new("Planet"));
 
-        match fs::read_dir("./assets/models/planets")
-            .expect("Failed to access ./assets/models/planets")
-            .choose(&mut rng)
-        {
-            Some(planet_dir_result) => {
-                let random_planet_path = format!(
-                    "models/planets/{}#Scene0",
-                    planet_dir_result
-                        .unwrap()
-                        .path()
-                        .file_name()
-                        .unwrap()
-                        .to_str()
-                        .unwrap()
-                );
-
-                let planet_model_handle: Handle<Scene> = asset_server.load(random_planet_path);
+        match get_random_asset_file("./assets/models/planets".to_string()) {
+            Ok(file_name) => {
+                let planet_model_handle: Handle<Scene> =
+                    asset_server.load(format!("models/planets/{file_name}#Scene0"));
 
                 planet_commands.insert(SceneBundle {
                     scene: planet_model_handle,
@@ -181,7 +198,8 @@ pub fn create_background_system(
                     ..default()
                 });
             }
-            None => {
+            Err(_) => {
+                error!("Failed to get random model from ./assets/models/planets. Using fallback model instead.");
                 let planet_mesh = meshes.add(
                     shape::Icosphere {
                         radius: 10.0,
@@ -219,23 +237,9 @@ pub fn create_background_system(
         .insert(ComputedVisibility::default())
         .insert(Name::new("Space Background"))
         .insert(
-            match fs::read_dir("./assets/texture/backgrounds")
-                .expect("Failed to access ./assets/texture/backgrounds")
-                .choose(&mut rng)
-            {
-                Some(background_dir_result) => {
-                    let random_background_path = format!(
-                        "texture/backgrounds/{}",
-                        background_dir_result
-                            .unwrap()
-                            .path()
-                            .file_name()
-                            .unwrap()
-                            .to_str()
-                            .unwrap()
-                    );
-
-                    let background_texture_handle = asset_server.load(random_background_path);
+            match get_random_asset_file("./assets/texture/backgrounds".to_string()) {
+                Ok(file_name) => {
+                    let background_texture_handle = asset_server.load(format!("texture/backgrounds/{file_name}"));
 
                     let material_handle = materials.add(StandardMaterial {
                         base_color_texture: Some(background_texture_handle),
@@ -252,7 +256,9 @@ pub fn create_background_system(
                         ..default()
                     }
                 }
-                None => {
+                Err(_) => {
+                    error!("Failed to get random background texture from ./assets/texture/backgrounds. Using fallback material instead.");
+
                     let material_handle = materials.add(StandardMaterial {
                         base_color: Color::BLACK,
                         unlit: true,
@@ -266,7 +272,7 @@ pub fn create_background_system(
                         ..default()
                     }
                 }
-            },
+            }
         );
 
     // Spawn a star with a random color
