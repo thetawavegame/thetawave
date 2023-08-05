@@ -5,7 +5,6 @@ use thetawave_interface::game::historical_metrics::{MobsKilledByPlayerCacheT, DE
 use crate::{states, GameEnterSet, GameUpdateSet};
 
 mod character_selection;
-mod debug;
 mod game;
 mod game_over;
 mod instructions;

@@ -84,7 +84,6 @@ fn setup_serial_system(
 
 enum ButtonLEDByte {
     EndMarker = 255,
-    Prefix = 254,
     Off = 0,
     On = 1,
     Fade = 2,

@@ -557,8 +557,8 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
 /// Handles players joining the game
 pub fn player_join_system(
     gamepads: Res<Gamepads>,
-    mut keyboard_input: ResMut<Input<KeyCode>>,
-    mut gamepad_input: ResMut<Input<GamepadButton>>,
+    keyboard_input: Res<Input<KeyCode>>,
+    gamepad_input: Res<Input<GamepadButton>>,
     mut players_resource: ResMut<PlayersResource>,
     mut start_game_prompt: Query<&mut Visibility, With<StartGamePrompt>>,
     mut ui_queries: ParamSet<(
@@ -577,7 +577,7 @@ pub fn player_join_system(
         .collect();
 
     // check for keyboard input
-    let mut keyboard_join_input = keyboard_input.just_released(KeyCode::ShiftLeft)
+    let keyboard_join_input = keyboard_input.just_released(KeyCode::ShiftLeft)
         || keyboard_input.just_released(KeyCode::ShiftRight);
 
     // join with keyboard
