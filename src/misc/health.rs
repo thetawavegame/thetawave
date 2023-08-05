@@ -1,3 +1,4 @@
+use bevy::prelude::warn;
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug, Clone)]
@@ -90,7 +91,7 @@ impl Health {
     #[allow(dead_code)]
     pub fn set_health(&mut self, health: f32) {
         if health > self.max_health {
-            eprintln!(
+            warn!(
                 "Attempting to set health value to value above maximum health!
             Setting to max value instead."
             );

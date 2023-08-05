@@ -1,9 +1,6 @@
 use std::time::Duration;
 
-use bevy::{
-    diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin},
-    prelude::*,
-};
+use bevy::prelude::*;
 
 use crate::{
     player::{PlayerComponent, PlayersResource},
@@ -36,9 +33,6 @@ pub struct LevelUI;
 /// Tag for level ui
 #[derive(Component)]
 pub struct PowerGlowUI(Timer);
-
-#[derive(Component)]
-pub struct FPSUI;
 
 #[derive(Component)]
 pub struct StatBarLabel;
@@ -460,45 +454,6 @@ pub fn setup_game_ui_system(
             .insert(StatBarLabel)
             .insert(Player2UI);
     }
-}
-
-#[allow(dead_code)]
-pub fn setup_fps_ui_system(mut commands: Commands, asset_server: ResMut<AssetServer>) {
-    // setup font
-    let font = asset_server.load("fonts/SpaceMadness.ttf");
-
-    commands
-        .spawn(TextBundle {
-            style: Style {
-                left: Val::Percent(90.0),
-                bottom: Val::Percent(5.0),
-
-                position_type: PositionType::Absolute,
-                ..Style::default()
-            },
-            text: Text::from_section(
-                "fps: ",
-                TextStyle {
-                    font,
-                    font_size: 18.0,
-                    color: Color::WHITE,
-                },
-            ),
-            ..Default::default()
-        })
-        .insert(Name::new("FPS UI"))
-        .insert(FPSUI);
-}
-
-#[allow(dead_code)]
-pub fn fps_system(diagnostics: Res<DiagnosticsStore>, mut query: Query<&mut Text, With<FPSUI>>) {
-    let mut text = query.single_mut();
-
-    if let Some(fps) = diagnostics.get(FrameTimeDiagnosticsPlugin::FPS) {
-        if let Some(average) = fps.average() {
-            text.sections[0].value = format!("fps: {average:.2}");
-        }
-    };
 }
 
 #[allow(clippy::type_complexity)]

@@ -263,7 +263,7 @@ impl Level {
                 }
             }
         } else {
-            println!("Timeline index: {:?}", self.timeline_idx);
+            error!("Timeline index: {:?}", self.timeline_idx);
             panic!("Something is wrong. There is not phase at the current timeline index.")
         }
     }

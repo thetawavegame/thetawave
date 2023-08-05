@@ -7,7 +7,7 @@ use thetawave_interface::game::historical_metrics::{
 };
 
 use crate::states::MainMenuCleanup;
-use crate::{assets::GameAudioAssets, audio, states};
+use crate::{assets::GameAudioAssets, audio};
 
 #[derive(Component)]
 pub struct MainMenuUI;

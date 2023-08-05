@@ -3,7 +3,6 @@ use crate::{
     audio,
     collision::SortedCollisionEvent,
     game::GameParametersResource,
-    run::{ObjectiveType, RunResource},
     spawnable::{InitialMotion, PlayerComponent, SpawnEffectEvent},
 };
 use bevy::math::Vec3Swizzles;
@@ -34,7 +33,6 @@ pub fn consumable_execute_behavior_system(
     )>,
     mut player_query: Query<(Entity, &mut PlayerComponent, &Transform)>,
     mut collision_events: EventReader<SortedCollisionEvent>,
-    mut run_resource: ResMut<RunResource>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
@@ -61,7 +59,6 @@ pub fn consumable_execute_behavior_system(
                         &collision_events_vec,
                         &mut player_query,
                         &consumable_component.consumable_effects,
-                        &mut run_resource,
                         &mut spawn_effect_event_writer,
                         &audio_channel,
                         &audio_assets,
@@ -132,7 +129,6 @@ fn apply_effects_on_impact(
     collision_events: &[&SortedCollisionEvent],
     player_query: &mut Query<(Entity, &mut PlayerComponent, &Transform)>,
     consumable_effects: &Vec<ConsumableEffect>,
-    run_resource: &mut RunResource,
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
     audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
     audio_assets: &GameAudioAssets,
@@ -174,12 +170,6 @@ fn apply_effects_on_impact(
                             match consumable_effect {
                                 ConsumableEffect::GainHealth(health) => {
                                     player_component.health.heal(*health);
-                                }
-                                ConsumableEffect::GainDefense(defense) => {
-                                    if let Some(level) = &mut run_resource.level {
-                                        let ObjectiveType::Defense(health) = &mut level.objective;
-                                        health.heal(*defense);
-                                    }
                                 }
                                 ConsumableEffect::GainArmor(armor) => {
                                     player_component.health.gain_armor(*armor);

@@ -523,7 +523,7 @@ pub fn player_join_system(
         .collect();
 
     // check for keyboard input
-    let mut keyboard_join_input = keyboard_input.just_released(KeyCode::ShiftLeft)
+    let keyboard_join_input = keyboard_input.just_released(KeyCode::ShiftLeft)
         || keyboard_input.just_released(KeyCode::ShiftRight);
 
     // join with keyboard

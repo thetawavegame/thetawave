@@ -190,7 +190,7 @@ fn deal_damage_on_contact(
                 mob_faction,
                 projectile_faction,
                 projectile_damage,
-                projectile_source,
+                projectile_source: _,
             } => {
                 if entity == *projectile_entity
                     && !match mob_faction {
@@ -283,7 +283,7 @@ fn deal_damage_on_intersection(
                 mob_faction,
                 projectile_faction,
                 projectile_damage,
-                projectile_source,
+                projectile_source: _,
             } => {
                 if entity == *projectile_entity
                     && !match mob_faction {
@@ -380,8 +380,8 @@ fn explode_on_intersection(
                 projectile_entity,
                 mob_faction,
                 projectile_faction,
-                projectile_damage,
-                projectile_source,
+                projectile_damage: _,
+                projectile_source: _,
             } => {
                 if entity == *projectile_entity
                     && !match mob_faction {
@@ -525,8 +525,8 @@ fn explode_on_contact(
                 projectile_entity,
                 mob_faction: _,
                 projectile_faction,
-                projectile_damage,
-                projectile_source,
+                projectile_damage: _,
+                projectile_source: _,
             } => {
                 if entity == *projectile_entity {
                     audio_channel.play(audio_assets.mob_hit.clone());
