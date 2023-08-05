@@ -1,5 +1,5 @@
 use bevy::prelude::info;
-use dirs::data_dir;
+use directories::ProjectDirs;
 use rusqlite;
 use rusqlite::Connection;
 use std::env::var_os;
@@ -28,10 +28,14 @@ pub(super) enum OurDBError {
 }
 
 fn default_db_path() -> Result<PathBuf, OurDBError> {
-    let data_dir = data_dir().ok_or(OurDBError::NoDBPathFound)?;
-    let game_data_dir = data_dir.join("thetawave");
-    std::fs::create_dir_all(&game_data_dir)?;
-    Ok(game_data_dir.join(THETAWAVE_DB_FILE))
+    match ProjectDirs::from("org", "thetawave-game", "thetawave") {
+        Some(pdirs) => {
+            let game_data_dir = pdirs.data_local_dir();
+            std::fs::create_dir_all(&game_data_dir)?;
+            Ok(game_data_dir.join(THETAWAVE_DB_FILE))
+        }
+        None => Err(OurDBError::NoDBPathFound),
+    }
 }
 
 pub(super) fn setup_db(conn: Connection) -> rusqlite::Result<()> {
