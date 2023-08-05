@@ -1,9 +1,7 @@
 use crate::game;
 use bevy::{
     core_pipeline::{
-        bloom::{BloomCompositeMode, BloomSettings},
-        clear_color::ClearColorConfig,
-        tonemapping::Tonemapping,
+        bloom::BloomSettings, clear_color::ClearColorConfig, tonemapping::Tonemapping,
     },
     prelude::*,
 };

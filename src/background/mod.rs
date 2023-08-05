@@ -124,7 +124,6 @@ pub fn on_defeat_star_explode_system(
 }
 
 #[derive(Error, Debug)]
-
 pub enum OurGetRandomAssetError {
     #[error("Path does not exist.")]
     NoPathFound,
