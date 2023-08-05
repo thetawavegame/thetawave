@@ -174,12 +174,3 @@ pub fn clear_state_system<T: Component>(
         commands.entity(entity).despawn_recursive();
     }
 }
-
-pub fn unload_game_assets(mut commands: Commands) {
-    commands.remove_resource::<assets::PlayerAssets>();
-    commands.remove_resource::<assets::ProjectileAssets>();
-    commands.remove_resource::<assets::MobAssets>();
-    commands.remove_resource::<assets::ConsumableAssets>();
-    commands.remove_resource::<assets::EffectAssets>();
-    commands.remove_resource::<assets::GameAudioAssets>();
-}

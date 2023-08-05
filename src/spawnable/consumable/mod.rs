@@ -20,7 +20,6 @@ pub use self::behavior::{consumable_execute_behavior_system, ConsumableBehavior}
 #[derive(Deserialize, Clone)]
 pub enum ConsumableEffect {
     GainHealth(f32),
-    GainDefense(f32),
     GainArmor(usize),
     GainMoney(usize),
 }
