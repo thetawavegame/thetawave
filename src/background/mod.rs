@@ -199,24 +199,28 @@ pub fn create_background_system(
             }
             Err(_) => {
                 error!("Failed to get random model from ./assets/models/planets. Using fallback model instead.");
-                let planet_mesh = meshes.add(
-                    shape::Icosphere {
-                        radius: 10.0,
-                        subdivisions: backgrounds_res.planet_subdivisions,
-                    }
-                    .try_into()
-                    .unwrap(),
-                );
 
-                planet_commands.insert(PbrBundle {
-                    mesh: planet_mesh,
-                    material: materials.add(StandardMaterial {
-                        base_color: Color::WHITE,
-                        ..default()
-                    }),
-                    transform: planet_transform,
-                    ..default()
+                let maybe_icosphere = Mesh::try_from(shape::Icosphere {
+                    radius: 10.0,
+                    subdivisions: backgrounds_res.planet_subdivisions,
                 });
+
+                match maybe_icosphere {
+                    Ok(icosphere) => {
+                        planet_commands.insert(PbrBundle {
+                            mesh: meshes.add(icosphere),
+                            material: materials.add(StandardMaterial {
+                                base_color: Color::WHITE,
+                                ..default()
+                            }),
+                            transform: planet_transform,
+                            ..default()
+                        });
+                    }
+                    Err(_) => {
+                        error!("Could not construct icosphere for planet. No planet model will be spawned.");
+                    }
+                };
             }
         }
     }
