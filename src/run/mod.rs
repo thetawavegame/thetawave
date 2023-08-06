@@ -45,7 +45,8 @@ impl Plugin for RunPlugin {
         ));
 
         app.add_event::<SpawnFormationEvent>()
-            .add_event::<LevelCompletedEvent>();
+            .add_event::<LevelCompletedEvent>()
+            .add_event::<RunEndEvent>();
 
         app.add_systems(
             OnEnter(states::AppStates::Game),
@@ -78,6 +79,21 @@ impl Plugin for RunPlugin {
             reset_run_system.run_if(in_state(states::GameStates::Paused)),
         );
     }
+}
+
+pub enum RunOutcomeType {
+    Victory,
+    Defeat(RunDefeatType),
+}
+
+pub enum RunDefeatType {
+    PlayersDestroyed,
+    DefenseDestroyed,
+}
+
+#[derive(Event)]
+pub struct RunEndEvent {
+    pub outcome: RunOutcomeType,
 }
 
 // TODO: set to a progression of levels
@@ -130,6 +146,7 @@ impl RunResource {
         mob_reached_bottom: &mut EventReader<MobReachedBottomGateEvent>,
         formation_pools: &formation::FormationPoolsResource,
         end_game_trans_resource: &mut EndGameTransitionResource,
+        run_end_event_writer: &mut EventWriter<RunEndEvent>,
         audio_channel: &AudioChannel<audio::BackgroundMusicAudioChannel>,
         audio_assets: &GameAudioAssets,
     ) {
@@ -143,6 +160,7 @@ impl RunResource {
                 mob_reached_bottom,
                 formation_pools,
                 end_game_trans_resource,
+                run_end_event_writer,
                 audio_channel,
                 audio_assets,
             );

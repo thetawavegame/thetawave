@@ -253,12 +253,11 @@ mod test {
         let player_1_entity = app.world.spawn(player_1.clone());
         let player_1_projectile_event = SpawnProjectileEvent {
             projectile_type: ProjectileType::Bullet(Faction::Ally),
-            transform: Default::default(),
             damage: 0.0,
             despawn_time: 0.0,
-            initial_motion: Default::default(),
-            health: None,
             source: player_1_entity.id(),
+            transform: Default::default(),
+            initial_motion: Default::default(),
         };
         app.world.send_event(player_1_projectile_event.clone());
         app.update();

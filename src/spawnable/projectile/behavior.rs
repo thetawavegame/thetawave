@@ -8,7 +8,6 @@ use crate::{
 };
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
-use bevy_rapier2d::prelude::Velocity;
 use serde::Deserialize;
 use thetawave_interface::spawnable::{EffectType, Faction, ProjectileType};
 
@@ -28,7 +27,7 @@ pub enum ProjectileBehavior {
 #[allow(clippy::too_many_arguments)]
 pub fn projectile_execute_behavior_system(
     mut commands: Commands,
-    mut projectile_query: Query<(Entity, &Transform, &mut ProjectileComponent, &Velocity)>,
+    mut projectile_query: Query<(Entity, &Transform, &mut ProjectileComponent)>,
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
     mut mob_query: Query<(Entity, &mut MobComponent)>,
     mut mob_segment_query: Query<(Entity, &mut MobSegmentComponent)>,
@@ -45,7 +44,7 @@ pub fn projectile_execute_behavior_system(
     }
 
     // iterate through all projectiles
-    for (entity, projectile_transform, mut projectile_component, _) in projectile_query.iter_mut() {
+    for (entity, projectile_transform, mut projectile_component) in projectile_query.iter_mut() {
         let projectile_type = projectile_component.projectile_type.clone();
         for behavior in projectile_component.behaviors.clone() {
             match behavior {

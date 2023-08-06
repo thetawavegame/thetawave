@@ -1,35 +1,17 @@
 (
-	backgrounds: {
-		"solar_system": (
-			planets: [
-				(
-					translation: (550.0, -300.0, -775.0),
-					scale: (450.0, 450.0, 450.0),
-					rotation: (0.0, 0.0, 0.20356716, 0.979061),
-					rotation_speed: 0.0002,
-					mesh_path: "models/earth.glb#Mesh0/Primitive0",
-					material_path: "models/earth.glb#Material0",
-					light: None,
-				),
-				(
-					translation: (-1150.0, -300.0, -2000.0),
-					scale: (70.0, 70.0, 70.0),
-					rotation: (0.0, 0.0, 0.0, 0.0),
-					rotation_speed: 0.00005,
-					mesh_path: "models/sun.glb#Mesh0/Primitive0",
-					material_path: "models/sun.glb#Material0",
-					light: Some((
-						color: Rgba (
-            				red: 0.7,
-            				green: 0.27,
-            				blue: 0.0,
-            				alpha: 1.0,
-						),
-						intensity: 200000000.0,
-						range: 1000000000.0,
-					)),
-				),
-			]
-		)
-	}
+    star_explode_intensity: 65.0,
+    background_transation: (0.0, 0.0, -300.0),
+    star_position_x_range: ( start: -90.0, end: -30.0),
+    star_position_z_range: (start: -250.0, end: -150.0),
+    planet_translation: (8.0, -8.0, 30.0),
+    star_color_range: (start: 0.0, end: 15.0),
+    background_quad_width: 375.0,
+    background_quad_height: 375.0,
+    background_alpha: 0.06,
+    star_radius: 10.0,
+    star_subdivisions: 5,
+    planet_subdivisions: 5,
+    rotation_speed_range: (start: 0.01, end: 0.05),
+    star_light_intensity: 5000000.0,
+    star_light_range: 10000.0,
 )

@@ -132,7 +132,6 @@ pub fn setup_game_over_system(
     commands
         .spawn(NodeBundle {
             style: Style {
-                //size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
                 width: Val::Percent(100.0),
                 height: Val::Percent(100.0),
                 ..Default::default()
@@ -147,7 +146,6 @@ pub fn setup_game_over_system(
                 .spawn(ImageBundle {
                     image: asset_server.load("texture/game_over_background.png").into(),
                     style: Style {
-                        //size: Size::new(Val::Percent(100.), Val::Percent(100.)),
                         width: Val::Percent(100.0),
                         flex_direction: FlexDirection::Column,
                         height: Val::Percent(100.0),
