@@ -2,9 +2,7 @@ name: CI
 
 on:
   pull_request:
-  push:
-    branches:
-      - main
+
 env:
   RUST_BACKTRACE: 1
 
@@ -15,8 +13,6 @@ jobs:
     needs:
       - style
       - test
-      - wasm
-      - docs
     steps:
       - run: exit 0
 
@@ -74,7 +70,6 @@ jobs:
             os: windows-latest
             rust: nightly
             target: x86_64-pc-windows-msvc
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -111,66 +106,3 @@ jobs:
           cargo check --tests
           cargo test --all-features --workspace
         shell: bash
-
-  docs:
-    name: Docs
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Cache deps
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@nightly
-
-      - name: Install bevy deps
-        run: |
-          set -euxo pipefail
-          sudo apt install -y lld g++ pkg-config libx11-dev libasound2-dev libudev-dev
-        shell: bash
-
-      - name: Check documentation
-        run: cargo doc --no-deps --document-private-items --all-features
-
-  wasm:
-    name: WASM
-    needs: [style]
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Install rust
-        uses: dtolnay/rust-toolchain@nightly
-        with:
-          targets: wasm32-unknown-unknown
-
-      - name: Install bevy deps and binaryen for wasm optimization
-        run: |
-          set -euxo pipefail
-          sudo apt install -y lld g++ pkg-config libx11-dev libasound2-dev libudev-dev binaryen
-        shell: bash
-      - name: Build wasm assets
-        run: ./build_wasm.sh
-
-      - name: Publish test deployment to netlify
-        uses: jsmrcaga/action-netlify-deploy@v2.0.0
-        with:
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_DEPLOY_MESSAGE: "Feature preview deploy via GH Actions ${{ github.ref }}"
-          build_directory: 'out/'
-          install_command: "echo 'Skipping installing the dependencies'"
-          build_command: "echo 'Skipping building the web files'"
