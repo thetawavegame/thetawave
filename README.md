@@ -64,9 +64,7 @@ The game is lost when all players have their health bars depleted from taking da
 
 ### Sound Effects
 
-#### *Space Ultimate Megapack*
-
-https://gamesupply.itch.io/ultimate-space-game-mega-asset-package
+#### [*Space Ultimate Megapack*](https://gamesupply.itch.io/ultimate-space-game-mega-asset-package)
 
 ### Assets
 
@@ -78,6 +76,4 @@ https://gamesupply.itch.io/ultimate-space-game-mega-asset-package
 
 *Space Madness* by [Rose Frye](https://modernmodron.itch.io/)
 
-Licensed under Creative Commons: By Attribution 4.0 International.
-
-http://creativecommons.org/licenses/by/4.0/
+Licensed under [Creative Commons: By Attribution 4.0 International](http://creativecommons.org/licenses/by/4.0/).
