@@ -166,9 +166,11 @@ jobs:
         run: ./build_wasm.sh
 
       - name: Publish test deployment to netlify
-        uses: netlify/actions/cli@master
+        uses: jsmrcaga/action-netlify-deploy@v2.0.0
         with:
-          args: deploy --dir=out/ 
-        env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_DEPLOY_MESSAGE: "Feature preview deploy via GH Actions ${{ github.ref }}"
+          build_directory: 'out/'
+          install_command: "echo 'Skipping installing the dependencies'"
+          build_command: "echo 'Skipping building the web files'"
