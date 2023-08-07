@@ -157,6 +157,11 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
+      - name: Install bevy deps and binaryen for wasm optimization
+        run: |
+          set -euxo pipefail
+          sudo apt install -y lld g++ pkg-config libx11-dev libasound2-dev libudev-dev binaryen
+        shell: bash
       - name: Build wasm assets
         run: ./build_wasm.sh
 
