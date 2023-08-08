@@ -7,7 +7,7 @@ env:
   RUST_BACKTRACE: 1
 jobs:
   wasm-publish:
-    name: WASM
+    name: Build and publish WASM-based game to Netlify dev branch
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -17,7 +17,6 @@ jobs:
         uses: dtolnay/rust-toolchain@nightly
         with:
           targets: wasm32-unknown-unknown
-
       - name: Install bevy deps and binaryen for wasm optimization
         run: |
           set -euxo pipefail
@@ -29,11 +28,11 @@ jobs:
       - name: Publish test deployment to netlify
         uses: netlify/actions/cli@master
         with:
-          args: deploy --dir=out/ -m $NETLIFY_DEPLOY_MESSAGE
+          args: deploy --dir=out/ -m "$NETLIFY_DEPLOY_MESSAGE" --alias=dev
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_DEPLOY_MESSAGE: "Feature preview deploy via GH Actions ${{ github.ref }}. Summary: ${{ github.event.head_commit.message}}"
+          NETLIFY_DEPLOY_MESSAGE: "Main branch preview deploy via GH Actions ${{ github.ref }}. Summary: ${{ github.event.head_commit.message}}"
   ci-pass:
     name: CI is green
     runs-on: ubuntu-latest
