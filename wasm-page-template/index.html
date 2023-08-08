@@ -1,36 +1,49 @@
-<!DOCTYPE html>
-
-<head>
+<!doctype html>
+<html>
+  <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <style>
-        body {
-            margin: 0;
-            background: rgb(39, 0, 71);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
+      body {
+        margin: 0;
+        background: rgb(39, 0, 71);
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
 
-        canvas {
-            background-color: white;
-        }
+      canvas {
+        background-color: white;
+      }
 
-        .title {
-            color: white;
-        }
+      .title {
+        color: white;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <script type="module">
-        // prevent right click
-        document.addEventListener('contextmenu', event => event.preventDefault());
-
-        import init from './thetawave.js'
-        init()
+      import init from "./thetawave.js";
+      // prevent right click
+      document.addEventListener("contextmenu", (event) =>
+        event.preventDefault(),
+      );
+      // Chrome and firefox do not want sound starting unless there is a user gesture. Hence we start the game onClick
+      document.body.addEventListener("click", () => {
+        const audioContext = new (window.AudioContext ||
+          window.webkitAudioContext)();
+        // Check if the AudioContext is suspended (for Safari)
+        if (audioContext.state === "suspended") {
+          audioContext.resume().then(() => {
+            console.log("AudioContext resumed successfully.");
+          });
+        } else {
+          init();
+        }
+      });
     </script>
-</body>
-
+  </body>
 </html>
