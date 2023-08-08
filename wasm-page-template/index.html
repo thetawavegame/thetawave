@@ -17,6 +17,17 @@
       canvas {
         background-color: white;
       }
+      button {
+        padding: 10px 20px;
+        font-size: x-large;
+        width: 80%;
+        height: 20%;
+        background-color: rgb(0, 128, 128);
+        color: rgb(218, 165, 32);
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+      }
 
       .title {
         color: white;
@@ -25,6 +36,7 @@
   </head>
 
   <body>
+    <button id="buttonToTriggerGame">Click to Play Thetawave!</button>
     <script type="module">
       import init from "./thetawave.js";
       // prevent right click
@@ -32,17 +44,20 @@
         event.preventDefault(),
       );
       // Chrome and firefox do not want sound starting unless there is a user gesture. Hence we start the game onClick
-      document.body.addEventListener("click", () => {
+      const buttonToInitGame = document.getElementById("buttonToTriggerGame");
+      buttonToInitGame.addEventListener("click", () => {
+        // Permit the browser to play audio
         const audioContext = new (window.AudioContext ||
           window.webkitAudioContext)();
-        // Check if the AudioContext is suspended (for Safari)
+        // Check if the AudioContext is suspended
         if (audioContext.state === "suspended") {
           audioContext.resume().then(() => {
             console.log("AudioContext resumed successfully.");
           });
-        } else {
-          init();
         }
+        init();
+        // Hide the button so we can play the game.
+        buttonToInitGame.remove();
       });
     </script>
   </body>
