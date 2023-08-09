@@ -5,6 +5,7 @@ use crate::{
 };
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
+use rand::Rng;
 use serde::Deserialize;
 use std::collections::HashMap;
 use thetawave_interface::spawnable::EffectType;
@@ -13,6 +14,7 @@ use super::InitialMotion;
 
 mod behavior;
 pub use self::behavior::effect_execute_behavior_system;
+use self::behavior::EffectBehavior;
 
 /// Core component of effect
 #[derive(Component)]
@@ -58,19 +60,100 @@ pub struct SpawnEffectEvent {
 pub fn spawn_effect_system(
     mut commands: Commands,
     mut event_reader: EventReader<SpawnEffectEvent>,
+    asset_server: Res<AssetServer>,
     effects_resource: Res<EffectsResource>,
     effect_assets: Res<EffectAssets>,
 ) {
     for event in event_reader.iter() {
-        spawn_effect(
-            &event.effect_type,
-            &effects_resource,
-            &effect_assets,
-            event.transform,
-            event.initial_motion.clone(),
-            &mut commands,
-        );
+        if let EffectType::DamageNumber(num) = event.effect_type {
+            spawn_damage_number(num, event.transform, &mut commands, &asset_server);
+        } else {
+            spawn_effect(
+                &event.effect_type,
+                &effects_resource,
+                &effect_assets,
+                event.transform,
+                event.initial_motion.clone(),
+                &mut commands,
+            );
+        }
     }
+}
+
+fn spawn_damage_number(
+    damage_num: usize,
+    transform: Transform,
+    commands: &mut Commands,
+    asset_server: &AssetServer,
+) {
+    let font = asset_server.load("fonts/wibletown-regular.otf");
+
+    let mut rng = rand::thread_rng();
+
+    commands
+        .spawn(Text2dBundle {
+            text: Text::from_section(
+                //damage_num.to_string(),
+                5.0.to_string(),
+                TextStyle {
+                    font: font.clone(),
+                    font_size: 60.0,
+                    color: Color::WHITE,
+                },
+            ),
+            ..default()
+        })
+        .insert(
+            transform
+                .with_translation(
+                    transform.translation
+                        + Vec3::new(rng.gen_range(-50.0..50.0), rng.gen_range(-50.0..50.0), 0.0),
+                )
+                .with_scale(Vec3 {
+                    x: 0.6,
+                    y: 0.6,
+                    z: 0.0,
+                }),
+        )
+        .insert(super::SpawnableComponent {
+            spawnable_type: super::SpawnableType::Effect(EffectType::DamageNumber(damage_num)),
+            acceleration: Vec2::new(0.0, 0.0),
+            deceleration: Vec2::new(0.0, 0.0),
+            speed: Vec2::new(0.0, 0.0),
+            angular_acceleration: 0.0,
+            angular_deceleration: 0.0,
+            angular_speed: 0.0,
+            behaviors: vec![],
+        })
+        .insert(EffectComponent {
+            effect_type: EffectType::DamageNumber(damage_num),
+            behaviors: vec![EffectBehavior::FadeOutTimeMs(Timer::from_seconds(
+                0.5,
+                TimerMode::Once,
+            ))],
+        })
+        .insert(GameCleanup)
+        .with_children(|parent| {
+            // spawn border text
+            parent
+                .spawn(Text2dBundle {
+                    text: Text::from_section(
+                        //damage_num.to_string(),
+                        5.0.to_string(),
+                        TextStyle {
+                            font,
+                            font_size: 60.0,
+                            color: Color::BLACK,
+                        },
+                    ),
+                    ..default()
+                })
+                .insert(Transform::from_scale(Vec3 {
+                    x: 1.15,
+                    y: 1.15,
+                    z: 0.0,
+                }));
+        });
 }
 
 /// Spawn effect from effect type

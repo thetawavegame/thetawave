@@ -7,6 +7,7 @@ use super::EffectComponent;
 #[derive(Deserialize, Clone)]
 pub enum EffectBehavior {
     DespawnAfterAnimation,
+    FadeOutTimeMs(Timer),
 }
 
 /// Execute behaviors specific to effects
@@ -14,19 +15,31 @@ pub fn effect_execute_behavior_system(
     mut commands: Commands,
     mut effect_query: Query<(
         Entity,
-        &EffectComponent,
-        &TextureAtlasSprite,
-        &Handle<TextureAtlas>,
+        &mut EffectComponent,
+        Option<&TextureAtlasSprite>,
+        Option<&Handle<TextureAtlas>>,
+        Option<&mut Text>,
     )>,
     texture_atlases: Res<Assets<TextureAtlas>>,
+    time: Res<Time>,
 ) {
-    for (entity, effect_component, sprite, texture_atlas_handle) in effect_query.iter_mut() {
-        let behaviors = effect_component.behaviors.clone();
-        for behavior in behaviors {
+    for (entity, mut effect_component, sprite, texture_atlas_handle, mut text) in
+        effect_query.iter_mut()
+    {
+        for behavior in effect_component.behaviors.iter_mut() {
             match behavior {
                 EffectBehavior::DespawnAfterAnimation => {
-                    let texture_atlas = texture_atlases.get(texture_atlas_handle).unwrap();
-                    if sprite.index == texture_atlas.textures.len() - 1 {
+                    let texture_atlas = texture_atlases.get(texture_atlas_handle.unwrap()).unwrap();
+                    if sprite.unwrap().index == texture_atlas.textures.len() - 1 {
+                        commands.entity(entity).despawn_recursive();
+                    }
+                }
+                EffectBehavior::FadeOutTimeMs(timer) => {
+                    timer.tick(time.delta());
+                    if let Some(text) = text.as_mut().unwrap().sections.get_mut(0) {
+                        text.style.color.set_a(timer.percent_left());
+                    }
+                    if timer.just_finished() {
                         commands.entity(entity).despawn_recursive();
                     }
                 }

@@ -43,6 +43,7 @@ impl EffectAssets {
             EffectType::EnemyBulletDespawn => self.enemy_bullet_despawn.clone(),
             EffectType::AllyBulletExplosion => self.ally_bullet_explosion.clone(),
             EffectType::EnemyBulletExplosion => self.enemy_bullet_explosion.clone(),
+            EffectType::DamageNumber(_) => todo!(),
         }
     }
 }

@@ -403,6 +403,15 @@ fn explode_on_intersection(
                                 },
                                 initial_motion: InitialMotion::default(),
                             });
+                            spawn_effect_event_writer.send(SpawnEffectEvent {
+                                effect_type: EffectType::DamageNumber(100),
+                                transform: Transform {
+                                    translation: transform.translation,
+                                    scale: transform.scale,
+                                    ..Default::default()
+                                },
+                                initial_motion: InitialMotion::default(),
+                            });
                         }
                         Faction::Enemy => {
                             // spawn explosion
@@ -444,6 +453,15 @@ fn explode_on_intersection(
                             // spawn explosion
                             spawn_effect_event_writer.send(SpawnEffectEvent {
                                 effect_type: EffectType::AllyBlastExplosion,
+                                transform: Transform {
+                                    translation: transform.translation,
+                                    scale: transform.scale,
+                                    ..Default::default()
+                                },
+                                initial_motion: InitialMotion::default(),
+                            });
+                            spawn_effect_event_writer.send(SpawnEffectEvent {
+                                effect_type: EffectType::DamageNumber(100),
                                 transform: Transform {
                                     translation: transform.translation,
                                     scale: transform.scale,
@@ -542,6 +560,15 @@ fn explode_on_contact(
                                 },
                                 initial_motion: InitialMotion::default(),
                             });
+                            spawn_effect_event_writer.send(SpawnEffectEvent {
+                                effect_type: EffectType::DamageNumber(100),
+                                transform: Transform {
+                                    translation: transform.translation,
+                                    scale: transform.scale,
+                                    ..Default::default()
+                                },
+                                initial_motion: InitialMotion::default(),
+                            });
                         }
                         Faction::Enemy => {
                             // spawn explosion
@@ -578,6 +605,15 @@ fn explode_on_contact(
                             // spawn explosion
                             spawn_effect_event_writer.send(SpawnEffectEvent {
                                 effect_type: EffectType::AllyBulletExplosion,
+                                transform: Transform {
+                                    translation: transform.translation,
+                                    scale: transform.scale,
+                                    ..Default::default()
+                                },
+                                initial_motion: InitialMotion::default(),
+                            });
+                            spawn_effect_event_writer.send(SpawnEffectEvent {
+                                effect_type: EffectType::DamageNumber(100),
                                 transform: Transform {
                                     translation: transform.translation,
                                     scale: transform.scale,
