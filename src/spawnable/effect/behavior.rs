@@ -7,10 +7,11 @@ use super::EffectComponent;
 #[derive(Deserialize, Clone)]
 pub enum EffectBehavior {
     DespawnAfterAnimation,
-    FadeOutTimeMs(Timer),
+    FadeOutMs(Timer),
 }
 
 /// Execute behaviors specific to effects
+#[allow(clippy::complexity)]
 pub fn effect_execute_behavior_system(
     mut commands: Commands,
     mut effect_query: Query<(
@@ -34,9 +35,10 @@ pub fn effect_execute_behavior_system(
                         commands.entity(entity).despawn_recursive();
                     }
                 }
-                EffectBehavior::FadeOutTimeMs(timer) => {
+                EffectBehavior::FadeOutMs(timer) => {
                     timer.tick(time.delta());
                     if let Some(text) = text.as_mut().unwrap().sections.get_mut(0) {
+                        // set alpha color channel to the percent left in the timer
                         text.style.color.set_a(timer.percent_left());
                     }
                     if timer.just_finished() {

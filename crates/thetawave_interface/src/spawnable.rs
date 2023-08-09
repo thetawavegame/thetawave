@@ -135,8 +135,5 @@ pub enum EffectType {
     EnemyBulletDespawn,
     AllyBulletExplosion,
     DamageText(String),
-    //PoisonBlastExplosion,
-    //CriticalBlastExplosion,
-    //MobExplosion,
     //Giblets(MobType),
 }

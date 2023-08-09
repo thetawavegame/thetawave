@@ -98,8 +98,6 @@ fn spawn_damage_text(
     commands
         .spawn(Text2dBundle {
             text: Text::from_section(
-                //damage_num.to_string(),
-                //5.0.to_string(),
                 damage_text.clone(),
                 TextStyle {
                     font: font.clone(),
@@ -113,7 +111,7 @@ fn spawn_damage_text(
             transform
                 .with_translation(
                     transform.translation
-                        + Vec3::new(rng.gen_range(-50.0..50.0), rng.gen_range(-50.0..50.0), 0.0),
+                        + Vec3::new(rng.gen_range(-50.0..50.0), rng.gen_range(-50.0..50.0), 1.0),
                 )
                 .with_scale(Vec3 {
                     x: 0.6,
@@ -135,7 +133,7 @@ fn spawn_damage_text(
         })
         .insert(EffectComponent {
             effect_type: EffectType::DamageText(damage_text),
-            behaviors: vec![EffectBehavior::FadeOutTimeMs(Timer::from_seconds(
+            behaviors: vec![EffectBehavior::FadeOutMs(Timer::from_seconds(
                 0.5,
                 TimerMode::Once,
             ))],

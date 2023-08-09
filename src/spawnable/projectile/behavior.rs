@@ -153,6 +153,7 @@ pub fn projectile_execute_behavior_system(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn deal_damage_on_contact(
     entity: Entity,
     collision_events: &[&SortedCollisionEvent],
@@ -265,6 +266,7 @@ fn deal_damage_on_contact(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn deal_damage_on_intersection(
     entity: Entity,
     collision_events: &[&SortedCollisionEvent],
@@ -422,7 +424,7 @@ fn explode_on_intersection(
                 projectile_entity,
                 mob_faction,
                 projectile_faction,
-                projectile_damage,
+                projectile_damage: _,
                 projectile_source: _,
             } => {
                 if entity == *projectile_entity
@@ -471,7 +473,7 @@ fn explode_on_intersection(
                 projectile_entity,
                 mob_segment_faction,
                 projectile_faction,
-                projectile_damage,
+                projectile_damage: _,
             } => {
                 if entity == *projectile_entity
                     && !match mob_segment_faction {
@@ -567,7 +569,7 @@ fn explode_on_contact(
                 projectile_entity,
                 mob_faction: _,
                 projectile_faction,
-                projectile_damage,
+                projectile_damage: _,
                 projectile_source: _,
             } => {
                 if entity == *projectile_entity {
@@ -611,7 +613,7 @@ fn explode_on_contact(
                 projectile_entity,
                 mob_segment_faction: _,
                 projectile_faction,
-                projectile_damage,
+                projectile_damage: _,
             } => {
                 if entity == *projectile_entity {
                     audio_channel.play(audio_assets.mob_hit.clone());
