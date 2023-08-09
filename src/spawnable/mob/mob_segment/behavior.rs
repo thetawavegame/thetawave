@@ -329,7 +329,7 @@ fn receive_damage_on_impact(
             } => {
                 if entity == *mob_segment_entity {
                     for (player_entity_q, mut _player_component) in player_query.iter_mut() {
-                        if player_entity_q == *player_entity {
+                        if player_entity_q == *player_entity && *player_damage > 0.0 {
                             mob_segment_component.health.take_damage(*player_damage);
                             spawn_effect_event_writer.send(SpawnEffectEvent {
                                 effect_type: EffectType::DamageText(player_damage.to_string()),
@@ -352,7 +352,7 @@ fn receive_damage_on_impact(
                 mob_faction: _,
                 mob_damage,
             } => {
-                if entity == *mob_segment_entity {
+                if entity == *mob_segment_entity && *mob_damage > 0.0 {
                     mob_segment_component.health.take_damage(*mob_damage);
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::DamageText(mob_damage.to_string()),
@@ -373,7 +373,7 @@ fn receive_damage_on_impact(
                 mob_segment_faction_2: _,
                 mob_segment_damage_2,
             } => {
-                if entity == *mob_segment_entity_1 {
+                if entity == *mob_segment_entity_1 && *mob_segment_damage_2 > 0.0 {
                     mob_segment_component
                         .health
                         .take_damage(*mob_segment_damage_2);

@@ -1,3 +1,5 @@
+use std::thread::spawn;
+
 use crate::{
     assets::GameAudioAssets,
     audio,
@@ -29,8 +31,8 @@ pub fn projectile_execute_behavior_system(
     mut commands: Commands,
     mut projectile_query: Query<(Entity, &Transform, &mut ProjectileComponent)>,
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
-    mut mob_query: Query<(Entity, &mut MobComponent)>,
-    mut mob_segment_query: Query<(Entity, &mut MobSegmentComponent)>,
+    mut mob_query: Query<(Entity, &Transform, &mut MobComponent)>,
+    mut mob_segment_query: Query<(Entity, &Transform, &mut MobSegmentComponent)>,
     mut collision_events: EventReader<SortedCollisionEvent>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     time: Res<Time>,
@@ -74,6 +76,7 @@ pub fn projectile_execute_behavior_system(
                     &mut mob_segment_query,
                     &audio_channel,
                     &audio_assets,
+                    &mut spawn_effect_event_writer,
                 ),
                 ProjectileBehavior::DealDamageOnIntersection => deal_damage_on_intersection(
                     entity,
@@ -83,6 +86,7 @@ pub fn projectile_execute_behavior_system(
                     &mut mob_segment_query,
                     &audio_channel,
                     &audio_assets,
+                    &mut spawn_effect_event_writer,
                 ),
                 ProjectileBehavior::TimedDespawn { despawn_time } => {
                     projectile_component.time_alive += time.delta_seconds();
@@ -153,10 +157,11 @@ fn deal_damage_on_contact(
     entity: Entity,
     collision_events: &[&SortedCollisionEvent],
     player_query: &mut Query<(Entity, &mut PlayerComponent)>,
-    mob_query: &mut Query<(Entity, &mut MobComponent)>,
-    mob_segment_query: &mut Query<(Entity, &mut MobSegmentComponent)>,
+    mob_query: &mut Query<(Entity, &Transform, &mut MobComponent)>,
+    mob_segment_query: &mut Query<(Entity, &Transform, &mut MobSegmentComponent)>,
     audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
     audio_assets: &GameAudioAssets,
+    spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
@@ -201,9 +206,18 @@ fn deal_damage_on_contact(
                 {
                     // deal damage to mob
                     audio_channel.play(audio_assets.bullet_ding.clone());
-                    for (mob_entity_q, mut mob_component) in mob_query.iter_mut() {
-                        if *mob_entity == mob_entity_q {
+                    for (mob_entity_q, mob_transform, mut mob_component) in mob_query.iter_mut() {
+                        if *mob_entity == mob_entity_q && *projectile_damage > 0.0 {
                             mob_component.health.take_damage(*projectile_damage);
+                            spawn_effect_event_writer.send(SpawnEffectEvent {
+                                effect_type: EffectType::DamageText(projectile_damage.to_string()),
+                                transform: Transform {
+                                    translation: mob_transform.translation,
+                                    scale: mob_transform.scale,
+                                    ..Default::default()
+                                },
+                                initial_motion: InitialMotion::default(),
+                            });
                         }
                     }
 
@@ -226,11 +240,20 @@ fn deal_damage_on_contact(
                 {
                     // deal damage to mob
                     audio_channel.play(audio_assets.bullet_ding.clone());
-                    for (mob_segment_entity_q, mut mob_segment_component) in
+                    for (mob_segment_entity_q, mob_segment_transform, mut mob_segment_component) in
                         mob_segment_query.iter_mut()
                     {
-                        if *mob_segment_entity == mob_segment_entity_q {
+                        if *mob_segment_entity == mob_segment_entity_q && *projectile_damage > 0.0 {
                             mob_segment_component.health.take_damage(*projectile_damage);
+                            spawn_effect_event_writer.send(SpawnEffectEvent {
+                                effect_type: EffectType::DamageText(projectile_damage.to_string()),
+                                transform: Transform {
+                                    translation: mob_segment_transform.translation,
+                                    scale: mob_segment_transform.scale,
+                                    ..Default::default()
+                                },
+                                initial_motion: InitialMotion::default(),
+                            });
                         }
                     }
 
@@ -246,10 +269,11 @@ fn deal_damage_on_intersection(
     entity: Entity,
     collision_events: &[&SortedCollisionEvent],
     player_query: &mut Query<(Entity, &mut PlayerComponent)>,
-    mob_query: &mut Query<(Entity, &mut MobComponent)>,
-    mob_segment_query: &mut Query<(Entity, &mut MobSegmentComponent)>,
+    mob_query: &mut Query<(Entity, &Transform, &mut MobComponent)>,
+    mob_segment_query: &mut Query<(Entity, &Transform, &mut MobSegmentComponent)>,
     audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
     audio_assets: &GameAudioAssets,
+    spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
@@ -293,9 +317,18 @@ fn deal_damage_on_intersection(
                     }
                 {
                     // deal damage to mob
-                    for (mob_entity_q, mut mob_component) in mob_query.iter_mut() {
-                        if *mob_entity == mob_entity_q {
+                    for (mob_entity_q, mob_transform, mut mob_component) in mob_query.iter_mut() {
+                        if *mob_entity == mob_entity_q && *projectile_damage > 0.0 {
                             mob_component.health.take_damage(*projectile_damage);
+                            spawn_effect_event_writer.send(SpawnEffectEvent {
+                                effect_type: EffectType::DamageText(projectile_damage.to_string()),
+                                transform: Transform {
+                                    translation: mob_transform.translation,
+                                    scale: mob_transform.scale,
+                                    ..Default::default()
+                                },
+                                initial_motion: InitialMotion::default(),
+                            });
                         }
                     }
 
@@ -317,11 +350,20 @@ fn deal_damage_on_intersection(
                     }
                 {
                     // deal damage to mob
-                    for (mob_segment_entity_q, mut mob_segment_component) in
+                    for (mob_segment_entity_q, mob_segment_transform, mut mob_segment_component) in
                         mob_segment_query.iter_mut()
                     {
-                        if *mob_segment_entity == mob_segment_entity_q {
+                        if *mob_segment_entity == mob_segment_entity_q && *projectile_damage > 0.0 {
                             mob_segment_component.health.take_damage(*projectile_damage);
+                            spawn_effect_event_writer.send(SpawnEffectEvent {
+                                effect_type: EffectType::DamageText(projectile_damage.to_string()),
+                                transform: Transform {
+                                    translation: mob_segment_transform.translation,
+                                    scale: mob_segment_transform.scale,
+                                    ..Default::default()
+                                },
+                                initial_motion: InitialMotion::default(),
+                            });
                         }
                     }
 
@@ -403,15 +445,6 @@ fn explode_on_intersection(
                                 },
                                 initial_motion: InitialMotion::default(),
                             });
-                            spawn_effect_event_writer.send(SpawnEffectEvent {
-                                effect_type: EffectType::DamageText(projectile_damage.to_string()),
-                                transform: Transform {
-                                    translation: transform.translation,
-                                    scale: transform.scale,
-                                    ..Default::default()
-                                },
-                                initial_motion: InitialMotion::default(),
-                            });
                         }
                         Faction::Enemy => {
                             // spawn explosion
@@ -453,15 +486,6 @@ fn explode_on_intersection(
                             // spawn explosion
                             spawn_effect_event_writer.send(SpawnEffectEvent {
                                 effect_type: EffectType::AllyBlastExplosion,
-                                transform: Transform {
-                                    translation: transform.translation,
-                                    scale: transform.scale,
-                                    ..Default::default()
-                                },
-                                initial_motion: InitialMotion::default(),
-                            });
-                            spawn_effect_event_writer.send(SpawnEffectEvent {
-                                effect_type: EffectType::DamageText(projectile_damage.to_string()),
                                 transform: Transform {
                                     translation: transform.translation,
                                     scale: transform.scale,
@@ -560,15 +584,6 @@ fn explode_on_contact(
                                 },
                                 initial_motion: InitialMotion::default(),
                             });
-                            spawn_effect_event_writer.send(SpawnEffectEvent {
-                                effect_type: EffectType::DamageText(projectile_damage.to_string()),
-                                transform: Transform {
-                                    translation: transform.translation,
-                                    scale: transform.scale,
-                                    ..Default::default()
-                                },
-                                initial_motion: InitialMotion::default(),
-                            });
                         }
                         Faction::Enemy => {
                             // spawn explosion
@@ -605,15 +620,6 @@ fn explode_on_contact(
                             // spawn explosion
                             spawn_effect_event_writer.send(SpawnEffectEvent {
                                 effect_type: EffectType::AllyBulletExplosion,
-                                transform: Transform {
-                                    translation: transform.translation,
-                                    scale: transform.scale,
-                                    ..Default::default()
-                                },
-                                initial_motion: InitialMotion::default(),
-                            });
-                            spawn_effect_event_writer.send(SpawnEffectEvent {
-                                effect_type: EffectType::DamageText(projectile_damage.to_string()),
                                 transform: Transform {
                                     translation: transform.translation,
                                     scale: transform.scale,
