@@ -65,8 +65,13 @@ pub fn spawn_effect_system(
     effect_assets: Res<EffectAssets>,
 ) {
     for event in event_reader.iter() {
-        if let EffectType::DamageNumber(num) = event.effect_type {
-            spawn_damage_number(num, event.transform, &mut commands, &asset_server);
+        if let EffectType::DamageText(damage_text) = &event.effect_type {
+            spawn_damage_text(
+                damage_text.to_string(),
+                event.transform,
+                &mut commands,
+                &asset_server,
+            );
         } else {
             spawn_effect(
                 &event.effect_type,
@@ -80,8 +85,8 @@ pub fn spawn_effect_system(
     }
 }
 
-fn spawn_damage_number(
-    damage_num: usize,
+fn spawn_damage_text(
+    damage_text: String,
     transform: Transform,
     commands: &mut Commands,
     asset_server: &AssetServer,
@@ -94,7 +99,8 @@ fn spawn_damage_number(
         .spawn(Text2dBundle {
             text: Text::from_section(
                 //damage_num.to_string(),
-                5.0.to_string(),
+                //5.0.to_string(),
+                damage_text.clone(),
                 TextStyle {
                     font: font.clone(),
                     font_size: 60.0,
@@ -116,7 +122,9 @@ fn spawn_damage_number(
                 }),
         )
         .insert(super::SpawnableComponent {
-            spawnable_type: super::SpawnableType::Effect(EffectType::DamageNumber(damage_num)),
+            spawnable_type: super::SpawnableType::Effect(EffectType::DamageText(
+                damage_text.clone(),
+            )),
             acceleration: Vec2::new(0.0, 0.0),
             deceleration: Vec2::new(0.0, 0.0),
             speed: Vec2::new(0.0, 0.0),
@@ -126,34 +134,13 @@ fn spawn_damage_number(
             behaviors: vec![],
         })
         .insert(EffectComponent {
-            effect_type: EffectType::DamageNumber(damage_num),
+            effect_type: EffectType::DamageText(damage_text),
             behaviors: vec![EffectBehavior::FadeOutTimeMs(Timer::from_seconds(
                 0.5,
                 TimerMode::Once,
             ))],
         })
-        .insert(GameCleanup)
-        .with_children(|parent| {
-            // spawn border text
-            parent
-                .spawn(Text2dBundle {
-                    text: Text::from_section(
-                        //damage_num.to_string(),
-                        5.0.to_string(),
-                        TextStyle {
-                            font,
-                            font_size: 60.0,
-                            color: Color::BLACK,
-                        },
-                    ),
-                    ..default()
-                })
-                .insert(Transform::from_scale(Vec3 {
-                    x: 1.15,
-                    y: 1.15,
-                    z: 0.0,
-                }));
-        });
+        .insert(GameCleanup);
 }
 
 /// Spawn effect from effect type

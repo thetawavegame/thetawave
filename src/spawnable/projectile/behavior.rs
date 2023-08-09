@@ -380,7 +380,7 @@ fn explode_on_intersection(
                 projectile_entity,
                 mob_faction,
                 projectile_faction,
-                projectile_damage: _,
+                projectile_damage,
                 projectile_source: _,
             } => {
                 if entity == *projectile_entity
@@ -404,7 +404,7 @@ fn explode_on_intersection(
                                 initial_motion: InitialMotion::default(),
                             });
                             spawn_effect_event_writer.send(SpawnEffectEvent {
-                                effect_type: EffectType::DamageNumber(100),
+                                effect_type: EffectType::DamageText(projectile_damage.to_string()),
                                 transform: Transform {
                                     translation: transform.translation,
                                     scale: transform.scale,
@@ -438,7 +438,7 @@ fn explode_on_intersection(
                 projectile_entity,
                 mob_segment_faction,
                 projectile_faction,
-                projectile_damage: _,
+                projectile_damage,
             } => {
                 if entity == *projectile_entity
                     && !match mob_segment_faction {
@@ -461,7 +461,7 @@ fn explode_on_intersection(
                                 initial_motion: InitialMotion::default(),
                             });
                             spawn_effect_event_writer.send(SpawnEffectEvent {
-                                effect_type: EffectType::DamageNumber(100),
+                                effect_type: EffectType::DamageText(projectile_damage.to_string()),
                                 transform: Transform {
                                     translation: transform.translation,
                                     scale: transform.scale,
@@ -543,7 +543,7 @@ fn explode_on_contact(
                 projectile_entity,
                 mob_faction: _,
                 projectile_faction,
-                projectile_damage: _,
+                projectile_damage,
                 projectile_source: _,
             } => {
                 if entity == *projectile_entity {
@@ -561,7 +561,7 @@ fn explode_on_contact(
                                 initial_motion: InitialMotion::default(),
                             });
                             spawn_effect_event_writer.send(SpawnEffectEvent {
-                                effect_type: EffectType::DamageNumber(100),
+                                effect_type: EffectType::DamageText(projectile_damage.to_string()),
                                 transform: Transform {
                                     translation: transform.translation,
                                     scale: transform.scale,
@@ -596,7 +596,7 @@ fn explode_on_contact(
                 projectile_entity,
                 mob_segment_faction: _,
                 projectile_faction,
-                projectile_damage: _,
+                projectile_damage,
             } => {
                 if entity == *projectile_entity {
                     audio_channel.play(audio_assets.mob_hit.clone());
@@ -613,7 +613,7 @@ fn explode_on_contact(
                                 initial_motion: InitialMotion::default(),
                             });
                             spawn_effect_event_writer.send(SpawnEffectEvent {
-                                effect_type: EffectType::DamageNumber(100),
+                                effect_type: EffectType::DamageText(projectile_damage.to_string()),
                                 transform: Transform {
                                     translation: transform.translation,
                                     scale: transform.scale,

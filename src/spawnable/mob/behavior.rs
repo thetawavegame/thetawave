@@ -198,6 +198,8 @@ pub fn mob_execute_behavior_system(
                         entity,
                         &collision_events_vec,
                         &mut mob_component,
+                        *mob_transform,
+                        &mut spawn_effect_event_writer,
                         &mut player_query,
                     );
                 }
@@ -253,6 +255,8 @@ fn receive_damage_on_impact(
     entity: Entity,
     collision_events: &[&SortedCollisionEvent],
     mob_component: &mut super::MobComponent,
+    mob_transform: Transform,
+    spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
     player_query: &mut Query<(Entity, &mut PlayerComponent)>,
 ) {
     for collision_event in collision_events.iter() {
@@ -268,6 +272,15 @@ fn receive_damage_on_impact(
                     for (player_entity_q, mut _player_component) in player_query.iter_mut() {
                         if player_entity_q == *player_entity {
                             mob_component.health.take_damage(*player_damage);
+                            spawn_effect_event_writer.send(SpawnEffectEvent {
+                                effect_type: EffectType::DamageText(player_damage.to_string()),
+                                transform: Transform {
+                                    translation: mob_transform.translation,
+                                    scale: mob_transform.scale,
+                                    ..Default::default()
+                                },
+                                initial_motion: InitialMotion::default(),
+                            });
                         }
                     }
                 }
@@ -282,6 +295,15 @@ fn receive_damage_on_impact(
             } => {
                 if entity == *mob_entity_1 {
                     mob_component.health.take_damage(*mob_damage_2);
+                    spawn_effect_event_writer.send(SpawnEffectEvent {
+                        effect_type: EffectType::DamageText(mob_damage_2.to_string()),
+                        transform: Transform {
+                            translation: mob_transform.translation,
+                            scale: mob_transform.scale,
+                            ..Default::default()
+                        },
+                        initial_motion: InitialMotion::default(),
+                    });
                 }
             }
             SortedCollisionEvent::MobToMobSegmentContact {
@@ -294,6 +316,15 @@ fn receive_damage_on_impact(
             } => {
                 if entity == *mob_entity {
                     mob_component.health.take_damage(*mob_segment_damage);
+                    spawn_effect_event_writer.send(SpawnEffectEvent {
+                        effect_type: EffectType::DamageText(mob_segment_damage.to_string()),
+                        transform: Transform {
+                            translation: mob_transform.translation,
+                            scale: mob_transform.scale,
+                            ..Default::default()
+                        },
+                        initial_motion: InitialMotion::default(),
+                    });
                 }
             }
 
