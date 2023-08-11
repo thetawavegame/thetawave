@@ -11,7 +11,7 @@ use crate::{
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use serde::Deserialize;
-use thetawave_interface::spawnable::{EffectType, Faction, ProjectileType};
+use thetawave_interface::spawnable::{EffectType, Faction, ProjectileType, TextEffectType};
 
 use super::ProjectileComponent;
 
@@ -102,6 +102,7 @@ pub fn projectile_execute_behavior_system(
                                             ..Default::default()
                                         },
                                         initial_motion: InitialMotion::default(),
+                                        text: None,
                                     });
                                 }
                                 Faction::Ally => {
@@ -113,6 +114,7 @@ pub fn projectile_execute_behavior_system(
                                             ..Default::default()
                                         },
                                         initial_motion: InitialMotion::default(),
+                                        text: None,
                                     });
                                 }
                                 _ => {}
@@ -127,6 +129,7 @@ pub fn projectile_execute_behavior_system(
                                             ..Default::default()
                                         },
                                         initial_motion: InitialMotion::default(),
+                                        text: None,
                                     });
                                 }
 
@@ -139,6 +142,7 @@ pub fn projectile_execute_behavior_system(
                                             ..Default::default()
                                         },
                                         initial_motion: InitialMotion::default(),
+                                        text: None,
                                     });
                                 }
                                 _ => {}
@@ -211,13 +215,14 @@ fn deal_damage_on_contact(
                         if *mob_entity == mob_entity_q && *projectile_damage > 0.0 {
                             mob_component.health.take_damage(*projectile_damage);
                             spawn_effect_event_writer.send(SpawnEffectEvent {
-                                effect_type: EffectType::DamageText(projectile_damage.to_string()),
+                                effect_type: EffectType::Text(TextEffectType::DamageDealt),
                                 transform: Transform {
                                     translation: mob_transform.translation,
                                     scale: mob_transform.scale,
                                     ..Default::default()
                                 },
                                 initial_motion: InitialMotion::default(),
+                                text: Some(projectile_damage.to_string()),
                             });
                         }
                     }
@@ -247,13 +252,14 @@ fn deal_damage_on_contact(
                         if *mob_segment_entity == mob_segment_entity_q && *projectile_damage > 0.0 {
                             mob_segment_component.health.take_damage(*projectile_damage);
                             spawn_effect_event_writer.send(SpawnEffectEvent {
-                                effect_type: EffectType::DamageText(projectile_damage.to_string()),
+                                effect_type: EffectType::Text(TextEffectType::DamageDealt),
                                 transform: Transform {
                                     translation: mob_segment_transform.translation,
                                     scale: mob_segment_transform.scale,
                                     ..Default::default()
                                 },
                                 initial_motion: InitialMotion::default(),
+                                text: Some(projectile_damage.to_string()),
                             });
                         }
                     }
@@ -323,13 +329,14 @@ fn deal_damage_on_intersection(
                         if *mob_entity == mob_entity_q && *projectile_damage > 0.0 {
                             mob_component.health.take_damage(*projectile_damage);
                             spawn_effect_event_writer.send(SpawnEffectEvent {
-                                effect_type: EffectType::DamageText(projectile_damage.to_string()),
+                                effect_type: EffectType::Text(TextEffectType::DamageDealt),
                                 transform: Transform {
                                     translation: mob_transform.translation,
                                     scale: mob_transform.scale,
                                     ..Default::default()
                                 },
                                 initial_motion: InitialMotion::default(),
+                                text: Some(projectile_damage.to_string()),
                             });
                         }
                     }
@@ -358,13 +365,14 @@ fn deal_damage_on_intersection(
                         if *mob_segment_entity == mob_segment_entity_q && *projectile_damage > 0.0 {
                             mob_segment_component.health.take_damage(*projectile_damage);
                             spawn_effect_event_writer.send(SpawnEffectEvent {
-                                effect_type: EffectType::DamageText(projectile_damage.to_string()),
+                                effect_type: EffectType::Text(TextEffectType::DamageDealt),
                                 transform: Transform {
                                     translation: mob_segment_transform.translation,
                                     scale: mob_segment_transform.scale,
                                     ..Default::default()
                                 },
                                 initial_motion: InitialMotion::default(),
+                                text: Some(projectile_damage.to_string()),
                             });
                         }
                     }
@@ -410,6 +418,7 @@ fn explode_on_intersection(
                             ..Default::default()
                         },
                         initial_motion: InitialMotion::default(),
+                        text: None,
                     });
 
                     // despawn blast
@@ -446,6 +455,7 @@ fn explode_on_intersection(
                                     ..Default::default()
                                 },
                                 initial_motion: InitialMotion::default(),
+                                text: None,
                             });
                         }
                         Faction::Enemy => {
@@ -458,6 +468,7 @@ fn explode_on_intersection(
                                     ..Default::default()
                                 },
                                 initial_motion: InitialMotion::default(),
+                                text: None,
                             });
                         }
                         Faction::Neutral => {}
@@ -494,6 +505,7 @@ fn explode_on_intersection(
                                     ..Default::default()
                                 },
                                 initial_motion: InitialMotion::default(),
+                                text: None,
                             });
                         }
                         Faction::Enemy => {
@@ -506,6 +518,7 @@ fn explode_on_intersection(
                                     ..Default::default()
                                 },
                                 initial_motion: InitialMotion::default(),
+                                text: None,
                             });
                         }
                         Faction::Neutral => {}
@@ -555,6 +568,7 @@ fn explode_on_contact(
                             ..Default::default()
                         },
                         initial_motion: InitialMotion::default(),
+                        text: None,
                     });
 
                     // despawn blast
@@ -585,6 +599,7 @@ fn explode_on_contact(
                                     ..Default::default()
                                 },
                                 initial_motion: InitialMotion::default(),
+                                text: None,
                             });
                         }
                         Faction::Enemy => {
@@ -597,6 +612,7 @@ fn explode_on_contact(
                                     ..Default::default()
                                 },
                                 initial_motion: InitialMotion::default(),
+                                text: None,
                             });
                         }
                         Faction::Neutral => {}
@@ -628,6 +644,7 @@ fn explode_on_contact(
                                     ..Default::default()
                                 },
                                 initial_motion: InitialMotion::default(),
+                                text: None,
                             });
                         }
                         Faction::Enemy => {
@@ -640,6 +657,7 @@ fn explode_on_contact(
                                     ..Default::default()
                                 },
                                 initial_motion: InitialMotion::default(),
+                                text: None,
                             });
                         }
                         Faction::Neutral => {}
@@ -670,6 +688,7 @@ fn explode_on_contact(
                                     ..Default::default()
                                 },
                                 initial_motion: InitialMotion::default(),
+                                text: None,
                             });
                         }
                         Faction::Enemy => {
@@ -682,6 +701,7 @@ fn explode_on_contact(
                                     ..Default::default()
                                 },
                                 initial_motion: InitialMotion::default(),
+                                text: None,
                             });
                         }
                         Faction::Neutral => {}

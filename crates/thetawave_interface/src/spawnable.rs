@@ -93,7 +93,6 @@ pub enum NeutralMobType {
 /// Type that encompasses all spawnable consumables
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum ConsumableType {
-    DefenseWrench,
     Money1,
     Money3,
     HealthWrench,
@@ -134,6 +133,12 @@ pub enum EffectType {
     AllyBulletDespawn,
     EnemyBulletDespawn,
     AllyBulletExplosion,
-    DamageText(String),
+    Text(TextEffectType),
     //Giblets(MobType),
+}
+
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+pub enum TextEffectType {
+    DamageDealt,
+    ConsumableCollected(ConsumableType),
 }

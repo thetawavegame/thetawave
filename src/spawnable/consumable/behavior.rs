@@ -157,6 +157,7 @@ fn apply_effects_on_impact(
                         ..Default::default()
                     },
                     initial_motion: InitialMotion::default(),
+                    text: None,
                 });
 
                 //apply effect to player

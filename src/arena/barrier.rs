@@ -37,6 +37,7 @@ pub fn spawn_barriers_system(
             ..Default::default()
         },
         initial_motion: InitialMotion::default(),
+        text: None,
     });
     spawn_effect.send(SpawnEffectEvent {
         effect_type: EffectType::BarrierGlow,
@@ -46,6 +47,7 @@ pub fn spawn_barriers_system(
             ..Default::default()
         },
         initial_motion: InitialMotion::default(),
+        text: None,
     });
     spawn_effect.send(SpawnEffectEvent {
         effect_type: EffectType::BarrierGlow,
@@ -55,6 +57,7 @@ pub fn spawn_barriers_system(
             rotation: Quat::from_rotation_z(FRAC_PI_2),
         },
         initial_motion: InitialMotion::default(),
+        text: None,
     });
     spawn_effect.send(SpawnEffectEvent {
         effect_type: EffectType::BarrierGlow,
@@ -64,6 +67,7 @@ pub fn spawn_barriers_system(
             rotation: Quat::from_rotation_z(FRAC_PI_2),
         },
         initial_motion: InitialMotion::default(),
+        text: None,
     });
 }
 

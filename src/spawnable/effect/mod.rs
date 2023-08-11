@@ -7,8 +7,8 @@ use bevy::{prelude::*, sprite::Anchor};
 use bevy_rapier2d::prelude::*;
 use rand::Rng;
 use serde::Deserialize;
-use std::collections::HashMap;
-use thetawave_interface::spawnable::EffectType;
+use std::{collections::HashMap, ops::Range};
+use thetawave_interface::spawnable::{EffectType, TextEffectType};
 
 use super::InitialMotion;
 
@@ -38,11 +38,26 @@ pub struct EffectData {
     pub z_level: f32,
 }
 
+#[derive(Deserialize, Debug)]
+pub struct TextEffectData {
+    pub text: String,
+    pub text_color: Color,
+    pub font_size: f32,
+    pub translation_x: Range<f32>,
+    pub translation_y: Range<f32>,
+    pub scale: f32,
+}
+
 /// Resource to store data and textures of effects
 #[derive(Resource)]
 pub struct EffectsResource {
     /// Maps effect types to data
     pub effects: HashMap<EffectType, EffectData>,
+}
+
+#[derive(Resource)]
+pub struct TextEffectsResource {
+    pub text_effects: HashMap<TextEffectType, TextEffectData>,
 }
 
 /// Event for spawning effect
@@ -54,6 +69,8 @@ pub struct SpawnEffectEvent {
     pub transform: Transform,
     /// Initial motion of the effect
     pub initial_motion: InitialMotion,
+    /// Send optional text to be used in some effects
+    pub text: Option<String>,
 }
 
 /// Handles spawning of effects from events
@@ -62,16 +79,24 @@ pub fn spawn_effect_system(
     mut event_reader: EventReader<SpawnEffectEvent>,
     asset_server: Res<AssetServer>,
     effects_resource: Res<EffectsResource>,
+    text_effects_resource: Res<TextEffectsResource>,
     effect_assets: Res<EffectAssets>,
 ) {
     for event in event_reader.iter() {
-        if let EffectType::DamageText(damage_text) = &event.effect_type {
-            spawn_damage_text(
-                damage_text.to_string(),
-                event.transform,
-                &mut commands,
-                &asset_server,
-            );
+        if let EffectType::Text(text_effect_type) = &event.effect_type {
+            match text_effect_type {
+                TextEffectType::DamageDealt => {
+                    spawn_damage_text_effect(
+                        event.text.clone().unwrap(),
+                        event.transform,
+                        &mut commands,
+                        &asset_server,
+                        &text_effects_resource,
+                        &effects_resource,
+                    );
+                }
+                TextEffectType::ConsumableCollected(consumable_type) => todo!(),
+            }
         } else {
             spawn_effect(
                 &event.effect_type,
@@ -85,15 +110,22 @@ pub fn spawn_effect_system(
     }
 }
 
-fn spawn_damage_text(
+fn spawn_damage_text_effect(
     damage_text: String,
     transform: Transform,
     commands: &mut Commands,
     asset_server: &AssetServer,
+    text_effects_resource: &TextEffectsResource,
+    effects_resource: &EffectsResource,
 ) {
     let font = asset_server.load("fonts/wibletown-regular.otf");
 
     let mut rng = rand::thread_rng();
+
+    let effect_data = &effects_resource.effects[&EffectType::Text(TextEffectType::DamageDealt)];
+
+    // Get data from effect resource
+    let text_effect_data = &text_effects_resource.text_effects[&TextEffectType::DamageDealt];
 
     commands
         .spawn(Text2dBundle {
@@ -101,8 +133,8 @@ fn spawn_damage_text(
                 damage_text.clone(),
                 TextStyle {
                     font: font.clone(),
-                    font_size: 60.0,
-                    color: Color::WHITE,
+                    font_size: text_effect_data.font_size,
+                    color: text_effect_data.text_color,
                 },
             ),
             ..default()
@@ -111,17 +143,21 @@ fn spawn_damage_text(
             transform
                 .with_translation(
                     transform.translation
-                        + Vec3::new(rng.gen_range(-45.0..50.0), rng.gen_range(-45.0..45.0), 1.0),
+                        + Vec3::new(
+                            rng.gen_range(text_effect_data.translation_x.clone()),
+                            rng.gen_range(text_effect_data.translation_y.clone()),
+                            effect_data.z_level,
+                        ),
                 )
                 .with_scale(Vec3 {
-                    x: 0.4,
-                    y: 0.4,
+                    x: text_effect_data.scale,
+                    y: text_effect_data.scale,
                     z: 0.0,
                 }),
         )
         .insert(super::SpawnableComponent {
-            spawnable_type: super::SpawnableType::Effect(EffectType::DamageText(
-                damage_text.clone(),
+            spawnable_type: super::SpawnableType::Effect(EffectType::Text(
+                TextEffectType::DamageDealt,
             )),
             acceleration: Vec2::new(0.0, 0.0),
             deceleration: Vec2::new(0.0, 0.0),
@@ -132,11 +168,8 @@ fn spawn_damage_text(
             behaviors: vec![],
         })
         .insert(EffectComponent {
-            effect_type: EffectType::DamageText(damage_text),
-            behaviors: vec![EffectBehavior::FadeOutMs(Timer::from_seconds(
-                0.55,
-                TimerMode::Once,
-            ))],
+            effect_type: EffectType::Text(TextEffectType::DamageDealt),
+            behaviors: effect_data.effect_behaviors.clone(),
         })
         .insert(GameCleanup);
 }
@@ -161,7 +194,7 @@ pub fn spawn_effect(
 
     effect
         .insert(SpriteSheetBundle {
-            texture_atlas: effect_assets.get_asset(effect_type),
+            texture_atlas: effect_assets.get_asset(effect_type).unwrap(),
             ..Default::default()
         })
         .insert(AnimationComponent {

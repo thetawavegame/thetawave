@@ -56,6 +56,7 @@ pub fn player_death_system(
                     ..Default::default()
                 },
                 initial_motion: InitialMotion::default(),
+                text: None,
             });
 
             // play explosion sound effect

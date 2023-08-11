@@ -4,7 +4,7 @@ use bevy_kira_audio::{AudioChannel, AudioControl};
 use bevy_rapier2d::{prelude::*, rapier::prelude::JointAxis};
 use rand::{thread_rng, Rng};
 use serde::Deserialize;
-use thetawave_interface::spawnable::EffectType;
+use thetawave_interface::spawnable::{EffectType, TextEffectType};
 
 use crate::{
     assets::GameAudioAssets,
@@ -122,6 +122,7 @@ pub fn mob_segment_execute_behavior_system(
                                 ..Default::default()
                             },
                             initial_motion: InitialMotion::default(),
+                            text: None,
                         });
 
                         // drop loot
@@ -332,13 +333,14 @@ fn receive_damage_on_impact(
                         if player_entity_q == *player_entity && *player_damage > 0.0 {
                             mob_segment_component.health.take_damage(*player_damage);
                             spawn_effect_event_writer.send(SpawnEffectEvent {
-                                effect_type: EffectType::DamageText(player_damage.to_string()),
+                                effect_type: EffectType::Text(TextEffectType::DamageDealt),
                                 transform: Transform {
                                     translation: mob_segment_transform.translation,
                                     scale: mob_segment_transform.scale,
                                     ..Default::default()
                                 },
                                 initial_motion: InitialMotion::default(),
+                                text: Some(player_damage.to_string()),
                             });
                         }
                     }
@@ -355,13 +357,14 @@ fn receive_damage_on_impact(
                 if entity == *mob_segment_entity && *mob_damage > 0.0 {
                     mob_segment_component.health.take_damage(*mob_damage);
                     spawn_effect_event_writer.send(SpawnEffectEvent {
-                        effect_type: EffectType::DamageText(mob_damage.to_string()),
+                        effect_type: EffectType::Text(TextEffectType::DamageDealt),
                         transform: Transform {
                             translation: mob_segment_transform.translation,
                             scale: mob_segment_transform.scale,
                             ..Default::default()
                         },
                         initial_motion: InitialMotion::default(),
+                        text: Some(mob_damage.to_string()),
                     });
                 }
             }
@@ -378,13 +381,14 @@ fn receive_damage_on_impact(
                         .health
                         .take_damage(*mob_segment_damage_2);
                     spawn_effect_event_writer.send(SpawnEffectEvent {
-                        effect_type: EffectType::DamageText(mob_segment_damage_2.to_string()),
+                        effect_type: EffectType::Text(TextEffectType::DamageDealt),
                         transform: Transform {
                             translation: mob_segment_transform.translation,
                             scale: mob_segment_transform.scale,
                             ..Default::default()
                         },
                         initial_motion: InitialMotion::default(),
+                        text: Some(mob_segment_damage_2.to_string()),
                     });
                 }
             }

@@ -7,6 +7,7 @@ use bevy_rapier2d::prelude::Velocity;
 use rand::{thread_rng, Rng};
 use ron::de::from_bytes;
 use serde::Deserialize;
+use thetawave_interface::spawnable::TextEffectType;
 pub use thetawave_interface::spawnable::{
     ConsumableType, EffectType, MobType, ProjectileType, SpawnableType,
 };
@@ -18,6 +19,7 @@ mod effect;
 mod mob;
 mod projectile;
 
+use self::effect::{TextEffectData, TextEffectsResource};
 pub use self::mob::*;
 pub use self::projectile::{
     projectile_execute_behavior_system, spawn_projectile_system, ProjectileComponent,
@@ -67,6 +69,12 @@ impl Plugin for SpawnablePlugin {
         .insert_resource(EffectsResource {
             effects: from_bytes::<HashMap<EffectType, EffectData>>(include_bytes!(
                 "../../assets/data/effects.ron"
+            ))
+            .unwrap(),
+        })
+        .insert_resource(TextEffectsResource {
+            text_effects: from_bytes::<HashMap<TextEffectType, TextEffectData>>(include_bytes!(
+                "../../assets/data/text_effects.ron"
             ))
             .unwrap(),
         })
