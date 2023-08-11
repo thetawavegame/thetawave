@@ -101,8 +101,7 @@ pub fn projectile_execute_behavior_system(
                                             scale: projectile_transform.scale,
                                             ..Default::default()
                                         },
-                                        initial_motion: InitialMotion::default(),
-                                        text: None,
+                                        ..default()
                                     });
                                 }
                                 Faction::Ally => {
@@ -113,8 +112,7 @@ pub fn projectile_execute_behavior_system(
                                             scale: projectile_transform.scale,
                                             ..Default::default()
                                         },
-                                        initial_motion: InitialMotion::default(),
-                                        text: None,
+                                        ..default()
                                     });
                                 }
                                 _ => {}
@@ -128,8 +126,7 @@ pub fn projectile_execute_behavior_system(
                                             scale: projectile_transform.scale,
                                             ..Default::default()
                                         },
-                                        initial_motion: InitialMotion::default(),
-                                        text: None,
+                                        ..default()
                                     });
                                 }
 
@@ -141,8 +138,7 @@ pub fn projectile_execute_behavior_system(
                                             scale: projectile_transform.scale,
                                             ..Default::default()
                                         },
-                                        initial_motion: InitialMotion::default(),
-                                        text: None,
+                                        ..default()
                                     });
                                 }
                                 _ => {}
@@ -221,8 +217,8 @@ fn deal_damage_on_contact(
                                     scale: mob_transform.scale,
                                     ..Default::default()
                                 },
-                                initial_motion: InitialMotion::default(),
                                 text: Some(projectile_damage.to_string()),
+                                ..default()
                             });
                         }
                     }
@@ -258,8 +254,8 @@ fn deal_damage_on_contact(
                                     scale: mob_segment_transform.scale,
                                     ..Default::default()
                                 },
-                                initial_motion: InitialMotion::default(),
                                 text: Some(projectile_damage.to_string()),
+                                ..default()
                             });
                         }
                     }
@@ -335,8 +331,8 @@ fn deal_damage_on_intersection(
                                     scale: mob_transform.scale,
                                     ..Default::default()
                                 },
-                                initial_motion: InitialMotion::default(),
                                 text: Some(projectile_damage.to_string()),
+                                ..default()
                             });
                         }
                     }
@@ -371,8 +367,8 @@ fn deal_damage_on_intersection(
                                     scale: mob_segment_transform.scale,
                                     ..Default::default()
                                 },
-                                initial_motion: InitialMotion::default(),
                                 text: Some(projectile_damage.to_string()),
+                                ..default()
                             });
                         }
                     }
@@ -417,8 +413,7 @@ fn explode_on_intersection(
                             scale: transform.scale,
                             ..Default::default()
                         },
-                        initial_motion: InitialMotion::default(),
-                        text: None,
+                        ..default()
                     });
 
                     // despawn blast
@@ -454,8 +449,7 @@ fn explode_on_intersection(
                                     scale: transform.scale,
                                     ..Default::default()
                                 },
-                                initial_motion: InitialMotion::default(),
-                                text: None,
+                                ..default()
                             });
                         }
                         Faction::Enemy => {
@@ -467,8 +461,7 @@ fn explode_on_intersection(
                                     scale: transform.scale,
                                     ..Default::default()
                                 },
-                                initial_motion: InitialMotion::default(),
-                                text: None,
+                                ..default()
                             });
                         }
                         Faction::Neutral => {}
@@ -504,8 +497,7 @@ fn explode_on_intersection(
                                     scale: transform.scale,
                                     ..Default::default()
                                 },
-                                initial_motion: InitialMotion::default(),
-                                text: None,
+                                ..default()
                             });
                         }
                         Faction::Enemy => {
@@ -517,8 +509,7 @@ fn explode_on_intersection(
                                     scale: transform.scale,
                                     ..Default::default()
                                 },
-                                initial_motion: InitialMotion::default(),
-                                text: None,
+                                ..default()
                             });
                         }
                         Faction::Neutral => {}
@@ -567,8 +558,7 @@ fn explode_on_contact(
                             scale: transform.scale,
                             ..Default::default()
                         },
-                        initial_motion: InitialMotion::default(),
-                        text: None,
+                        ..default()
                     });
 
                     // despawn blast
@@ -598,8 +588,7 @@ fn explode_on_contact(
                                     scale: transform.scale,
                                     ..Default::default()
                                 },
-                                initial_motion: InitialMotion::default(),
-                                text: None,
+                                ..default()
                             });
                         }
                         Faction::Enemy => {
@@ -611,8 +600,7 @@ fn explode_on_contact(
                                     scale: transform.scale,
                                     ..Default::default()
                                 },
-                                initial_motion: InitialMotion::default(),
-                                text: None,
+                                ..default()
                             });
                         }
                         Faction::Neutral => {}
@@ -643,8 +631,7 @@ fn explode_on_contact(
                                     scale: transform.scale,
                                     ..Default::default()
                                 },
-                                initial_motion: InitialMotion::default(),
-                                text: None,
+                                ..default()
                             });
                         }
                         Faction::Enemy => {
@@ -656,8 +643,7 @@ fn explode_on_contact(
                                     scale: transform.scale,
                                     ..Default::default()
                                 },
-                                initial_motion: InitialMotion::default(),
-                                text: None,
+                                ..default()
                             });
                         }
                         Faction::Neutral => {}
@@ -687,8 +673,7 @@ fn explode_on_contact(
                                     scale: transform.scale,
                                     ..Default::default()
                                 },
-                                initial_motion: InitialMotion::default(),
-                                text: None,
+                                ..default()
                             });
                         }
                         Faction::Enemy => {
@@ -700,8 +685,7 @@ fn explode_on_contact(
                                     scale: transform.scale,
                                     ..Default::default()
                                 },
-                                initial_motion: InitialMotion::default(),
-                                text: None,
+                                ..default()
                             });
                         }
                         Faction::Neutral => {}

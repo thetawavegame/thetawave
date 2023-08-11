@@ -219,8 +219,7 @@ pub fn mob_execute_behavior_system(
                                 ),
                                 ..Default::default()
                             },
-                            initial_motion: InitialMotion::default(),
-                            text: None,
+                            ..default()
                         });
 
                         // drop loot
@@ -280,8 +279,8 @@ fn receive_damage_on_impact(
                                     scale: mob_transform.scale,
                                     ..Default::default()
                                 },
-                                initial_motion: InitialMotion::default(),
                                 text: Some(player_damage.to_string()),
+                                ..default()
                             });
                         }
                     }
@@ -304,8 +303,8 @@ fn receive_damage_on_impact(
                             scale: mob_transform.scale,
                             ..Default::default()
                         },
-                        initial_motion: InitialMotion::default(),
                         text: Some(mob_damage_2.to_string()),
+                        ..default()
                     });
                 }
             }
@@ -326,8 +325,8 @@ fn receive_damage_on_impact(
                             scale: mob_transform.scale,
                             ..Default::default()
                         },
-                        initial_motion: InitialMotion::default(),
                         text: Some(mob_segment_damage.to_string()),
+                        ..default()
                     });
                 }
             }
@@ -403,8 +402,7 @@ fn explode_on_impact(
                             ),
                             ..Default::default()
                         },
-                        initial_motion: InitialMotion::default(),
-                        text: None,
+                        ..default()
                     });
                     // despawn mob
                     commands.entity(entity).despawn_recursive();
@@ -433,8 +431,7 @@ fn explode_on_impact(
                             ),
                             ..Default::default()
                         },
-                        initial_motion: InitialMotion::default(),
-                        text: None,
+                        ..default()
                     });
                     // despawn mob
                     commands.entity(entity).despawn_recursive();
@@ -462,8 +459,7 @@ fn explode_on_impact(
                             ),
                             ..Default::default()
                         },
-                        initial_motion: InitialMotion::default(),
-                        text: None,
+                        ..default()
                     });
                     commands.entity(entity).despawn_recursive();
                     continue;

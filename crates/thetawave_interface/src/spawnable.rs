@@ -1,3 +1,5 @@
+use std::default;
+
 use serde::Deserialize;
 use strum_macros::{Display, EnumString};
 
@@ -127,10 +129,11 @@ pub enum ItemType {
 }
 
 /// Type that encompasses all spawnable effects
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display, Default)]
 pub enum EffectType {
     AllyBlastExplosion,
     AllyBlastDespawn,
+    #[default]
     MobExplosion,
     ConsumableDespawn,
     EnemyBlastExplosion,

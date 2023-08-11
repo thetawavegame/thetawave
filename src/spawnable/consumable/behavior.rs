@@ -158,8 +158,7 @@ fn apply_effects_on_impact(
                         ),
                         ..Default::default()
                     },
-                    initial_motion: InitialMotion::default(),
-                    text: None,
+                    ..default()
                 });
 
                 spawn_effect_event_writer.send(SpawnEffectEvent {
@@ -171,8 +170,7 @@ fn apply_effects_on_impact(
                         scale: transform.scale,
                         ..default()
                     },
-                    initial_motion: InitialMotion::default(),
-                    text: None,
+                    ..default()
                 });
 
                 //apply effect to player

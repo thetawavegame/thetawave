@@ -60,7 +60,7 @@ pub struct TextEffectsResource {
 }
 
 /// Event for spawning effect
-#[derive(Event)]
+#[derive(Event, Default)]
 pub struct SpawnEffectEvent {
     /// Type of the effect
     pub effect_type: EffectType,
@@ -187,7 +187,7 @@ pub fn spawn_effect(
 
     effect
         .insert(SpriteSheetBundle {
-            texture_atlas: effect_assets.get_asset(effect_type).unwrap(),
+            texture_atlas: effect_assets.get_asset(effect_type).unwrap_or_default(),
             ..Default::default()
         })
         .insert(AnimationComponent {

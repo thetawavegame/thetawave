@@ -121,8 +121,7 @@ pub fn mob_segment_execute_behavior_system(
                                 ),
                                 ..Default::default()
                             },
-                            initial_motion: InitialMotion::default(),
-                            text: None,
+                            ..default()
                         });
 
                         // drop loot
@@ -339,8 +338,8 @@ fn receive_damage_on_impact(
                                     scale: mob_segment_transform.scale,
                                     ..Default::default()
                                 },
-                                initial_motion: InitialMotion::default(),
                                 text: Some(player_damage.to_string()),
+                                ..default()
                             });
                         }
                     }
@@ -363,8 +362,8 @@ fn receive_damage_on_impact(
                             scale: mob_segment_transform.scale,
                             ..Default::default()
                         },
-                        initial_motion: InitialMotion::default(),
                         text: Some(mob_damage.to_string()),
+                        ..default()
                     });
                 }
             }
@@ -387,8 +386,8 @@ fn receive_damage_on_impact(
                             scale: mob_segment_transform.scale,
                             ..Default::default()
                         },
-                        initial_motion: InitialMotion::default(),
                         text: Some(mob_segment_damage_2.to_string()),
+                        ..default()
                     });
                 }
             }

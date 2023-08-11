@@ -36,8 +36,7 @@ pub fn spawn_barriers_system(
             scale: Vec3::new(10.0, game_parameters.sprite_scale, 1.0),
             ..Default::default()
         },
-        initial_motion: InitialMotion::default(),
-        text: None,
+        ..default()
     });
     spawn_effect.send(SpawnEffectEvent {
         effect_type: EffectType::BarrierGlow,
@@ -46,8 +45,7 @@ pub fn spawn_barriers_system(
             scale: Vec3::new(10.0, game_parameters.sprite_scale, 1.0),
             ..Default::default()
         },
-        initial_motion: InitialMotion::default(),
-        text: None,
+        ..default()
     });
     spawn_effect.send(SpawnEffectEvent {
         effect_type: EffectType::BarrierGlow,
@@ -56,8 +54,7 @@ pub fn spawn_barriers_system(
             scale: Vec3::new(7.3, game_parameters.sprite_scale, 1.0),
             rotation: Quat::from_rotation_z(FRAC_PI_2),
         },
-        initial_motion: InitialMotion::default(),
-        text: None,
+        ..default()
     });
     spawn_effect.send(SpawnEffectEvent {
         effect_type: EffectType::BarrierGlow,
@@ -66,8 +63,7 @@ pub fn spawn_barriers_system(
             scale: Vec3::new(7.3, game_parameters.sprite_scale, 1.0),
             rotation: Quat::from_rotation_z(FRAC_PI_2),
         },
-        initial_motion: InitialMotion::default(),
-        text: None,
+        ..default()
     });
 }
 
