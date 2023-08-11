@@ -10,7 +10,7 @@ use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
-use thetawave_interface::spawnable::EffectType;
+use thetawave_interface::spawnable::{ConsumableType, EffectType, TextEffectType};
 
 use super::ConsumableEffect;
 
@@ -63,6 +63,7 @@ pub fn consumable_execute_behavior_system(
                         &audio_channel,
                         &audio_assets,
                         &game_parameters_res,
+                        consumable_component.consumable_type.clone(),
                     );
                 }
                 ConsumableBehavior::AttractToPlayer => {
@@ -133,6 +134,7 @@ fn apply_effects_on_impact(
     audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
     audio_assets: &GameAudioAssets,
     game_parameters_res: &GameParametersResource,
+    consumable_type: ConsumableType,
 ) {
     for collision_event in collision_events.iter() {
         if let SortedCollisionEvent::PlayerToConsumableIntersection {
@@ -155,6 +157,19 @@ fn apply_effects_on_impact(
                             1.0,
                         ),
                         ..Default::default()
+                    },
+                    initial_motion: InitialMotion::default(),
+                    text: None,
+                });
+
+                spawn_effect_event_writer.send(SpawnEffectEvent {
+                    effect_type: EffectType::Text(TextEffectType::ConsumableCollected(
+                        consumable_type.clone(),
+                    )),
+                    transform: Transform {
+                        translation: transform.translation,
+                        scale: transform.scale,
+                        ..default()
                     },
                     initial_motion: InitialMotion::default(),
                     text: None,

@@ -27,6 +27,13 @@ pub enum SpawnableType {
     MobSegment(MobSegmentType),
 }
 
+impl Default for SpawnableType {
+    /// Money1 is default so that SpawnableComponent can derive default
+    fn default() -> Self {
+        SpawnableType::Consumable(ConsumableType::Money1)
+    }
+}
+
 /// Type that encompasses all weapon projectiles
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum ProjectileType {

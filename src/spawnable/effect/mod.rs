@@ -3,7 +3,7 @@ use crate::{
     assets::EffectAssets,
     states::GameCleanup,
 };
-use bevy::{prelude::*, sprite::Anchor};
+use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use rand::Rng;
 use serde::Deserialize;
@@ -14,7 +14,6 @@ use super::InitialMotion;
 
 mod behavior;
 pub use self::behavior::effect_execute_behavior_system;
-use self::behavior::EffectBehavior;
 
 /// Core component of effect
 #[derive(Component)]
@@ -84,19 +83,15 @@ pub fn spawn_effect_system(
 ) {
     for event in event_reader.iter() {
         if let EffectType::Text(text_effect_type) = &event.effect_type {
-            match text_effect_type {
-                TextEffectType::DamageDealt => {
-                    spawn_damage_text_effect(
-                        event.text.clone().unwrap(),
-                        event.transform,
-                        &mut commands,
-                        &asset_server,
-                        &text_effects_resource,
-                        &effects_resource,
-                    );
-                }
-                TextEffectType::ConsumableCollected(consumable_type) => todo!(),
-            }
+            spawn_text_effect(
+                event.text.clone(),
+                text_effect_type,
+                event.transform,
+                &mut commands,
+                &asset_server,
+                &text_effects_resource,
+                &effects_resource,
+            );
         } else {
             spawn_effect(
                 &event.effect_type,
@@ -110,35 +105,39 @@ pub fn spawn_effect_system(
     }
 }
 
-fn spawn_damage_text_effect(
-    damage_text: String,
+// spawn a text effect
+fn spawn_text_effect(
+    effect_text: Option<String>,
+    text_effect_type: &TextEffectType,
     transform: Transform,
     commands: &mut Commands,
     asset_server: &AssetServer,
     text_effects_resource: &TextEffectsResource,
     effects_resource: &EffectsResource,
 ) {
-    let font = asset_server.load("fonts/wibletown-regular.otf");
-
     let mut rng = rand::thread_rng();
 
-    let effect_data = &effects_resource.effects[&EffectType::Text(TextEffectType::DamageDealt)];
+    // get data specific to the text effect
+    let effect_data = &effects_resource.effects[&EffectType::Text(text_effect_type.clone())];
+    let text_effect_data: &TextEffectData = &text_effects_resource.text_effects[text_effect_type];
 
-    // Get data from effect resource
-    let text_effect_data = &text_effects_resource.text_effects[&TextEffectType::DamageDealt];
+    // create text
+    let text = Text::from_section(
+        match text_effect_type {
+            TextEffectType::DamageDealt => effect_text.clone().unwrap_or("0".to_string()),
 
+            TextEffectType::ConsumableCollected(_) => text_effect_data.text.clone(),
+        },
+        TextStyle {
+            font: asset_server.load("fonts/wibletown-regular.otf"),
+            font_size: text_effect_data.font_size,
+            color: text_effect_data.text_color,
+        },
+    );
+
+    // spawn text effect entity
     commands
-        .spawn(Text2dBundle {
-            text: Text::from_section(
-                damage_text.clone(),
-                TextStyle {
-                    font: font.clone(),
-                    font_size: text_effect_data.font_size,
-                    color: text_effect_data.text_color,
-                },
-            ),
-            ..default()
-        })
+        .spawn(Text2dBundle { text, ..default() })
         .insert(
             transform
                 .with_translation(
@@ -157,18 +156,12 @@ fn spawn_damage_text_effect(
         )
         .insert(super::SpawnableComponent {
             spawnable_type: super::SpawnableType::Effect(EffectType::Text(
-                TextEffectType::DamageDealt,
+                text_effect_type.clone(),
             )),
-            acceleration: Vec2::new(0.0, 0.0),
-            deceleration: Vec2::new(0.0, 0.0),
-            speed: Vec2::new(0.0, 0.0),
-            angular_acceleration: 0.0,
-            angular_deceleration: 0.0,
-            angular_speed: 0.0,
-            behaviors: vec![],
+            ..default()
         })
         .insert(EffectComponent {
-            effect_type: EffectType::Text(TextEffectType::DamageDealt),
+            effect_type: EffectType::Text(text_effect_type.clone()),
             behaviors: effect_data.effect_behaviors.clone(),
         })
         .insert(GameCleanup);
@@ -207,13 +200,7 @@ pub fn spawn_effect(
         })
         .insert(super::SpawnableComponent {
             spawnable_type: super::SpawnableType::Effect(effect_data.effect_type.clone()),
-            acceleration: Vec2::new(0.0, 0.0),
-            deceleration: Vec2::new(0.0, 0.0),
-            speed: Vec2::new(0.0, 0.0),
-            angular_acceleration: 0.0,
-            angular_deceleration: 0.0,
-            angular_speed: 0.0,
-            behaviors: vec![],
+            ..default()
         })
         .insert(LockedAxes::default())
         .insert(RigidBody::KinematicVelocityBased)

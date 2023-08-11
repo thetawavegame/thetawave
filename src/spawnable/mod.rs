@@ -126,7 +126,7 @@ impl Plugin for SpawnablePlugin {
 }
 
 /// Core component of spawnable entities
-#[derive(Component)]
+#[derive(Component, Default)]
 pub struct SpawnableComponent {
     /// Type of spawnable
     pub spawnable_type: SpawnableType,
