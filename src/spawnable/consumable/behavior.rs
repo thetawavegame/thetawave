@@ -3,7 +3,7 @@ use crate::{
     audio,
     collision::SortedCollisionEvent,
     game::GameParametersResource,
-    spawnable::{InitialMotion, PlayerComponent, SpawnEffectEvent},
+    spawnable::{PlayerComponent, SpawnEffectEvent},
 };
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
@@ -161,6 +161,7 @@ fn apply_effects_on_impact(
                     ..default()
                 });
 
+                // spawn consumable collected text
                 spawn_effect_event_writer.send(SpawnEffectEvent {
                     effect_type: EffectType::Text(TextEffectType::ConsumableCollected(
                         consumable_type.clone(),

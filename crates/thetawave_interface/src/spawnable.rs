@@ -134,7 +134,7 @@ pub enum EffectType {
     AllyBlastExplosion,
     AllyBlastDespawn,
     #[default]
-    MobExplosion,
+    MobExplosion, // defaults to mob explosion
     ConsumableDespawn,
     EnemyBlastExplosion,
     EnemyBlastDespawn,
@@ -147,6 +147,7 @@ pub enum EffectType {
     //Giblets(MobType),
 }
 
+/// Subtype of effect for text effects
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum TextEffectType {
     DamageDealt,

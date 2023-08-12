@@ -1,12 +1,8 @@
-use std::thread::spawn;
-
 use crate::{
     assets::GameAudioAssets,
     audio,
     collision::SortedCollisionEvent,
-    spawnable::{
-        InitialMotion, MobComponent, MobSegmentComponent, PlayerComponent, SpawnEffectEvent,
-    },
+    spawnable::{MobComponent, MobSegmentComponent, PlayerComponent, SpawnEffectEvent},
 };
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
@@ -210,6 +206,8 @@ fn deal_damage_on_contact(
                     for (mob_entity_q, mob_transform, mut mob_component) in mob_query.iter_mut() {
                         if *mob_entity == mob_entity_q && *projectile_damage > 0.0 {
                             mob_component.health.take_damage(*projectile_damage);
+
+                            // spawn damage dealt text effect
                             spawn_effect_event_writer.send(SpawnEffectEvent {
                                 effect_type: EffectType::Text(TextEffectType::DamageDealt),
                                 transform: Transform {
@@ -247,6 +245,8 @@ fn deal_damage_on_contact(
                     {
                         if *mob_segment_entity == mob_segment_entity_q && *projectile_damage > 0.0 {
                             mob_segment_component.health.take_damage(*projectile_damage);
+
+                            // spawn damage dealt text effect
                             spawn_effect_event_writer.send(SpawnEffectEvent {
                                 effect_type: EffectType::Text(TextEffectType::DamageDealt),
                                 transform: Transform {
@@ -324,6 +324,8 @@ fn deal_damage_on_intersection(
                     for (mob_entity_q, mob_transform, mut mob_component) in mob_query.iter_mut() {
                         if *mob_entity == mob_entity_q && *projectile_damage > 0.0 {
                             mob_component.health.take_damage(*projectile_damage);
+
+                            // spawn damage dealt text effect
                             spawn_effect_event_writer.send(SpawnEffectEvent {
                                 effect_type: EffectType::Text(TextEffectType::DamageDealt),
                                 transform: Transform {
@@ -360,6 +362,8 @@ fn deal_damage_on_intersection(
                     {
                         if *mob_segment_entity == mob_segment_entity_q && *projectile_damage > 0.0 {
                             mob_segment_component.health.take_damage(*projectile_damage);
+
+                            // spawn damage dealt text effect
                             spawn_effect_event_writer.send(SpawnEffectEvent {
                                 effect_type: EffectType::Text(TextEffectType::DamageDealt),
                                 transform: Transform {

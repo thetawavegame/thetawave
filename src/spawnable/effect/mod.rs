@@ -39,11 +39,17 @@ pub struct EffectData {
 
 #[derive(Deserialize, Debug)]
 pub struct TextEffectData {
+    /// Text of the effect
     pub text: String,
+    /// Color of the text
     pub text_color: Color,
+    /// Font size pf the text
     pub font_size: f32,
+    /// X position range (randomly chosen)
     pub translation_x: Range<f32>,
+    /// Y position range (randomly chosen)
     pub translation_y: Range<f32>,
+    /// Scale of the text
     pub scale: f32,
 }
 
@@ -56,6 +62,7 @@ pub struct EffectsResource {
 
 #[derive(Resource)]
 pub struct TextEffectsResource {
+    /// Maps text effect types to data
     pub text_effects: HashMap<TextEffectType, TextEffectData>,
 }
 
@@ -167,7 +174,7 @@ fn spawn_text_effect(
         .insert(GameCleanup);
 }
 
-/// Spawn effect from effect type
+/// Spawn a non-text effect from effect type
 pub fn spawn_effect(
     effect_type: &EffectType,
     effects_resource: &EffectsResource,

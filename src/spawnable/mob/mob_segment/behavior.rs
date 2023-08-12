@@ -331,6 +331,8 @@ fn receive_damage_on_impact(
                     for (player_entity_q, mut _player_component) in player_query.iter_mut() {
                         if player_entity_q == *player_entity && *player_damage > 0.0 {
                             mob_segment_component.health.take_damage(*player_damage);
+
+                            // spawn damage dealt text effect
                             spawn_effect_event_writer.send(SpawnEffectEvent {
                                 effect_type: EffectType::Text(TextEffectType::DamageDealt),
                                 transform: Transform {
@@ -355,6 +357,8 @@ fn receive_damage_on_impact(
             } => {
                 if entity == *mob_segment_entity && *mob_damage > 0.0 {
                     mob_segment_component.health.take_damage(*mob_damage);
+
+                    // spawn damage dealt text effect
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::Text(TextEffectType::DamageDealt),
                         transform: Transform {
@@ -379,6 +383,8 @@ fn receive_damage_on_impact(
                     mob_segment_component
                         .health
                         .take_damage(*mob_segment_damage_2);
+
+                    // spawn damage dealt text effect
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::Text(TextEffectType::DamageDealt),
                         transform: Transform {
