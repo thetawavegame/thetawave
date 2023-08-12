@@ -144,7 +144,6 @@ pub enum EffectType {
     EnemyBulletDespawn,
     AllyBulletExplosion,
     Text(TextEffectType),
-    //Giblets(MobType),
 }
 
 /// Subtype of effect for text effects
