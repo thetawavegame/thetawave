@@ -1,5 +1,64 @@
-use bevy::prelude::warn;
+use bevy::prelude::*;
 use serde::Deserialize;
+use thetawave_interface::spawnable::{EffectType, TextEffectType};
+
+use crate::spawnable::{MobComponent, MobSegmentComponent, SpawnEffectEvent};
+
+#[derive(Event)]
+pub struct DamageDealtEvent {
+    pub damage: f32,
+    pub target: Entity,
+}
+
+pub fn damage_system(
+    mut damge_dealt_event: EventReader<DamageDealtEvent>,
+    mut mob_query: Query<(Entity, &Transform, &mut MobComponent)>,
+    mut mob_seg_query: Query<(Entity, &Transform, &mut MobSegmentComponent)>,
+    mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
+) {
+    'events: for event in damge_dealt_event.iter() {
+        for (mob_entity, mob_transform, mut mob_component) in mob_query.iter_mut() {
+            if event.target == mob_entity {
+                // take damage from health
+                mob_component.health.take_damage(event.damage);
+
+                // spawn damage dealt text effect
+                spawn_effect_event_writer.send(SpawnEffectEvent {
+                    effect_type: EffectType::Text(TextEffectType::DamageDealt),
+                    transform: Transform {
+                        translation: mob_transform.translation,
+                        scale: mob_transform.scale,
+                        ..Default::default()
+                    },
+                    text: Some(event.damage.to_string()),
+                    ..default()
+                });
+
+                continue 'events;
+            }
+        }
+
+        for (mob_seg_entity, mob_seg_transform, mut mob_seg_component) in mob_seg_query.iter_mut() {
+            if event.target == mob_seg_entity {
+                mob_seg_component.health.take_damage(event.damage);
+
+                // spawn damage dealt text effect
+                spawn_effect_event_writer.send(SpawnEffectEvent {
+                    effect_type: EffectType::Text(TextEffectType::DamageDealt),
+                    transform: Transform {
+                        translation: mob_seg_transform.translation,
+                        scale: mob_seg_transform.scale,
+                        ..Default::default()
+                    },
+                    text: Some(event.damage.to_string()),
+                    ..default()
+                });
+
+                continue 'events;
+            }
+        }
+    }
+}
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct Health {

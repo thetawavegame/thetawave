@@ -12,9 +12,10 @@ use crate::{
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     loot::LootDropsResource,
+    misc::DamageDealtEvent,
     player::PlayerComponent,
     spawnable::{
-        behavior_sequence::EntityPair, InitialMotion, MobDestroyedEvent, SpawnConsumableEvent,
+        behavior_sequence::EntityPair, mob, InitialMotion, MobDestroyedEvent, SpawnConsumableEvent,
         SpawnEffectEvent, SpawnMobEvent, SpawnPosition,
     },
 };
@@ -76,6 +77,7 @@ pub fn mob_segment_execute_behavior_system(
     mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
     mut mob_segment_destroyed_event_writer: EventWriter<MobSegmentDestroyedEvent>,
     game_parameters: Res<GameParametersResource>,
+    mut damage_dealt_event_writer: EventWriter<DamageDealtEvent>,
 ) {
     let mut collision_events_vec = vec![];
     for collision_event in collision_events.iter() {
@@ -99,10 +101,8 @@ pub fn mob_segment_execute_behavior_system(
                     receive_damage_on_impact(
                         entity,
                         &collision_events_vec,
-                        &mut mob_segment_component,
-                        *mob_segment_transform,
-                        &mut spawn_effect_event_writer,
                         &mut player_query,
+                        &mut damage_dealt_event_writer,
                     );
                 }
                 MobSegmentBehavior::DieAtZeroHealth => {
@@ -313,10 +313,8 @@ fn deal_damage_to_player_on_impact(
 fn receive_damage_on_impact(
     entity: Entity,
     collision_events: &[&SortedCollisionEvent],
-    mob_segment_component: &mut super::MobSegmentComponent,
-    mob_segment_transform: Transform,
-    spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
     player_query: &mut Query<(Entity, &mut PlayerComponent)>,
+    damage_dealt_event_writer: &mut EventWriter<DamageDealtEvent>,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
@@ -330,18 +328,9 @@ fn receive_damage_on_impact(
                 if entity == *mob_segment_entity {
                     for (player_entity_q, mut _player_component) in player_query.iter_mut() {
                         if player_entity_q == *player_entity && *player_damage > 0.0 {
-                            mob_segment_component.health.take_damage(*player_damage);
-
-                            // spawn damage dealt text effect
-                            spawn_effect_event_writer.send(SpawnEffectEvent {
-                                effect_type: EffectType::Text(TextEffectType::DamageDealt),
-                                transform: Transform {
-                                    translation: mob_segment_transform.translation,
-                                    scale: mob_segment_transform.scale,
-                                    ..Default::default()
-                                },
-                                text: Some(player_damage.to_string()),
-                                ..default()
+                            damage_dealt_event_writer.send(DamageDealtEvent {
+                                damage: *player_damage,
+                                target: *mob_segment_entity,
                             });
                         }
                     }
@@ -356,18 +345,9 @@ fn receive_damage_on_impact(
                 mob_damage,
             } => {
                 if entity == *mob_segment_entity && *mob_damage > 0.0 {
-                    mob_segment_component.health.take_damage(*mob_damage);
-
-                    // spawn damage dealt text effect
-                    spawn_effect_event_writer.send(SpawnEffectEvent {
-                        effect_type: EffectType::Text(TextEffectType::DamageDealt),
-                        transform: Transform {
-                            translation: mob_segment_transform.translation,
-                            scale: mob_segment_transform.scale,
-                            ..Default::default()
-                        },
-                        text: Some(mob_damage.to_string()),
-                        ..default()
+                    damage_dealt_event_writer.send(DamageDealtEvent {
+                        damage: *mob_damage,
+                        target: *mob_segment_entity,
                     });
                 }
             }
@@ -380,20 +360,9 @@ fn receive_damage_on_impact(
                 mob_segment_damage_2,
             } => {
                 if entity == *mob_segment_entity_1 && *mob_segment_damage_2 > 0.0 {
-                    mob_segment_component
-                        .health
-                        .take_damage(*mob_segment_damage_2);
-
-                    // spawn damage dealt text effect
-                    spawn_effect_event_writer.send(SpawnEffectEvent {
-                        effect_type: EffectType::Text(TextEffectType::DamageDealt),
-                        transform: Transform {
-                            translation: mob_segment_transform.translation,
-                            scale: mob_segment_transform.scale,
-                            ..Default::default()
-                        },
-                        text: Some(mob_segment_damage_2.to_string()),
-                        ..default()
+                    damage_dealt_event_writer.send(DamageDealtEvent {
+                        damage: *mob_segment_damage_2,
+                        target: *mob_segment_entity_1,
                     });
                 }
             }

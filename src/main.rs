@@ -138,6 +138,7 @@ fn main() {
     .add_plugins(animation::AnimationPlugin)
     .add_plugins(states::StatesPlugin)
     .add_plugins(game::counters::plugin::CountingMetricsPlugin)
+    .add_plugins(misc::HealthPlugin)
     .insert_resource(ClearColor(Color::BLACK))
     .insert_resource(AmbientLight {
         color: Color::WHITE,
