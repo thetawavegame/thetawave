@@ -3,7 +3,10 @@ use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
-use thetawave_interface::spawnable::{EffectType, MobType, ProjectileType, TextEffectType};
+use thetawave_interface::{
+    health::DamageDealtEvent,
+    spawnable::{EffectType, MobType, ProjectileType},
+};
 
 use crate::{
     assets::GameAudioAssets,
@@ -11,7 +14,6 @@ use crate::{
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     loot::LootDropsResource,
-    misc::DamageDealtEvent,
     spawnable::{
         InitialMotion, PlayerComponent, SpawnConsumableEvent, SpawnEffectEvent,
         SpawnProjectileEvent,

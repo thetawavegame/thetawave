@@ -1,14 +1,11 @@
 use bevy::prelude::*;
 use serde::Deserialize;
-use thetawave_interface::spawnable::{EffectType, TextEffectType};
+use thetawave_interface::{
+    health::DamageDealtEvent,
+    spawnable::{EffectType, TextEffectType},
+};
 
 use crate::spawnable::{MobComponent, MobSegmentComponent, SpawnEffectEvent};
-
-#[derive(Event)]
-pub struct DamageDealtEvent {
-    pub damage: f32,
-    pub target: Entity,
-}
 
 pub fn damage_system(
     mut damge_dealt_event: EventReader<DamageDealtEvent>,

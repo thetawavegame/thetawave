@@ -1,7 +1,9 @@
 use bevy::prelude::*;
+use thetawave_interface::health::DamageDealtEvent;
 
 mod health;
-pub use self::health::{DamageDealtEvent, Health};
+
+pub use self::health::Health;
 
 pub struct HealthPlugin;
 
