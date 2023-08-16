@@ -14,6 +14,7 @@ use crate::{
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     loot::LootDropsResource,
+    misc::HealthComponent,
     spawnable::{
         InitialMotion, PlayerComponent, SpawnConsumableEvent, SpawnEffectEvent,
         SpawnProjectileEvent,
@@ -71,7 +72,13 @@ pub fn mob_execute_behavior_system(
     mut commands: Commands,
     mut collision_events: EventReader<SortedCollisionEvent>,
     time: Res<Time>,
-    mut mob_query: Query<(Entity, &mut MobComponent, &Transform, &Velocity)>,
+    mut mob_query: Query<(
+        Entity,
+        &mut MobComponent,
+        &Transform,
+        &Velocity,
+        &HealthComponent,
+    )>,
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     mut spawn_consumable_event_writer: EventWriter<SpawnConsumableEvent>,
@@ -91,7 +98,8 @@ pub fn mob_execute_behavior_system(
     }
 
     // Iterate through all spawnable entities and execute their behavior
-    for (entity, mut mob_component, mob_transform, mob_velocity) in mob_query.iter_mut() {
+    for (entity, mut mob_component, mob_transform, mob_velocity, mob_health) in mob_query.iter_mut()
+    {
         let behaviors = mob_component.behaviors.clone();
         for behavior in behaviors {
             match behavior {
@@ -195,6 +203,7 @@ pub fn mob_execute_behavior_system(
                         entity,
                         &collision_events_vec,
                         &mut player_query,
+                        &mut damage_dealt_event_writer,
                     );
                 }
                 MobBehavior::ReceiveDamageOnImpact => {
@@ -206,7 +215,7 @@ pub fn mob_execute_behavior_system(
                     );
                 }
                 MobBehavior::DieAtZeroHealth => {
-                    if mob_component.health.is_dead() {
+                    if mob_health.is_dead() {
                         audio_channel.play(audio_assets.mob_explosion.clone());
 
                         // spawn mob explosion
@@ -320,6 +329,7 @@ fn deal_damage_to_player_on_impact(
     entity: Entity,
     collision_events: &[&SortedCollisionEvent],
     player_query: &mut Query<(Entity, &mut PlayerComponent)>,
+    damage_dealt_event_writer: &mut EventWriter<DamageDealtEvent>,
 ) {
     for collision_event in collision_events.iter() {
         if let SortedCollisionEvent::PlayerToMobContact {
@@ -333,11 +343,12 @@ fn deal_damage_to_player_on_impact(
             if entity == *mob_entity {
                 // deal damage to player
                 for (player_entity_q, mut player_component) in player_query.iter_mut() {
-                    if player_entity_q == *player_entity {
-                        let damage_multiplier = player_component.incoming_damage_multiplier;
-                        player_component
-                            .health
-                            .take_damage(*mob_damage * damage_multiplier);
+                    let damage = player_component.incoming_damage_multiplier * *mob_damage;
+                    if player_entity_q == *player_entity && damage > 0.0 {
+                        damage_dealt_event_writer.send(DamageDealtEvent {
+                            damage,
+                            target: player_entity_q,
+                        })
                     }
                 }
             }

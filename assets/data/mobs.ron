@@ -177,11 +177,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Standard,
-		health: (
-			max_health: 1500.0,
-			health: 1500.0,
-			armor: 0,
-		),
+		health: 1500.0,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
@@ -246,11 +242,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Standard,
-		health: (
-			max_health: 40.0,
-			health: 40.0,
-			armor: 0,
-		),
+		health: 40.0,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
@@ -305,11 +297,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Standard,
-		health: (
-			max_health: 40.0,
-			health: 40.0,
-			armor: 0,
-		),
+		health: 40.0,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
@@ -359,11 +347,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Standard,
-		health: (
-			max_health: 30.0,
-			health: 30.0,
-			armor: 0,
-		),
+		health: 30.0,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
@@ -400,11 +384,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Standard,
-		health: (
-			max_health: 20.0,
-			health: 20.0,
-			armor: 0,
-		),
+		health: 20.0,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
@@ -427,11 +407,6 @@
 						random_angvel: None,
 						linvel: Some((0.0, -400.0)),
 					),
-					health: Some((
-						max_health: 10.0,
-						health: 10.0,
-						armor: 0,
-					))
 				)
 			],
 			"blast": [
@@ -472,11 +447,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Standard,
-		health: (
-			max_health: 25.0,
-			health: 25.0,
-			armor: 0,
-		),
+		health: 25.0,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
@@ -512,11 +483,7 @@
 			)
 		],
 		z_level: 6.0,
-		health: (
-			max_health: 80.0,
-			health: 80.0,
-			armor: 0,
-		),
+		health: 80.0,
 		animation: (
 			direction: None,
 			frame_duration: 1.0,
@@ -555,11 +522,7 @@
 			)
 		],
 		z_level: 6.0,
-		health: (
-			max_health: 80.0,
-			health: 80.0,
-			armor: 0,
-		),
+		health: 80.0,
 		animation: (
 			direction: None,
 			frame_duration: 1.0,
@@ -605,11 +568,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Standard,
-		health: (
-			max_health: 50.0,
-			health: 50.0,
-			armor: 0,
-		),	
+		health: 50.0,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
@@ -649,11 +608,7 @@
 			)
 		],
 		z_level: 5.0,
-		health: (
-			max_health: 15.0,
-			health: 15.0,
-			armor: 0,
-		),
+		health: 15.0,
 		animation: (
 			direction: Forward,
 			frame_duration: 0.1,
@@ -690,11 +645,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Standard,
-		health: (
-			max_health: 20.0,
-			health: 20.0,
-			armor: 0,
-		),	
+		health: 20.0,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
@@ -745,11 +696,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Standard,
-		health: (
-			max_health: 20.0,
-			health: 20.0,
-			armor: 0,
-		),
+		health: 20.0,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
@@ -796,11 +743,7 @@
 				rotation: 0.0,
 			)
 		],
-		health: (
-			max_health: 50.0,
-			health: 50.0,
-			armor: 0,
-		),	
+		health: 50.0,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,

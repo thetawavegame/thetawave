@@ -9,13 +9,12 @@ use crate::{
     arena::MobReachedBottomGateEvent,
     assets::{BGMusicType, GameAudioAssets},
     audio,
-    misc::Health,
     spawnable::{MobDestroyedEvent, SpawnMobEvent},
     tools::weighted_rng,
     ui::EndGameTransitionResource,
 };
 
-use super::{formation, RunDefeatType, RunEndEvent, RunOutcomeType};
+use super::{formation, objective::Objective, RunDefeatType, RunEndEvent, RunOutcomeType};
 
 /// Structure stored in data file to describe level
 pub type LevelsResourceData = HashMap<String, LevelData>;
@@ -44,7 +43,7 @@ pub struct LevelData {
     /// timeline of the phases of the level
     pub timeline: LevelTimeline,
     /// objective of the level (besides surviving)
-    pub objective: ObjectiveType,
+    pub objective: Objective,
 }
 
 /// Event to alert when level has been completed
@@ -63,13 +62,7 @@ pub struct Level {
     /// Tracks time between spawns
     pub spawn_timer: Option<Timer>,
     /// Level objective
-    pub objective: ObjectiveType,
-}
-
-/// Types of objectives for a level
-#[derive(Clone, Deserialize, Debug)]
-pub enum ObjectiveType {
-    Defense(Health),
+    pub objective: Objective,
 }
 
 impl From<LevelData> for Level {
@@ -120,18 +113,18 @@ impl Level {
         // handle each of the objective types
         #[allow(clippy::single_match)]
         match &mut self.objective {
-            ObjectiveType::Defense(health) => {
+            Objective::Defense(data) => {
                 // iterate through all the mobs that have reached the bottom
                 for event in mob_reached_bottom.iter() {
                     // heal or take damage based on the damage amount
                     if event.0 > 0.0 {
-                        health.take_damage(event.0);
+                        data.take_damage(event.0);
                     } else {
-                        health.heal(-event.0);
+                        data.gain_defense(-event.0);
                     }
 
                     // end the game if defense dies
-                    if health.is_dead() {
+                    if data.is_failed() {
                         // TODO: remove and use event instead
                         run_end_event_writer.send(RunEndEvent {
                             outcome: RunOutcomeType::Defeat(RunDefeatType::DefenseDestroyed),

@@ -3,6 +3,7 @@ use crate::{
     audio,
     collision::SortedCollisionEvent,
     game::GameParametersResource,
+    misc::HealthComponent,
     spawnable::{PlayerComponent, SpawnEffectEvent},
 };
 use bevy::math::Vec3Swizzles;
@@ -31,7 +32,12 @@ pub fn consumable_execute_behavior_system(
         &mut Velocity,
         &mut super::ConsumableComponent,
     )>,
-    mut player_query: Query<(Entity, &mut PlayerComponent, &Transform)>,
+    mut player_query: Query<(
+        Entity,
+        &mut PlayerComponent,
+        &Transform,
+        &mut HealthComponent,
+    )>,
     mut collision_events: EventReader<SortedCollisionEvent>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
@@ -78,13 +84,18 @@ pub fn consumable_execute_behavior_system(
 fn attract_to_player(
     velocity: &mut Velocity,
     consumable_transform: &Transform,
-    player_query: &mut Query<(Entity, &mut PlayerComponent, &Transform)>,
+    player_query: &mut Query<(
+        Entity,
+        &mut PlayerComponent,
+        &Transform,
+        &mut HealthComponent,
+    )>,
 ) {
     // get position and attraction distance of closest player
     let mut closest_player_pos: Option<(Vec2, f32)> = None;
 
     // set the position to be attracted to, to that of the closest player
-    for (_, player_component, player_transform) in player_query.iter_mut() {
+    for (_, player_component, player_transform, _) in player_query.iter_mut() {
         // get distance between the player and the consumable
         let distance = player_transform
             .translation
@@ -128,7 +139,12 @@ fn apply_effects_on_impact(
     entity: Entity,
     transform: &Transform,
     collision_events: &[&SortedCollisionEvent],
-    player_query: &mut Query<(Entity, &mut PlayerComponent, &Transform)>,
+    player_query: &mut Query<(
+        Entity,
+        &mut PlayerComponent,
+        &Transform,
+        &mut HealthComponent,
+    )>,
     consumable_effects: &Vec<ConsumableEffect>,
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
     audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
@@ -175,7 +191,9 @@ fn apply_effects_on_impact(
                 });
 
                 //apply effect to player
-                for (player_entity_q, mut player_component, _) in player_query.iter_mut() {
+                for (player_entity_q, mut player_component, _, mut health_component) in
+                    player_query.iter_mut()
+                {
                     if *player_entity == player_entity_q {
                         // play consumable pickup sound
                         audio_channel.play(audio_assets.consumable_pickup.clone());
@@ -184,10 +202,10 @@ fn apply_effects_on_impact(
                         for consumable_effect in consumable_effects {
                             match consumable_effect {
                                 ConsumableEffect::GainHealth(health) => {
-                                    player_component.health.heal(*health);
+                                    health_component.heal(*health);
                                 }
                                 ConsumableEffect::GainArmor(armor) => {
-                                    player_component.health.gain_armor(*armor);
+                                    health_component.gain_armor(*armor);
                                 }
                                 ConsumableEffect::GainMoney(money) => {
                                     player_component.money += *money;

@@ -1,6 +1,6 @@
 use bevy::{math::Vec3Swizzles, prelude::*, window::PrimaryWindow};
 
-use crate::{game::GameParametersResource, spawnable::MobComponent, states};
+use crate::{game::GameParametersResource, misc::HealthComponent, spawnable::MobComponent, states};
 
 pub struct ScannerPlugin;
 
@@ -18,7 +18,7 @@ pub fn scanner_system(
     //windows: Res<Windows>,
     windows: Query<&Window, With<PrimaryWindow>>,
     game_params: Res<GameParametersResource>,
-    mob_query: Query<(Entity, &MobComponent, &Transform)>,
+    mob_query: Query<(Entity, &HealthComponent, &Transform), With<MobComponent>>,
 ) {
     // get the primary window
     let primary_window = windows.get_single().unwrap();
@@ -26,7 +26,7 @@ pub fn scanner_system(
     // get the cursor position in the window
     if let Some(mouse_pos) = primary_window.cursor_position() {
         // query the mobs
-        for (mob_entity, mob_component, transform) in mob_query.iter() {
+        for (mob_entity, health_component, transform) in mob_query.iter() {
             // check if the mob is in scanning range of the mouse
             if mouse_pos_to_rapier_pos(mouse_pos, primary_window)
                 .distance(transform.translation.xy())
@@ -35,8 +35,8 @@ pub fn scanner_system(
                 debug!(
                     "Mob near mouse: Entity: {:?}\t Health: {}/{}",
                     mob_entity,
-                    mob_component.health.get_health(),
-                    mob_component.health.get_max_health()
+                    health_component.get_health(),
+                    health_component.get_max_health()
                 );
                 return;
             }

@@ -1,50 +1,39 @@
 use bevy::prelude::*;
-use serde::Deserialize;
 use thetawave_interface::{
     health::DamageDealtEvent,
     spawnable::{EffectType, TextEffectType},
 };
 
-use crate::spawnable::{MobComponent, MobSegmentComponent, SpawnEffectEvent};
+use crate::{
+    player::Character,
+    spawnable::{MobData, MobSegmentData, SpawnEffectEvent},
+};
 
+/// Handle player health regeneration
+pub fn regenerate_shields_system(mut health_query: Query<&mut HealthComponent>, time: Res<Time>) {
+    for mut health in health_query.iter_mut() {
+        health.regenerate_shields(time.delta_seconds());
+    }
+}
+
+/// Receive damage dealt events, apply damage, and spawn effects
 pub fn damage_system(
-    mut damge_dealt_event: EventReader<DamageDealtEvent>,
-    mut mob_query: Query<(Entity, &Transform, &mut MobComponent)>,
-    mut mob_seg_query: Query<(Entity, &Transform, &mut MobSegmentComponent)>,
+    mut damage_dealt_event: EventReader<DamageDealtEvent>,
+    mut health_query: Query<(Entity, &Transform, &mut HealthComponent)>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
 ) {
-    'events: for event in damge_dealt_event.iter() {
-        for (mob_entity, mob_transform, mut mob_component) in mob_query.iter_mut() {
-            if event.target == mob_entity {
+    'events: for event in damage_dealt_event.iter() {
+        for (entity, transform, mut health_component) in health_query.iter_mut() {
+            if event.target == entity {
                 // take damage from health
-                mob_component.health.take_damage(event.damage);
+                health_component.take_damage(event.damage);
 
                 // spawn damage dealt text effect
                 spawn_effect_event_writer.send(SpawnEffectEvent {
                     effect_type: EffectType::Text(TextEffectType::DamageDealt),
                     transform: Transform {
-                        translation: mob_transform.translation,
-                        scale: mob_transform.scale,
-                        ..Default::default()
-                    },
-                    text: Some(event.damage.to_string()),
-                    ..default()
-                });
-
-                continue 'events;
-            }
-        }
-
-        for (mob_seg_entity, mob_seg_transform, mut mob_seg_component) in mob_seg_query.iter_mut() {
-            if event.target == mob_seg_entity {
-                mob_seg_component.health.take_damage(event.damage);
-
-                // spawn damage dealt text effect
-                spawn_effect_event_writer.send(SpawnEffectEvent {
-                    effect_type: EffectType::Text(TextEffectType::DamageDealt),
-                    transform: Transform {
-                        translation: mob_seg_transform.translation,
-                        scale: mob_seg_transform.scale,
+                        translation: transform.translation,
+                        scale: transform.scale,
                         ..Default::default()
                     },
                     text: Some(event.damage.to_string()),
@@ -57,25 +46,43 @@ pub fn damage_system(
     }
 }
 
-#[derive(Deserialize, Debug, Clone)]
-pub struct Health {
+/// Tracks health for an entity
+#[derive(Component, Default)]
+pub struct HealthComponent {
     max_health: f32,
     health: f32,
-    #[serde(default)]
     armor: usize,
-    #[serde(default)]
     shields: f32,
-    #[serde(default)]
     max_shields: f32,
-    #[serde(default)]
     shields_recharge_rate: f32,
 }
 
-impl Health {
-    #[allow(dead_code)]
+impl From<&Character> for HealthComponent {
+    fn from(character: &Character) -> Self {
+        HealthComponent::new(
+            character.health,
+            character.shields,
+            character.shields_recharge_rate,
+        )
+    }
+}
+
+impl From<&MobData> for HealthComponent {
+    fn from(mob_data: &MobData) -> Self {
+        HealthComponent::new(mob_data.health, 0.0, 0.0)
+    }
+}
+
+impl From<&MobSegmentData> for HealthComponent {
+    fn from(mob_segment_data: &MobSegmentData) -> Self {
+        HealthComponent::new(mob_segment_data.health, 0.0, 0.0)
+    }
+}
+
+impl HealthComponent {
     /// Create a new health struct from a maximum health value
     pub fn new(health: f32, shields: f32, shields_recharge_rate: f32) -> Self {
-        Health {
+        HealthComponent {
             max_health: health,
             health,
             max_shields: shields,
@@ -85,8 +92,8 @@ impl Health {
         }
     }
 
-    pub fn regenerate_shields(&mut self) {
-        self.shields += self.shields_recharge_rate;
+    pub fn regenerate_shields(&mut self, delta_time: f32) {
+        self.shields += self.shields_recharge_rate * delta_time;
         if self.shields > self.max_shields {
             self.shields = self.max_shields;
         }

@@ -3,13 +3,15 @@ use thetawave_interface::health::DamageDealtEvent;
 
 mod health;
 
-pub use self::health::Health;
+pub use self::health::HealthComponent;
 
 pub struct HealthPlugin;
 
 impl Plugin for HealthPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<DamageDealtEvent>()
-            .add_systems(Update, health::damage_system);
+        app.add_event::<DamageDealtEvent>().add_systems(
+            Update,
+            (health::damage_system, health::regenerate_shields_system),
+        );
     }
 }

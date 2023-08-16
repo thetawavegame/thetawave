@@ -3,7 +3,7 @@ use serde::Deserialize;
 use std::collections::HashMap;
 use thetawave_interface::spawnable::ProjectileType;
 
-use crate::{misc::Health, player::components::AbilityType};
+use crate::player::components::AbilityType;
 
 /// Contains data necessary to create a player entity.
 /// A character is chosen at the beginning of the game.
@@ -34,7 +34,11 @@ pub struct Character {
     /// Period of time between firing blasts
     pub fire_period: f32,
     /// Health of the player
-    pub health: Health,
+    pub health: f32,
+    /// Shields of the player
+    pub shields: f32,
+    /// Shields recharging rate
+    pub shields_recharge_rate: f32,
     /// Amount of damage dealt per attack
     pub attack_damage: f32,
     /// Amount of damage dealt on contact

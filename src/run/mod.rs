@@ -17,12 +17,14 @@ use crate::{
 
 mod formation;
 mod level;
+mod objective;
 
+pub use self::objective::Objective;
 pub use self::{
     formation::{spawn_formation_system, FormationPoolsResource, SpawnFormationEvent},
     level::{
         level_system, next_level_system, setup_first_level, LevelCompletedEvent, LevelsResource,
-        LevelsResourceData, ObjectiveType,
+        LevelsResourceData,
     },
 };
 

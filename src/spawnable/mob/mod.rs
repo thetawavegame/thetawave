@@ -12,7 +12,7 @@ use crate::{
     assets::{CollisionSoundType, MobAssets},
     game::GameParametersResource,
     loot::ConsumableDropListType,
-    misc::Health,
+    misc::HealthComponent,
     spawnable::{InitialMotion, SpawnableBehavior, SpawnableComponent},
     states::GameCleanup,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
@@ -53,8 +53,6 @@ pub struct MobComponent {
     pub collision_sound: CollisionSoundType,
     /// Damage dealt to defense objective, after reaching bottom of arena
     pub defense_damage: f32,
-    /// Health of the mob
-    pub health: Health,
     /// List of consumable drops
     pub consumable_drops: ConsumableDropListType,
 }
@@ -104,7 +102,6 @@ impl From<&MobData> for MobComponent {
             collision_damage: mob_data.collision_damage,
             collision_sound: mob_data.collision_sound.clone(),
             defense_damage: mob_data.defense_damage,
-            health: mob_data.health.clone(),
             consumable_drops: mob_data.consumable_drops.clone(),
         }
     }
@@ -135,7 +132,6 @@ pub struct ProjectileSpawner {
     pub position: SpawnPosition,
     pub initial_motion: InitialMotion,
     pub despawn_time: f32,
-    pub health: Option<Health>,
 }
 
 impl From<ProjectileSpawnerData> for ProjectileSpawner {
@@ -146,7 +142,6 @@ impl From<ProjectileSpawnerData> for ProjectileSpawner {
             position: value.position.clone(),
             initial_motion: value.initial_motion.clone(),
             despawn_time: value.despawn_time,
-            health: value.health,
         }
     }
 }
@@ -158,7 +153,6 @@ pub struct ProjectileSpawnerData {
     pub position: SpawnPosition,
     pub initial_motion: InitialMotion,
     pub despawn_time: f32,
-    pub health: Option<Health>,
 }
 
 #[derive(Deserialize, Clone)]
@@ -238,7 +232,7 @@ pub struct MobData {
     #[serde(default)]
     pub defense_damage: f32,
     /// Health of the mob
-    pub health: Health,
+    pub health: f32,
     /// List of consumable drops
     #[serde(default)]
     pub consumable_drops: ConsumableDropListType,
@@ -397,6 +391,7 @@ pub fn spawn_mob(
         filters: Group::ALL ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
     })
     .insert(MobComponent::from(mob_data))
+    .insert(HealthComponent::from(mob_data))
     .insert(SpawnableComponent::from(mob_data))
     .insert(ActiveEvents::COLLISION_EVENTS)
     .insert(GameCleanup)
