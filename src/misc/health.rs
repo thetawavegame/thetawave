@@ -94,9 +94,7 @@ impl HealthComponent {
 
     pub fn regenerate_shields(&mut self, delta_time: f32) {
         self.shields += self.shields_recharge_rate * delta_time;
-        if self.shields > self.max_shields {
-            self.shields = self.max_shields;
-        }
+        self.shields = self.shields.clamp(0.0, self.max_shields);
     }
 
     /// Check if health is below zero
@@ -104,21 +102,13 @@ impl HealthComponent {
         self.health <= 0.0
     }
 
-    /// Take damage (deplete armore, then shields, then health  in that order)
+    /// Take damage (deplete armor, then shields, then health  in that order)
     pub fn take_damage(&mut self, damage: f32) {
         if self.armor == 0 {
-            if self.shields > 0.0 {
-                self.shields -= damage;
-                if self.shields < 0.0 {
-                    let remaining_damage = -self.shields;
-                    self.health -= remaining_damage;
-                    self.shields = 0.0;
-                }
-            } else {
-                self.health -= damage;
-                if self.health < 0.0 {
-                    self.health = 0.0;
-                }
+            let damage_piercing_shields = (damage - self.shields).clamp(0.0, f32::MAX);
+            self.shields = (self.shields - damage).clamp(0.0, self.max_shields);
+            if damage_piercing_shields.is_sign_positive() {
+                self.health = (self.health - damage_piercing_shields).clamp(0.0, self.max_health);
             }
         } else {
             self.armor -= 1;
@@ -150,44 +140,12 @@ impl HealthComponent {
         self.armor
     }
 
-    /// Set health to value
-    #[allow(dead_code)]
-    pub fn set_health(&mut self, health: f32) {
-        if health > self.max_health {
-            warn!(
-                "Attempting to set health value to value above maximum health!
-            Setting to max value instead."
-            );
-            self.health = self.max_health;
-        } else {
-            self.health = health;
-        }
-    }
-
-    #[allow(dead_code)]
-    /// Set maximum health to value
-    pub fn set_max_health(&mut self, max_health: f32) {
-        if max_health <= 0.0 {
-            panic!("Attempted to set maximum health to value less than or equal to 0.0!");
-        }
-
-        self.max_health = max_health;
-
-        if self.health > self.max_health {
-            self.health = self.max_health;
-        }
-    }
-
     /// Add to health
     pub fn heal(&mut self, health: f32) {
         if health < 0.0 {
             panic!("Attempted to heal by negative value. Use take_damage function instead?");
         }
-
-        self.health += health;
-        if self.health > self.max_health {
-            self.health = self.max_health;
-        }
+        self.health = (self.health + health).clamp(0.0, self.max_health);
     }
 
     /// Add to armor
