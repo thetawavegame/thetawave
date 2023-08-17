@@ -3,6 +3,7 @@ use bevy_kira_audio::prelude::*;
 
 use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
+use run::RunEndEvent;
 use states::GameCleanup;
 use thetawave_interface::states::{AppStates, GameStates};
 use ui::EndGameTransitionResource;
@@ -181,6 +182,7 @@ fn setup_game(
     mut run_resource: ResMut<run::RunResource>,
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
     levels_resource: Res<run::LevelsResource>,
+    mut run_end_event_writer: EventWriter<RunEndEvent>,
 ) {
     *end_game_trans_resource = EndGameTransitionResource::new(2.0, 3.0, 2.5, 0.5, 0.5, 30.0);
 
@@ -200,5 +202,5 @@ fn setup_game(
         .insert(Name::new("Game Fade"));
 
     // create run resource
-    run_resource.create_level(&levels_resource);
+    run_resource.create_level(&levels_resource, &mut run_end_event_writer);
 }

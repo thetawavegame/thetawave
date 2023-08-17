@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use ron::de::from_bytes;
-use std::time::Duration;
+use std::{collections::VecDeque, time::Duration};
 use thetawave_interface::states::{AppStates, GameStates};
 
 use crate::{
@@ -100,40 +100,50 @@ pub struct RunEndEvent {
 
 // TODO: set to a progression of levels
 /// Right now just set to one level
-pub type RunResourceData = String;
+pub type RunResourceData = VecDeque<String>;
 
 #[derive(Resource)]
 pub struct RunResource {
-    /// Type of the level
-    pub level_type: String,
-    /// Level struct itself
-    pub level: Option<level::Level>,
+    /// List of string level keys that are matched to values in the levelsresource
+    pub levels: VecDeque<String>,
+    /// Tracks the level currently being played
+    pub current_level: Option<level::Level>,
 }
 
 impl From<RunResourceData> for RunResource {
     fn from(resource_data: RunResourceData) -> Self {
         RunResource {
-            level_type: resource_data,
-            level: None,
+            levels: resource_data,
+            current_level: None,
         }
     }
 }
 
 impl RunResource {
     /// Create the level from the level type
-    pub fn create_level(&mut self, levels_resource: &level::LevelsResource) {
-        self.level = Some(
-            levels_resource
-                .levels
-                .get(&self.level_type)
-                .unwrap()
-                .clone(),
-        );
+    pub fn create_level(
+        &mut self,
+        levels_resource: &level::LevelsResource,
+        run_end_event_writer: &mut EventWriter<RunEndEvent>,
+    ) {
+        // attempt to pop the next level from the front of the level queue
+        if let Some(level_name) = self.levels.pop_front() {
+            // get the level from the LevelsResource using the level_name and set it to the current level
+            match levels_resource.levels.get(&level_name) {
+                Some(level) => self.current_level = Some(level.clone()),
+                None => panic!("Level not found for {level_name} in LevelsResource"),
+            }
+        } else {
+            // all levels have been completed, go to victory
+            run_end_event_writer.send(RunEndEvent {
+                outcome: RunOutcomeType::Victory,
+            })
+        }
     }
 
     /// Returns true if the level is ready to start
     pub fn is_ready(&self) -> bool {
-        self.level.is_some()
+        self.current_level.is_some()
     }
 
     /// Progress the run, right noew just ticks the level
@@ -152,7 +162,7 @@ impl RunResource {
         audio_channel: &AudioChannel<audio::BackgroundMusicAudioChannel>,
         audio_assets: &GameAudioAssets,
     ) {
-        if let Some(level) = &mut self.level {
+        if let Some(level) = &mut self.current_level {
             level.tick(
                 delta,
                 spawn_formation,

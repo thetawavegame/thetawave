@@ -394,7 +394,7 @@ pub fn setup_first_level(
     audio_channel: Res<AudioChannel<audio::BackgroundMusicAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
 ) {
-    if let Some(level) = &mut run_resource.level {
+    if let Some(level) = &mut run_resource.current_level {
         // start music for first phase
 
         audio_channel
