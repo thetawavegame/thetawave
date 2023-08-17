@@ -1,3 +1,4 @@
+use crate::misc::HealthComponent;
 use bevy::prelude::*;
 use serde::Deserialize;
 use std::collections::HashMap;
@@ -53,6 +54,16 @@ pub struct Character {
     pub ability_period: f32,
     /// Type of ability
     pub ability_type: AbilityType,
+}
+
+impl From<&Character> for HealthComponent {
+    fn from(character: &Character) -> Self {
+        HealthComponent::new(
+            character.health,
+            character.shields,
+            character.shields_recharge_rate,
+        )
+    }
 }
 
 #[derive(Deserialize, Clone, Debug, Hash, PartialEq, Eq)]

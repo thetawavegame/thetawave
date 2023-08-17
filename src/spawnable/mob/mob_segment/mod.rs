@@ -91,6 +91,11 @@ pub struct MobSegmentData {
     pub mob_spawners: Option<HashMap<String, Vec<MobSpawnerData>>>,
 }
 
+impl From<&MobSegmentData> for HealthComponent {
+    fn from(mob_segment_data: &MobSegmentData) -> Self {
+        HealthComponent::new(mob_segment_data.health, 0.0, 0.0)
+    }
+}
 /// Spawn a mob segment
 #[allow(clippy::too_many_arguments)]
 pub fn spawn_mob_segment(

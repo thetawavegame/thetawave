@@ -4,10 +4,7 @@ use thetawave_interface::{
     spawnable::{EffectType, TextEffectType},
 };
 
-use crate::{
-    player::Character,
-    spawnable::{MobData, MobSegmentData, SpawnEffectEvent},
-};
+use crate::spawnable::SpawnEffectEvent;
 
 /// Handle player health regeneration
 pub fn regenerate_shields_system(mut health_query: Query<&mut HealthComponent>, time: Res<Time>) {
@@ -55,28 +52,6 @@ pub struct HealthComponent {
     shields: f32,
     max_shields: f32,
     shields_recharge_rate: f32,
-}
-
-impl From<&Character> for HealthComponent {
-    fn from(character: &Character) -> Self {
-        HealthComponent::new(
-            character.health,
-            character.shields,
-            character.shields_recharge_rate,
-        )
-    }
-}
-
-impl From<&MobData> for HealthComponent {
-    fn from(mob_data: &MobData) -> Self {
-        HealthComponent::new(mob_data.health, 0.0, 0.0)
-    }
-}
-
-impl From<&MobSegmentData> for HealthComponent {
-    fn from(mob_segment_data: &MobSegmentData) -> Self {
-        HealthComponent::new(mob_segment_data.health, 0.0, 0.0)
-    }
 }
 
 impl HealthComponent {

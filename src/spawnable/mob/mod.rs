@@ -248,7 +248,11 @@ pub struct MobData {
     #[serde(default)]
     pub projectile_spawners: HashMap<String, Vec<ProjectileSpawnerData>>,
 }
-
+impl From<&MobData> for HealthComponent {
+    fn from(mob_data: &MobData) -> Self {
+        HealthComponent::new(mob_data.health, 0.0, 0.0)
+    }
+}
 #[derive(Deserialize, Clone)]
 pub struct ColliderData {
     pub dimensions: Vec2,
