@@ -11,9 +11,9 @@ pub(super) fn set_user_stats_for_user_id(
 ) -> Result<(), OurDBError> {
     let stmt_raw = format!(
         "
-    INSERT OR REPLACE INTO {USERSTAT} (userId, totalShotsFired, totalGamesLost)
-    VALUES (?1,  ?2, ?3)
-    ON CONFLICT DO UPDATE SET totalShotsFired=?2, totalGamesLost=?3"
+    INSERT OR REPLACE INTO {USERSTAT} (userId, totalShotsFired, totalGamesLost, totalShotsHit)
+    VALUES (?1,  ?2, ?3, ?4)
+    ON CONFLICT DO UPDATE SET totalShotsFired=?2, totalGamesLost=?3, totalShotsHit=?4"
     );
     let conn = get_db()?;
     info!(
@@ -23,7 +23,8 @@ pub(super) fn set_user_stats_for_user_id(
     conn.prepare(&stmt_raw)?.execute(params![
         user_id,
         user_stats.total_shots_fired,
-        user_stats.total_games_lost
+        user_stats.total_games_lost,
+        user_stats.total_shots_hit,
     ])?;
     Ok(())
 }
