@@ -49,25 +49,24 @@ pub fn contact_collision_system(
                 // check if colliding entities were found
                 if let Some(colliding_entities) = colliding_entities {
                     // check if player collided with a mob
-                    for (mob_entity, mob_component) in mob_query.iter() {
-                        if colliding_entities.secondary == mob_entity {
-                            audio_channel.play(
-                                audio_assets
-                                    .get_collision_sound_asset(&mob_component.collision_sound),
-                            );
-                            collision_event_writer.send(SortedCollisionEvent::PlayerToMobContact {
-                                player_entity: colliding_entities.primary,
-                                mob_entity: colliding_entities.secondary,
-                                mob_faction: match mob_component.mob_type.clone() {
-                                    MobType::Enemy(_) => Faction::Enemy,
-                                    MobType::Ally(_) => Faction::Ally,
-                                    MobType::Neutral(_) => Faction::Neutral,
-                                },
-                                player_damage: player_component.collision_damage,
-                                mob_damage: mob_component.collision_damage,
-                            });
-                            continue 'collision_events;
-                        }
+                    if let Ok((_entity, mob_component)) =
+                        mob_query.get(colliding_entities.secondary)
+                    {
+                        audio_channel.play(
+                            audio_assets.get_collision_sound_asset(&mob_component.collision_sound),
+                        );
+                        collision_event_writer.send(SortedCollisionEvent::PlayerToMobContact {
+                            player_entity: colliding_entities.primary,
+                            mob_entity: colliding_entities.secondary,
+                            mob_faction: match mob_component.mob_type.clone() {
+                                MobType::Enemy(_) => Faction::Enemy,
+                                MobType::Ally(_) => Faction::Ally,
+                                MobType::Neutral(_) => Faction::Neutral,
+                            },
+                            player_damage: player_component.collision_damage,
+                            mob_damage: mob_component.collision_damage,
+                        });
+                        continue 'collision_events;
                     }
 
                     // check if player collided with a barrier
