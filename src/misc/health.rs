@@ -92,20 +92,11 @@ impl HealthComponent {
     /// Take damage (deplete armor, then shields, then health  in that order)
     pub fn take_damage(&mut self, damage: usize) {
         if self.armor == 0 {
-            //let damage_piercing_shields = (damage - self.shields).clamp(0, usize::MAX);
-            let damage_piercing_shields = damage.checked_sub(self.shields).unwrap_or(0);
-            //self.shields = (self.shields - damage).clamp(0, self.max_shields);
-            self.shields = self.shields.checked_sub(damage).unwrap_or(0);
-            /*
-            if damage_piercing_shields.is_sign_positive() {
-                self.health = (self.health - damage_piercing_shields).clamp(0, self.max_health);
-            }
-            */
+            let damage_piercing_shields = damage.saturating_sub(self.shields);
+            self.shields = self.shields.saturating_sub(damage);
+
             if damage_piercing_shields > 0 {
-                self.health = self
-                    .health
-                    .checked_sub(damage_piercing_shields)
-                    .unwrap_or(0);
+                self.health = self.health.saturating_sub(damage_piercing_shields);
             }
         } else {
             self.armor -= 1;
@@ -149,11 +140,19 @@ impl HealthComponent {
 
     /// Percentage of defense left
     pub fn get_health_percentage(&self) -> f32 {
-        self.health as f32 / self.max_health as f32
+        if self.max_health > 0 {
+            self.health as f32 / self.max_health as f32
+        } else {
+            0.0
+        }
     }
 
     /// Percentage of defense left
     pub fn get_shields_percentage(&self) -> f32 {
-        self.shields as f32 / self.max_shields as f32
+        if self.max_shields > 0 {
+            self.shields as f32 / self.max_shields as f32
+        } else {
+            0.0
+        }
     }
 }

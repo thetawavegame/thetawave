@@ -29,11 +29,15 @@ impl DefenseData {
 
     /// Decrement defense level
     pub fn take_damage(&mut self, value: usize) {
-        self.defense = self.defense.checked_sub(value).unwrap_or(0);
+        self.defense = self.defense.saturating_sub(value);
     }
 
     /// Percentage of defense left
     pub fn get_percentage(&self) -> f32 {
-        self.defense as f32 / self.max_defense as f32
+        if self.max_defense > 0 {
+            self.defense as f32 / self.max_defense as f32
+        } else {
+            0.0
+        }
     }
 }
