@@ -305,7 +305,7 @@ fn deal_damage_to_player_on_impact(
                 for (player_entity_q, mut player_component) in player_query.iter_mut() {
                     let damage = (*mob_segment_damage as f32
                         * player_component.incoming_damage_multiplier)
-                        as usize;
+                        .round() as usize;
                     if player_entity_q == *player_entity && damage > 0 {
                         damage_dealt_event_writer.send(DamageDealtEvent {
                             damage,
