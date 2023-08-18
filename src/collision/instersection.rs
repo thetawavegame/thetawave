@@ -65,7 +65,7 @@ pub fn intersection_collision_system(
                     continue 'collision_events;
                 }
                 // check for player-consumable intersection
-                if consumable_query.get(colliding_entities.secondary).is_ok() {
+                else if consumable_query.get(colliding_entities.secondary).is_ok() {
                     collision_event_writer.send(
                         SortedCollisionEvent::PlayerToConsumableIntersection {
                             player_entity: colliding_entities.primary,
@@ -75,9 +75,10 @@ pub fn intersection_collision_system(
                     continue 'collision_events;
                 }
             }
-
             // check of mob was collided with
-            if let Ok((_mob_entity, mob_component)) = mob_query.get(colliding_entities.primary) {
+            else if let Ok((_mob_entity, mob_component)) =
+                mob_query.get(colliding_entities.primary)
+            {
                 // check for mob-to-projectile intersection
                 if let Ok((_projectile_entity, projectile_component)) =
                     projectile_query.get(colliding_entities.secondary)
@@ -102,9 +103,8 @@ pub fn intersection_collision_system(
                     continue 'collision_events;
                 }
             }
-
             // check if mob segment was collided with
-            if let Ok((_mob_segment_entity, mob_segment_component)) =
+            else if let Ok((_mob_segment_entity, mob_segment_component)) =
                 mob_segment_query.get(colliding_entities.primary)
             {
                 // check for mobSegment-to-projectile intersection
