@@ -28,7 +28,7 @@ pub struct SpawnProjectileEvent {
     /// Position to spawn
     pub transform: Transform,
     /// Damage of projectile
-    pub damage: f32,
+    pub damage: usize,
     /// Time until projectile despawns
     pub despawn_time: f32,
     /// Initial motion of the projectile
@@ -44,7 +44,7 @@ pub struct ProjectileComponent {
     /// Projectile specific behaviors
     pub behaviors: Vec<ProjectileBehavior>,
     /// Damage dealt to target
-    pub damage: f32,
+    pub damage: usize,
     /// Time the projectile has existed
     pub time_alive: f32,
     /// Entity that fired the projectile
@@ -108,7 +108,7 @@ pub fn spawn_projectile(
     projectile_resource: &ProjectileResource,
     projectile_assets: &ProjectileAssets,
     transform: Transform,
-    damage: f32,
+    damage: usize,
     despawn_time: f32, // time before despawning
     initial_motion: InitialMotion,
     commands: &mut Commands,

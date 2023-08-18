@@ -479,9 +479,7 @@ pub fn update_player1_ui(
     for mut style_component in player1_ui_queries.p0().iter_mut() {
         for (health_component, player_component) in player_query.iter() {
             if player_component.player_index == 0 {
-                style_component.height = Val::Px(
-                    200.0 * (health_component.get_health() / health_component.get_max_health()),
-                )
+                style_component.height = Val::Px(200.0 * health_component.get_health_percentage())
             }
         }
     }
@@ -489,9 +487,7 @@ pub fn update_player1_ui(
     for mut style_component in player1_ui_queries.p7().iter_mut() {
         for (health_component, player_component) in player_query.iter() {
             if player_component.player_index == 0 {
-                style_component.height = Val::Px(
-                    200.0 * (health_component.get_shields() / health_component.get_max_shields()),
-                )
+                style_component.height = Val::Px(200.0 * health_component.get_shields_percentage())
             }
         }
     }
@@ -500,7 +496,7 @@ pub fn update_player1_ui(
         if let Some(level) = &run_resource.level {
             match &level.objective {
                 Objective::Defense(data) => {
-                    style_component.width = Val::Px(800.0 * data.get_percentage_left())
+                    style_component.width = Val::Px(800.0 * data.get_percentage())
                 }
             }
         }
@@ -605,9 +601,7 @@ pub fn update_player2_ui(
     for mut style_component in player2_ui_queries.p0().iter_mut() {
         for (health_component, player_component) in player_query.iter() {
             if player_component.player_index == 1 {
-                style_component.height = Val::Px(
-                    200.0 * (health_component.get_health() / health_component.get_max_health()),
-                )
+                style_component.height = Val::Px(200.0 * health_component.get_health_percentage())
             }
         }
     }
@@ -615,9 +609,7 @@ pub fn update_player2_ui(
     for mut style_component in player2_ui_queries.p6().iter_mut() {
         for (health_component, player_component) in player_query.iter() {
             if player_component.player_index == 1 {
-                style_component.height = Val::Px(
-                    200.0 * (health_component.get_shields() / health_component.get_max_shields()),
-                )
+                style_component.height = Val::Px(200.0 * health_component.get_shields_percentage())
             }
         }
     }

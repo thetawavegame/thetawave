@@ -113,18 +113,23 @@ impl Level {
         // handle each of the objective types
         #[allow(clippy::single_match)]
         match &mut self.objective {
-            Objective::Defense(data) => {
+            Objective::Defense(defense_data) => {
                 // iterate through all the mobs that have reached the bottom
                 for event in mob_reached_bottom.iter() {
                     // heal or take damage based on the damage amount
-                    if event.0 > 0.0 {
-                        data.take_damage(event.0);
-                    } else {
-                        data.gain_defense(-event.0);
+                    match event.0 {
+                        crate::arena::DefenseAffect::Heal(value) => {
+                            defense_data.gain_defense(value);
+                            audio_channel.play(audio_assets.defense_heal.clone());
+                        }
+                        crate::arena::DefenseAffect::Damage(value) => {
+                            defense_data.take_damage(value);
+                            audio_channel.play(audio_assets.defense_damage.clone());
+                        }
                     }
 
                     // end the game if defense dies
-                    if data.is_failed() {
+                    if defense_data.is_failed() {
                         // TODO: remove and use event instead
                         run_end_event_writer.send(RunEndEvent {
                             outcome: RunOutcomeType::Defeat(RunDefeatType::DefenseDestroyed),

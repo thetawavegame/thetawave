@@ -30,9 +30,9 @@ pub struct PlayerComponent {
     /// Time between firing projectiles
     pub fire_period: f32,
     /// Amount of damage dealt per attack
-    pub attack_damage: f32,
+    pub attack_damage: usize,
     /// Amount of damage dealt on contact
-    pub collision_damage: f32,
+    pub collision_damage: usize,
     /// Distance to attract items and consumables
     pub attraction_distance: f32,
     /// Acceleration applied to items and conumables in attraction distance

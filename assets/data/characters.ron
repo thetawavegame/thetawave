@@ -2,9 +2,7 @@
 	characters: {
 		Captain: (
 			acceleration: (25.0, 25.0),
-			//acceleration: (20.0, 20.0),
-			//deceleration: (2.0, 2.0), // for pc
-			deceleration: (10.0, 10.0), // for arcade
+			deceleration: (10.0, 10.0),
 			speed: (300.0, 300.0),
 			collider_dimensions: (2.0 , 4.0),
 			collider_density: 1.0,
@@ -14,11 +12,11 @@
 			projectile_velocity: (0.0, 500.0),
 			projectile_offset_position: (0.0, 40.0),
 			fire_period: 0.4,
-			health: 80.0,
-			shields: 5.0,
-			shields_recharge_rate: 0.25,
-			attack_damage: 10.0,
-			collision_damage: 10.0,
+			health: 80,
+			shields: 5,
+			shields_recharge_rate: 1.0,
+			attack_damage: 10,
+			collision_damage: 10,
 			attraction_distance: 150.0,
 			attraction_acceleration: 5.0,
 			money: 0,
@@ -27,8 +25,7 @@
 		),
 		Juggernaut: (
 			acceleration: (25.0, 25.0),
-			//deceleration: (2.0, 2.0),
-			deceleration: (10.0, 10.0), // for arcade
+			deceleration: (10.0, 10.0),
 			speed: (250.0, 250.0),
 			collider_dimensions: (4.0 , 5.5),
 			collider_density: 1.5,
@@ -38,11 +35,11 @@
 			projectile_velocity: (0.0, 400.0),
 			projectile_offset_position: (0.0, 45.0),
 			fire_period: 0.7, // currently gets overwritten by the fire rate increase from collecting the rocks
-			health: 150.0,
-			shields: 10.0,
-			shields_recharge_rate: 0.35,
-			attack_damage: 10.0,
-			collision_damage: 15.0,
+			health: 150,
+			shields: 10,
+			shields_recharge_rate: 0.75,
+			attack_damage: 10,
+			collision_damage: 15,
 			attraction_distance: 150.0,
 			attraction_acceleration: 5.0,
 			money: 0,
