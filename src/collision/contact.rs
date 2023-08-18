@@ -69,15 +69,13 @@ pub fn contact_collision_system(
                     });
                     continue 'collision_events;
                 }
-
                 // check if player collided with a barrier
-                if barrier_query.get(colliding_entities.secondary).is_ok() {
+                else if barrier_query.get(colliding_entities.secondary).is_ok() {
                     audio_channel.play(audio_assets.barrier_bounce.clone());
                     continue 'collision_events;
                 }
-
                 // check if player collided with segment
-                if let Ok((_mob_segment_entity, mob_segment_component)) =
+                else if let Ok((_mob_segment_entity, mob_segment_component)) =
                     mob_segment_query.get(colliding_entities.secondary)
                 {
                     audio_channel.play(
@@ -97,8 +95,7 @@ pub fn contact_collision_system(
                     continue 'collision_events;
                 }
                 // check if player collided with a projectile
-
-                if let Ok((_projectile_entity, projectile_component)) =
+                else if let Ok((_projectile_entity, projectile_component)) =
                     projectile_query.get(colliding_entities.secondary)
                 {
                     collision_event_writer.send(SortedCollisionEvent::PlayerToProjectileContact {
@@ -114,9 +111,9 @@ pub fn contact_collision_system(
                     continue 'collision_events;
                 }
             }
-
             // check if mob was the 'most important thing' that was in the collision
-            if let Ok((_mob_entity_1, mob_component_1)) = mob_query.get(colliding_entities.primary)
+            else if let Ok((_mob_entity_1, mob_component_1)) =
+                mob_query.get(colliding_entities.primary)
             {
                 // check if mob collided with other mob
                 if let Ok((_mob_entity, mob_component_2)) =
@@ -171,9 +168,8 @@ pub fn contact_collision_system(
                     });
                     continue 'collision_events;
                 }
-
                 // check if mob collided with barrier
-                if let Ok(barrier_entity) = barrier_query.get(colliding_entities.secondary) {
+                else if let Ok(barrier_entity) = barrier_query.get(colliding_entities.secondary) {
                     collision_event_writer.send(SortedCollisionEvent::MobToBarrierContact {
                         mob_entity: colliding_entities.primary,
                         barrier_entity,
@@ -182,7 +178,7 @@ pub fn contact_collision_system(
                     continue 'collision_events;
                 }
                 // check if mob collided with mob segment
-                if let Ok((_mob_segment_entity, mob_segment_component)) =
+                else if let Ok((_mob_segment_entity, mob_segment_component)) =
                     mob_segment_query.get(colliding_entities.secondary)
                 {
                     if mob_component_1.collision_sound != CollisionSoundType::default() {
@@ -217,7 +213,7 @@ pub fn contact_collision_system(
                     continue 'collision_events;
                 }
                 // check if mob collided with projectile
-                if let Ok((_projectile_entity, projectile_component)) =
+                else if let Ok((_projectile_entity, projectile_component)) =
                     projectile_query.get(colliding_entities.secondary)
                 {
                     collision_event_writer.send(SortedCollisionEvent::MobToProjectileContact {
@@ -238,9 +234,8 @@ pub fn contact_collision_system(
                     continue 'collision_events;
                 }
             }
-
             // check if mob segment was the 'most important thing' that was in the collision
-            if let Ok((_mob_segment_entity_1, mob_segment_component_1)) =
+            else if let Ok((_mob_segment_entity_1, mob_segment_component_1)) =
                 mob_segment_query.get(colliding_entities.primary)
             {
                 // check if mob segment collided with other mob segment
@@ -300,9 +295,8 @@ pub fn contact_collision_system(
                     );
                     continue 'collision_events;
                 }
-
                 // check if mob segment collided with projectile
-                if let Ok((_projectile_entity, projectile_component)) =
+                else if let Ok((_projectile_entity, projectile_component)) =
                     projectile_query.get(colliding_entities.secondary)
                 {
                     audio_channel.play(audio_assets.bullet_bounce.clone());
@@ -324,16 +318,14 @@ pub fn contact_collision_system(
                     );
                     continue 'collision_events;
                 }
-
                 // check if mob segment collided with barrier
-                if barrier_query.get(colliding_entities.secondary).is_ok() {
+                else if barrier_query.get(colliding_entities.secondary).is_ok() {
                     audio_channel.play(audio_assets.barrier_bounce.clone());
                     continue 'collision_events;
                 }
             }
-
             // check if projectile was the 'most important thing' that was in the collision
-            if let Ok((projectile_entity_1, projectile_component_1)) =
+            else if let Ok((projectile_entity_1, projectile_component_1)) =
                 projectile_query.get(colliding_entities.primary)
             {
                 // check if the projectile collided with another projectile
