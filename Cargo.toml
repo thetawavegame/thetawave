@@ -14,9 +14,11 @@ members = [
 serde = "1.0.159"
 strum = "0.25.0"
 strum_macros = "0.25.1"
-bevy = { version = "0.11.0", features = ["serialize"] }
+bevy = { version = "0.11.2", features = ["serialize"] }
 thiserror = "1.0"
 derive_more  = "0.99.17"
+bevy_ecs_macros = "0.11.2"
+bevy_ecs = "0.11.2"
 
 [dependencies]
 bevy = {workspace = true}
@@ -37,7 +39,6 @@ ron = "0.8.0"
 rand = "0.8.5"
 console_error_panic_hook = "0.1.7"
 bevy_kira_audio = { version = "0.16.0", features = ["mp3", "wav"] }
-#bevy_editor_pls = "0.4.0"
 winit = "0.28.4"
 image = "0.24.6"
 thiserror = {workspace = true}
