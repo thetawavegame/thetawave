@@ -202,5 +202,5 @@ fn setup_game(
         .insert(Name::new("Game Fade"));
 
     // create run resource
-    run_resource.create_level(&levels_resource, &mut run_end_event_writer);
+    //run_resource.create_level(&levels_resource, &mut run_end_event_writer);
 }

@@ -22,10 +22,7 @@ mod objective;
 pub use self::objective::Objective;
 pub use self::{
     formation::{spawn_formation_system, FormationPoolsResource, SpawnFormationEvent},
-    level::{
-        level_system, next_level_system, setup_first_level, LevelCompletedEvent, LevelsResource,
-        LevelsResourceData,
-    },
+    level::{LevelCompletedEvent, LevelsResource, LevelsResourceData},
 };
 
 pub struct RunPlugin;
@@ -50,6 +47,7 @@ impl Plugin for RunPlugin {
             .add_event::<LevelCompletedEvent>()
             .add_event::<RunEndEvent>();
 
+        /*
         app.add_systems(
             OnEnter(states::AppStates::Game),
             setup_first_level.in_set(GameEnterSet::BuildLevel),
@@ -65,7 +63,8 @@ impl Plugin for RunPlugin {
                 .run_if(in_state(states::AppStates::Game))
                 .run_if(in_state(states::GameStates::Playing)),
         );
-
+        */
+        /*
         app.add_systems(
             Update,
             reset_run_system.run_if(in_state(states::AppStates::GameOver)),
@@ -80,6 +79,7 @@ impl Plugin for RunPlugin {
             Update,
             reset_run_system.run_if(in_state(states::GameStates::Paused)),
         );
+        */
     }
 }
 
@@ -119,109 +119,4 @@ impl From<RunResourceData> for RunResource {
     }
 }
 
-impl RunResource {
-    /// Create the level from the level type
-    pub fn create_level(
-        &mut self,
-        levels_resource: &level::LevelsResource,
-        run_end_event_writer: &mut EventWriter<RunEndEvent>,
-    ) {
-        // attempt to pop the next level from the front of the level queue
-        if let Some(level_name) = self.levels.pop_front() {
-            // get the level from the LevelsResource using the level_name and set it to the current level
-            match levels_resource.levels.get(&level_name) {
-                Some(level) => self.current_level = Some(level.clone()),
-                None => panic!("Level not found for {level_name} in LevelsResource"),
-            }
-        } else {
-            // all levels have been completed, go to victory
-            run_end_event_writer.send(RunEndEvent {
-                outcome: RunOutcomeType::Victory,
-            })
-        }
-    }
-
-    /// Returns true if the level is ready to start
-    pub fn is_ready(&self) -> bool {
-        self.current_level.is_some()
-    }
-
-    /// Progress the run, right noew just ticks the level
-    #[allow(clippy::too_many_arguments)]
-    pub fn tick(
-        &mut self,
-        delta: Duration,
-        spawn_formation: &mut EventWriter<formation::SpawnFormationEvent>,
-        level_completed: &mut EventWriter<level::LevelCompletedEvent>,
-        spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
-        mob_destroyed_event_reader: &mut EventReader<MobDestroyedEvent>,
-        mob_reached_bottom: &mut EventReader<MobReachedBottomGateEvent>,
-        formation_pools: &formation::FormationPoolsResource,
-        end_game_trans_resource: &mut EndGameTransitionResource,
-        run_end_event_writer: &mut EventWriter<RunEndEvent>,
-        audio_channel: &AudioChannel<audio::BackgroundMusicAudioChannel>,
-        audio_assets: &GameAudioAssets,
-    ) {
-        if let Some(level) = &mut self.current_level {
-            level.tick(
-                delta,
-                spawn_formation,
-                level_completed,
-                spawn_mob_event_writer,
-                mob_destroyed_event_reader,
-                mob_reached_bottom,
-                formation_pools,
-                end_game_trans_resource,
-                run_end_event_writer,
-                audio_channel,
-                audio_assets,
-            );
-        }
-    }
-}
-
-/// Restarts the run reseting all of the values in the game
-#[allow(clippy::too_many_arguments)]
-pub fn reset_run_system(
-    gamepads: Res<Gamepads>,
-    mut gamepad_input: ResMut<Input<GamepadButton>>,
-    mut keyboard_input: ResMut<Input<KeyCode>>,
-    mut next_app_state: ResMut<NextState<AppStates>>,
-    mut next_game_state: ResMut<NextState<GameStates>>,
-    asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<audio::MenuAudioChannel>>,
-    bg_auido_channel: Res<AudioChannel<audio::BackgroundMusicAudioChannel>>,
-    mut players_resource: ResMut<PlayersResource>,
-) {
-    // get input
-    let mut reset = keyboard_input.just_released(KeyCode::R);
-
-    for gamepad in gamepads.iter() {
-        reset |= gamepad_input.just_released(GamepadButton {
-            gamepad,
-            button_type: GamepadButtonType::East,
-        });
-    }
-
-    // if reset input provided reset th run
-    if reset {
-        // go to the main menu state
-        next_app_state.set(AppStates::MainMenu);
-        next_game_state.set(GameStates::Playing);
-        *players_resource = PlayersResource::default();
-
-        // play menu input sound
-        // TODO: change to using loaded assets
-        audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
-        bg_auido_channel.stop();
-
-        // reset the input
-        keyboard_input.reset(KeyCode::R);
-        for gamepad in gamepads.iter() {
-            gamepad_input.reset(GamepadButton {
-                gamepad,
-                button_type: GamepadButtonType::East,
-            });
-        }
-    }
-}
+impl RunResource {}
