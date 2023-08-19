@@ -1,5 +1,15 @@
-name: Web dev release -- Netlify
+name: Web release -- Netlify
 on:
+  workflow_dispatch:
+    inputs:
+      deploymentAppTier:
+        description: 'Application tier of the deployed site. Dev or prod.'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+        - dev
+        - prod
   push:
     branches:
       - main
@@ -25,12 +35,22 @@ jobs:
           
       - name: Build wasm assets
         run: ./build_wasm.sh
-      - name: Publish test deployment to netlify
+      - name: Publish test deployment to netlify dev site
+        if: "${{ inputs.deploymentAppTier != 'prod' }}"
         uses: netlify/actions/cli@master
         with:
-          args: deploy --dir=out/ -m "$NETLIFY_DEPLOY_MESSAGE" --alias=dev
+          args: deploy --dir=out/ -m "$NETLIFY_DEPLOY_MESSAGE" --prod
         env:
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_SITE_ID: ${{ secrets.DEV_THETAWAVE_NETLIFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_DEPLOY_MESSAGE: "Main branch preview deploy via GH Actions ${{ github.ref }}. Summary: ${{ github.event.head_commit.message}}"
+      - name: Publish deployment to netlify prod site
+        if: "${{ inputs.deploymentAppTier == 'prod' }}"
+        uses: netlify/actions/cli@master
+        with:
+          args: deploy --dir=out/ -m "$NETLIFY_DEPLOY_MESSAGE" --prod
+        env:
+          NETLIFY_SITE_ID: ${{ secrets.PROD_THETAWAVE_NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_DEPLOY_MESSAGE: "Main branch preview deploy via GH Actions ${{ github.ref }}. Summary: ${{ github.event.head_commit.message}}"
   ci-pass:
