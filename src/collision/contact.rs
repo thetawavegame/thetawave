@@ -30,7 +30,7 @@ pub fn contact_collision_system(
             // Prioritize by the importance of components to eliminate cases to check due to
             // `x collided with y` and `y collided with x` symmetry
             let colliding_entities = {
-                let mut entities = [collider1_entity.clone(), collider2_entity.clone()];
+                let mut entities = [*collider1_entity, *collider2_entity];
                 // This sort order is key to making other logic in the function work
                 // (0,...,1) ascending ordering. E.x. [...,mob segments,  mobs, players]
                 entities.sort_by_key(|e| {
@@ -42,8 +42,8 @@ pub fn contact_collision_system(
                     )
                 });
                 CollidingEntityPair {
-                    primary: entities[1].clone(),
-                    secondary: entities[0].clone(),
+                    primary: entities[1],
+                    secondary: entities[0],
                 }
             };
             // Now we pattern match to dynamic dispatch based on component type.

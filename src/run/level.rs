@@ -79,6 +79,7 @@ impl From<LevelData> for Level {
 
 impl Level {
     /// Get a string name of the phase
+    #[allow(dead_code)]
     pub fn get_phase_name(&self) -> String {
         match &self.timeline.phases[self.timeline_idx].phase_type {
             LevelPhaseType::FormationSpawn { formation_pool, .. } => {
@@ -90,6 +91,7 @@ impl Level {
     }
 
     /// Get the index of the current phase
+    #[allow(dead_code)]
     pub fn get_phase_number(&self) -> String {
         self.timeline_idx.to_string()
     }

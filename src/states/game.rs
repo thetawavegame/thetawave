@@ -128,6 +128,7 @@ pub fn start_character_selection_system(
 }
 
 /// Quit the game if quit input read
+#[allow(dead_code)]
 pub fn quit_game_system(
     gamepads: Res<Gamepads>,
     gamepad_input: Res<Input<GamepadButton>>,

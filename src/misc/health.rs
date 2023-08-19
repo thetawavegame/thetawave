@@ -22,9 +22,7 @@ pub fn damage_system(
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
 ) {
     for event in damage_dealt_events.iter() {
-        if let Ok((_entity, transform, mut health_component)) =
-            health_query.get_mut(event.target.clone())
-        {
+        if let Ok((_entity, transform, mut health_component)) = health_query.get_mut(event.target) {
             // take damage from health
             health_component.take_damage(event.damage);
 
@@ -103,7 +101,7 @@ impl HealthComponent {
         }
     }
 
-    /// Get maximum health
+    #[allow(dead_code)]
     pub fn get_max_health(&self) -> usize {
         self.max_health
     }
@@ -113,12 +111,13 @@ impl HealthComponent {
         self.health
     }
 
-    /// Get maximum health
+    #[allow(dead_code)]
     pub fn get_max_shields(&self) -> usize {
         self.max_shields
     }
 
     /// Get current health
+    #[allow(dead_code)]
     pub fn get_shields(&self) -> usize {
         self.shields
     }

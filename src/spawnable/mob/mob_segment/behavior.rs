@@ -302,7 +302,7 @@ fn deal_damage_to_player_on_impact(
         {
             if entity == *mob_segment_entity {
                 // deal damage to player
-                for (player_entity_q, mut player_component) in player_query.iter_mut() {
+                for (player_entity_q, player_component) in player_query.iter_mut() {
                     let damage = (*mob_segment_damage as f32
                         * player_component.incoming_damage_multiplier)
                         .round() as usize;

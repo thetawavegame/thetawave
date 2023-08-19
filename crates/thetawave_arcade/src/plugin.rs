@@ -187,13 +187,6 @@ impl ButtonLEDByte {
     }
 }
 
-enum NeopixelStripByte {
-    EndMarker = 255,
-    RightPrefix = 252,
-    LeftPrefix = 253,
-    Off = 0,
-}
-
 fn enter_main_menu_button_leds_system(mut serial_resource: ResMut<SerialResource>) {
     serial_resource.send_message("COM3", ButtonLEDByte::enter_main_menu());
 }
