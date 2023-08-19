@@ -103,7 +103,7 @@ impl HealthComponent {
         }
     }
 
-    /// Get maximum health
+    #[allow(dead_code)]
     pub fn get_max_health(&self) -> usize {
         self.max_health
     }
@@ -113,12 +113,13 @@ impl HealthComponent {
         self.health
     }
 
-    /// Get maximum health
+    #[allow(dead_code)]
     pub fn get_max_shields(&self) -> usize {
         self.max_shields
     }
 
     /// Get current health
+    #[allow(dead_code)]
     pub fn get_shields(&self) -> usize {
         self.shields
     }

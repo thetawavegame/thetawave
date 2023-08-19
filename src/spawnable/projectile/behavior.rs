@@ -181,7 +181,7 @@ fn deal_damage_on_contact(
                 {
                     // deal damage to player
                     audio_channel.play(audio_assets.player_hit.clone());
-                    for (player_entity_q, player_component) in player_query.iter() {
+                    for (player_entity_q, _player_component) in player_query.iter() {
                         if *player_entity == player_entity_q && *projectile_damage > 0 {
                             damage_dealt_event_writer.send(DamageDealtEvent {
                                 damage: *projectile_damage,
@@ -210,7 +210,7 @@ fn deal_damage_on_contact(
                 {
                     // deal damage to mob
                     audio_channel.play(audio_assets.bullet_ding.clone());
-                    for (mob_entity_q, mut mob_component) in mob_query.iter_mut() {
+                    for (mob_entity_q, _mob_component) in mob_query.iter_mut() {
                         if *mob_entity == mob_entity_q && *projectile_damage > 0 {
                             damage_dealt_event_writer.send(DamageDealtEvent {
                                 damage: *projectile_damage,
@@ -238,7 +238,7 @@ fn deal_damage_on_contact(
                 {
                     // deal damage to mob
                     audio_channel.play(audio_assets.bullet_ding.clone());
-                    for (mob_segment_entity_q, mut mob_segment_component) in
+                    for (mob_segment_entity_q, _mob_segment_component) in
                         mob_segment_query.iter_mut()
                     {
                         if *mob_segment_entity == mob_segment_entity_q && *projectile_damage > 0 {
@@ -283,7 +283,7 @@ fn deal_damage_on_intersection(
                     )
                 {
                     // deal damage to player
-                    for (player_entity_q, player_component) in player_query.iter() {
+                    for (player_entity_q, _player_component) in player_query.iter() {
                         if *player_entity == player_entity_q && *projectile_damage > 0 {
                             damage_dealt_event_writer.send(DamageDealtEvent {
                                 damage: *projectile_damage,
@@ -313,7 +313,7 @@ fn deal_damage_on_intersection(
                     }
                 {
                     // deal damage to mob
-                    for (mob_entity_q, mut mob_component) in mob_query.iter_mut() {
+                    for (mob_entity_q, _mob_component) in mob_query.iter_mut() {
                         if *mob_entity == mob_entity_q && *projectile_damage > 0 {
                             damage_dealt_event_writer.send(DamageDealtEvent {
                                 damage: *projectile_damage,
@@ -340,7 +340,7 @@ fn deal_damage_on_intersection(
                     }
                 {
                     // deal damage to mob
-                    for (mob_segment_entity_q, mut mob_segment_component) in
+                    for (mob_segment_entity_q, _mob_segment_component) in
                         mob_segment_query.iter_mut()
                     {
                         if *mob_segment_entity == mob_segment_entity_q && *projectile_damage > 0 {
