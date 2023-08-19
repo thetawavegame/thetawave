@@ -131,7 +131,7 @@ fn spawn_text_effect(
     // create text
     let text = Text::from_section(
         match text_effect_type {
-            TextEffectType::DamageDealt => effect_text.clone().unwrap_or("0".to_string()),
+            TextEffectType::DamageDealt => effect_text.unwrap_or("0".to_string()),
 
             TextEffectType::ConsumableCollected(_) => text_effect_data.text.clone(),
         },

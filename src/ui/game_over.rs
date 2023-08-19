@@ -193,7 +193,7 @@ pub fn setup_game_over_system(
                                         total_shots_fired,
                                         accuracy_rate,
                                         super::pprint_mob_kills_from_data(
-                                            &(**current_game_enemy_mob_kill_counts)
+                                            &current_game_enemy_mob_kill_counts
                                         ),
                                     ),
                                     TextStyle {

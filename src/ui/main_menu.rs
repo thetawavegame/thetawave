@@ -106,7 +106,7 @@ pub fn setup_main_menu_system(
                                         "Projectiles fired: {}\nAccuracy: {:.2}%\n\nEnemies destroyed:\n{}",
                                         total_shots_fired,
                                         accuracy_rate,
-                                        super::pprint_mob_kills_from_data(&(**historical_games_enemy_mob_kill_counts)),
+                                        super::pprint_mob_kills_from_data(&historical_games_enemy_mob_kill_counts),
                                     ),
                                     TextStyle {
                                         font,
