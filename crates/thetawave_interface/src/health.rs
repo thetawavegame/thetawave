@@ -3,6 +3,6 @@ use bevy_ecs_macros::Event;
 
 #[derive(Event)]
 pub struct DamageDealtEvent {
-    pub damage: f32,
+    pub damage: usize,
     pub target: Entity,
 }

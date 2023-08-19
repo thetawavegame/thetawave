@@ -279,7 +279,7 @@ fn receive_damage_on_impact(
             } => {
                 if entity == *mob_entity {
                     for (player_entity_q, mut _player_component) in player_query.iter_mut() {
-                        if player_entity_q == *player_entity && *player_damage > 0.0 {
+                        if player_entity_q == *player_entity && *player_damage > 0 {
                             damage_dealt_event_writer.send(DamageDealtEvent {
                                 damage: *player_damage,
                                 target: *mob_entity,
@@ -296,7 +296,7 @@ fn receive_damage_on_impact(
                 mob_faction_2: _,
                 mob_damage_2,
             } => {
-                if entity == *mob_entity_1 && *mob_damage_2 > 0.0 {
+                if entity == *mob_entity_1 && *mob_damage_2 > 0 {
                     damage_dealt_event_writer.send(DamageDealtEvent {
                         damage: *mob_damage_2,
                         target: *mob_entity_1,
@@ -311,7 +311,7 @@ fn receive_damage_on_impact(
                 mob_segment_faction: _,
                 mob_segment_damage,
             } => {
-                if entity == *mob_entity && *mob_segment_damage > 0.0 {
+                if entity == *mob_entity && *mob_segment_damage > 0 {
                     damage_dealt_event_writer.send(DamageDealtEvent {
                         damage: *mob_segment_damage,
                         target: *mob_entity,
@@ -343,8 +343,9 @@ fn deal_damage_to_player_on_impact(
             if entity == *mob_entity {
                 // deal damage to player
                 for (player_entity_q, mut player_component) in player_query.iter_mut() {
-                    let damage = player_component.incoming_damage_multiplier * *mob_damage;
-                    if player_entity_q == *player_entity && damage > 0.0 {
+                    let damage = (player_component.incoming_damage_multiplier * *mob_damage as f32)
+                        .round() as usize;
+                    if player_entity_q == *player_entity && damage > 0 {
                         damage_dealt_event_writer.send(DamageDealtEvent {
                             damage,
                             target: player_entity_q,

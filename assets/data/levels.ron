@@ -1,8 +1,8 @@
 {
 	"earth-orbit": (
 		objective: Defense((
-			defense: 100.0,
-			max_defense: 100.0,
+			defense: 100,
+			max_defense: 100,
 		)),
 		timeline: (
 			phases: [
@@ -58,8 +58,8 @@
 	),
 	"test": (
 		objective: Defense((
-			defense: 100.0,
-			max_defense: 100.0,
+			defense: 100,
+			max_defense: 100,
 		)),
 		timeline: (
 			phases: [

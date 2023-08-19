@@ -19,7 +19,7 @@ pub use self::behavior::{consumable_execute_behavior_system, ConsumableBehavior}
 /// All the different consumable effects
 #[derive(Deserialize, Clone)]
 pub enum ConsumableEffect {
-    GainHealth(f32),
+    GainHealth(usize),
     GainArmor(usize),
     GainMoney(usize),
 }

@@ -303,8 +303,10 @@ fn deal_damage_to_player_on_impact(
             if entity == *mob_segment_entity {
                 // deal damage to player
                 for (player_entity_q, mut player_component) in player_query.iter_mut() {
-                    let damage = *mob_segment_damage * player_component.incoming_damage_multiplier;
-                    if player_entity_q == *player_entity && damage > 0.0 {
+                    let damage = (*mob_segment_damage as f32
+                        * player_component.incoming_damage_multiplier)
+                        .round() as usize;
+                    if player_entity_q == *player_entity && damage > 0 {
                         damage_dealt_event_writer.send(DamageDealtEvent {
                             damage,
                             target: player_entity_q,
@@ -334,7 +336,7 @@ fn receive_damage_on_impact(
             } => {
                 if entity == *mob_segment_entity {
                     for (player_entity_q, mut _player_component) in player_query.iter_mut() {
-                        if player_entity_q == *player_entity && *player_damage > 0.0 {
+                        if player_entity_q == *player_entity && *player_damage > 0 {
                             damage_dealt_event_writer.send(DamageDealtEvent {
                                 damage: *player_damage,
                                 target: *mob_segment_entity,
@@ -351,7 +353,7 @@ fn receive_damage_on_impact(
                 mob_faction: _,
                 mob_damage,
             } => {
-                if entity == *mob_segment_entity && *mob_damage > 0.0 {
+                if entity == *mob_segment_entity && *mob_damage > 0 {
                     damage_dealt_event_writer.send(DamageDealtEvent {
                         damage: *mob_damage,
                         target: *mob_segment_entity,
@@ -366,7 +368,7 @@ fn receive_damage_on_impact(
                 mob_segment_faction_2: _,
                 mob_segment_damage_2,
             } => {
-                if entity == *mob_segment_entity_1 && *mob_segment_damage_2 > 0.0 {
+                if entity == *mob_segment_entity_1 && *mob_segment_damage_2 > 0 {
                     damage_dealt_event_writer.send(DamageDealtEvent {
                         damage: *mob_segment_damage_2,
                         target: *mob_segment_entity_1,

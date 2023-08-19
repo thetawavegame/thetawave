@@ -176,14 +176,18 @@ mod test {
             MobsKilledBy1PlayerCacheT::from([(EnemyMobType::Drone, N_DRONES)]),
         );
     }
-    fn set_n_games_lost_by_player_in_user_stats_cache<const N_GAMES_LOST: usize>(
+    fn set_user_stats_for_completed_games<
+        const N_GAMES_LOST: usize,
+        const TOTAL_SHOTS_HIT: usize,
+        const TOTAL_SHOTS_FIRED: usize,
+    >(
         mut historical_user_stats: ResMut<UserStatsByPlayerForCompletedGamesCache>,
     ) {
         (**historical_user_stats).insert(
             DEFAULT_USER_ID,
             UserStat {
-                total_shots_fired: 0,
-                total_shots_hit: 0,
+                total_shots_fired: TOTAL_SHOTS_FIRED,
+                total_shots_hit: TOTAL_SHOTS_HIT,
                 total_games_lost: N_GAMES_LOST,
             },
         );
@@ -204,6 +208,8 @@ mod test {
     fn _test_can_flush_caches_to_db() {
         const N_DRONES_KILLED: usize = 15;
         const N_GAMES_PLAYED: usize = 2;
+        const TOTAL_SHOTS_HIT: usize = 10;
+        const TOTAL_SHOTS_FIRED: usize = 15;
 
         let mob_kills_after_1_game =
             MobKillsByPlayerForCompletedGames::from(MobsKilledByPlayerCacheT::from([(
@@ -216,7 +222,11 @@ mod test {
                 OnEnter(AppStates::Game),
                 (
                     set_n_drones_killed_for_p1_in_completed_games_cache::<N_DRONES_KILLED>,
-                    set_n_games_lost_by_player_in_user_stats_cache::<N_GAMES_PLAYED>,
+                    set_user_stats_for_completed_games::<
+                        N_GAMES_PLAYED,
+                        TOTAL_SHOTS_HIT,
+                        TOTAL_SHOTS_FIRED,
+                    >,
                 ),
             )
             .add_systems(OnEnter(AppStates::Game), set_game_over_state)
@@ -229,8 +239,8 @@ mod test {
         assert_eq!(
             get_user_stats(DEFAULT_USER_ID).unwrap(),
             UserStat {
-                total_shots_fired: 0,
-                total_shots_hit: 0,
+                total_shots_fired: TOTAL_SHOTS_FIRED,
+                total_shots_hit: TOTAL_SHOTS_HIT,
                 total_games_lost: N_GAMES_PLAYED,
             }
         );

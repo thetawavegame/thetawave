@@ -1,4 +1,4 @@
-use std::default;
+use std::default::Default;
 
 use serde::Deserialize;
 use strum_macros::{Display, EnumString};

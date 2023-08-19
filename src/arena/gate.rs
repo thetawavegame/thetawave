@@ -7,6 +7,7 @@ use crate::{
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::{prelude::*, rapier::prelude::CollisionEventFlags};
+use serde::Deserialize;
 
 /// Despawn gate tag
 #[derive(Component)]
@@ -75,15 +76,9 @@ pub fn despawn_gates_system(
                     for (mob_entity, mob_component) in mob_query.iter() {
                         if mob_entity == *other_entity {
                             // send event for mob reaching bottom of arena
-                            enemy_bottom_event
-                                .send(MobReachedBottomGateEvent(mob_component.defense_damage));
-
-                            // play sound based on if defense was increased or decreased
-                            if mob_component.defense_damage > 0.0 {
-                                audio_channel.play(audio_assets.defense_damage.clone());
-                            } else if mob_component.defense_damage < -0.5 {
-                                audio_channel.play(audio_assets.defense_heal.clone());
-                            }
+                            enemy_bottom_event.send(MobReachedBottomGateEvent(
+                                mob_component.defense_affect.clone(),
+                            ));
                         }
                     }
 
@@ -92,15 +87,8 @@ pub fn despawn_gates_system(
                         if mob_segment_entity == *other_entity {
                             // send event for mob segment reaching bottom of arena
                             enemy_bottom_event.send(MobReachedBottomGateEvent(
-                                mob_segment_component.defense_damage,
+                                mob_segment_component.defense_affect.clone(),
                             ));
-
-                            // play sound based on if defense was increased or decreased
-                            if mob_segment_component.defense_damage > 0.0 {
-                                audio_channel.play(audio_assets.defense_damage.clone());
-                            } else if mob_segment_component.defense_damage < -0.5 {
-                                audio_channel.play(audio_assets.defense_heal.clone());
-                            }
                         }
                     }
                 }
@@ -111,4 +99,16 @@ pub fn despawn_gates_system(
 
 // Event for sending damage dealt from mob reaching bottom of arena
 #[derive(Event)]
-pub struct MobReachedBottomGateEvent(pub f32);
+pub struct MobReachedBottomGateEvent(pub DefenseAffect);
+
+#[derive(Deserialize, Clone)]
+pub enum DefenseAffect {
+    Heal(usize),
+    Damage(usize),
+}
+
+impl Default for DefenseAffect {
+    fn default() -> Self {
+        DefenseAffect::Damage(0)
+    }
+}
