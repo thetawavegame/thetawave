@@ -47,6 +47,9 @@ jobs:
         # Workaround for rust-lang/cargo#7732
         run: cargo fmt -- --check $(find . -name '*.rs' -print)
 
+      - name: Check that the game compiles and is minimally sensible rust (no warnings)
+        run: cargo rustc --all-features -- -D warnings
+
   test:
     name: ${{ matrix.name }}
     needs: [style]
