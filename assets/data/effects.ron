@@ -98,4 +98,124 @@
 			frame_duration: 0.1,
 		),
 	),
+	Text(DamageDealt): (
+		effect_type: Text(DamageDealt),
+		effect_behaviors: [FadeOutMs((
+			mode: Once,
+			duration: (
+				secs: 0,
+				nanos: 550000000,
+			),
+			stopwatch: (
+				elapsed: (
+					secs: 0,
+					nanos: 0,
+				),
+				paused: false, 
+			),
+			finished: false,
+			times_finished_this_tick: 0,
+		))],
+		z_level: 10.0,
+		animation: (
+			direction: None,
+			frame_duration: 0.1,
+		),
+	),
+	Text(ConsumableCollected(Money1)): (
+		effect_type: Text(ConsumableCollected(Money1)),
+		effect_behaviors: [FadeOutMs((
+			mode: Once,
+			duration: (
+				secs: 0,
+				nanos: 550000000,
+			),
+			stopwatch: (
+				elapsed: (
+					secs: 0,
+					nanos: 0,
+				),
+				paused: false, 
+			),
+			finished: false,
+			times_finished_this_tick: 0,
+		))],
+		z_level: 10.0,
+		animation: (
+			direction: None,
+			frame_duration: 0.1,
+		),
+	),
+	Text(ConsumableCollected(Money3)): (
+		effect_type: Text(ConsumableCollected(Money3)),
+		effect_behaviors: [FadeOutMs((
+			mode: Once,
+			duration: (
+				secs: 0,
+				nanos: 550000000,
+			),
+			stopwatch: (
+				elapsed: (
+					secs: 0,
+					nanos: 0,
+				),
+				paused: false, 
+			),
+			finished: false,
+			times_finished_this_tick: 0,
+		))],
+		z_level: 10.0,
+		animation: (
+			direction: None,
+			frame_duration: 0.1,
+		),
+	),
+	Text(ConsumableCollected(HealthWrench)): (
+		effect_type: Text(ConsumableCollected(HealthWrench)),
+		effect_behaviors: [FadeOutMs((
+			mode: Once,
+			duration: (
+				secs: 0,
+				nanos: 550000000,
+			),
+			stopwatch: (
+				elapsed: (
+					secs: 0,
+					nanos: 0,
+				),
+				paused: false, 
+			),
+			finished: false,
+			times_finished_this_tick: 0,
+		))],
+		z_level: 10.0,
+		animation: (
+			direction: None,
+			frame_duration: 0.1,
+		),
+	),
+	Text(ConsumableCollected(Armor)): (
+		effect_type: Text(ConsumableCollected(Armor)),
+		effect_behaviors: [FadeOutMs((
+			mode: Once,
+			duration: (
+				secs: 0,
+				nanos: 550000000,
+			),
+			stopwatch: (
+				elapsed: (
+					secs: 0,
+					nanos: 0,
+				),
+				paused: false, 
+			),
+			finished: false,
+			times_finished_this_tick: 0,
+		))],
+		z_level: 10.0,
+		animation: (
+			direction: None,
+			frame_duration: 0.1,
+		),
+	),
 }

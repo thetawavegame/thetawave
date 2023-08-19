@@ -167,7 +167,7 @@
 		acceleration: (2.0, 2.0),
 		deceleration: (2.0, 2.0),
 		speed: (80.0, 30.0),
-		collision_damage: 20.0,
+		collision_damage: 20,
 		colliders: [
 			(
 				dimensions: (12.0, 12.0),
@@ -177,11 +177,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Standard,
-		health: (
-			max_health: 1500.0,
-			health: 1500.0,
-			armor: 0,
-		),
+		health: 1500,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
@@ -230,8 +226,8 @@
 		acceleration: (2.0, 2.0),
 		deceleration: (2.0, 2.0),
 		speed: (80.0, 45.0),
-		collision_damage: 20.0,
-		defense_damage: 15.0,
+		collision_damage: 20,
+		defense_affect: Damage(15),
 		colliders: [
 			(
 				dimensions: (12.0, 2.0),
@@ -246,11 +242,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Standard,
-		health: (
-			max_health: 40.0,
-			health: 40.0,
-			armor: 0,
-		),
+		health: 40,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
@@ -289,8 +281,8 @@
 		acceleration: (2.0, 2.0),
 		deceleration: (2.0, 2.0),
 		speed: (80.0, 45.0),
-		collision_damage: 20.0,
-		defense_damage: 15.0,
+		collision_damage: 20,
+		defense_affect: Damage(15),
 		colliders: [
 			(
 				dimensions: (12.0, 2.0),
@@ -305,11 +297,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Standard,
-		health: (
-			max_health: 40.0,
-			health: 40.0,
-			armor: 0,
-		),
+		health: 40,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
@@ -348,8 +336,8 @@
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
 		speed: (0.0, 100.0),
-		collision_damage: 12.0,
-		defense_damage: 8.0,
+		collision_damage: 12,
+		defense_affect: Damage(8),
 		colliders: [
 			(
 				dimensions: (6.5, 6.5),
@@ -359,11 +347,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Standard,
-		health: (
-			max_health: 30.0,
-			health: 30.0,
-			armor: 0,
-		),
+		health: 30,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
@@ -388,9 +372,9 @@
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
 		speed: (0.0, 85.0),
-		attack_damage: 10.0,
-		collision_damage: 8.0,
-		defense_damage: 8.0,
+		attack_damage: 10,
+		collision_damage: 8,
+		defense_affect: Damage(8),
 		colliders: [
 			(
 				dimensions: (6.5, 6.5),
@@ -400,11 +384,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Standard,
-		health: (
-			max_health: 20.0,
-			health: 20.0,
-			armor: 0,
-		),
+		health: 20,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
@@ -427,11 +407,6 @@
 						random_angvel: None,
 						linvel: Some((0.0, -400.0)),
 					),
-					health: Some((
-						max_health: 10.0,
-						health: 10.0,
-						armor: 0,
-					))
 				)
 			],
 			"blast": [
@@ -460,9 +435,9 @@
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
 		speed: (0.0, 75.0),
-		attack_damage: 10.0,
-		collision_damage: 8.0,
-		defense_damage: 8.0,
+		attack_damage: 10,
+		collision_damage: 8,
+		defense_affect: Damage(8),
 		colliders: [
 			(
 				dimensions: (7.0, 7.5),
@@ -472,11 +447,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Standard,
-		health: (
-			max_health: 25.0,
-			health: 25.0,
-			armor: 0,
-		),
+		health: 25,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
@@ -503,7 +474,7 @@
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
 		speed: (0.0, 70.0),
-		collision_damage: 5.0,
+		collision_damage: 5,
 		colliders: [
 			(
 				dimensions: (5.25, 3.75),
@@ -512,11 +483,7 @@
 			)
 		],
 		z_level: 6.0,
-		health: (
-			max_health: 80.0,
-			health: 80.0,
-			armor: 0,
-		),
+		health: 80,
 		animation: (
 			direction: None,
 			frame_duration: 1.0,
@@ -546,7 +513,7 @@
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
 		speed: (0.0, 70.0),
-		collision_damage: 5.0,
+		collision_damage: 5,
 		colliders: [
 			(
 				dimensions: (5.25, 3.75),
@@ -555,11 +522,7 @@
 			)
 		],
 		z_level: 6.0,
-		health: (
-			max_health: 80.0,
-			health: 80.0,
-			armor: 0,
-		),
+		health: 80,
 		animation: (
 			direction: None,
 			frame_duration: 1.0,
@@ -594,8 +557,8 @@
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
 		speed: (0.0, 75.0),
-		collision_damage: 6.0,
-		defense_damage: 15.0,
+		collision_damage: 6,
+		defense_affect: Damage(15),
 		colliders: [
 			(
 				dimensions: (7.5, 10.5),
@@ -605,11 +568,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Standard,
-		health: (
-			max_health: 50.0,
-			health: 50.0,
-			armor: 0,
-		),	
+		health: 50,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
@@ -640,7 +599,7 @@
 		speed: (150.0, 150.0),
 		angular_acceleration: 0.5,
 		angular_speed: 1.8,
-		collision_damage: 30.0,
+		collision_damage: 30,
 		colliders: [
 			(
 				dimensions: (2.25, 6.0),
@@ -649,11 +608,7 @@
 			)
 		],
 		z_level: 5.0,
-		health: (
-			max_health: 15.0,
-			health: 15.0,
-			armor: 0,
-		),
+		health: 15,
 		animation: (
 			direction: Forward,
 			frame_duration: 0.1,
@@ -678,9 +633,9 @@
 		acceleration: (2.0, 2.0),
 		deceleration: (2.0, 2.0),
 		speed: (75.0, 75.0),
-		attack_damage: 8.0,
-		collision_damage: 10.0,
-		defense_damage: 12.0,
+		attack_damage: 8,
+		collision_damage: 10,
+		defense_affect: Damage(12),
 		colliders: [
 			(
 				dimensions: (10.5, 3.0),
@@ -690,11 +645,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Standard,
-		health: (
-			max_health: 20.0,
-			health: 20.0,
-			armor: 0,
-		),	
+		health: 20,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
@@ -733,9 +684,9 @@
 		acceleration: (2.0, 2.0),
 		deceleration: (2.0, 2.0),
 		speed: (75.0, 75.0),
-		attack_damage: 8.0,
-		collision_damage: 10.0,
-		defense_damage: 12.0,
+		attack_damage: 8,
+		collision_damage: 10,
+		defense_affect: Damage(12),
 		colliders: [
 			(
 				dimensions: (10.5, 3.0),
@@ -745,11 +696,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Standard,
-		health: (
-			max_health: 20.0,
-			health: 20.0,
-			armor: 0,
-		),
+		health: 20,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
@@ -783,7 +730,7 @@
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
 		speed: (0.0, 75.0),
-		collision_damage: 7.0,
+		collision_damage: 7,
 		z_level: 4.0,
 		consumable_drops: MoneyAsteroid,
 		initial_motion: (
@@ -796,11 +743,7 @@
 				rotation: 0.0,
 			)
 		],
-		health: (
-			max_health: 50.0,
-			health: 50.0,
-			armor: 0,
-		),	
+		health: 50,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,

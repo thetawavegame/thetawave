@@ -7,7 +7,8 @@ mod movement;
 use crate::assets::GameAudioAssets;
 use crate::audio;
 use crate::game::GameParametersResource;
-use crate::spawnable::{InitialMotion, SpawnEffectEvent};
+use crate::misc::HealthComponent;
+use crate::spawnable::SpawnEffectEvent;
 use crate::ui::EndGameTransitionResource;
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
@@ -24,7 +25,7 @@ use super::PlayerComponent;
 pub fn player_death_system(
     mut commands: Commands,
     mut effect_event_writer: EventWriter<SpawnEffectEvent>,
-    player_query: Query<(Entity, &PlayerComponent, &Transform)>,
+    player_query: Query<(Entity, &Transform, &HealthComponent), With<PlayerComponent>>,
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
@@ -38,8 +39,8 @@ pub fn player_death_system(
     }
 
     // handle death of player entities
-    for (entity, player, transform) in player_query.iter() {
-        if player.health.is_dead() {
+    for (entity, transform, health) in player_query.iter() {
+        if health.is_dead() {
             // despawn the player
             commands.entity(entity).despawn_recursive();
 
@@ -55,18 +56,11 @@ pub fn player_death_system(
                     ),
                     ..Default::default()
                 },
-                initial_motion: InitialMotion::default(),
+                ..default()
             });
 
             // play explosion sound effect
             audio_channel.play(audio_assets.player_explosion.clone());
         }
-    }
-}
-
-/// Handle player health regeneration
-pub fn player_health_system(mut player_query: Query<&mut PlayerComponent>) {
-    for mut player_component in player_query.iter_mut() {
-        player_component.health.regenerate_shields();
     }
 }

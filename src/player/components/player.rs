@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use serde::Deserialize;
 use thetawave_interface::spawnable::ProjectileType;
 
-use crate::{misc::Health, player::Character};
+use crate::player::Character;
 
 /// Component for managing core attributes of the player
 #[derive(Component, Debug, Clone)]
@@ -29,12 +29,10 @@ pub struct PlayerComponent {
     pub fire_timer: Timer,
     /// Time between firing projectiles
     pub fire_period: f32,
-    /// Health of the player
-    pub health: Health,
     /// Amount of damage dealt per attack
-    pub attack_damage: f32,
+    pub attack_damage: usize,
     /// Amount of damage dealt on contact
-    pub collision_damage: f32,
+    pub collision_damage: usize,
     /// Distance to attract items and consumables
     pub attraction_distance: f32,
     /// Acceleration applied to items and conumables in attraction distance
@@ -69,7 +67,6 @@ impl From<&Character> for PlayerComponent {
             projectile_offset_position: character.projectile_offset_position,
             fire_timer: Timer::from_seconds(character.fire_period, TimerMode::Once),
             fire_period: character.fire_period,
-            health: character.health.clone(),
             attack_damage: character.attack_damage,
             collision_damage: character.collision_damage,
             attraction_distance: character.attraction_distance,

@@ -1,3 +1,5 @@
+use std::default::Default;
+
 use serde::Deserialize;
 use strum_macros::{Display, EnumString};
 
@@ -25,6 +27,13 @@ pub enum SpawnableType {
     Effect(EffectType),
     Mob(MobType),
     MobSegment(MobSegmentType),
+}
+
+impl Default for SpawnableType {
+    /// Money1 is default so that SpawnableComponent can derive default
+    fn default() -> Self {
+        SpawnableType::Consumable(ConsumableType::Money1)
+    }
 }
 
 /// Type that encompasses all weapon projectiles
@@ -93,7 +102,6 @@ pub enum NeutralMobType {
 /// Type that encompasses all spawnable consumables
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum ConsumableType {
-    DefenseWrench,
     Money1,
     Money3,
     HealthWrench,
@@ -121,11 +129,12 @@ pub enum ItemType {
 }
 
 /// Type that encompasses all spawnable effects
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display, Default)]
 pub enum EffectType {
     AllyBlastExplosion,
     AllyBlastDespawn,
-    MobExplosion,
+    #[default]
+    MobExplosion, // defaults to mob explosion
     ConsumableDespawn,
     EnemyBlastExplosion,
     EnemyBlastDespawn,
@@ -134,8 +143,12 @@ pub enum EffectType {
     AllyBulletDespawn,
     EnemyBulletDespawn,
     AllyBulletExplosion,
-    //PoisonBlastExplosion,
-    //CriticalBlastExplosion,
-    //MobExplosion,
-    //Giblets(MobType),
+    Text(TextEffectType),
+}
+
+/// Subtype of effect for text effects
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+pub enum TextEffectType {
+    DamageDealt,
+    ConsumableCollected(ConsumableType),
 }

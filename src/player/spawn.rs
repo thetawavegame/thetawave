@@ -4,6 +4,7 @@ use bevy_rapier2d::prelude::*;
 use crate::{
     assets,
     game::GameParametersResource,
+    misc::HealthComponent,
     player::{CharactersResource, PlayerComponent, PlayersResource},
     states::GameCleanup,
 };
@@ -70,6 +71,7 @@ pub fn spawn_players_system(
                 .insert(Restitution::new(1.0))
                 .insert(ColliderMassProperties::Density(character.collider_density))
                 .insert(player_component)
+                .insert(HealthComponent::from(character))
                 .insert(GameCleanup)
                 .insert(ActiveEvents::COLLISION_EVENTS)
                 .insert(ExternalImpulse::default())

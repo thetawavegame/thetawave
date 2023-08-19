@@ -1,9 +1,8 @@
 {
 	"earth-orbit": (
 		objective: Defense((
-			max_health: 100.0,
-			health: 100.0,
-			armor: 0,
+			defense: 100,
+			max_defense: 100,
 		)),
 		timeline: (
 			phases: [
@@ -59,9 +58,8 @@
 	),
 	"test": (
 		objective: Defense((
-			max_health: 100.0,
-			health: 100.0,
-			armor: 0,
+			defense: 100,
+			max_defense: 100,
 		)),
 		timeline: (
 			phases: [

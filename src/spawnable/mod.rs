@@ -7,6 +7,7 @@ use bevy_rapier2d::prelude::Velocity;
 use rand::{thread_rng, Rng};
 use ron::de::from_bytes;
 use serde::Deserialize;
+use thetawave_interface::spawnable::TextEffectType;
 pub use thetawave_interface::spawnable::{
     ConsumableType, EffectType, MobType, ProjectileType, SpawnableType,
 };
@@ -18,6 +19,7 @@ mod effect;
 mod mob;
 mod projectile;
 
+use self::effect::{TextEffectData, TextEffectsResource};
 pub use self::mob::*;
 pub use self::projectile::{
     projectile_execute_behavior_system, spawn_projectile_system, ProjectileComponent,
@@ -51,36 +53,42 @@ impl Plugin for SpawnablePlugin {
             from_bytes::<BehaviorSequenceResource>(include_bytes!(
                 "../../assets/data/behavior_sequences.ron"
             ))
-            .unwrap(),
+            .expect("Failed to parse BehaviorSequenceResource from 'behavior_sequences.ron'"),
         )
         .insert_resource(MobsResource {
             mobs: from_bytes::<HashMap<MobType, MobData>>(include_bytes!(
                 "../../assets/data/mobs.ron"
             ))
-            .unwrap(),
+            .expect("Failed to parse MobsResource from 'mobs.ron'"),
             texture_atlas_handle: HashMap::new(),
         })
         .insert_resource(
             from_bytes::<MobSegmentsResource>(include_bytes!("../../assets/data/mob_segments.ron"))
-                .unwrap(),
+                .expect("Failed to parse MobSegmentsResource from 'mob_segments.ron'"),
         )
         .insert_resource(EffectsResource {
             effects: from_bytes::<HashMap<EffectType, EffectData>>(include_bytes!(
                 "../../assets/data/effects.ron"
             ))
-            .unwrap(),
+            .expect("Failed to parse EffectsResource from 'effects.ron'"),
+        })
+        .insert_resource(TextEffectsResource {
+            text_effects: from_bytes::<HashMap<TextEffectType, TextEffectData>>(include_bytes!(
+                "../../assets/data/text_effects.ron"
+            ))
+            .expect("Failed to parse TextEffectsResource from 'text_effects.ron'"),
         })
         .insert_resource(ProjectileResource {
             projectiles: from_bytes::<HashMap<ProjectileType, ProjectileData>>(include_bytes!(
                 "../../assets/data/projectiles.ron"
             ))
-            .unwrap(),
+            .expect("Failed to parse ProjectileResource from 'projectiles.ron'"),
         })
         .insert_resource(ConsumableResource {
             consumables: from_bytes::<HashMap<ConsumableType, ConsumableData>>(include_bytes!(
                 "../../assets/data/consumables.ron"
             ))
-            .unwrap(),
+            .expect("Failed to parse ConsumableResource from 'consumables.ron'"),
         });
 
         app.add_event::<SpawnEffectEvent>()
@@ -118,7 +126,7 @@ impl Plugin for SpawnablePlugin {
 }
 
 /// Core component of spawnable entities
-#[derive(Component)]
+#[derive(Component, Default)]
 pub struct SpawnableComponent {
     /// Type of spawnable
     pub spawnable_type: SpawnableType,

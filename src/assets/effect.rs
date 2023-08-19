@@ -30,19 +30,20 @@ pub struct EffectAssets {
 }
 
 impl EffectAssets {
-    pub fn get_asset(&self, effect_type: &EffectType) -> Handle<TextureAtlas> {
+    pub fn get_asset(&self, effect_type: &EffectType) -> Option<Handle<TextureAtlas>> {
         match effect_type {
-            EffectType::AllyBlastExplosion => self.ally_blast_explosion.clone(),
-            EffectType::AllyBlastDespawn => self.ally_blast_despawn.clone(),
-            EffectType::MobExplosion => self.mob_explosion.clone(),
-            EffectType::ConsumableDespawn => self.consumable_despawn.clone(),
-            EffectType::EnemyBlastExplosion => self.enemy_blast_explosion.clone(),
-            EffectType::EnemyBlastDespawn => self.enemy_blast_despawn.clone(),
-            EffectType::BarrierGlow => self.barrier_glow.clone(),
-            EffectType::AllyBulletDespawn => self.ally_bullet_despawn.clone(),
-            EffectType::EnemyBulletDespawn => self.enemy_bullet_despawn.clone(),
-            EffectType::AllyBulletExplosion => self.ally_bullet_explosion.clone(),
-            EffectType::EnemyBulletExplosion => self.enemy_bullet_explosion.clone(),
+            EffectType::AllyBlastExplosion => Some(self.ally_blast_explosion.clone()),
+            EffectType::AllyBlastDespawn => Some(self.ally_blast_despawn.clone()),
+            EffectType::MobExplosion => Some(self.mob_explosion.clone()),
+            EffectType::ConsumableDespawn => Some(self.consumable_despawn.clone()),
+            EffectType::EnemyBlastExplosion => Some(self.enemy_blast_explosion.clone()),
+            EffectType::EnemyBlastDespawn => Some(self.enemy_blast_despawn.clone()),
+            EffectType::BarrierGlow => Some(self.barrier_glow.clone()),
+            EffectType::AllyBulletDespawn => Some(self.ally_bullet_despawn.clone()),
+            EffectType::EnemyBulletDespawn => Some(self.enemy_bullet_despawn.clone()),
+            EffectType::AllyBulletExplosion => Some(self.ally_bullet_explosion.clone()),
+            EffectType::EnemyBulletExplosion => Some(self.enemy_bullet_explosion.clone()),
+            EffectType::Text(_) => None,
         }
     }
 }

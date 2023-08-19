@@ -9,10 +9,11 @@ use std::{
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
+    arena::DefenseAffect,
     assets::{CollisionSoundType, MobAssets},
     game::GameParametersResource,
     loot::ConsumableDropListType,
-    misc::Health,
+    misc::HealthComponent,
     spawnable::{InitialMotion, SpawnableBehavior, SpawnableComponent},
     states::GameCleanup,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
@@ -47,14 +48,12 @@ pub struct MobComponent {
     /// Tracks available mob spawning patterns for projectiles
     pub projectile_spawners: HashMap<String, Vec<ProjectileSpawner>>,
     /// Damage dealt to other factions through attacks
-    pub attack_damage: f32,
+    pub attack_damage: usize,
     /// Damage dealt to other factions on collision
-    pub collision_damage: f32,
+    pub collision_damage: usize,
     pub collision_sound: CollisionSoundType,
     /// Damage dealt to defense objective, after reaching bottom of arena
-    pub defense_damage: f32,
-    /// Health of the mob
-    pub health: Health,
+    pub defense_affect: DefenseAffect,
     /// List of consumable drops
     pub consumable_drops: ConsumableDropListType,
 }
@@ -103,8 +102,7 @@ impl From<&MobData> for MobComponent {
             attack_damage: mob_data.attack_damage,
             collision_damage: mob_data.collision_damage,
             collision_sound: mob_data.collision_sound.clone(),
-            defense_damage: mob_data.defense_damage,
-            health: mob_data.health.clone(),
+            defense_affect: mob_data.defense_affect.clone(),
             consumable_drops: mob_data.consumable_drops.clone(),
         }
     }
@@ -135,7 +133,6 @@ pub struct ProjectileSpawner {
     pub position: SpawnPosition,
     pub initial_motion: InitialMotion,
     pub despawn_time: f32,
-    pub health: Option<Health>,
 }
 
 impl From<ProjectileSpawnerData> for ProjectileSpawner {
@@ -146,7 +143,6 @@ impl From<ProjectileSpawnerData> for ProjectileSpawner {
             position: value.position.clone(),
             initial_motion: value.initial_motion.clone(),
             despawn_time: value.despawn_time,
-            health: value.health,
         }
     }
 }
@@ -158,7 +154,6 @@ pub struct ProjectileSpawnerData {
     pub position: SpawnPosition,
     pub initial_motion: InitialMotion,
     pub despawn_time: f32,
-    pub health: Option<Health>,
 }
 
 #[derive(Deserialize, Clone)]
@@ -228,17 +223,17 @@ pub struct MobData {
     pub thruster: Option<ThrusterData>,
     /// Damage dealt to other factions through attacks
     #[serde(default)]
-    pub attack_damage: f32,
+    pub attack_damage: usize,
     /// Damage dealt to other factions on collision
     #[serde(default)]
-    pub collision_damage: f32,
+    pub collision_damage: usize,
     /// Damage dealt to defense objective, after reaching bottom of arena
     #[serde(default)]
     pub collision_sound: CollisionSoundType,
     #[serde(default)]
-    pub defense_damage: f32,
+    pub defense_affect: DefenseAffect,
     /// Health of the mob
-    pub health: Health,
+    pub health: usize,
     /// List of consumable drops
     #[serde(default)]
     pub consumable_drops: ConsumableDropListType,
@@ -254,7 +249,11 @@ pub struct MobData {
     #[serde(default)]
     pub projectile_spawners: HashMap<String, Vec<ProjectileSpawnerData>>,
 }
-
+impl From<&MobData> for HealthComponent {
+    fn from(mob_data: &MobData) -> Self {
+        HealthComponent::new(mob_data.health, 0, 0.0)
+    }
+}
 #[derive(Deserialize, Clone)]
 pub struct ColliderData {
     pub dimensions: Vec2,
@@ -397,6 +396,7 @@ pub fn spawn_mob(
         filters: Group::ALL ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
     })
     .insert(MobComponent::from(mob_data))
+    .insert(HealthComponent::from(mob_data))
     .insert(SpawnableComponent::from(mob_data))
     .insert(ActiveEvents::COLLISION_EVENTS)
     .insert(GameCleanup)

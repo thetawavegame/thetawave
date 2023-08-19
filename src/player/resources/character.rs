@@ -1,9 +1,10 @@
+use crate::misc::HealthComponent;
 use bevy::prelude::*;
 use serde::Deserialize;
 use std::collections::HashMap;
 use thetawave_interface::spawnable::ProjectileType;
 
-use crate::{misc::Health, player::components::AbilityType};
+use crate::player::components::AbilityType;
 
 /// Contains data necessary to create a player entity.
 /// A character is chosen at the beginning of the game.
@@ -34,11 +35,15 @@ pub struct Character {
     /// Period of time between firing blasts
     pub fire_period: f32,
     /// Health of the player
-    pub health: Health,
+    pub health: usize,
+    /// Shields of the player
+    pub shields: usize,
+    /// Shields recharging rate
+    pub shields_recharge_rate: f32,
     /// Amount of damage dealt per attack
-    pub attack_damage: f32,
+    pub attack_damage: usize,
     /// Amount of damage dealt on contact
-    pub collision_damage: f32,
+    pub collision_damage: usize,
     /// Distance to attract items and consumables
     pub attraction_distance: f32,
     /// Acceleration applied to items and conumables in attraction distance
@@ -49,6 +54,16 @@ pub struct Character {
     pub ability_period: f32,
     /// Type of ability
     pub ability_type: AbilityType,
+}
+
+impl From<&Character> for HealthComponent {
+    fn from(character: &Character) -> Self {
+        HealthComponent::new(
+            character.health,
+            character.shields,
+            character.shields_recharge_rate,
+        )
+    }
 }
 
 #[derive(Deserialize, Clone, Debug, Hash, PartialEq, Eq)]

@@ -3,8 +3,9 @@ use std::time::Duration;
 use bevy::prelude::*;
 
 use crate::{
+    misc::HealthComponent,
     player::{PlayerComponent, PlayersResource},
-    run::RunResource,
+    run::{Objective, RunResource},
     states::GameCleanup,
 };
 
@@ -469,32 +470,24 @@ pub fn update_player1_ui(
         Query<&mut Style, With<LevelUI>>,
         Query<&mut Style, (With<ShieldsUI>, With<Player1UI>)>,
     )>,
-    player_query: Query<&PlayerComponent>,
+    player_query: Query<(&HealthComponent, &PlayerComponent)>,
     run_resource: Res<RunResource>,
     time: Res<Time>,
 ) {
     // update player health ui
 
     for mut style_component in player1_ui_queries.p0().iter_mut() {
-        for player_component in player_query.iter() {
+        for (health_component, player_component) in player_query.iter() {
             if player_component.player_index == 0 {
-                style_component.height = Val::Px(
-                    200.0
-                        * (player_component.health.get_health()
-                            / player_component.health.get_max_health()),
-                )
+                style_component.height = Val::Px(200.0 * health_component.get_health_percentage())
             }
         }
     }
 
     for mut style_component in player1_ui_queries.p7().iter_mut() {
-        for player_component in player_query.iter() {
+        for (health_component, player_component) in player_query.iter() {
             if player_component.player_index == 0 {
-                style_component.height = Val::Px(
-                    200.0
-                        * (player_component.health.get_shields()
-                            / player_component.health.get_max_shields()),
-                )
+                style_component.height = Val::Px(200.0 * health_component.get_shields_percentage())
             }
         }
     }
@@ -502,18 +495,17 @@ pub fn update_player1_ui(
     for mut style_component in player1_ui_queries.p6().iter_mut() {
         if let Some(level) = &run_resource.level {
             match &level.objective {
-                crate::run::ObjectiveType::Defense(health) => {
-                    style_component.width =
-                        Val::Px(800.0 * (health.get_health() / health.get_max_health()));
+                Objective::Defense(data) => {
+                    style_component.width = Val::Px(800.0 * data.get_percentage())
                 }
             }
         }
     }
 
     for mut ui_color in player1_ui_queries.p1().iter_mut() {
-        for player_component in player_query.iter() {
+        for (health_component, player_component) in player_query.iter() {
             if player_component.player_index == 0 {
-                if player_component.health.get_armor() > 0 {
+                if health_component.get_armor() > 0 {
                     ui_color.0.set_a(1.0);
                 } else {
                     ui_color.0.set_a(0.2);
@@ -524,7 +516,7 @@ pub fn update_player1_ui(
 
     for (mut ui_color, mut transform, mut power_glow) in player1_ui_queries.p2().iter_mut() {
         power_glow.0.tick(time.delta());
-        for player_component in player_query.iter() {
+        for (_, player_component) in player_query.iter() {
             if player_component.player_index == 0 {
                 let new_scale = (3.0 * (player_component.money as f32 / 25.0).min(25.0))
                     + (0.2 * (power_glow.0.elapsed_secs() * std::f32::consts::PI).sin())
@@ -539,7 +531,7 @@ pub fn update_player1_ui(
 
     // update player ability ui
     for mut style_component in player1_ui_queries.p3().iter_mut() {
-        for player_component in player_query.iter() {
+        for (_, player_component) in player_query.iter() {
             if player_component.player_index == 0 {
                 let cooldown_ratio = player_component.ability_cooldown_timer.elapsed_secs()
                     / player_component
@@ -553,7 +545,7 @@ pub fn update_player1_ui(
     }
 
     for mut visibility_component in player1_ui_queries.p4().iter_mut() {
-        for player_component in player_query.iter() {
+        for (_, player_component) in player_query.iter() {
             if player_component.player_index == 0 {
                 let cooldown_ratio = player_component.ability_cooldown_timer.elapsed_secs()
                     / player_component
@@ -571,7 +563,7 @@ pub fn update_player1_ui(
     }
 
     for mut visibility_component in player1_ui_queries.p5().iter_mut() {
-        for player_component in player_query.iter() {
+        for (_, player_component) in player_query.iter() {
             if player_component.player_index == 0 {
                 let cooldown_ratio = player_component.ability_cooldown_timer.elapsed_secs()
                     / player_component
@@ -601,39 +593,31 @@ pub fn update_player2_ui(
         Query<&mut Visibility, (With<AbilityReadyUI>, With<Player2UI>)>,
         Query<&mut Style, (With<ShieldsUI>, With<Player2UI>)>,
     )>,
-    player_query: Query<&PlayerComponent>,
+    player_query: Query<(&HealthComponent, &PlayerComponent)>,
     time: Res<Time>,
 ) {
     // update player health ui
 
     for mut style_component in player2_ui_queries.p0().iter_mut() {
-        for player_component in player_query.iter() {
+        for (health_component, player_component) in player_query.iter() {
             if player_component.player_index == 1 {
-                style_component.height = Val::Px(
-                    200.0
-                        * (player_component.health.get_health()
-                            / player_component.health.get_max_health()),
-                )
+                style_component.height = Val::Px(200.0 * health_component.get_health_percentage())
             }
         }
     }
 
     for mut style_component in player2_ui_queries.p6().iter_mut() {
-        for player_component in player_query.iter() {
+        for (health_component, player_component) in player_query.iter() {
             if player_component.player_index == 1 {
-                style_component.height = Val::Px(
-                    200.0
-                        * (player_component.health.get_shields()
-                            / player_component.health.get_max_shields()),
-                )
+                style_component.height = Val::Px(200.0 * health_component.get_shields_percentage())
             }
         }
     }
 
     for mut ui_color in player2_ui_queries.p1().iter_mut() {
-        for player_component in player_query.iter() {
+        for (health_component, player_component) in player_query.iter() {
             if player_component.player_index == 1 {
-                if player_component.health.get_armor() > 0 {
+                if health_component.get_armor() > 0 {
                     ui_color.0.set_a(1.0);
                 } else {
                     ui_color.0.set_a(0.2);
@@ -644,7 +628,7 @@ pub fn update_player2_ui(
 
     for (mut ui_color, mut transform, mut power_glow) in player2_ui_queries.p2().iter_mut() {
         power_glow.0.tick(time.delta());
-        for player_component in player_query.iter() {
+        for (_, player_component) in player_query.iter() {
             if player_component.player_index == 1 {
                 let new_scale = (3.0 * (player_component.money as f32 / 25.0).min(25.0))
                     + (0.2 * (power_glow.0.elapsed_secs() * std::f32::consts::PI).sin())
@@ -659,7 +643,7 @@ pub fn update_player2_ui(
 
     // update player ability ui
     for mut style_component in player2_ui_queries.p3().iter_mut() {
-        for player_component in player_query.iter() {
+        for (_, player_component) in player_query.iter() {
             if player_component.player_index == 1 {
                 let cooldown_ratio = player_component.ability_cooldown_timer.elapsed_secs()
                     / player_component
@@ -673,7 +657,7 @@ pub fn update_player2_ui(
     }
 
     for mut visibility_component in player2_ui_queries.p4().iter_mut() {
-        for player_component in player_query.iter() {
+        for (_, player_component) in player_query.iter() {
             if player_component.player_index == 1 {
                 let cooldown_ratio = player_component.ability_cooldown_timer.elapsed_secs()
                     / player_component
@@ -691,7 +675,7 @@ pub fn update_player2_ui(
     }
 
     for mut visibility_component in player2_ui_queries.p5().iter_mut() {
-        for player_component in player_query.iter() {
+        for (_, player_component) in player_query.iter() {
             if player_component.player_index == 1 {
                 let cooldown_ratio = player_component.ability_cooldown_timer.elapsed_secs()
                     / player_component

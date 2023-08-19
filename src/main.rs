@@ -1,5 +1,4 @@
 use bevy::{pbr::AmbientLight, prelude::*};
-//use bevy_editor_pls::prelude::*;
 use bevy_kira_audio::prelude::*;
 
 use bevy_rapier2d::geometry::Group;
@@ -138,6 +137,7 @@ fn main() {
     .add_plugins(animation::AnimationPlugin)
     .add_plugins(states::StatesPlugin)
     .add_plugins(game::counters::plugin::CountingMetricsPlugin)
+    .add_plugins(misc::HealthPlugin)
     .insert_resource(ClearColor(Color::BLACK))
     .insert_resource(AmbientLight {
         color: Color::WHITE,

@@ -7,8 +7,6 @@ use thetawave_interface::spawnable::ConsumableType;
 pub struct ConsumableAssets {
     #[asset(key = "health_wrench")]
     pub health_wrench: Handle<TextureAtlas>,
-    #[asset(key = "defense_wrench")]
-    pub defense_wrench: Handle<TextureAtlas>,
     #[asset(key = "money3")]
     pub money3: Handle<TextureAtlas>,
     #[asset(key = "money1")]
@@ -20,7 +18,6 @@ pub struct ConsumableAssets {
 impl ConsumableAssets {
     pub fn get_asset(&self, consumable_type: &ConsumableType) -> Handle<TextureAtlas> {
         match consumable_type {
-            ConsumableType::DefenseWrench => self.defense_wrench.clone(),
             ConsumableType::Money1 => self.money1.clone(),
             ConsumableType::Money3 => self.money3.clone(),
             ConsumableType::HealthWrench => self.health_wrench.clone(),

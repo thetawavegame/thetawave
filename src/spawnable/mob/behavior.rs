@@ -3,7 +3,10 @@ use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
-use thetawave_interface::spawnable::{EffectType, MobType, ProjectileType};
+use thetawave_interface::{
+    health::DamageDealtEvent,
+    spawnable::{EffectType, MobType, ProjectileType},
+};
 
 use crate::{
     assets::GameAudioAssets,
@@ -11,6 +14,7 @@ use crate::{
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     loot::LootDropsResource,
+    misc::HealthComponent,
     spawnable::{
         InitialMotion, PlayerComponent, SpawnConsumableEvent, SpawnEffectEvent,
         SpawnProjectileEvent,
@@ -68,13 +72,20 @@ pub fn mob_execute_behavior_system(
     mut commands: Commands,
     mut collision_events: EventReader<SortedCollisionEvent>,
     time: Res<Time>,
-    mut mob_query: Query<(Entity, &mut MobComponent, &Transform, &Velocity)>,
+    mut mob_query: Query<(
+        Entity,
+        &mut MobComponent,
+        &Transform,
+        &Velocity,
+        &HealthComponent,
+    )>,
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     mut spawn_consumable_event_writer: EventWriter<SpawnConsumableEvent>,
     mut spawn_projectile_event_writer: EventWriter<SpawnProjectileEvent>,
     mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
     mut mob_destroyed_event_writer: EventWriter<MobDestroyedEvent>,
+    mut damage_dealt_event_writer: EventWriter<DamageDealtEvent>,
     loot_drops_resource: Res<LootDropsResource>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
@@ -87,7 +98,8 @@ pub fn mob_execute_behavior_system(
     }
 
     // Iterate through all spawnable entities and execute their behavior
-    for (entity, mut mob_component, mob_transform, mob_velocity) in mob_query.iter_mut() {
+    for (entity, mut mob_component, mob_transform, mob_velocity, mob_health) in mob_query.iter_mut()
+    {
         let behaviors = mob_component.behaviors.clone();
         for behavior in behaviors {
             match behavior {
@@ -191,18 +203,19 @@ pub fn mob_execute_behavior_system(
                         entity,
                         &collision_events_vec,
                         &mut player_query,
+                        &mut damage_dealt_event_writer,
                     );
                 }
                 MobBehavior::ReceiveDamageOnImpact => {
                     receive_damage_on_impact(
                         entity,
                         &collision_events_vec,
-                        &mut mob_component,
                         &mut player_query,
+                        &mut damage_dealt_event_writer,
                     );
                 }
                 MobBehavior::DieAtZeroHealth => {
-                    if mob_component.health.is_dead() {
+                    if mob_health.is_dead() {
                         audio_channel.play(audio_assets.mob_explosion.clone());
 
                         // spawn mob explosion
@@ -217,7 +230,7 @@ pub fn mob_execute_behavior_system(
                                 ),
                                 ..Default::default()
                             },
-                            initial_motion: InitialMotion::default(),
+                            ..default()
                         });
 
                         // drop loot
@@ -252,8 +265,8 @@ pub struct MobDestroyedEvent {
 fn receive_damage_on_impact(
     entity: Entity,
     collision_events: &[&SortedCollisionEvent],
-    mob_component: &mut super::MobComponent,
     player_query: &mut Query<(Entity, &mut PlayerComponent)>,
+    damage_dealt_event_writer: &mut EventWriter<DamageDealtEvent>,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
@@ -266,8 +279,11 @@ fn receive_damage_on_impact(
             } => {
                 if entity == *mob_entity {
                     for (player_entity_q, mut _player_component) in player_query.iter_mut() {
-                        if player_entity_q == *player_entity {
-                            mob_component.health.take_damage(*player_damage);
+                        if player_entity_q == *player_entity && *player_damage > 0 {
+                            damage_dealt_event_writer.send(DamageDealtEvent {
+                                damage: *player_damage,
+                                target: *mob_entity,
+                            });
                         }
                     }
                 }
@@ -280,8 +296,11 @@ fn receive_damage_on_impact(
                 mob_faction_2: _,
                 mob_damage_2,
             } => {
-                if entity == *mob_entity_1 {
-                    mob_component.health.take_damage(*mob_damage_2);
+                if entity == *mob_entity_1 && *mob_damage_2 > 0 {
+                    damage_dealt_event_writer.send(DamageDealtEvent {
+                        damage: *mob_damage_2,
+                        target: *mob_entity_1,
+                    });
                 }
             }
             SortedCollisionEvent::MobToMobSegmentContact {
@@ -292,8 +311,11 @@ fn receive_damage_on_impact(
                 mob_segment_faction: _,
                 mob_segment_damage,
             } => {
-                if entity == *mob_entity {
-                    mob_component.health.take_damage(*mob_segment_damage);
+                if entity == *mob_entity && *mob_segment_damage > 0 {
+                    damage_dealt_event_writer.send(DamageDealtEvent {
+                        damage: *mob_segment_damage,
+                        target: *mob_entity,
+                    });
                 }
             }
 
@@ -307,6 +329,7 @@ fn deal_damage_to_player_on_impact(
     entity: Entity,
     collision_events: &[&SortedCollisionEvent],
     player_query: &mut Query<(Entity, &mut PlayerComponent)>,
+    damage_dealt_event_writer: &mut EventWriter<DamageDealtEvent>,
 ) {
     for collision_event in collision_events.iter() {
         if let SortedCollisionEvent::PlayerToMobContact {
@@ -320,11 +343,13 @@ fn deal_damage_to_player_on_impact(
             if entity == *mob_entity {
                 // deal damage to player
                 for (player_entity_q, mut player_component) in player_query.iter_mut() {
-                    if player_entity_q == *player_entity {
-                        let damage_multiplier = player_component.incoming_damage_multiplier;
-                        player_component
-                            .health
-                            .take_damage(*mob_damage * damage_multiplier);
+                    let damage = (player_component.incoming_damage_multiplier * *mob_damage as f32)
+                        .round() as usize;
+                    if player_entity_q == *player_entity && damage > 0 {
+                        damage_dealt_event_writer.send(DamageDealtEvent {
+                            damage,
+                            target: player_entity_q,
+                        })
                     }
                 }
             }
@@ -368,7 +393,7 @@ fn explode_on_impact(
                             ),
                             ..Default::default()
                         },
-                        initial_motion: InitialMotion::default(),
+                        ..default()
                     });
                     // despawn mob
                     commands.entity(entity).despawn_recursive();
@@ -397,7 +422,7 @@ fn explode_on_impact(
                             ),
                             ..Default::default()
                         },
-                        initial_motion: InitialMotion::default(),
+                        ..default()
                     });
                     // despawn mob
                     commands.entity(entity).despawn_recursive();
@@ -425,7 +450,7 @@ fn explode_on_impact(
                             ),
                             ..Default::default()
                         },
-                        initial_motion: InitialMotion::default(),
+                        ..default()
                     });
                     commands.entity(entity).despawn_recursive();
                     continue;

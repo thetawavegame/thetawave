@@ -4,7 +4,7 @@ use bevy_kira_audio::{AudioChannel, AudioControl};
 use bevy_rapier2d::{prelude::*, rapier::prelude::JointAxis};
 use rand::{thread_rng, Rng};
 use serde::Deserialize;
-use thetawave_interface::spawnable::EffectType;
+use thetawave_interface::{health::DamageDealtEvent, spawnable::EffectType};
 
 use crate::{
     assets::GameAudioAssets,
@@ -12,10 +12,11 @@ use crate::{
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     loot::LootDropsResource,
+    misc::HealthComponent,
     player::PlayerComponent,
     spawnable::{
-        behavior_sequence::EntityPair, InitialMotion, MobDestroyedEvent, SpawnConsumableEvent,
-        SpawnEffectEvent, SpawnMobEvent, SpawnPosition,
+        behavior_sequence::EntityPair, MobDestroyedEvent, SpawnConsumableEvent, SpawnEffectEvent,
+        SpawnMobEvent, SpawnPosition,
     },
 };
 
@@ -65,6 +66,7 @@ pub fn mob_segment_execute_behavior_system(
         &mut MobSegmentComponent,
         &Transform,
         &mut ImpulseJoint,
+        &HealthComponent,
     )>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
@@ -76,13 +78,14 @@ pub fn mob_segment_execute_behavior_system(
     mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
     mut mob_segment_destroyed_event_writer: EventWriter<MobSegmentDestroyedEvent>,
     game_parameters: Res<GameParametersResource>,
+    mut damage_dealt_event_writer: EventWriter<DamageDealtEvent>,
 ) {
     let mut collision_events_vec = vec![];
     for collision_event in collision_events.iter() {
         collision_events_vec.push(collision_event);
     }
 
-    for (entity, mut mob_segment_component, mob_segment_transform, mut joint) in
+    for (entity, mut mob_segment_component, mob_segment_transform, mut joint, mob_seg_health) in
         mob_segment_query.iter_mut()
     {
         let behaviors = mob_segment_component.behaviors.clone();
@@ -93,18 +96,19 @@ pub fn mob_segment_execute_behavior_system(
                         entity,
                         &collision_events_vec,
                         &mut player_query,
+                        &mut damage_dealt_event_writer,
                     );
                 }
                 MobSegmentBehavior::ReceiveDamageOnImpact => {
                     receive_damage_on_impact(
                         entity,
                         &collision_events_vec,
-                        &mut mob_segment_component,
                         &mut player_query,
+                        &mut damage_dealt_event_writer,
                     );
                 }
                 MobSegmentBehavior::DieAtZeroHealth => {
-                    if mob_segment_component.health.is_dead() {
+                    if mob_seg_health.is_dead() {
                         audio_channel.play(audio_assets.mob_explosion.clone());
 
                         // spawn mob explosion
@@ -119,7 +123,7 @@ pub fn mob_segment_execute_behavior_system(
                                 ),
                                 ..Default::default()
                             },
-                            initial_motion: InitialMotion::default(),
+                            ..default()
                         });
 
                         // drop loot
@@ -285,6 +289,7 @@ fn deal_damage_to_player_on_impact(
     entity: Entity,
     collision_events: &[&SortedCollisionEvent],
     player_query: &mut Query<(Entity, &mut PlayerComponent)>,
+    damage_dealt_event_writer: &mut EventWriter<DamageDealtEvent>,
 ) {
     for collision_event in collision_events.iter() {
         if let SortedCollisionEvent::PlayerToMobSegmentContact {
@@ -298,8 +303,14 @@ fn deal_damage_to_player_on_impact(
             if entity == *mob_segment_entity {
                 // deal damage to player
                 for (player_entity_q, mut player_component) in player_query.iter_mut() {
-                    if player_entity_q == *player_entity {
-                        player_component.health.take_damage(*mob_segment_damage);
+                    let damage = (*mob_segment_damage as f32
+                        * player_component.incoming_damage_multiplier)
+                        .round() as usize;
+                    if player_entity_q == *player_entity && damage > 0 {
+                        damage_dealt_event_writer.send(DamageDealtEvent {
+                            damage,
+                            target: player_entity_q,
+                        });
                     }
                 }
             }
@@ -311,8 +322,8 @@ fn deal_damage_to_player_on_impact(
 fn receive_damage_on_impact(
     entity: Entity,
     collision_events: &[&SortedCollisionEvent],
-    mob_segment_component: &mut super::MobSegmentComponent,
     player_query: &mut Query<(Entity, &mut PlayerComponent)>,
+    damage_dealt_event_writer: &mut EventWriter<DamageDealtEvent>,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
@@ -325,8 +336,11 @@ fn receive_damage_on_impact(
             } => {
                 if entity == *mob_segment_entity {
                     for (player_entity_q, mut _player_component) in player_query.iter_mut() {
-                        if player_entity_q == *player_entity {
-                            mob_segment_component.health.take_damage(*player_damage);
+                        if player_entity_q == *player_entity && *player_damage > 0 {
+                            damage_dealt_event_writer.send(DamageDealtEvent {
+                                damage: *player_damage,
+                                target: *mob_segment_entity,
+                            });
                         }
                     }
                 }
@@ -339,8 +353,11 @@ fn receive_damage_on_impact(
                 mob_faction: _,
                 mob_damage,
             } => {
-                if entity == *mob_segment_entity {
-                    mob_segment_component.health.take_damage(*mob_damage);
+                if entity == *mob_segment_entity && *mob_damage > 0 {
+                    damage_dealt_event_writer.send(DamageDealtEvent {
+                        damage: *mob_damage,
+                        target: *mob_segment_entity,
+                    });
                 }
             }
             SortedCollisionEvent::MobSegmentToMobSegmentContact {
@@ -351,10 +368,11 @@ fn receive_damage_on_impact(
                 mob_segment_faction_2: _,
                 mob_segment_damage_2,
             } => {
-                if entity == *mob_segment_entity_1 {
-                    mob_segment_component
-                        .health
-                        .take_damage(*mob_segment_damage_2);
+                if entity == *mob_segment_entity_1 && *mob_segment_damage_2 > 0 {
+                    damage_dealt_event_writer.send(DamageDealtEvent {
+                        damage: *mob_segment_damage_2,
+                        target: *mob_segment_entity_1,
+                    });
                 }
             }
 

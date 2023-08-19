@@ -253,7 +253,7 @@ mod test {
         let player_1_entity = app.world.spawn(player_1.clone());
         let player_1_projectile_event = SpawnProjectileEvent {
             projectile_type: ProjectileType::Bullet(Faction::Ally),
-            damage: 0.0,
+            damage: 0,
             despawn_time: 0.0,
             source: player_1_entity.id(),
             transform: Default::default(),

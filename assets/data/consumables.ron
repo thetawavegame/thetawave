@@ -3,7 +3,7 @@
         consumable_type: HealthWrench,
         collider_dimensions: (3.0, 3.0),
         spawnable_behaviors: [BrakeHorizontal, MoveDown],
-        consumable_effects: [GainHealth(20.0)],
+        consumable_effects: [GainHealth(20)],
         consumable_behaviors: [ApplyEffectsOnImpact, AttractToPlayer],
         acceleration: (0.0, 2.0),
         deceleration: (0.5, 1.0),

@@ -1,0 +1,72 @@
+{
+    DamageDealt: (
+        text: "",
+        text_color: Rgba(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0),
+        font_size: 60.0,
+        translation_x: (
+            start: -45.0,
+            end: 45.0,
+        ),
+        translation_y: (
+            start: -45.0,
+            end: 45.0,
+        ),
+        scale: 0.4,
+    ),
+    ConsumableCollected(Money1): (
+        text: "Fire Rate +",
+        text_color: Rgba(red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0),
+        font_size: 60.0,
+        translation_x: (
+            start: -45.0,
+            end: 45.0,
+        ),
+        translation_y: (
+            start: -45.0,
+            end: 45.0,
+        ),
+        scale: 0.4,
+    ),
+    ConsumableCollected(Money3): (
+        text: "Fire Rate +++",
+        text_color: Rgba(red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0),
+        font_size: 60.0,
+        translation_x: (
+            start: -45.0,
+            end: 45.0,
+        ),
+        translation_y: (
+            start: -45.0,
+            end: 45.0,
+        ),
+        scale: 0.4,
+    ),
+    ConsumableCollected(HealthWrench): (
+        text: "Health +",
+        text_color: Rgba(red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0),
+        font_size: 60.0,
+        translation_x: (
+            start: -45.0,
+            end: 45.0,
+        ),
+        translation_y: (
+            start: -45.0,
+            end: 45.0,
+        ),
+        scale: 0.4,
+    ),
+    ConsumableCollected(Armor): (
+        text: "Armor +",
+        text_color: Rgba(red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0),
+        font_size: 60.0,
+        translation_x: (
+            start: -45.0,
+            end: 45.0,
+        ),
+        translation_y: (
+            start: -45.0,
+            end: 45.0,
+        ),
+        scale: 0.4,
+    ),
+}
