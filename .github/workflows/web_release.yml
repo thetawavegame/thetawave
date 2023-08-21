@@ -34,20 +34,20 @@ jobs:
       - name: Build wasm assets
         run: ./build_wasm.sh
       - name: Publish test deployment to netlify dev site
-        if: "${{ github.event.inputs.deploymentAppTier != 'prod' }}"
+        if: "${{ !((github.event_name == 'workflow_dispatch') && (inputs.deploymentAppTier == 'prod')) }}"
         uses: netlify/actions/cli@master
         with:
           # It says prod, but this just means that we publish to the 'actual dev site' and opt out of netlify's 'branch
           # deploys'
-          args: 'deploy --prod --dir=out/ -m "Main branch preview deploy via GH Actions ${{ github.sha }}. Message: ${{ github.event.head_commit.message}}"'
+          args: 'deploy --prod --dir=out/ -m "Main branch preview deploy via GH Actions. Git sha: ${{ github.sha }}. Message: ${{ github.event.head_commit.message}}"'
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEV_THETAWAVE_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
       - name: Publish deployment to netlify prod site
-        if: "${{ github.event.inputs.deploymentAppTier == 'prod' }}"
+        if: "${{ (github.event_name == 'workflow_dispatch') && (inputs.deploymentAppTier == 'prod') }}"
         uses: netlify/actions/cli@master
         with:
-          args: 'deploy --prod --dir=out/ -m "Main branch deploy via GH Actions ${{ github.sha }}. Message: ${{ github.event.head_commit.message}}"'
+          args: 'deploy --prod --dir=out/ -m "Main branch deploy via GH Actions. Git sha: ${{ github.sha }}. Message: ${{ github.event.head_commit.message}}"'
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PROD_THETAWAVE_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
