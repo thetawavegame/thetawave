@@ -2,12 +2,28 @@ use bevy::prelude::*;
 use serde::Deserialize;
 use std::collections::HashMap;
 
-use crate::spawnable::{self, SpawnConsumableEvent, SpawnMobEvent};
+use crate::{
+    spawnable::{self, SpawnConsumableEvent, SpawnMobEvent},
+    tools::weighted_rng,
+};
 
 /// Resource for storing collections of formations of spawnables
 #[derive(Resource, Deserialize)]
 pub struct FormationPoolsResource {
     pub formation_pools: HashMap<String, FormationPool>,
+}
+
+impl FormationPoolsResource {
+    pub fn get_random_formation(&self, pool_key: String) -> Formation {
+        // TODO: handle unwraps
+        let formation_pool = self.formation_pools.get(&pool_key).unwrap();
+
+        let weights = formation_pool.iter().map(|x| x.weight).collect();
+
+        let random_idx = weighted_rng(weights);
+
+        formation_pool.get(random_idx).unwrap().clone()
+    }
 }
 
 /// Collection of formations that can be chosen to be spawned

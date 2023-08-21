@@ -179,9 +179,7 @@ fn setup_physics(mut rapier_config: ResMut<RapierConfiguration>) {
 #[allow(clippy::too_many_arguments)]
 fn setup_game(
     mut commands: Commands,
-    mut run_resource: ResMut<run::RunResource>,
     mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
-    levels_resource: Res<run::LevelsResource>,
     mut run_end_event_writer: EventWriter<RunEndEvent>,
 ) {
     *end_game_trans_resource = EndGameTransitionResource::new(2.0, 3.0, 2.5, 0.5, 0.5, 30.0);

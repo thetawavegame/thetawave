@@ -8,7 +8,7 @@ pub enum AppStates {
     MainMenu,
     Instructions,
     CharacterSelection,
-    //LoadingGame, // assets can currently only be loaded once
+    InitializeRun,
     Game,
     GameOver,
     Victory,

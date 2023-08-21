@@ -1,7 +1,10 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, time::Stopwatch};
 use bevy_kira_audio::prelude::*;
 use serde::Deserialize;
-use std::{collections::HashMap, time::Duration};
+use std::{
+    collections::{HashMap, VecDeque},
+    time::Duration,
+};
 use thetawave_interface::spawnable::MobType;
 use thetawave_interface::states::AppStates;
 
@@ -14,34 +17,14 @@ use crate::{
     ui::EndGameTransitionResource,
 };
 
-use super::{formation, objective::Objective, RunDefeatType, RunEndEvent, RunOutcomeType};
+use super::{
+    formation, objective::Objective, FormationPoolsResource, RunDefeatType, RunEndEvent,
+    RunOutcomeType, RunResource, SpawnFormationEvent,
+};
 
-/// Structure stored in data file to describe level
-pub type LevelsResourceData = HashMap<String, LevelData>;
-
-/// Resource for storing defined predefined levels
-#[derive(Clone, Resource)]
-pub struct LevelsResource {
-    /// Leveltypes maped to levels
-    pub levels: HashMap<String, Level>,
-}
-
-impl From<LevelsResourceData> for LevelsResource {
-    fn from(resource_data: LevelsResourceData) -> Self {
-        LevelsResource {
-            levels: resource_data
-                .into_iter()
-                .map(|(k, v)| (k, v.into()))
-                .collect(),
-        }
-    }
-}
-
-/// Level timeline for carrying phases of the level
-#[derive(Deserialize, Clone, Debug)]
-pub struct LevelTimeline {
-    /// level phases
-    pub phases: Vec<LevelPhase>,
+#[derive(Resource, Deserialize)]
+pub struct PremadeLevelsResource {
+    pub levels_data: HashMap<String, LevelData>,
 }
 
 /// A defined section of the level
@@ -51,6 +34,8 @@ pub struct LevelPhase {
     pub phase_type: LevelPhaseType,
     /// music to play during phase
     pub bg_music_transition: Option<BGMusicTransition>,
+    #[serde(default)]
+    pub phase_time: Stopwatch,
 }
 
 /// Background music transition
@@ -64,12 +49,12 @@ pub struct BGMusicTransition {
 #[derive(Deserialize, Clone, Debug)]
 pub enum LevelPhaseType {
     FormationSpawn {
-        time: f32,
-        initial_delay: f32,
+        phase_timer: Timer,
+        spawn_timer: Timer,
         formation_pool: String,
     },
     Break {
-        time: f32,
+        phase_timer: Timer,
     },
     Boss {
         mob_type: MobType,
@@ -83,7 +68,7 @@ pub enum LevelPhaseType {
 #[derive(Deserialize)]
 pub struct LevelData {
     /// timeline of the phases of the level
-    pub timeline: LevelTimeline,
+    pub phases: Vec<LevelPhase>,
     /// objective of the level (besides surviving)
     pub objective: Objective,
 }
@@ -95,26 +80,118 @@ pub struct LevelCompletedEvent;
 /// Struct to manage a level
 #[derive(Clone, Debug)]
 pub struct Level {
-    /// Index of the current phase
-    timeline_idx: usize,
-    /// Timeline
-    pub timeline: LevelTimeline,
-    /// Tracks time of phases
-    pub phase_timer: Option<Timer>,
-    /// Tracks time between spawns
-    pub spawn_timer: Option<Timer>,
+    pub completed_phases: VecDeque<LevelPhase>,
+    pub current_phase: Option<LevelPhase>,
+    pub queued_phases: VecDeque<LevelPhase>,
     /// Level objective
     pub objective: Objective,
+
+    pub level_time: Stopwatch,
 }
 
-impl From<LevelData> for Level {
-    fn from(data: LevelData) -> Self {
+impl From<&LevelData> for Level {
+    fn from(data: &LevelData) -> Self {
         Level {
-            timeline_idx: 0,
-            timeline: data.timeline,
-            phase_timer: None,
-            spawn_timer: None,
-            objective: data.objective,
+            completed_phases: vec![].into(),
+            current_phase: None,
+            queued_phases: data.phases.clone().into(),
+            objective: data.objective.clone(),
+            level_time: Stopwatch::new(),
+        }
+    }
+}
+
+impl Level {
+    pub fn cycle_phase(&mut self) -> bool {
+        // clone the current phase (if it exists) into the back of the completed phases queue
+        if let Some(current_phase) = &self.current_phase {
+            self.completed_phases.push_back(current_phase.clone());
+            self.current_phase = None;
+        }
+
+        // pop the next level (if it exists) into the the current level
+        self.current_phase = self.queued_phases.pop_front();
+
+        info!("Phase cycled");
+
+        // return true if no phase was available to cycle to the current phase
+        self.current_phase.is_none()
+    }
+
+    pub fn init_phase(&mut self) {
+        info!("Phase initialized");
+    }
+
+    // returns true if level has been completed
+    pub fn tick(
+        &mut self,
+        time: &Time,
+        spawn_formation_event_writer: &mut EventWriter<SpawnFormationEvent>,
+        formations_res: &FormationPoolsResource,
+    ) {
+        self.level_time.tick(time.delta());
+
+        // TODO: Handle none case to remove unwrap
+        let mut modified_current_phase = self.current_phase.clone().unwrap();
+
+        let phase_completed = match &mut modified_current_phase.phase_type {
+            LevelPhaseType::FormationSpawn {
+                phase_timer,
+                spawn_timer,
+                formation_pool,
+            } => {
+                Self::tick_spawn_timer(
+                    spawn_timer,
+                    time,
+                    spawn_formation_event_writer,
+                    formations_res,
+                    formation_pool.to_string(),
+                );
+
+                Self::tick_phase_timer(phase_timer, time)
+            }
+            LevelPhaseType::Break { phase_timer } => Self::tick_phase_timer(phase_timer, time),
+            LevelPhaseType::Boss {
+                mob_type: _,
+                position: _,
+                initial_delay: _,
+                is_defeated: _,
+            } => todo!(),
+        };
+
+        self.current_phase = Some(modified_current_phase);
+
+        // this will short circuit and not call cycle_phase if !phase_completed
+        if phase_completed && !self.cycle_phase() {
+            self.init_phase();
+        }
+
+        //self.tick_phase(time);
+    }
+
+    fn tick_phase_timer(phase_timer: &mut Timer, time: &Time) -> bool {
+        phase_timer.tick(time.delta());
+
+        phase_timer.just_finished()
+    }
+
+    pub fn tick_spawn_timer(
+        spawn_timer: &mut Timer,
+        time: &Time,
+        spawn_formation_event_writer: &mut EventWriter<SpawnFormationEvent>,
+        formations_res: &FormationPoolsResource,
+        formation_key: String,
+    ) {
+        let formation = formations_res.get_random_formation(formation_key);
+        spawn_timer.tick(time.delta());
+
+        if spawn_timer.just_finished() {
+            spawn_formation_event_writer.send(SpawnFormationEvent {
+                formation: formation.clone(),
+            });
+            spawn_timer.set_duration(Duration::from_secs_f32(formation.period));
+            spawn_timer.reset();
+            info!("Spawn timer duration reset to: {}", formation.period);
         }
     }
 }

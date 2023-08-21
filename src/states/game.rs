@@ -28,7 +28,7 @@ pub fn start_game_system(
     // if input read enter the game state
     if start_input && players_resource.player_inputs[0].is_some() {
         // set the state to game
-        next_app_state.set(AppStates::Game);
+        next_app_state.set(AppStates::InitializeRun);
 
         // play sound effect
         audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
