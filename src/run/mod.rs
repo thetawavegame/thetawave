@@ -60,7 +60,7 @@ impl Plugin for RunPlugin {
 
         app.add_systems(
             Update,
-            tick_run_system
+            (tick_run_system, handle_objective_system, run_end_system)
                 .in_set(GameUpdateSet::Level)
                 .run_if(in_state(AppStates::Game))
                 .run_if(in_state(GameStates::Playing)),
@@ -207,4 +207,54 @@ fn tick_run_system(
     formations_res: Res<FormationPoolsResource>,
 ) {
     run_res.tick(&time, &mut spawn_formation_event_writer, &formations_res);
+}
+
+fn handle_objective_system(
+    mut run_res: ResMut<RunResource>,
+    mut bottom_gate_event: EventReader<MobReachedBottomGateEvent>,
+    mut run_end_event: EventWriter<RunEndEvent>,
+) {
+    if let Some(current_level) = &mut run_res.current_level {
+        let objective = &mut current_level.objective;
+
+        match objective {
+            Objective::Defense(defense_data) => {
+                for event in bottom_gate_event.iter() {
+                    match event.0 {
+                        crate::arena::DefenseAffect::Heal(value) => {
+                            defense_data.gain_defense(value)
+                        }
+                        crate::arena::DefenseAffect::Damage(value) => {
+                            defense_data.take_damage(value)
+                        }
+                    }
+                }
+
+                if defense_data.is_failed() {
+                    run_end_event.send(RunEndEvent {
+                        outcome: RunOutcomeType::Defeat(RunDefeatType::DefenseDestroyed),
+                    });
+                }
+            }
+        }
+    }
+}
+
+fn run_end_system(
+    mut run_end_event_reader: EventReader<RunEndEvent>,
+    mut end_game_trans_res: ResMut<EndGameTransitionResource>,
+) {
+    for event in run_end_event_reader.iter() {
+        match &event.outcome {
+            RunOutcomeType::Victory => todo!(),
+            RunOutcomeType::Defeat(defeat_type) => {
+                end_game_trans_res.start(AppStates::GameOver);
+
+                match defeat_type {
+                    RunDefeatType::PlayersDestroyed => info!("Players destroyed"),
+                    RunDefeatType::DefenseDestroyed => info!("Defense objective failed"),
+                };
+            }
+        }
+    }
 }

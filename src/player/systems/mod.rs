@@ -8,12 +8,12 @@ use crate::assets::GameAudioAssets;
 use crate::audio;
 use crate::game::GameParametersResource;
 use crate::misc::HealthComponent;
+use crate::run::{RunDefeatType, RunEndEvent, RunOutcomeType};
 use crate::spawnable::SpawnEffectEvent;
 use crate::ui::EndGameTransitionResource;
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use thetawave_interface::spawnable::EffectType;
-use thetawave_interface::states::AppStates;
 
 pub use self::ability::*;
 pub use self::attacks::{player_fire_weapon_system, player_scale_fire_rate_system};
@@ -26,16 +26,16 @@ pub fn player_death_system(
     mut commands: Commands,
     mut effect_event_writer: EventWriter<SpawnEffectEvent>,
     player_query: Query<(Entity, &Transform, &HealthComponent), With<PlayerComponent>>,
-    mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
     audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
     game_parameters: Res<GameParametersResource>,
+    mut run_end_event_writer: EventWriter<RunEndEvent>,
 ) {
     // end the game if no players are alive
     if player_query.iter().count() == 0 {
-        // transition to the game over state
-        // TODO: remove and send event
-        end_game_trans_resource.start(AppStates::GameOver);
+        run_end_event_writer.send(RunEndEvent {
+            outcome: RunOutcomeType::Defeat(RunDefeatType::PlayersDestroyed),
+        });
     }
 
     // handle death of player entities
