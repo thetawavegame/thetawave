@@ -9,7 +9,7 @@ use std::{
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
-    arena::DefenseAffect,
+    arena::DefenseInteraction,
     assets::{CollisionSoundType, MobAssets},
     game::GameParametersResource,
     loot::ConsumableDropListType,
@@ -53,7 +53,7 @@ pub struct MobComponent {
     pub collision_damage: usize,
     pub collision_sound: CollisionSoundType,
     /// Damage dealt to defense objective, after reaching bottom of arena
-    pub defense_affect: DefenseAffect,
+    pub defense_interaction: Option<DefenseInteraction>,
     /// List of consumable drops
     pub consumable_drops: ConsumableDropListType,
 }
@@ -102,7 +102,7 @@ impl From<&MobData> for MobComponent {
             attack_damage: mob_data.attack_damage,
             collision_damage: mob_data.collision_damage,
             collision_sound: mob_data.collision_sound.clone(),
-            defense_affect: mob_data.defense_affect.clone(),
+            defense_interaction: mob_data.defense_interaction.clone(),
             consumable_drops: mob_data.consumable_drops.clone(),
         }
     }
@@ -230,8 +230,7 @@ pub struct MobData {
     /// Damage dealt to defense objective, after reaching bottom of arena
     #[serde(default)]
     pub collision_sound: CollisionSoundType,
-    #[serde(default)]
-    pub defense_affect: DefenseAffect,
+    pub defense_interaction: Option<DefenseInteraction>,
     /// Health of the mob
     pub health: usize,
     /// List of consumable drops

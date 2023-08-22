@@ -9,9 +9,9 @@ use std::{
 use thetawave_interface::states::{AppStates, GameStates};
 
 use crate::{
-    arena::MobReachedBottomGateEvent,
-    assets::GameAudioAssets,
-    audio,
+    arena::{DefenseInteraction, MobReachedBottomGateEvent},
+    assets::{GameAudioAssets, SoundEffectType},
+    audio::{self, PlaySoundEffectEvent},
     player::PlayersResource,
     spawnable::{MobDestroyedEvent, SpawnMobEvent},
     states::{self},
@@ -212,6 +212,7 @@ fn handle_objective_system(
     mut run_res: ResMut<RunResource>,
     mut bottom_gate_event: EventReader<MobReachedBottomGateEvent>,
     mut run_end_event: EventWriter<RunEndEvent>,
+    mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
 ) {
     if let Some(current_level) = &mut run_res.current_level {
         let objective = &mut current_level.objective;
@@ -220,13 +221,25 @@ fn handle_objective_system(
             Objective::Defense(defense_data) => {
                 for event in bottom_gate_event.iter() {
                     match event.0 {
-                        crate::arena::DefenseAffect::Heal(value) => {
-                            defense_data.gain_defense(value)
+                        DefenseInteraction::Heal(value) => {
+                            // heal defense objective
+                            defense_data.gain_defense(value);
+
+                            // play heal sound effect
+                            sound_effect_event_writer.send(PlaySoundEffectEvent {
+                                sound_effect_type: SoundEffectType::DefenseHeal,
+                            });
                         }
-                        crate::arena::DefenseAffect::Damage(value) => {
-                            defense_data.take_damage(value)
+                        DefenseInteraction::Damage(value) => {
+                            // damage defense objective
+                            defense_data.take_damage(value);
+
+                            //play damage sound effect
+                            sound_effect_event_writer.send(PlaySoundEffectEvent {
+                                sound_effect_type: SoundEffectType::DefenseDamage,
+                            });
                         }
-                    }
+                    };
                 }
 
                 if defense_data.is_failed() {

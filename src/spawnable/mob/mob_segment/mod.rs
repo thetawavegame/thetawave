@@ -6,7 +6,7 @@ use thetawave_interface::spawnable::{MobSegmentType, SpawnableType};
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
-    arena::DefenseAffect,
+    arena::DefenseInteraction,
     assets::{CollisionSoundType, MobAssets},
     game::GameParametersResource,
     loot::ConsumableDropListType,
@@ -36,7 +36,7 @@ pub struct MobSegmentComponent {
     pub mob_segment_type: MobSegmentType,
     pub collision_damage: usize,
     pub collision_sound: CollisionSoundType,
-    pub defense_affect: DefenseAffect,
+    pub defense_interaction: Option<DefenseInteraction>,
     pub consumable_drops: ConsumableDropListType,
     pub behaviors: Vec<behavior::MobSegmentBehavior>,
     pub mob_spawners: HashMap<String, Vec<MobSpawner>>,
@@ -65,7 +65,7 @@ impl From<&MobSegmentData> for MobSegmentComponent {
             mob_segment_type: mob_segment_data.mob_segment_type.clone(),
             collision_damage: mob_segment_data.collision_damage,
             collision_sound: mob_segment_data.collision_sound.clone(),
-            defense_affect: mob_segment_data.defense_affect.clone(),
+            defense_interaction: mob_segment_data.defense_interaction.clone(),
             consumable_drops: mob_segment_data.consumable_drops.clone(),
             behaviors: mob_segment_data.behaviors.clone(),
             mob_spawners,
@@ -82,7 +82,7 @@ pub struct MobSegmentData {
     #[serde(default)]
     pub collision_sound: CollisionSoundType,
     #[serde(default)]
-    pub defense_affect: DefenseAffect,
+    pub defense_interaction: Option<DefenseInteraction>,
     pub health: usize,
     pub consumable_drops: ConsumableDropListType,
     pub z_level: f32,

@@ -76,9 +76,12 @@ pub fn despawn_gates_system(
                     for (mob_entity, mob_component) in mob_query.iter() {
                         if mob_entity == *other_entity {
                             // send event for mob reaching bottom of arena
-                            enemy_bottom_event.send(MobReachedBottomGateEvent(
-                                mob_component.defense_affect.clone(),
-                            ));
+                            if let Some(defense_interaction) =
+                                mob_component.defense_interaction.clone()
+                            {
+                                enemy_bottom_event
+                                    .send(MobReachedBottomGateEvent(defense_interaction));
+                            }
                         }
                     }
 
@@ -86,9 +89,12 @@ pub fn despawn_gates_system(
                     for (mob_segment_entity, mob_segment_component) in mob_segment_query.iter() {
                         if mob_segment_entity == *other_entity {
                             // send event for mob segment reaching bottom of arena
-                            enemy_bottom_event.send(MobReachedBottomGateEvent(
-                                mob_segment_component.defense_affect.clone(),
-                            ));
+                            if let Some(defense_interaction) =
+                                mob_segment_component.defense_interaction.clone()
+                            {
+                                enemy_bottom_event
+                                    .send(MobReachedBottomGateEvent(defense_interaction));
+                            }
                         }
                     }
                 }
@@ -99,16 +105,10 @@ pub fn despawn_gates_system(
 
 // Event for sending damage dealt from mob reaching bottom of arena
 #[derive(Event)]
-pub struct MobReachedBottomGateEvent(pub DefenseAffect);
+pub struct MobReachedBottomGateEvent(pub DefenseInteraction);
 
 #[derive(Deserialize, Clone)]
-pub enum DefenseAffect {
+pub enum DefenseInteraction {
     Heal(usize),
     Damage(usize),
-}
-
-impl Default for DefenseAffect {
-    fn default() -> Self {
-        DefenseAffect::Damage(0)
-    }
 }
