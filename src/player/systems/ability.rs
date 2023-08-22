@@ -1,12 +1,11 @@
 use std::collections::HashMap;
 
 use bevy::prelude::*;
-use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::{ExternalImpulse, Velocity};
 
 use crate::{
-    assets::GameAudioAssets,
-    audio,
+    assets::SoundEffectType,
+    audio::{self, PlaySoundEffectEvent},
     player::{components::AbilityType, PlayerComponent, PlayerInput, PlayersResource},
     spawnable::{InitialMotion, SpawnProjectileEvent},
 };
@@ -27,8 +26,7 @@ pub fn player_ability_system(
     gamepad_input: Res<Input<GamepadButton>>,
     mouse_input: Res<Input<MouseButton>>,
     players_resource: Res<PlayersResource>,
-    audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
-    audio_assets: Res<GameAudioAssets>,
+    mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
 ) {
     // get keyboard directional inputs
     let up_keyboard_input =
@@ -175,7 +173,9 @@ pub fn player_ability_system(
                 }
                 // shoot a giant projectile
                 AbilityType::MegaBlast(multiplier) => {
-                    audio_channel.play(audio_assets.megablast_ability.clone());
+                    sound_effect_event_writer.send(PlaySoundEffectEvent {
+                        sound_effect_type: SoundEffectType::MegablastAbility,
+                    });
                     let projectile_transform = Transform {
                         translation: Vec3::new(
                             player_trans.translation.x

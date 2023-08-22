@@ -12,6 +12,25 @@ pub enum BGMusicType {
     Main,
 }
 
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+pub enum SoundEffectType {
+    Collision(CollisionSoundType),
+    BarrierBounce,
+    ConsumablePickup,
+    DefenseDamage,
+    DefenseHeal,
+    EnemyFireBlast,
+    MenuInputSuccess,
+    MobExplosion,
+    MobHit,
+    PlayerExplosion,
+    PlayerFireBlast,
+    PlayerHit,
+    BulletDing,
+    BulletBounce,
+    MegablastAbility,
+}
+
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display, Default)]
 pub enum CollisionSoundType {
     Squishy,
@@ -73,13 +92,26 @@ impl GameAudioAssets {
         }
     }
 
-    pub fn get_collision_sound_asset(
-        &self,
-        collision_sound_type: &CollisionSoundType,
-    ) -> Handle<AudioSource> {
-        match collision_sound_type {
-            CollisionSoundType::Squishy => self.squishy_collision.clone(),
-            CollisionSoundType::Normal => self.collision.clone(),
+    pub fn get_sound_effect(&self, sound_type: &SoundEffectType) -> Handle<AudioSource> {
+        match sound_type {
+            SoundEffectType::Collision(collsion_type) => match collsion_type {
+                CollisionSoundType::Squishy => self.squishy_collision.clone(),
+                CollisionSoundType::Normal => self.collision.clone(),
+            },
+            SoundEffectType::BarrierBounce => self.barrier_bounce.clone(),
+            SoundEffectType::ConsumablePickup => self.consumable_pickup.clone(),
+            SoundEffectType::DefenseDamage => self.defense_damage.clone(),
+            SoundEffectType::DefenseHeal => self.defense_heal.clone(),
+            SoundEffectType::EnemyFireBlast => self.enemy_fire_blast.clone(),
+            SoundEffectType::MenuInputSuccess => self.menu_input_success.clone(),
+            SoundEffectType::MobExplosion => self.mob_explosion.clone(),
+            SoundEffectType::MobHit => self.mob_hit.clone(),
+            SoundEffectType::PlayerExplosion => self.player_explosion.clone(),
+            SoundEffectType::PlayerFireBlast => self.player_fire_blast.clone(),
+            SoundEffectType::PlayerHit => self.player_hit.clone(),
+            SoundEffectType::BulletDing => self.bullet_ding.clone(),
+            SoundEffectType::BulletBounce => self.bullet_bounce.clone(),
+            SoundEffectType::MegablastAbility => self.megablast_ability.clone(),
         }
     }
 }

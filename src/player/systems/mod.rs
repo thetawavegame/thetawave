@@ -4,15 +4,13 @@ mod ability;
 mod attacks;
 mod movement;
 
-use crate::assets::GameAudioAssets;
-use crate::audio;
+use crate::assets::SoundEffectType;
+use crate::audio::PlaySoundEffectEvent;
 use crate::game::GameParametersResource;
 use crate::misc::HealthComponent;
 use crate::run::{RunDefeatType, RunEndEvent, RunOutcomeType};
 use crate::spawnable::SpawnEffectEvent;
-use crate::ui::EndGameTransitionResource;
 use bevy::prelude::*;
-use bevy_kira_audio::prelude::*;
 use thetawave_interface::spawnable::EffectType;
 
 pub use self::ability::*;
@@ -26,8 +24,7 @@ pub fn player_death_system(
     mut commands: Commands,
     mut effect_event_writer: EventWriter<SpawnEffectEvent>,
     player_query: Query<(Entity, &Transform, &HealthComponent), With<PlayerComponent>>,
-    audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
-    audio_assets: Res<GameAudioAssets>,
+    mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
     game_parameters: Res<GameParametersResource>,
     mut run_end_event_writer: EventWriter<RunEndEvent>,
 ) {
@@ -60,7 +57,9 @@ pub fn player_death_system(
             });
 
             // play explosion sound effect
-            audio_channel.play(audio_assets.player_explosion.clone());
+            sound_effect_event_writer.send(PlaySoundEffectEvent {
+                sound_effect_type: SoundEffectType::PlayerExplosion,
+            });
         }
     }
 }

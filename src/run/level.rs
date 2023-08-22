@@ -14,7 +14,6 @@ use crate::{
     audio,
     spawnable::{MobDestroyedEvent, SpawnMobEvent},
     tools::weighted_rng,
-    ui::EndGameTransitionResource,
 };
 
 use super::{

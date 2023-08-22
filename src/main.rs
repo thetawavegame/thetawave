@@ -3,10 +3,7 @@ use bevy_kira_audio::prelude::*;
 
 use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
-use run::RunEndEvent;
-use states::GameCleanup;
 use thetawave_interface::states::{AppStates, GameStates};
-use ui::EndGameTransitionResource;
 
 pub const PHYSICS_SCALE: f32 = 10.0;
 pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_1;
@@ -151,7 +148,7 @@ fn main() {
 
     app.add_systems(
         OnEnter(AppStates::Game),
-        (setup_game, setup_physics).in_set(GameEnterSet::Initialize),
+        setup_physics.in_set(GameEnterSet::Initialize),
     );
     #[cfg(feature = "arcade")]
     app.add_plugins(thetawave_arcade::plugin::ArcadePlugin);
@@ -173,32 +170,4 @@ fn setup_physics(mut rapier_config: ResMut<RapierConfiguration>) {
     rapier_config.physics_pipeline_active = true;
     rapier_config.query_pipeline_active = true;
     rapier_config.gravity = Vec2::ZERO;
-}
-
-/// Initialize values for the game
-#[allow(clippy::too_many_arguments)]
-fn setup_game(
-    mut commands: Commands,
-    mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
-    mut run_end_event_writer: EventWriter<RunEndEvent>,
-) {
-    *end_game_trans_resource = EndGameTransitionResource::new(2.0, 3.0, 2.5, 0.5, 0.5, 30.0);
-
-    // spawn game fade entity
-    commands
-        .spawn(SpriteBundle {
-            sprite: Sprite {
-                color: Color::rgba(0.0, 0.0, 0.0, 0.0),
-                custom_size: Some(Vec2::new(16000.0, 9000.0)),
-                ..default()
-            },
-            transform: Transform::from_xyz(0.0, 0.0, 100.0),
-            ..default()
-        })
-        .insert(ui::GameFadeComponent)
-        .insert(GameCleanup)
-        .insert(Name::new("Game Fade"));
-
-    // create run resource
-    //run_resource.create_level(&levels_resource, &mut run_end_event_writer);
 }

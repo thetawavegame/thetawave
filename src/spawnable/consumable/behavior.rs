@@ -1,6 +1,6 @@
 use crate::{
-    assets::GameAudioAssets,
-    audio,
+    assets::SoundEffectType,
+    audio::PlaySoundEffectEvent,
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     misc::HealthComponent,
@@ -8,7 +8,6 @@ use crate::{
 };
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
-use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 use thetawave_interface::spawnable::{ConsumableType, EffectType, TextEffectType};
@@ -40,8 +39,7 @@ pub fn consumable_execute_behavior_system(
     )>,
     mut collision_events: EventReader<SortedCollisionEvent>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
-    audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
-    audio_assets: Res<GameAudioAssets>,
+    mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
     game_parameters_res: Res<GameParametersResource>,
 ) {
     // put all collision events in a vector first (so that they can be looked at multiple times)
@@ -66,10 +64,9 @@ pub fn consumable_execute_behavior_system(
                         &mut player_query,
                         &consumable_component.consumable_effects,
                         &mut spawn_effect_event_writer,
-                        &audio_channel,
-                        &audio_assets,
                         &game_parameters_res,
                         consumable_component.consumable_type.clone(),
+                        &mut sound_effect_event_writer,
                     );
                 }
                 ConsumableBehavior::AttractToPlayer => {
@@ -147,10 +144,9 @@ fn apply_effects_on_impact(
     )>,
     consumable_effects: &Vec<ConsumableEffect>,
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
-    audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
-    audio_assets: &GameAudioAssets,
     game_parameters_res: &GameParametersResource,
     consumable_type: ConsumableType,
+    sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
 ) {
     for collision_event in collision_events.iter() {
         if let SortedCollisionEvent::PlayerToConsumableIntersection {
@@ -196,7 +192,9 @@ fn apply_effects_on_impact(
                 {
                     if *player_entity == player_entity_q {
                         // play consumable pickup sound
-                        audio_channel.play(audio_assets.consumable_pickup.clone());
+                        sound_effect_event_writer.send(PlaySoundEffectEvent {
+                            sound_effect_type: SoundEffectType::ConsumablePickup,
+                        });
 
                         // apply the effects to the player
                         for consumable_effect in consumable_effects {

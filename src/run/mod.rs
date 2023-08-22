@@ -15,7 +15,6 @@ use crate::{
     player::PlayersResource,
     spawnable::{MobDestroyedEvent, SpawnMobEvent},
     states::{self},
-    ui::EndGameTransitionResource,
     GameEnterSet, GameUpdateSet,
 };
 
@@ -242,13 +241,13 @@ fn handle_objective_system(
 
 fn run_end_system(
     mut run_end_event_reader: EventReader<RunEndEvent>,
-    mut end_game_trans_res: ResMut<EndGameTransitionResource>,
+    mut next_app_state: ResMut<NextState<AppStates>>,
 ) {
     for event in run_end_event_reader.iter() {
         match &event.outcome {
             RunOutcomeType::Victory => todo!(),
             RunOutcomeType::Defeat(defeat_type) => {
-                end_game_trans_res.start(AppStates::GameOver);
+                next_app_state.set(AppStates::GameOver);
 
                 match defeat_type {
                     RunDefeatType::PlayersDestroyed => info!("Players destroyed"),
@@ -257,4 +256,8 @@ fn run_end_system(
             }
         }
     }
+}
+
+fn run_reset_system(mut run_resource: ResMut<RunResource>) {
+    *run_resource = RunResource::default();
 }
