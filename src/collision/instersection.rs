@@ -30,7 +30,7 @@ pub fn intersection_collision_system(
             // 'Canonicalized' pair to deal with/normalize out E.x. (mob, player) vs (player, mob)
             // intersection symmetry of pattern match arms.
             let colliding_entities = {
-                let mut entities = [collider1_entity.clone(), collider2_entity.clone()];
+                let mut entities = [*collider1_entity, *collider2_entity];
                 entities.sort_by_key(|e| {
                     (
                         // (0,...,1) ascending ordering.
@@ -41,8 +41,8 @@ pub fn intersection_collision_system(
                     )
                 });
                 CollidingEntityPair {
-                    primary: entities[1].clone(),
-                    secondary: entities[0].clone(),
+                    primary: entities[1],
+                    secondary: entities[0],
                 }
             };
             //check if player was collided with

@@ -1,11 +1,8 @@
 use crate::{
-    assets::GameAudioAssets,
-    audio,
     spawnable::{MobComponent, MobSegmentComponent, SpawnableComponent},
     states::GameCleanup,
 };
 use bevy::prelude::*;
-use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::{prelude::*, rapier::prelude::CollisionEventFlags};
 use serde::Deserialize;
 
@@ -42,8 +39,6 @@ pub fn despawn_gates_system(
     mob_query: Query<(Entity, &MobComponent)>,
     mob_segment_query: Query<(Entity, &MobSegmentComponent)>,
     mut enemy_bottom_event: EventWriter<MobReachedBottomGateEvent>,
-    audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
-    audio_assets: Res<GameAudioAssets>,
 ) {
     // loop through all collision events
     'event_loop: for collision_event in collision_events.iter() {

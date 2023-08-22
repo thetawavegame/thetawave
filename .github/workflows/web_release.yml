@@ -1,6 +1,16 @@
-name: Web dev release -- Netlify
+name: Web release -- Netlify
 on:
-  push:
+  workflow_dispatch:
+    inputs:
+      deploymentAppTier:
+        description: 'Application tier of the deployed site. Dev or prod.'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+        - dev
+        - prod
+  push:  # We will publish to the dev website on pushes to main
     branches:
       - main
 env:
@@ -12,7 +22,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
       - name: Install rust nightly toolchain
         uses: dtolnay/rust-toolchain@nightly
         with:
@@ -22,17 +31,26 @@ jobs:
           set -euxo pipefail
           sudo apt install -y lld g++ pkg-config libx11-dev libasound2-dev libudev-dev binaryen
         shell: bash
-          
       - name: Build wasm assets
         run: ./build_wasm.sh
-      - name: Publish test deployment to netlify
+      - name: Publish test deployment to netlify dev site
+        if: "${{ !((github.event_name == 'workflow_dispatch') && (inputs.deploymentAppTier == 'prod')) }}"
         uses: netlify/actions/cli@master
         with:
-          args: deploy --dir=out/ -m "$NETLIFY_DEPLOY_MESSAGE" --alias=dev
+          # It says prod, but this just means that we publish to the 'actual dev site' and opt out of netlify's 'branch
+          # deploys'
+          args: 'deploy --prod --dir=out/ -m "Main branch preview deploy via GH Actions. Git sha: ${{ github.sha }}. Message: ${{ github.event.head_commit.message}}"'
         env:
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEV_THETAWAVE_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_DEPLOY_MESSAGE: "Main branch preview deploy via GH Actions ${{ github.ref }}. Summary: ${{ github.event.head_commit.message}}"
+      - name: Publish deployment to netlify prod site
+        if: "${{ (github.event_name == 'workflow_dispatch') && (inputs.deploymentAppTier == 'prod') }}"
+        uses: netlify/actions/cli@master
+        with:
+          args: 'deploy --prod --dir=out/ -m "Main branch deploy via GH Actions. Git sha: ${{ github.sha }}. Message: ${{ github.event.head_commit.message}}"'
+        env:
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PROD_THETAWAVE_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
   ci-pass:
     name: CI is green
     runs-on: ubuntu-latest

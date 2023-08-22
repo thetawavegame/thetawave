@@ -81,11 +81,13 @@ pub struct PremadeRunsResource {
 }
 
 pub enum RunOutcomeType {
+    #[allow(dead_code)] // TODO: Why is this never constructed????
     Victory,
     Defeat(RunDefeatType),
 }
 
 pub enum RunDefeatType {
+    #[allow(dead_code)] // TODO: Why is this never constructed????
     PlayersDestroyed,
     DefenseDestroyed,
 }
