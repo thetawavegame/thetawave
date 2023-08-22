@@ -6,7 +6,6 @@ use thetawave_interface::game::historical_metrics::{
     MobKillsByPlayerForCompletedGames, UserStatsByPlayerForCompletedGamesCache, DEFAULT_USER_ID,
 };
 
-use crate::audio::PlaySoundEffectEvent;
 use crate::states::MainMenuCleanup;
 use crate::{assets::GameAudioAssets, audio};
 

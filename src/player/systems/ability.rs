@@ -5,7 +5,7 @@ use bevy_rapier2d::prelude::{ExternalImpulse, Velocity};
 
 use crate::{
     assets::SoundEffectType,
-    audio::{self, PlaySoundEffectEvent},
+    audio::PlaySoundEffectEvent,
     player::{components::AbilityType, PlayerComponent, PlayerInput, PlayersResource},
     spawnable::{InitialMotion, SpawnProjectileEvent},
 };

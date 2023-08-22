@@ -1,7 +1,7 @@
 use crate::{
     arena::ArenaBarrierComponent,
     assets::{CollisionSoundType, SoundEffectType},
-    audio::{self, PlaySoundEffectEvent},
+    audio::PlaySoundEffectEvent,
     player::PlayerComponent,
     spawnable::{MobComponent, MobSegmentComponent, ProjectileComponent},
 };
