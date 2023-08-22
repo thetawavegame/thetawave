@@ -68,10 +68,10 @@ fn inc_in_memory_mob_destroyed_for_current_game_cache(
 ) {
     let player_1_mob_counters = (**mobs_destroyed_counters_by_player)
         .entry(DEFAULT_USER_ID)
-        .or_insert_with(|| Default::default());
+        .or_insert_with(Default::default);
     for event in mob_destroyed_event_reader.iter() {
         if let MobType::Enemy(enemy_type) = &event.mob_type {
-            inc_usize_map(player_1_mob_counters, enemy_type.clone());
+            inc_usize_map(player_1_mob_counters, *enemy_type);
         }
     }
 }
@@ -100,10 +100,10 @@ fn mob_projectile_collision_originates_from_entity(
     }
     false
 }
-fn inc_in_memory_projectile_hits_counter_system<'b>(
+fn inc_in_memory_projectile_hits_counter_system(
     mut current_game_user_stats: ResMut<UserStatsByPlayerForCurrentGameCache>,
     mut collision_event_reader: EventReader<SortedCollisionEvent>,
-    player_query: Query<(Entity, &'b PlayerComponent)>,
+    player_query: Query<(Entity, &PlayerComponent)>,
 ) {
     if let Some(player_1_entity_id) = find_player_1(&player_query) {
         let n_player_1_hit_shots = collision_event_reader
@@ -144,10 +144,9 @@ fn count_shots_fired_by_player_1_system(
             .and_modify(|x| {
                 x.total_shots_fired += n_p1_shots_fired;
             })
-            .or_insert_with(|| {
-                let mut stat = UserStat::default();
-                stat.total_shots_fired = n_p1_shots_fired;
-                stat
+            .or_insert_with(|| UserStat {
+                total_shots_fired: n_p1_shots_fired,
+                ..Default::default()
             });
     }
 }
@@ -165,9 +164,9 @@ fn roll_current_game_counters_into_completed_game_metrics(
     for (user_id, current_game_mob_kills) in (**mobs_destroyed_counters_by_player).iter() {
         for (mob_type, n_mobs) in current_game_mob_kills.iter() {
             (*historical_games_enemy_mob_kill_counts)
-                .entry(user_id.clone())
+                .entry(*user_id)
                 .or_default()
-                .entry(mob_type.clone())
+                .entry(*mob_type)
                 .and_modify(|x| {
                     *x += n_mobs;
                 })
@@ -177,7 +176,7 @@ fn roll_current_game_counters_into_completed_game_metrics(
     mobs_destroyed_counters_by_player.clear();
     for (user_id, current_game_stats) in (**current_game_user_stats).iter() {
         (*historical_games_shot_counts)
-            .entry(user_id.clone())
+            .entry(*user_id)
             .and_modify(|x| {
                 *x += current_game_stats.clone();
             })

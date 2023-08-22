@@ -2,11 +2,10 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
-use bevy_rapier2d::plugin::RapierConfiguration;
+
 use thetawave_interface::game::historical_metrics::{
     MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
 };
-use thetawave_interface::states::AppStates;
 
 use crate::{
     audio::BackgroundMusicAudioChannel, states::GameOverCleanup, ui::BouncingPromptComponent,
@@ -98,7 +97,7 @@ pub fn setup_game_over_system(
                                         total_shots_fired,
                                         accuracy_rate,
                                         super::pprint_mob_kills_from_data(
-                                            &(**current_game_enemy_mob_kill_counts)
+                                            &current_game_enemy_mob_kill_counts
                                         ),
                                     ),
                                     TextStyle {
