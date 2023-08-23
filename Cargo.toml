@@ -8,10 +8,13 @@ members = [
     "crates/thetawave_interface",
     "crates/thetawave_storage",
     "crates/thetawave_arcade",
+    "crates/thetawave_web",
 ]
 
 [workspace.dependencies]
 serde = "1.0.159"
+serde_derive = "1.0.159"
+serde-xml-rs = "0.6"
 strum = "0.25.0"
 strum_macros = "0.25.1"
 bevy = { version = "0.11.2", features = ["serialize"] }
@@ -19,6 +22,11 @@ thiserror = "1.0"
 derive_more  = "0.99.17"
 bevy_ecs_macros = "0.11.2"
 bevy_ecs = "0.11.2"
+bevy_app = "0.11.2"
+bevy_log = "0.11.2"
+bevy_tasks = "0.11.2"
+futures-lite = "1.13.0"
+async-channel = "1.9.0"
 
 [dependencies]
 bevy = {workspace = true}
@@ -51,6 +59,8 @@ thetawave_interface = { path = "crates/thetawave_interface" }
 thetawave_storage = { path = "crates/thetawave_storage", optional = true }
 thetawave_arcade = { path = "crates/thetawave_arcade", optional = true }
 
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+thetawave_web = { path = "crates/thetawave_web", optional = true }
 
 # optimize dev packages as we don't need them in debug version
 [profile.dev.package."*"]
@@ -66,3 +76,4 @@ codegen-units = 1
 [features]
 arcade = ["thetawave_arcade"]
 storage = ["thetawave_storage"]
+web = ["thetawave_web"]
