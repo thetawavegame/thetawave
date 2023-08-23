@@ -1,6 +1,7 @@
 //! `thetawave` player module
 use bevy::prelude::*;
 use ron::de::from_bytes;
+use thetawave_interface::states::{AppStates, GameStates};
 
 mod components;
 mod resources;
@@ -15,7 +16,7 @@ pub use self::{
     spawn::spawn_players_system,
     systems::{
         player_ability_system, player_death_system, player_fire_weapon_system,
-        player_movement_system, player_scale_fire_rate_system,
+        player_movement_system, player_scale_fire_rate_system, players_reset_system,
     },
 };
 
@@ -31,7 +32,7 @@ impl Plugin for PlayerPlugin {
         app.insert_resource(PlayersResource::default());
 
         app.add_systems(
-            OnEnter(states::AppStates::Game),
+            OnEnter(AppStates::Game),
             spawn_players_system.in_set(GameEnterSet::SpawnPlayer),
         );
 
@@ -44,8 +45,13 @@ impl Plugin for PlayerPlugin {
                 player_movement_system.in_set(GameUpdateSet::Movement),
                 player_ability_system.in_set(GameUpdateSet::Abilities),
             )
-                .run_if(in_state(states::AppStates::Game))
-                .run_if(in_state(states::GameStates::Playing)),
+                .run_if(in_state(AppStates::Game))
+                .run_if(in_state(GameStates::Playing)),
         );
+
+        // reset the run after exiting the end game screens and when entering the main menu
+        app.add_systems(OnExit(AppStates::GameOver), players_reset_system);
+        app.add_systems(OnExit(AppStates::Victory), players_reset_system);
+        app.add_systems(OnEnter(AppStates::MainMenu), players_reset_system);
     }
 }

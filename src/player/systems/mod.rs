@@ -17,7 +17,7 @@ pub use self::ability::*;
 pub use self::attacks::{player_fire_weapon_system, player_scale_fire_rate_system};
 pub use self::movement::player_movement_system;
 
-use super::PlayerComponent;
+use super::{PlayerComponent, PlayersResource};
 
 /// Handle player reaching zero health
 pub fn player_death_system(
@@ -62,4 +62,8 @@ pub fn player_death_system(
             });
         }
     }
+}
+
+pub fn players_reset_system(mut players_resource: ResMut<PlayersResource>) {
+    *players_resource = PlayersResource::default();
 }
