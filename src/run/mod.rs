@@ -69,6 +69,11 @@ impl Plugin for RunPlugin {
                 .run_if(in_state(AppStates::Game))
                 .run_if(in_state(GameStates::Playing)),
         );
+
+        // reset the run after exiting the end game screens and when entering the main menu
+        app.add_systems(OnExit(AppStates::GameOver), run_reset_system);
+        app.add_systems(OnExit(AppStates::Victory), run_reset_system);
+        app.add_systems(OnEnter(AppStates::MainMenu), run_reset_system);
     }
 }
 
