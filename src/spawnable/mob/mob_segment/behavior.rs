@@ -195,6 +195,7 @@ pub fn mob_segment_execute_behavior_system(
                                 mob_type: mob_spawner.mob_type.clone(),
                                 position,
                                 rotation: mob_segment_transform.rotation, // passed rotation of the parent mob
+                                boss: false,
                             })
                         }
                     }

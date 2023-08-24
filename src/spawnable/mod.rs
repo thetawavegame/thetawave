@@ -97,7 +97,8 @@ impl Plugin for SpawnablePlugin {
             .add_event::<SpawnMobEvent>()
             .add_event::<MobBehaviorUpdateEvent>()
             .add_event::<MobDestroyedEvent>()
-            .add_event::<MobSegmentDestroyedEvent>();
+            .add_event::<MobSegmentDestroyedEvent>()
+            .add_event::<BossesDestroyedEvent>();
 
         app.add_systems(
             Update,
@@ -118,6 +119,7 @@ impl Plugin for SpawnablePlugin {
                 spawn_projectile_system,
                 spawn_consumable_system, // event generated in mob execute behavior
                 spawn_mob_system,        // event generated in mob execute behavior
+                check_boss_mobs_system,
             )
                 .run_if(in_state(states::AppStates::Game))
                 .run_if(in_state(states::GameStates::Playing)),

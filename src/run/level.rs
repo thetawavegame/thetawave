@@ -6,7 +6,10 @@ use std::{
 };
 use thetawave_interface::spawnable::MobType;
 
-use crate::assets::BGMusicType;
+use crate::{
+    assets::BGMusicType,
+    spawnable::{BossesDestroyedEvent, SpawnMobEvent},
+};
 
 use super::{objective::Objective, FormationPoolsResource, SpawnFormationEvent};
 
@@ -47,8 +50,7 @@ pub enum LevelPhaseType {
     Boss {
         mob_type: MobType,
         position: Vec2,
-        initial_delay: f32,
-        is_defeated: bool,
+        spawn_timer: Timer,
     },
 }
 
@@ -116,45 +118,61 @@ impl Level {
         time: &Time,
         spawn_formation_event_writer: &mut EventWriter<SpawnFormationEvent>,
         formations_res: &FormationPoolsResource,
+        spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
+        bosses_destroyed_event_reader: &mut EventReader<BossesDestroyedEvent>,
     ) {
         self.level_time.tick(time.delta());
 
-        // TODO: Handle none case to remove unwrap
-        let mut modified_current_phase = self.current_phase.clone().unwrap();
-
-        let phase_completed = match &mut modified_current_phase.phase_type {
-            LevelPhaseType::FormationSpawn {
-                phase_timer,
-                spawn_timer,
-                formation_pool,
-            } => {
-                Self::tick_spawn_timer(
+        if let Some(mut modified_current_phase) = self.current_phase.clone() {
+            let phase_completed = match &mut modified_current_phase.phase_type {
+                LevelPhaseType::FormationSpawn {
+                    phase_timer,
                     spawn_timer,
-                    time,
-                    spawn_formation_event_writer,
-                    formations_res,
-                    formation_pool.to_string(),
-                );
+                    formation_pool,
+                } => {
+                    Self::tick_spawn_timer(
+                        spawn_timer,
+                        time,
+                        spawn_formation_event_writer,
+                        formations_res,
+                        formation_pool.to_string(),
+                    );
 
-                Self::tick_phase_timer(phase_timer, time)
+                    Self::tick_phase_timer(phase_timer, time)
+                }
+                LevelPhaseType::Break { phase_timer } => Self::tick_phase_timer(phase_timer, time),
+                LevelPhaseType::Boss {
+                    mob_type,
+                    position,
+                    spawn_timer,
+                } => {
+                    if spawn_timer.finished() {
+                        // check if no entities with a BossComponent tag exist
+                        !bosses_destroyed_event_reader.is_empty()
+                    } else {
+                        spawn_timer.tick(time.delta());
+                        if spawn_timer.just_finished() {
+                            spawn_mob_event_writer.send(SpawnMobEvent {
+                                mob_type: mob_type.clone(),
+                                position: *position,
+                                rotation: Quat::default(),
+                                boss: true,
+                            });
+                        }
+                        false
+                    }
+                }
+            };
+
+            self.current_phase = Some(modified_current_phase);
+
+            // this will short circuit and not call cycle_phase if !phase_completed
+            if phase_completed && !self.cycle_phase() {
+                self.init_phase();
             }
-            LevelPhaseType::Break { phase_timer } => Self::tick_phase_timer(phase_timer, time),
-            LevelPhaseType::Boss {
-                mob_type: _,
-                position: _,
-                initial_delay: _,
-                is_defeated: _,
-            } => todo!(),
-        };
-
-        self.current_phase = Some(modified_current_phase);
-
-        // this will short circuit and not call cycle_phase if !phase_completed
-        if phase_completed && !self.cycle_phase() {
-            self.init_phase();
+        } else {
+            todo!("cycle level");
         }
-
-        //self.tick_phase(time);
     }
 
     fn tick_phase_timer(phase_timer: &mut Timer, time: &Time) -> bool {

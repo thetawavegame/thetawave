@@ -187,8 +187,22 @@
 					phase_type: Boss(
 						mob_type: Enemy(Repeater),
 						position: (0.0, 600.0),
-						initial_delay: 5.0,
-						is_defeated: false,			
+						spawn_timer: (
+							mode: Once,
+							duration: (
+								secs: 5,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
 					),
 					bg_music_transition: Some((
 						loop_from: 9.615,
@@ -383,8 +397,22 @@
 					phase_type: Boss(
 						mob_type: Enemy(Repeater),
 						position: (0.0, 600.0),
-						initial_delay: 5.0,
-						is_defeated: false,			
+						spawn_timer: (
+							mode: Once,
+							duration: (
+								secs: 5,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),		
 					),
 					bg_music_transition: Some((
 						loop_from: 9.615,
@@ -579,8 +607,22 @@
 					phase_type: Boss(
 						mob_type: Enemy(Repeater),
 						position: (0.0, 600.0),
-						initial_delay: 5.0,
-						is_defeated: false,			
+						spawn_timer: (
+							mode: Once,
+							duration: (
+								secs: 5,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),		
 					),
 					bg_music_transition: Some((
 						loop_from: 9.615,

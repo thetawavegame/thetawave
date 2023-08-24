@@ -108,6 +108,9 @@ impl From<&MobData> for MobComponent {
     }
 }
 
+#[derive(Component)]
+pub struct BossComponent;
+
 #[derive(Deserialize, Clone, Debug)]
 pub struct MobSpawner {
     pub mob_type: MobType,
@@ -296,6 +299,8 @@ pub struct SpawnMobEvent {
     pub position: Vec2,
 
     pub rotation: Quat,
+
+    pub boss: bool,
 }
 
 /// Spawns mobs from events
@@ -315,6 +320,7 @@ pub fn spawn_mob_system(
             &mob_assets,
             event.position,
             event.rotation,
+            event.boss,
             &mut commands,
             &game_parameters,
         );
@@ -349,6 +355,7 @@ pub fn spawn_mob(
     mob_assets: &MobAssets,
     position: Vec2,
     rotation: Quat,
+    boss: bool,
     commands: &mut Commands,
     game_parameters: &GameParametersResource,
 ) {
@@ -401,6 +408,10 @@ pub fn spawn_mob(
     .insert(GameCleanup)
     .insert(Name::new(mob_data.mob_type.to_string()));
 
+    if boss {
+        mob.insert(BossComponent);
+    }
+
     // spawn thruster as child if mob has thruster
     if let Some(thruster) = &mob_data.thruster {
         mob.with_children(|parent| {
@@ -452,5 +463,19 @@ pub fn spawn_mob(
             commands,
             game_parameters,
         )
+    }
+}
+
+#[derive(Event)]
+pub struct BossesDestroyedEvent;
+
+pub fn check_boss_mobs_system(
+    boss_mobs_query: Query<&BossComponent>,
+    mob_destroyed_event_reader: EventReader<MobDestroyedEvent>,
+    mut bosses_destroyed_event_writer: EventWriter<BossesDestroyedEvent>,
+) {
+    // if a mob was just destroyed, check if there are any boss mobs left
+    if !mob_destroyed_event_reader.is_empty() && boss_mobs_query.get_single().is_err() {
+        bosses_destroyed_event_writer.send(BossesDestroyedEvent);
     }
 }

@@ -10,7 +10,7 @@ use crate::{
     assets::{GameAudioAssets, SoundEffectType},
     audio::{self, PlaySoundEffectEvent},
     player::PlayersResource,
-    spawnable::{MobDestroyedEvent, SpawnMobEvent},
+    spawnable::{BossesDestroyedEvent, MobDestroyedEvent, SpawnMobEvent},
     states::{self},
     GameEnterSet, GameUpdateSet,
 };
@@ -170,11 +170,19 @@ impl RunResource {
         time: &Time,
         spawn_formation_event_writer: &mut EventWriter<SpawnFormationEvent>,
         formations_res: &FormationPoolsResource,
+        spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
+        bosses_destroyed_event_reader: &mut EventReader<BossesDestroyedEvent>,
     ) {
         // TODO: handle none case to remove unwrap
         let current_level = self.current_level.as_mut().unwrap();
 
-        current_level.tick(time, spawn_formation_event_writer, formations_res);
+        current_level.tick(
+            time,
+            spawn_formation_event_writer,
+            formations_res,
+            spawn_mob_event_writer,
+            bosses_destroyed_event_reader,
+        );
     }
 }
 
@@ -208,8 +216,16 @@ fn tick_run_system(
     time: Res<Time>,
     mut spawn_formation_event_writer: EventWriter<SpawnFormationEvent>,
     formations_res: Res<FormationPoolsResource>,
+    mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
+    mut bosses_destroyed_event_reader: EventReader<BossesDestroyedEvent>,
 ) {
-    run_res.tick(&time, &mut spawn_formation_event_writer, &formations_res);
+    run_res.tick(
+        &time,
+        &mut spawn_formation_event_writer,
+        &formations_res,
+        &mut spawn_mob_event_writer,
+        &mut bosses_destroyed_event_reader,
+    );
 }
 
 fn handle_objective_system(
