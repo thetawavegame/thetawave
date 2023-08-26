@@ -172,17 +172,22 @@ impl RunResource {
         formations_res: &FormationPoolsResource,
         spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
         bosses_destroyed_event_reader: &mut EventReader<BossesDestroyedEvent>,
+        run_end_event_writer: &mut EventWriter<RunEndEvent>,
     ) {
         // TODO: handle none case to remove unwrap
         let current_level = self.current_level.as_mut().unwrap();
 
-        current_level.tick(
+        // cycle level when done with all phases
+        if current_level.tick(
             time,
             spawn_formation_event_writer,
             formations_res,
             spawn_mob_event_writer,
             bosses_destroyed_event_reader,
-        );
+        ) {
+            self.cycle_level(run_end_event_writer);
+            self.init_current_level(run_end_event_writer);
+        }
     }
 }
 
@@ -218,6 +223,7 @@ fn tick_run_system(
     formations_res: Res<FormationPoolsResource>,
     mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
     mut bosses_destroyed_event_reader: EventReader<BossesDestroyedEvent>,
+    mut run_end_event_writer: EventWriter<RunEndEvent>,
 ) {
     run_res.tick(
         &time,
@@ -225,6 +231,7 @@ fn tick_run_system(
         &formations_res,
         &mut spawn_mob_event_writer,
         &mut bosses_destroyed_event_reader,
+        &mut run_end_event_writer,
     );
 }
 
@@ -278,7 +285,7 @@ fn run_end_system(
 ) {
     for event in run_end_event_reader.iter() {
         match &event.outcome {
-            RunOutcomeType::Victory => todo!(),
+            RunOutcomeType::Victory => next_app_state.set(AppStates::Victory),
             RunOutcomeType::Defeat(defeat_type) => {
                 next_app_state.set(AppStates::GameOver);
 

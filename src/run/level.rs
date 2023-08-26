@@ -120,7 +120,7 @@ impl Level {
         formations_res: &FormationPoolsResource,
         spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
         bosses_destroyed_event_reader: &mut EventReader<BossesDestroyedEvent>,
-    ) {
+    ) -> bool {
         self.level_time.tick(time.delta());
 
         if let Some(mut modified_current_phase) = self.current_phase.clone() {
@@ -170,8 +170,10 @@ impl Level {
             if phase_completed && !self.cycle_phase() {
                 self.init_phase();
             }
+
+            false
         } else {
-            todo!("cycle level");
+            true
         }
     }
 
