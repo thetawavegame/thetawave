@@ -95,16 +95,7 @@ fn get_display_config() -> options::DisplayConfig {
     }
 }
 
-#[allow(dead_code)]
-fn setup_panic() {
-    use std::panic;
-    panic::set_hook(Box::new(console_error_panic_hook::hook)); // pushes rust errors to the browser console
-}
-
 fn main() {
-    #[cfg(target_arch = "wasm32")]
-    setup_panic();
-
     let display_config = get_display_config();
 
     let mut app = App::new();
@@ -143,6 +134,7 @@ fn main() {
         color: Color::WHITE,
         brightness: 0.1,
     })
+    .insert_resource(thetawave_interface::assets::BackupBackgroundAssetPaths::default())
     .add_plugins(AudioPlugin)
     .add_plugins(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
         PHYSICS_SCALE,
@@ -157,6 +149,9 @@ fn main() {
 
     #[cfg(feature = "storage")]
     app.add_plugins(thetawave_storage::plugin::DBPlugin);
+
+    #[cfg(all(target_arch = "wasm32", feature = "web"))]
+    app.add_plugins(thetawave_web::WebWasmSpecificPlugins);
 
     if cfg!(debug_assertions) {
         app

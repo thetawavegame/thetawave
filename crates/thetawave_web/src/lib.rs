@@ -1,5 +1,8 @@
 pub mod public_s3_assets;
 mod s3;
+
+use crate::public_s3_assets::PublicS3AssetsPlugin;
+use bevy_app::{App, Plugin, PluginGroup, PluginGroupBuilder};
 use bevy_log::{error, warn};
 use wasm_bindgen::prelude::{wasm_bindgen, JsValue};
 
@@ -24,7 +27,7 @@ pub async fn raw_list_public_s3_bucket(url: &str, timeout_ms: u32) -> Vec<String
                 .map(get_filenames_from_s3_list_buckets_resp)
                 .unwrap_or_else(|err| {
                     error!("Failed to parse s3 list bucket response. Err: {}", err);
-                    error!("Bad S3 listBuckets response; {}", str_result);
+                    error!("Bad S3 listBuckets response; {}", &str_result);
                     Default::default()
                 });
         }
@@ -33,4 +36,19 @@ pub async fn raw_list_public_s3_bucket(url: &str, timeout_ms: u32) -> Vec<String
         }
     };
     Default::default()
+}
+
+pub struct RedirectPanicsToBrowserConsoleLogPlugin;
+impl Plugin for RedirectPanicsToBrowserConsoleLogPlugin {
+    fn build(&self, _app: &mut App) {
+        std::panic::set_hook(Box::new(console_error_panic_hook::hook));
+    }
+}
+
+pub struct WebWasmSpecificPlugins;
+impl PluginGroup for WebWasmSpecificPlugins {
+    fn build(self) -> PluginGroupBuilder {
+        self.set(RedirectPanicsToBrowserConsoleLogPlugin)
+            .set(PublicS3AssetsPlugin)
+    }
 }

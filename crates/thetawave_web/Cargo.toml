@@ -9,15 +9,14 @@ edition = "2021"
 wasm-bindgen = { version = "0.2.74" }
 js-sys = "0.3.64"
 wasm-bindgen-futures = "0.4.37"
+console_error_panic_hook = "0.1.7"
 bevy_log = { workspace = true}
 bevy_app = { workspace = true}
 bevy_ecs = { workspace = true}
-bevy_tasks = { workspace = true}
 serde = { workspace = true}
 serde_derive = { workspace = true}
 serde-xml-rs = { workspace = true}
 derive_more = { workspace = true}
-futures-lite = { workspace = true}
 async-channel = { workspace = true}
 thetawave_interface = {path = "../thetawave_interface"}
 

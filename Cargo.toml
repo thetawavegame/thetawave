@@ -24,8 +24,6 @@ bevy_ecs_macros = "0.11.2"
 bevy_ecs = "0.11.2"
 bevy_app = "0.11.2"
 bevy_log = "0.11.2"
-bevy_tasks = "0.11.2"
-futures-lite = "1.13.0"
 async-channel = "1.9.0"
 
 [dependencies]
@@ -45,7 +43,6 @@ strum = {workspace = true}
 strum_macros = {workspace = true}
 ron = "0.8.0"
 rand = "0.8.5"
-console_error_panic_hook = "0.1.7"
 bevy_kira_audio = { version = "0.16.0", features = ["mp3", "wav"] }
 winit = "0.28.4"
 image = "0.24.6"

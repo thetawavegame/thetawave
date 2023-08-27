@@ -3,7 +3,7 @@ set -euo pipefail
 rm -rf ./out/
 mkdir ./out
 rustup target add wasm32-unknown-unknown
-cargo build --release --target wasm32-unknown-unknown
+cargo build --release --target wasm32-unknown-unknown --features web
 cargo install wasm-bindgen-cli
 wasm-bindgen --out-dir ./out/ --target web --split-linked-modules ./target/wasm32-unknown-unknown/release/thetawave.wasm
 wasm-opt out/thetawave_bg.wasm -Oz -o thetawave_bg.wasm
