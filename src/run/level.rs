@@ -109,7 +109,7 @@ impl Level {
     }
 
     pub fn init_phase(&mut self) {
-        info!("Phase initialized");
+        // change music
     }
 
     // returns true if level has been completed

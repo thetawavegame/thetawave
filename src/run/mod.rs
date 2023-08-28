@@ -285,7 +285,9 @@ fn run_end_system(
 ) {
     for event in run_end_event_reader.iter() {
         match &event.outcome {
-            RunOutcomeType::Victory => next_app_state.set(AppStates::Victory),
+            RunOutcomeType::Victory => {
+                next_app_state.set(AppStates::Victory);
+            }
             RunOutcomeType::Defeat(defeat_type) => {
                 next_app_state.set(AppStates::GameOver);
 

@@ -6,6 +6,8 @@ use thetawave_interface::game::historical_metrics::{
     MobKillsByPlayerForCompletedGames, UserStatsByPlayerForCompletedGamesCache, DEFAULT_USER_ID,
 };
 
+use crate::assets::BGMusicType;
+use crate::audio::PlayBackgroundMusicEvent;
 use crate::states::MainMenuCleanup;
 use crate::{assets::GameAudioAssets, audio};
 
@@ -21,8 +23,7 @@ pub struct BouncingPromptComponent {
 pub fn setup_main_menu_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<audio::BackgroundMusicAudioChannel>>,
-    audio_assets: Res<GameAudioAssets>,
+    mut play_bg_music_event_writer: EventWriter<PlayBackgroundMusicEvent>,
     historical_games_shot_counts: Res<UserStatsByPlayerForCompletedGamesCache>,
     historical_games_enemy_mob_kill_counts: Res<MobKillsByPlayerForCompletedGames>,
 ) {
@@ -38,10 +39,11 @@ pub fn setup_main_menu_system(
         }
     };
 
-    audio_channel
-        .play(audio_assets.get_bg_music_asset(&crate::assets::BGMusicType::Main))
-        .looped()
-        .fade_in(AudioTween::new(Duration::from_secs(2), AudioEasing::Linear));
+    play_bg_music_event_writer.send(PlayBackgroundMusicEvent {
+        bg_music_type: BGMusicType::Main,
+        looped: true,
+        fade: Some(AudioTween::new(Duration::from_secs(2), AudioEasing::Linear)),
+    });
 
     commands
         .spawn(NodeBundle {
