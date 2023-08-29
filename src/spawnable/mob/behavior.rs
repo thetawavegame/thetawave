@@ -3,13 +3,12 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 use thetawave_interface::{
+    audio::{PlaySoundEffectEvent, SoundEffectType},
     health::DamageDealtEvent,
     spawnable::{EffectType, MobType, ProjectileType},
 };
 
 use crate::{
-    assets::SoundEffectType,
-    audio::PlaySoundEffectEvent,
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     loot::LootDropsResource,

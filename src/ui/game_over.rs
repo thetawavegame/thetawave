@@ -3,13 +3,14 @@ use std::time::Duration;
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 
-use thetawave_interface::game::historical_metrics::{
-    MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
+use thetawave_interface::{
+    audio::ChangeBackgroundMusicEvent,
+    game::historical_metrics::{
+        MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
+    },
 };
 
-use crate::{
-    audio::ChangeBackgroundMusicEvent, states::GameOverCleanup, ui::BouncingPromptComponent,
-};
+use crate::{states::GameOverCleanup, ui::BouncingPromptComponent};
 
 #[derive(Component)]
 pub struct GameOverUI;

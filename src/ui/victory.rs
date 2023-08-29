@@ -2,12 +2,14 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 
-use crate::audio::ChangeBackgroundMusicEvent;
 use crate::states::VictoryCleanup;
 use crate::ui::BouncingPromptComponent;
 use bevy_kira_audio::prelude::*;
-use thetawave_interface::game::historical_metrics::{
-    MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
+use thetawave_interface::{
+    audio::ChangeBackgroundMusicEvent,
+    game::historical_metrics::{
+        MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
+    },
 };
 
 #[derive(Component)]

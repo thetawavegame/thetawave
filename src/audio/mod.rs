@@ -1,8 +1,11 @@
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
-use thetawave_interface::states::AppStates;
+use thetawave_interface::{
+    audio::{BGMusicType, ChangeBackgroundMusicEvent, PlaySoundEffectEvent, SoundEffectType},
+    states::AppStates,
+};
 
-use crate::assets::{BGMusicType, GameAudioAssets, SoundEffectType};
+use crate::assets::GameAudioAssets;
 
 pub struct ThetawaveAudioPlugin;
 
@@ -44,11 +47,6 @@ pub fn set_audio_volume_system(
     effects_audio_channel.set_volume(0.60);
 }
 
-#[derive(Event)]
-pub struct PlaySoundEffectEvent {
-    pub sound_effect_type: SoundEffectType,
-}
-
 fn play_sound_effect_system(
     mut play_sound_event_reader: EventReader<PlaySoundEffectEvent>,
     audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
@@ -57,14 +55,6 @@ fn play_sound_effect_system(
     for event in play_sound_event_reader.iter() {
         audio_channel.play(audio_assets.get_sound_effect(&event.sound_effect_type));
     }
-}
-
-#[derive(Event, Default)]
-pub struct ChangeBackgroundMusicEvent {
-    pub bg_music_type: Option<BGMusicType>,
-    pub loop_from: Option<f64>,
-    pub fade_in_tween: Option<AudioTween>,
-    pub fade_out_tween: Option<AudioTween>,
 }
 
 fn change_bg_music_system(

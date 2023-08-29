@@ -1,13 +1,14 @@
 use crate::{
     arena::ArenaBarrierComponent,
-    assets::{CollisionSoundType, SoundEffectType},
-    audio::PlaySoundEffectEvent,
     player::PlayerComponent,
     spawnable::{MobComponent, MobSegmentComponent, ProjectileComponent},
 };
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
-use thetawave_interface::spawnable::{Faction, MobSegmentType, MobType, ProjectileType};
+use thetawave_interface::{
+    audio::{CollisionSoundType, PlaySoundEffectEvent, SoundEffectType},
+    spawnable::{Faction, MobSegmentType, MobType, ProjectileType},
+};
 
 use super::{CollidingEntityPair, SortedCollisionEvent};
 

@@ -5,13 +5,12 @@ use std::{
     collections::{HashMap, VecDeque},
     time::Duration,
 };
-use thetawave_interface::spawnable::MobType;
-
-use crate::{
-    assets::BGMusicType,
-    audio::ChangeBackgroundMusicEvent,
-    spawnable::{BossesDestroyedEvent, SpawnMobEvent},
+use thetawave_interface::{
+    audio::{BGMusicType, ChangeBackgroundMusicEvent},
+    spawnable::MobType,
 };
+
+use crate::spawnable::{BossesDestroyedEvent, SpawnMobEvent};
 
 use super::{objective::Objective, FormationPoolsResource, SpawnFormationEvent};
 
@@ -86,15 +85,20 @@ pub struct LevelData {
 #[derive(Event)]
 pub struct LevelCompletedEvent;
 
+pub type LevelPhases = VecDeque<LevelPhase>;
+
 /// Struct to manage a level
 #[derive(Clone, Debug)]
 pub struct Level {
-    pub completed_phases: VecDeque<LevelPhase>,
+    /// Phases that have been completed so far in the run
+    pub completed_phases: LevelPhases,
+    /// Phase that is currently active
     pub current_phase: Option<LevelPhase>,
-    pub queued_phases: VecDeque<LevelPhase>,
-    /// Level objective
+    /// Phases that have yet to be played in the level
+    pub queued_phases: LevelPhases,
+    /// Objective is an additional failure condition for a level
     pub objective: Objective,
-
+    /// Tracks how long the player has been in the level
     pub level_time: Stopwatch,
 }
 

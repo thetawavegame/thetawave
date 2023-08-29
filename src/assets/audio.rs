@@ -1,42 +1,7 @@
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use bevy_kira_audio::AudioSource;
-use serde::Deserialize;
-use strum_macros::Display;
-
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
-pub enum BGMusicType {
-    Game,
-    Boss,
-    BossTransition,
-    Main,
-}
-
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
-pub enum SoundEffectType {
-    Collision(CollisionSoundType),
-    BarrierBounce,
-    ConsumablePickup,
-    DefenseDamage,
-    DefenseHeal,
-    EnemyFireBlast,
-    MenuInputSuccess,
-    MobExplosion,
-    MobHit,
-    PlayerExplosion,
-    PlayerFireBlast,
-    PlayerHit,
-    BulletDing,
-    BulletBounce,
-    MegablastAbility,
-}
-
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display, Default)]
-pub enum CollisionSoundType {
-    Squishy,
-    #[default]
-    Normal,
-}
+use thetawave_interface::audio::{BGMusicType, CollisionSoundType, SoundEffectType};
 
 #[derive(AssetCollection, Resource)]
 pub struct GameAudioAssets {

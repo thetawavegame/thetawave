@@ -2,10 +2,9 @@ use std::{collections::HashMap, time::Duration};
 
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
+use thetawave_interface::audio::{PlaySoundEffectEvent, SoundEffectType};
 
 use crate::{
-    assets::SoundEffectType,
-    audio::PlaySoundEffectEvent,
     player::{PlayerComponent, PlayerInput, PlayersResource},
     spawnable::{InitialMotion, SpawnProjectileEvent},
 };

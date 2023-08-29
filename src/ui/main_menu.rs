@@ -2,12 +2,11 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 use bevy_kira_audio::{AudioEasing, AudioTween};
+use thetawave_interface::audio::{BGMusicType, ChangeBackgroundMusicEvent};
 use thetawave_interface::game::historical_metrics::{
     MobKillsByPlayerForCompletedGames, UserStatsByPlayerForCompletedGamesCache, DEFAULT_USER_ID,
 };
 
-use crate::assets::BGMusicType;
-use crate::audio::ChangeBackgroundMusicEvent;
 use crate::states::MainMenuCleanup;
 
 #[derive(Component)]

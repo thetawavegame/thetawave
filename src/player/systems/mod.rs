@@ -3,14 +3,15 @@
 mod ability;
 mod attacks;
 mod movement;
+use crate::{
+    game::GameParametersResource,
+    misc::HealthComponent,
+    run::{RunDefeatType, RunEndEvent, RunOutcomeType},
+    spawnable::SpawnEffectEvent,
+};
 
-use crate::assets::SoundEffectType;
-use crate::audio::PlaySoundEffectEvent;
-use crate::game::GameParametersResource;
-use crate::misc::HealthComponent;
-use crate::run::{RunDefeatType, RunEndEvent, RunOutcomeType};
-use crate::spawnable::SpawnEffectEvent;
 use bevy::prelude::*;
+use thetawave_interface::audio::{PlaySoundEffectEvent, SoundEffectType};
 use thetawave_interface::spawnable::EffectType;
 
 pub use self::ability::*;

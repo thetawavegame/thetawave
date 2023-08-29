@@ -10,7 +10,7 @@ use std::{
 use crate::{
     animation::{AnimationComponent, AnimationData},
     arena::DefenseInteraction,
-    assets::{CollisionSoundType, MobAssets},
+    assets::MobAssets,
     game::GameParametersResource,
     loot::ConsumableDropListType,
     misc::HealthComponent,
@@ -24,7 +24,10 @@ mod mob_segment;
 pub use self::{behavior::*, mob_segment::*};
 
 use super::behavior_sequence::MobBehaviorSequenceType;
-use thetawave_interface::spawnable::{MobSegmentType, MobType, ProjectileType};
+use thetawave_interface::{
+    audio::CollisionSoundType,
+    spawnable::{MobSegmentType, MobType, ProjectileType},
+};
 
 /// Core component for mobs
 #[derive(Component)]

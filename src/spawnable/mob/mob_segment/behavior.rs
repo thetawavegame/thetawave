@@ -3,11 +3,13 @@ use bevy::prelude::*;
 use bevy_rapier2d::{prelude::*, rapier::prelude::JointAxis};
 use rand::{thread_rng, Rng};
 use serde::Deserialize;
-use thetawave_interface::{health::DamageDealtEvent, spawnable::EffectType};
+use thetawave_interface::{
+    audio::{PlaySoundEffectEvent, SoundEffectType},
+    health::DamageDealtEvent,
+    spawnable::EffectType,
+};
 
 use crate::{
-    assets::SoundEffectType,
-    audio::PlaySoundEffectEvent,
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     loot::LootDropsResource,

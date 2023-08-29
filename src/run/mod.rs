@@ -3,12 +3,13 @@ use bevy::prelude::*;
 use ron::de::from_bytes;
 use serde::Deserialize;
 use std::collections::{HashMap, VecDeque};
-use thetawave_interface::states::{AppStates, GameStates};
+use thetawave_interface::{
+    audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent, SoundEffectType},
+    states::{AppStates, GameStates},
+};
 
 use crate::{
     arena::{DefenseInteraction, MobReachedBottomGateEvent},
-    assets::SoundEffectType,
-    audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent},
     spawnable::{BossesDestroyedEvent, SpawnMobEvent},
     GameUpdateSet,
 };

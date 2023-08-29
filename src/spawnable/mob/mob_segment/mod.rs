@@ -2,12 +2,15 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 use std::collections::{hash_map::Entry, HashMap};
-use thetawave_interface::spawnable::{MobSegmentType, SpawnableType};
+use thetawave_interface::{
+    audio::CollisionSoundType,
+    spawnable::{MobSegmentType, SpawnableType},
+};
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
     arena::DefenseInteraction,
-    assets::{CollisionSoundType, MobAssets},
+    assets::MobAssets,
     game::GameParametersResource,
     loot::ConsumableDropListType,
     misc::HealthComponent,

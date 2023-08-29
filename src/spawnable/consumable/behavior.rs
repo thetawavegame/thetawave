@@ -1,6 +1,4 @@
 use crate::{
-    assets::SoundEffectType,
-    audio::PlaySoundEffectEvent,
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     misc::HealthComponent,
@@ -10,7 +8,10 @@ use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
-use thetawave_interface::spawnable::{ConsumableType, EffectType, TextEffectType};
+use thetawave_interface::{
+    audio::{PlaySoundEffectEvent, SoundEffectType},
+    spawnable::{ConsumableType, EffectType, TextEffectType},
+};
 
 use super::ConsumableEffect;
 
