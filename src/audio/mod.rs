@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use thetawave_interface::{
-    audio::{BGMusicType, ChangeBackgroundMusicEvent, PlaySoundEffectEvent, SoundEffectType},
+    audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent},
     states::AppStates,
 };
 
