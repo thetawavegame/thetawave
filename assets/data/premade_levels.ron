@@ -44,8 +44,10 @@
 						formation_pool: "easy",
 					),
 					bg_music_transition: Some((
-						loop_from: 0.0,
-						bg_music: Game,
+						loop_from: Some(0.0),
+						bg_music_type: Some(Game),
+						fade_out: Some(2.0),
+						fade_in: Some(2.0),
 					)),
 				),
 				(
@@ -205,8 +207,9 @@
 						),
 					),
 					bg_music_transition: Some((
-						loop_from: 9.615,
-						bg_music: Boss,
+						loop_from: Some(9.615),
+						bg_music_type: Some(Boss),
+						fade_out: Some(8.0),
 					)),
 				)
 			],
@@ -254,8 +257,10 @@
 						formation_pool: "easy",
 					),
 					bg_music_transition: Some((
-						loop_from: 0.0,
-						bg_music: Game,
+						loop_from: Some(0.0),
+						bg_music_type: Some(Game),
+						fade_out: Some(2.0),
+						fade_in: Some(2.0),
 					)),
 				),
 				(
@@ -415,8 +420,9 @@
 						),		
 					),
 					bg_music_transition: Some((
-						loop_from: 9.615,
-						bg_music: Boss,
+						loop_from: Some(9.615),
+						bg_music_type: Some(Boss),
+						fade_out: Some(8.0),
 					)),
 				)
 			],
@@ -464,8 +470,10 @@
 						formation_pool: "easy",
 					),
 					bg_music_transition: Some((
-						loop_from: 0.0,
-						bg_music: Game,
+						loop_from: Some(0.0),
+						bg_music_type: Some(Game),
+						fade_out: Some(2.0),
+						fade_in: Some(2.0),
 					)),
 				),
 				(
@@ -625,8 +633,9 @@
 						),		
 					),
 					bg_music_transition: Some((
-						loop_from: 9.615,
-						bg_music: Boss,
+						loop_from: Some(9.615),
+						bg_music_type: Some(Boss),
+						fade_out: Some(8.0),
 					)),
 				)
 			],

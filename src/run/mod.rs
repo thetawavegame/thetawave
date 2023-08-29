@@ -8,7 +8,7 @@ use thetawave_interface::states::{AppStates, GameStates};
 use crate::{
     arena::{DefenseInteraction, MobReachedBottomGateEvent},
     assets::{GameAudioAssets, SoundEffectType},
-    audio::{self, PlaySoundEffectEvent},
+    audio::{self, ChangeBackgroundMusicEvent, PlaySoundEffectEvent},
     player::PlayersResource,
     spawnable::{BossesDestroyedEvent, MobDestroyedEvent, SpawnMobEvent},
     states::{self},
@@ -153,12 +153,16 @@ impl RunResource {
         info!("Level cycled");
     }
 
-    pub fn init_current_level(&mut self, run_end_event_writer: &mut EventWriter<RunEndEvent>) {
+    pub fn init_current_level(
+        &mut self,
+        run_end_event_writer: &mut EventWriter<RunEndEvent>,
+        change_bg_music_event_writer: &mut EventWriter<ChangeBackgroundMusicEvent>,
+    ) {
         if let Some(current_level) = &mut self.current_level {
             let level_completed = current_level.cycle_phase();
 
             if !level_completed {
-                current_level.init_phase();
+                current_level.init_phase(change_bg_music_event_writer);
             } else {
                 self.cycle_level(run_end_event_writer);
             }
@@ -173,6 +177,7 @@ impl RunResource {
         spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
         bosses_destroyed_event_reader: &mut EventReader<BossesDestroyedEvent>,
         run_end_event_writer: &mut EventWriter<RunEndEvent>,
+        change_bg_music_event_writer: &mut EventWriter<ChangeBackgroundMusicEvent>,
     ) {
         // TODO: handle none case to remove unwrap
         let current_level = self.current_level.as_mut().unwrap();
@@ -184,9 +189,10 @@ impl RunResource {
             formations_res,
             spawn_mob_event_writer,
             bosses_destroyed_event_reader,
+            change_bg_music_event_writer,
         ) {
             self.cycle_level(run_end_event_writer);
-            self.init_current_level(run_end_event_writer);
+            self.init_current_level(run_end_event_writer, change_bg_music_event_writer);
         }
     }
 }
@@ -197,6 +203,7 @@ fn init_run_system(
     premade_levels_res: Res<PremadeLevelsResource>,
     mut next_app_state: ResMut<NextState<AppStates>>,
     mut run_end_event_writer: EventWriter<RunEndEvent>,
+    mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
 ) {
     // generate the run
     run_res.generate_premade(
@@ -209,7 +216,7 @@ fn init_run_system(
     run_res.cycle_level(&mut run_end_event_writer);
 
     // initialize the current level
-    run_res.init_current_level(&mut run_end_event_writer);
+    run_res.init_current_level(&mut run_end_event_writer, &mut change_bg_music_event_writer);
 
     next_app_state.set(AppStates::Game);
 
@@ -224,6 +231,7 @@ fn tick_run_system(
     mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
     mut bosses_destroyed_event_reader: EventReader<BossesDestroyedEvent>,
     mut run_end_event_writer: EventWriter<RunEndEvent>,
+    mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
 ) {
     run_res.tick(
         &time,
@@ -232,6 +240,7 @@ fn tick_run_system(
         &mut spawn_mob_event_writer,
         &mut bosses_destroyed_event_reader,
         &mut run_end_event_writer,
+        &mut change_bg_music_event_writer,
     );
 }
 

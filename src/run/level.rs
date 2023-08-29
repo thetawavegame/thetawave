@@ -1,4 +1,5 @@
 use bevy::{prelude::*, time::Stopwatch};
+use bevy_kira_audio::{AudioEasing, AudioTween};
 use serde::Deserialize;
 use std::{
     collections::{HashMap, VecDeque},
@@ -8,6 +9,7 @@ use thetawave_interface::spawnable::MobType;
 
 use crate::{
     assets::BGMusicType,
+    audio::ChangeBackgroundMusicEvent,
     spawnable::{BossesDestroyedEvent, SpawnMobEvent},
 };
 
@@ -32,8 +34,25 @@ pub struct LevelPhase {
 /// Background music transition
 #[derive(Deserialize, Clone, Debug)]
 pub struct BGMusicTransition {
-    pub loop_from: f64,
-    pub bg_music: BGMusicType,
+    pub loop_from: Option<f64>,
+    pub bg_music_type: Option<BGMusicType>,
+    pub fade_in: Option<f32>,
+    pub fade_out: Option<f32>,
+}
+
+impl From<&BGMusicTransition> for ChangeBackgroundMusicEvent {
+    fn from(value: &BGMusicTransition) -> Self {
+        ChangeBackgroundMusicEvent {
+            bg_music_type: value.bg_music_type.clone(),
+            loop_from: value.loop_from,
+            fade_in_tween: value.fade_in.map(|fade_in| {
+                AudioTween::new(Duration::from_secs_f32(fade_in), AudioEasing::Linear)
+            }),
+            fade_out_tween: value.fade_out.map(|fade_out| {
+                AudioTween::new(Duration::from_secs_f32(fade_out), AudioEasing::Linear)
+            }),
+        }
+    }
 }
 
 /// Describes a distinct portion of the level
@@ -108,8 +127,17 @@ impl Level {
         self.current_phase.is_none()
     }
 
-    pub fn init_phase(&mut self) {
-        // change music
+    pub fn init_phase(
+        &mut self,
+        change_bg_music_event_writer: &mut EventWriter<ChangeBackgroundMusicEvent>,
+    ) {
+        if let Some(current_phase) = &self.current_phase {
+            if let Some(bg_music_transition) = &current_phase.bg_music_transition {
+                // change music
+                change_bg_music_event_writer
+                    .send(ChangeBackgroundMusicEvent::from(bg_music_transition));
+            }
+        }
     }
 
     // returns true if level has been completed
@@ -120,6 +148,7 @@ impl Level {
         formations_res: &FormationPoolsResource,
         spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
         bosses_destroyed_event_reader: &mut EventReader<BossesDestroyedEvent>,
+        change_bg_music_event_writer: &mut EventWriter<ChangeBackgroundMusicEvent>,
     ) -> bool {
         self.level_time.tick(time.delta());
 
@@ -168,7 +197,7 @@ impl Level {
 
             // this will short circuit and not call cycle_phase if !phase_completed
             if phase_completed && !self.cycle_phase() {
-                self.init_phase();
+                self.init_phase(change_bg_music_event_writer);
             }
 
             false

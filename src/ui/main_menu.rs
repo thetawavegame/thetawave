@@ -1,15 +1,14 @@
 use std::time::Duration;
 
 use bevy::prelude::*;
-use bevy_kira_audio::{AudioChannel, AudioControl, AudioEasing, AudioTween};
+use bevy_kira_audio::{AudioEasing, AudioTween};
 use thetawave_interface::game::historical_metrics::{
     MobKillsByPlayerForCompletedGames, UserStatsByPlayerForCompletedGamesCache, DEFAULT_USER_ID,
 };
 
 use crate::assets::BGMusicType;
-use crate::audio::PlayBackgroundMusicEvent;
+use crate::audio::ChangeBackgroundMusicEvent;
 use crate::states::MainMenuCleanup;
-use crate::{assets::GameAudioAssets, audio};
 
 #[derive(Component)]
 pub struct MainMenuUI;
@@ -23,7 +22,7 @@ pub struct BouncingPromptComponent {
 pub fn setup_main_menu_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut play_bg_music_event_writer: EventWriter<PlayBackgroundMusicEvent>,
+    mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     historical_games_shot_counts: Res<UserStatsByPlayerForCompletedGamesCache>,
     historical_games_enemy_mob_kill_counts: Res<MobKillsByPlayerForCompletedGames>,
 ) {
@@ -39,10 +38,11 @@ pub fn setup_main_menu_system(
         }
     };
 
-    play_bg_music_event_writer.send(PlayBackgroundMusicEvent {
-        bg_music_type: BGMusicType::Main,
-        looped: true,
-        fade: Some(AudioTween::new(Duration::from_secs(2), AudioEasing::Linear)),
+    change_bg_music_event_writer.send(ChangeBackgroundMusicEvent {
+        bg_music_type: Some(BGMusicType::Main),
+        loop_from: Some(0.0),
+        fade_in_tween: Some(AudioTween::new(Duration::from_secs(2), AudioEasing::Linear)),
+        fade_out_tween: Some(AudioTween::new(Duration::from_secs(2), AudioEasing::Linear)),
     });
 
     commands

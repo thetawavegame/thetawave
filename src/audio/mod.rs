@@ -9,7 +9,7 @@ pub struct ThetawaveAudioPlugin;
 impl Plugin for ThetawaveAudioPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<PlaySoundEffectEvent>();
-        app.add_event::<PlayBackgroundMusicEvent>();
+        app.add_event::<ChangeBackgroundMusicEvent>();
 
         app.add_audio_channel::<BackgroundMusicAudioChannel>()
             .add_audio_channel::<MenuAudioChannel>()
@@ -19,7 +19,7 @@ impl Plugin for ThetawaveAudioPlugin {
 
         app.add_systems(
             Update,
-            (play_sound_effect_system, play_bg_music_system)
+            (play_sound_effect_system, change_bg_music_system)
                 .run_if(not(in_state(AppStates::LoadingAssets))),
         );
     }
@@ -59,25 +59,44 @@ fn play_sound_effect_system(
     }
 }
 
-#[derive(Event)]
-pub struct PlayBackgroundMusicEvent {
-    pub bg_music_type: BGMusicType,
-    pub looped: bool,
-    pub fade: Option<AudioTween>,
+#[derive(Event, Default)]
+pub struct ChangeBackgroundMusicEvent {
+    pub bg_music_type: Option<BGMusicType>,
+    pub loop_from: Option<f64>,
+    pub fade_in_tween: Option<AudioTween>,
+    pub fade_out_tween: Option<AudioTween>,
 }
 
-fn play_bg_music_system(
-    mut play_bg_music_event_reader: EventReader<PlayBackgroundMusicEvent>,
+fn change_bg_music_system(
+    mut change_bg_music_event_reader: EventReader<ChangeBackgroundMusicEvent>,
     audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
 ) {
-    for event in play_bg_music_event_reader.iter() {
-        let mut command = audio_channel.play(audio_assets.get_bg_music_asset(&event.bg_music_type));
-        if event.looped {
-            command.looped();
+    for event in change_bg_music_event_reader.iter() {
+        // stop audio if playing sound
+        if audio_channel.is_playing_sound() {
+            let mut stop_command = audio_channel.stop();
+
+            // use fade if specified
+            if let Some(fade_out) = event.fade_out_tween.clone() {
+                stop_command.fade_out(fade_out);
+            }
         }
-        if let Some(fade) = event.fade.clone() {
-            command.fade_in(fade);
+
+        // play music if provided a type
+        if let Some(bg_music_type) = event.bg_music_type.clone() {
+            let mut start_command =
+                audio_channel.play(audio_assets.get_bg_music_asset(&bg_music_type));
+
+            // loop if true
+            if let Some(loop_from) = event.loop_from {
+                start_command.loop_from(loop_from);
+            }
+
+            // use fade if specified
+            if let Some(fade) = event.fade_in_tween.clone() {
+                start_command.fade_in(fade);
+            }
         }
     }
 }

@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 
-use crate::audio::BackgroundMusicAudioChannel;
+use crate::audio::{BackgroundMusicAudioChannel, ChangeBackgroundMusicEvent};
 use crate::states::VictoryCleanup;
 use crate::ui::BouncingPromptComponent;
 use bevy_kira_audio::prelude::*;
@@ -16,13 +16,15 @@ pub struct VictoryUI;
 pub fn setup_victory_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
+    mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     current_game_shot_counts: Res<UserStatsByPlayerForCurrentGameCache>,
     current_game_enemy_mob_kill_counts: Res<MobKillsByPlayerForCurrentGame>,
 ) {
-    audio_channel
-        .stop()
-        .fade_out(AudioTween::linear(Duration::from_secs_f32(5.0)));
+    // fade music out
+    change_bg_music_event_writer.send(ChangeBackgroundMusicEvent {
+        fade_out_tween: Some(AudioTween::new(Duration::from_secs(5), AudioEasing::Linear)),
+        ..default()
+    });
 
     let maybe_current_game_stats = (**current_game_shot_counts).get(&DEFAULT_USER_ID);
     let (accuracy_rate, total_shots_fired): (f32, usize) = match maybe_current_game_stats {

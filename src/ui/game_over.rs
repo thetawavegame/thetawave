@@ -8,7 +8,9 @@ use thetawave_interface::game::historical_metrics::{
 };
 
 use crate::{
-    audio::BackgroundMusicAudioChannel, states::GameOverCleanup, ui::BouncingPromptComponent,
+    audio::{BackgroundMusicAudioChannel, ChangeBackgroundMusicEvent},
+    states::GameOverCleanup,
+    ui::BouncingPromptComponent,
 };
 
 #[derive(Component)]
@@ -18,6 +20,7 @@ pub fn setup_game_over_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
+    mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     current_game_shot_counts: Res<UserStatsByPlayerForCurrentGameCache>,
     current_game_enemy_mob_kill_counts: Res<MobKillsByPlayerForCurrentGame>,
 ) {
@@ -31,9 +34,13 @@ pub fn setup_game_over_system(
             (accuracy, current_game_shot_counts.total_shots_fired)
         }
     };
-    audio_channel
-        .stop()
-        .fade_out(AudioTween::linear(Duration::from_secs_f32(5.0)));
+
+    // fade music out
+    change_bg_music_event_writer.send(ChangeBackgroundMusicEvent {
+        fade_out_tween: Some(AudioTween::new(Duration::from_secs(5), AudioEasing::Linear)),
+        ..default()
+    });
+
     commands
         .spawn(NodeBundle {
             style: Style {
