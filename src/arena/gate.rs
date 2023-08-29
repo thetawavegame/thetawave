@@ -4,7 +4,6 @@ use crate::{
 };
 use bevy::prelude::*;
 use bevy_rapier2d::{prelude::*, rapier::prelude::CollisionEventFlags};
-use serde::Deserialize;
 use thetawave_interface::objective::MobReachedBottomGateEvent;
 
 /// Despawn gate tag
