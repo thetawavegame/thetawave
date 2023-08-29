@@ -4,12 +4,12 @@ use serde::Deserialize;
 use std::collections::{hash_map::Entry, HashMap};
 use thetawave_interface::{
     audio::CollisionSoundType,
+    objective::DefenseInteraction,
     spawnable::{MobSegmentType, SpawnableType},
 };
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
-    arena::DefenseInteraction,
     assets::MobAssets,
     game::GameParametersResource,
     loot::ConsumableDropListType,

@@ -223,16 +223,17 @@ impl Level {
         formations_res: &FormationPoolsResource,
         formation_key: String,
     ) {
-        let formation = formations_res.get_random_formation(formation_key);
         spawn_timer.tick(time.delta());
 
         if spawn_timer.just_finished() {
-            spawn_formation_event_writer.send(SpawnFormationEvent {
-                formation: formation.clone(),
-            });
-            spawn_timer.set_duration(Duration::from_secs_f32(formation.period));
-            spawn_timer.reset();
-            info!("Spawn timer duration reset to: {}", formation.period);
+            if let Some(formation) = formations_res.get_random_formation(formation_key) {
+                spawn_formation_event_writer.send(SpawnFormationEvent {
+                    formation: formation.clone(),
+                });
+                spawn_timer.set_duration(Duration::from_secs_f32(formation.period));
+                spawn_timer.reset();
+                info!("Spawn timer duration reset to: {}", formation.period);
+            }
         }
     }
 }

@@ -9,7 +9,6 @@ use std::{
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
-    arena::DefenseInteraction,
     assets::MobAssets,
     game::GameParametersResource,
     loot::ConsumableDropListType,
@@ -26,6 +25,7 @@ pub use self::{behavior::*, mob_segment::*};
 use super::behavior_sequence::MobBehaviorSequenceType;
 use thetawave_interface::{
     audio::CollisionSoundType,
+    objective::DefenseInteraction,
     spawnable::{MobSegmentType, MobType, ProjectileType},
 };
 

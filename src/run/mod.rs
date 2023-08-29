@@ -5,11 +5,12 @@ use serde::Deserialize;
 use std::collections::{HashMap, VecDeque};
 use thetawave_interface::{
     audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent, SoundEffectType},
+    objective::{DefenseInteraction, MobReachedBottomGateEvent},
+    run::{RunDefeatType, RunEndEvent, RunOutcomeType},
     states::{AppStates, GameStates},
 };
 
 use crate::{
-    arena::{DefenseInteraction, MobReachedBottomGateEvent},
     spawnable::{BossesDestroyedEvent, SpawnMobEvent},
     GameUpdateSet,
 };
@@ -79,23 +80,6 @@ impl Plugin for RunPlugin {
 #[derive(Resource, Deserialize)]
 pub struct PremadeRunsResource {
     pub runs: HashMap<String, Vec<String>>,
-}
-
-pub enum RunOutcomeType {
-    #[allow(dead_code)] // TODO: Why is this never constructed????
-    Victory,
-    Defeat(RunDefeatType),
-}
-
-pub enum RunDefeatType {
-    #[allow(dead_code)] // TODO: Why is this never constructed????
-    PlayersDestroyed,
-    DefenseDestroyed,
-}
-
-#[derive(Event)]
-pub struct RunEndEvent {
-    pub outcome: RunOutcomeType,
 }
 
 #[derive(Resource, Default, Debug)]

@@ -5,6 +5,7 @@ use crate::{
 use bevy::prelude::*;
 use bevy_rapier2d::{prelude::*, rapier::prelude::CollisionEventFlags};
 use serde::Deserialize;
+use thetawave_interface::objective::MobReachedBottomGateEvent;
 
 /// Despawn gate tag
 #[derive(Component)]
@@ -96,14 +97,4 @@ pub fn despawn_gates_system(
             }
         }
     }
-}
-
-// Event for sending damage dealt from mob reaching bottom of arena
-#[derive(Event)]
-pub struct MobReachedBottomGateEvent(pub DefenseInteraction);
-
-#[derive(Deserialize, Clone)]
-pub enum DefenseInteraction {
-    Heal(usize),
-    Damage(usize),
 }

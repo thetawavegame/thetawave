@@ -1,6 +1,7 @@
 //! `thetawave` arena module
 
 use bevy::prelude::*;
+use thetawave_interface::objective::MobReachedBottomGateEvent;
 mod barrier;
 mod gate;
 

@@ -14,15 +14,20 @@ pub struct FormationPoolsResource {
 }
 
 impl FormationPoolsResource {
-    pub fn get_random_formation(&self, pool_key: String) -> Formation {
-        // TODO: handle unwraps
-        let formation_pool = self.formation_pools.get(&pool_key).unwrap();
+    pub fn get_random_formation(&self, pool_key: String) -> Option<Formation> {
+        let formation_pool = match self.formation_pools.get(&pool_key) {
+            Some(pool) => pool,
+            None => {
+                error!("No formation pool found for given key: {}", pool_key);
+                return None;
+            }
+        };
 
         let weights = formation_pool.iter().map(|x| x.weight).collect();
 
         let random_idx = weighted_rng(weights);
 
-        formation_pool.get(random_idx).unwrap().clone()
+        formation_pool.get(random_idx).cloned()
     }
 }
 
