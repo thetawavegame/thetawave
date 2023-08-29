@@ -8,7 +8,7 @@ mod resources;
 mod spawn;
 mod systems;
 
-use crate::{states, GameEnterSet, GameUpdateSet};
+use crate::{GameEnterSet, GameUpdateSet};
 
 pub use self::{
     components::PlayerComponent,

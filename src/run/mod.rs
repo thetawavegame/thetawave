@@ -7,12 +7,10 @@ use thetawave_interface::states::{AppStates, GameStates};
 
 use crate::{
     arena::{DefenseInteraction, MobReachedBottomGateEvent},
-    assets::{GameAudioAssets, SoundEffectType},
-    audio::{self, ChangeBackgroundMusicEvent, PlaySoundEffectEvent},
-    player::PlayersResource,
-    spawnable::{BossesDestroyedEvent, MobDestroyedEvent, SpawnMobEvent},
-    states::{self},
-    GameEnterSet, GameUpdateSet,
+    assets::SoundEffectType,
+    audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent},
+    spawnable::{BossesDestroyedEvent, SpawnMobEvent},
+    GameUpdateSet,
 };
 
 mod formation;
@@ -109,8 +107,6 @@ pub struct RunResource {
 }
 
 impl RunResource {
-    pub fn generate_random(&mut self) {}
-
     /// Generate a premade level using a String run key
     pub fn generate_premade(
         &mut self,

@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 
-use crate::audio::{BackgroundMusicAudioChannel, ChangeBackgroundMusicEvent};
+use crate::audio::ChangeBackgroundMusicEvent;
 use crate::states::VictoryCleanup;
 use crate::ui::BouncingPromptComponent;
 use bevy_kira_audio::prelude::*;

@@ -8,9 +8,7 @@ use thetawave_interface::game::historical_metrics::{
 };
 
 use crate::{
-    audio::{BackgroundMusicAudioChannel, ChangeBackgroundMusicEvent},
-    states::GameOverCleanup,
-    ui::BouncingPromptComponent,
+    audio::ChangeBackgroundMusicEvent, states::GameOverCleanup, ui::BouncingPromptComponent,
 };
 
 #[derive(Component)]
@@ -19,7 +17,6 @@ pub struct GameOverUI;
 pub fn setup_game_over_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     current_game_shot_counts: Res<UserStatsByPlayerForCurrentGameCache>,
     current_game_enemy_mob_kill_counts: Res<MobKillsByPlayerForCurrentGame>,
