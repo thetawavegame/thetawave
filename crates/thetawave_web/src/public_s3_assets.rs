@@ -28,6 +28,18 @@ pub struct RemoteAssetFetchOptions {
     pub s3_bucket_base_url: String,
     pub timeout_ms: u32,
 }
+impl RemoteAssetFetchOptions {
+    /// Construct from a compile-time env var `THETAWAVE_S3_ASSETS_BASE_URL` because the WASM build
+    /// can't/shouldn't use client-side env vars.
+    fn from_compile_env_var() -> Self {
+        Self {
+            s3_bucket_base_url: option_env!("THETAWAVE_S3_ASSETS_BASE_URL")
+                .unwrap_or("https://assets.thetawave.metalmancy.tech")
+                .to_string(),
+            timeout_ms: 2000,
+        }
+    }
+}
 /// Populates `BackupBackgroundAssetPaths` with strings that can be sent to
 /// `bevy_asset::AssetServer::load`. These will use an S3-compatible service behind some CDN+DNS
 /// magic external to the program. This plugin has to assume some amount about the deployment
@@ -76,10 +88,7 @@ impl Plugin for PublicS3AssetsPlugin {
         let (tx, rx) = bounded::<Vec<String>>(1);
         app.insert_resource(DownloadedS3FileNamesChannelInput::from(tx))
             .insert_resource(FetchS3FileNamesTask::from(rx))
-            .insert_resource(RemoteAssetFetchOptions {
-                s3_bucket_base_url: "https://assets.thetawave.metalmancy.tech".to_string(),
-                timeout_ms: 2000,
-            })
+            .insert_resource(RemoteAssetFetchOptions::from_compile_env_var())
             .add_systems(OnEnter(AppStates::LoadingAssets), start_listing_s3_files)
             .add_systems(
                 FixedUpdate,
