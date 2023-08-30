@@ -1,9 +1,12 @@
-use super::raw_list_public_s3_bucket;
+//! Exposes a plugin Bevy plugin that lists file names from an S3 service and puts those names in
+//! `BackupBackgroundAssetPaths`. The `THETAWAVE_S3_ASSETS_BASE_URL` compile-time environment
+//! variable controls S3 location.
+use crate::s3;
 use async_channel::{bounded, Receiver, Sender};
 use bevy_app::{App, FixedUpdate, Plugin};
 use bevy_ecs::prelude::{in_state, Condition, IntoSystemConfigs, OnEnter, Resource};
 use bevy_ecs::system::{Res, ResMut};
-use bevy_log::{error, info};
+use bevy_log::{error, info, warn};
 use derive_more::{Deref, DerefMut, From};
 use thetawave_interface::assets::BackupBackgroundAssetPaths;
 use thetawave_interface::states::AppStates;
@@ -11,7 +14,8 @@ use wasm_bindgen_futures::spawn_local;
 
 /// Since Bevy doesn't handle async things so well (each system function ultimately blocks the next
 /// frame), we spawn a single-element queue with these ends, then populate a resource as part of
-/// the public API used by other plugins.
+/// the public API used by other plugins. This might be reworked to not require this resource
+/// based on https://github.com/bevyengine/bevy/discussions/3351 in later bevy versions
 #[derive(Resource, Deref, DerefMut, From)]
 struct FetchS3FileNamesTask(Receiver<Vec<String>>);
 
@@ -53,7 +57,7 @@ fn start_listing_s3_files(
     });
 }
 /// We don't have an event loop right now in the game, so we have no choice but to poll.
-fn poll_for_complete_s3_list_background_assets_and_populate_cache_if_compolete(
+fn poll_for_complete_s3_list_background_assets_and_populate_cache_if_complete(
     downloaded_s3_filenames: Res<FetchS3FileNamesTask>,
     mut cached_background_asset_paths: ResMut<BackupBackgroundAssetPaths>,
 ) {
@@ -79,9 +83,36 @@ impl Plugin for PublicS3AssetsPlugin {
             .add_systems(OnEnter(AppStates::LoadingAssets), start_listing_s3_files)
             .add_systems(
                 FixedUpdate,
-                poll_for_complete_s3_list_background_assets_and_populate_cache_if_compolete.run_if(
+                poll_for_complete_s3_list_background_assets_and_populate_cache_if_complete.run_if(
                     in_state(AppStates::MainMenu).or_else(in_state(AppStates::LoadingAssets)),
                 ),
             );
     }
+}
+
+fn get_filenames_from_s3_list_buckets_resp(s3_resp: s3::ListBucketV2Response) -> Vec<String> {
+    s3_resp.contents.iter().map(|x| x.key.clone()).collect()
+}
+
+/// If this returns an empty collection, then something is wrong (we would have logged it). And the
+/// game should just move on. S3 data should be _very_ optional.
+async fn raw_list_public_s3_bucket(url: &str, timeout_ms: u32) -> Vec<String> {
+    match crate::fetchWithTimeout(String::from(url), timeout_ms)
+        .await
+        .as_string()
+    {
+        Some(str_result) => {
+            return serde_xml_rs::from_str::<s3::ListBucketV2Response>(&str_result)
+                .map(get_filenames_from_s3_list_buckets_resp)
+                .unwrap_or_else(|err| {
+                    error!("Failed to parse s3 list bucket response. Err: {}", err);
+                    error!("Bad S3 listBuckets response; {}", &str_result);
+                    Default::default()
+                });
+        }
+        None => {
+            warn!("Received no data from unsigned S3 List objects request.");
+        }
+    };
+    Default::default()
 }
