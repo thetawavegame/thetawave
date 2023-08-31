@@ -293,3 +293,64 @@ fn run_end_system(
 fn run_reset_system(mut run_resource: ResMut<CurrentRunProgressResource>) {
     *run_resource = CurrentRunProgressResource::default();
 }
+
+#[cfg(test)]
+mod test {
+    use crate::run::{RunPlugin, SpawnFormationEvent};
+    use crate::spawnable::{BossesDestroyedEvent, SpawnConsumableEvent, SpawnMobEvent};
+    use bevy::app::App;
+    use bevy::log::{Level, LogPlugin};
+    use bevy::prelude::{NextState, State};
+    use bevy::MinimalPlugins;
+    use thetawave_interface::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent};
+    use thetawave_interface::objective::{DefenseInteraction, MobReachedBottomGateEvent};
+    use thetawave_interface::states::{AppStates, GameStates};
+
+    fn _minimal_app_for_run_progression_plugin_tests() -> App {
+        let mut app = App::new();
+        app.add_plugins(MinimalPlugins)
+            .add_plugins(LogPlugin {
+                filter: "".to_string(),
+                level: Level::TRACE,
+            })
+            .add_state::<AppStates>()
+            .add_state::<GameStates>()
+            .add_event::<MobReachedBottomGateEvent>()
+            .add_event::<ChangeBackgroundMusicEvent>()
+            .add_event::<PlaySoundEffectEvent>()
+            .add_event::<SpawnConsumableEvent>()
+            .add_event::<BossesDestroyedEvent>()
+            .add_event::<SpawnFormationEvent>()
+            .add_event::<SpawnMobEvent>()
+            .add_plugins(RunPlugin);
+        app
+    }
+
+    #[test]
+    fn test_gate_health_reaches_zero_triggers_game_over() {
+        // Defense starts with 100 HP
+        let mut app = _minimal_app_for_run_progression_plugin_tests();
+        app.update();
+        app.update();
+        // triggers => AppStates::Game and starts listening to events
+        app.world
+            .get_resource_mut::<NextState<AppStates>>()
+            .unwrap()
+            .set(AppStates::InitializeRun);
+        app.world
+            .get_resource_mut::<NextState<GameStates>>()
+            .unwrap()
+            .set(GameStates::Playing);
+        app.update();
+        // This is the main part of the test
+        app.world
+            .send_event(MobReachedBottomGateEvent(DefenseInteraction::Damage(101)));
+        app.update();
+        app.update();
+        app.update();
+        assert_eq!(
+            &AppStates::GameOver,
+            app.world.get_resource::<State<AppStates>>().unwrap().get()
+        );
+    }
+}
