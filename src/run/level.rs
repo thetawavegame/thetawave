@@ -44,12 +44,12 @@ impl From<&BGMusicTransition> for ChangeBackgroundMusicEvent {
         ChangeBackgroundMusicEvent {
             bg_music_type: value.bg_music_type.clone(),
             loop_from: value.loop_from,
-            fade_in_tween: value.fade_in.map(|fade_in| {
-                AudioTween::new(Duration::from_secs_f32(fade_in), AudioEasing::Linear)
-            }),
-            fade_out_tween: value.fade_out.map(|fade_out| {
-                AudioTween::new(Duration::from_secs_f32(fade_out), AudioEasing::Linear)
-            }),
+            fade_in: value
+                .fade_in
+                .map(|fade_in| Duration::from_secs_f32(fade_in)),
+            fade_out: value
+                .fade_out
+                .map(|fade_out| Duration::from_secs_f32(fade_out)),
         }
     }
 }

@@ -68,8 +68,8 @@ fn change_bg_music_system(
             let mut stop_command = audio_channel.stop();
 
             // use fade if specified
-            if let Some(fade_out) = event.fade_out_tween.clone() {
-                stop_command.fade_out(fade_out);
+            if let Some(fade_out) = event.fade_out {
+                stop_command.fade_out(AudioTween::new(fade_out, AudioEasing::Linear));
             }
         }
 
@@ -84,8 +84,8 @@ fn change_bg_music_system(
             }
 
             // use fade if specified
-            if let Some(fade) = event.fade_in_tween.clone() {
-                start_command.fade_in(fade);
+            if let Some(fade_in) = event.fade_in {
+                start_command.fade_in(AudioTween::new(fade_in, AudioEasing::Linear));
             }
         }
     }

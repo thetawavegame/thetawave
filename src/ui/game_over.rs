@@ -35,7 +35,7 @@ pub fn setup_game_over_system(
 
     // fade music out
     change_bg_music_event_writer.send(ChangeBackgroundMusicEvent {
-        fade_out_tween: Some(AudioTween::new(Duration::from_secs(5), AudioEasing::Linear)),
+        fade_out: Some(Duration::from_secs(5)),
         ..default()
     });
 

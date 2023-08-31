@@ -40,8 +40,8 @@ pub fn setup_main_menu_system(
     change_bg_music_event_writer.send(ChangeBackgroundMusicEvent {
         bg_music_type: Some(BGMusicType::Main),
         loop_from: Some(0.0),
-        fade_in_tween: Some(AudioTween::new(Duration::from_secs(2), AudioEasing::Linear)),
-        fade_out_tween: Some(AudioTween::new(Duration::from_secs(2), AudioEasing::Linear)),
+        fade_in: Some(Duration::from_secs(2)),
+        fade_out: Some(Duration::from_secs(2)),
     });
 
     commands

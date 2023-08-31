@@ -1,5 +1,6 @@
+use std::time::Duration;
+
 use bevy_ecs::prelude::Event;
-use bevy_kira_audio::AudioTween;
 use serde::Deserialize;
 use strum_macros::Display;
 
@@ -45,10 +46,10 @@ pub struct ChangeBackgroundMusicEvent {
     pub bg_music_type: Option<BGMusicType>,
     /// Loop from a specific time in the track, None will not loop the track
     pub loop_from: Option<f64>,
-    /// Fade in the music cycling in (bg_music_type)
-    pub fade_in_tween: Option<AudioTween>,
-    /// Fade out the music currently being played
-    pub fade_out_tween: Option<AudioTween>,
+    /// Fade in duration for the music cycling in (bg_music_type)
+    pub fade_in: Option<Duration>,
+    /// Fade out duration for the music currently being played
+    pub fade_out: Option<Duration>,
 }
 
 #[derive(Event)]
