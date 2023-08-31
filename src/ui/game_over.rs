@@ -1,7 +1,6 @@
 use std::time::Duration;
 
 use bevy::prelude::*;
-use bevy_kira_audio::prelude::*;
 
 use thetawave_interface::{
     audio::ChangeBackgroundMusicEvent,

@@ -1,5 +1,4 @@
 use bevy::{prelude::*, time::Stopwatch};
-use bevy_kira_audio::{AudioEasing, AudioTween};
 use serde::Deserialize;
 use std::{
     collections::{HashMap, VecDeque},
