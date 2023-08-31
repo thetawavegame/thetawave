@@ -46,7 +46,7 @@ impl Plugin for RunPlugin {
             ))
             .unwrap(),
         )
-        .insert_resource(RunResource::default());
+        .insert_resource(CurrentRunProgressResource::default());
 
         app.add_event::<SpawnFormationEvent>()
             .add_event::<LevelCompletedEvent>()
@@ -83,7 +83,7 @@ pub struct PremadeRunsResource {
 }
 
 #[derive(Resource, Default, Debug)]
-pub struct RunResource {
+pub struct CurrentRunProgressResource {
     /// List of string level keys that are matched to values in the levelsresource
     pub queued_levels: VecDeque<Level>,
     pub completed_levels: VecDeque<Level>,
@@ -91,7 +91,7 @@ pub struct RunResource {
     pub current_level: Option<Level>,
 }
 
-impl RunResource {
+impl CurrentRunProgressResource {
     /// Generate a premade level using a String run key
     pub fn generate_premade(
         &mut self,
@@ -179,7 +179,7 @@ impl RunResource {
 }
 
 fn init_run_system(
-    mut run_res: ResMut<RunResource>,
+    mut run_res: ResMut<CurrentRunProgressResource>,
     premade_runs_res: Res<PremadeRunsResource>,
     premade_levels_res: Res<PremadeLevelsResource>,
     mut next_app_state: ResMut<NextState<AppStates>>,
@@ -205,7 +205,7 @@ fn init_run_system(
 }
 
 fn tick_run_system(
-    mut run_res: ResMut<RunResource>,
+    mut run_res: ResMut<CurrentRunProgressResource>,
     time: Res<Time>,
     mut spawn_formation_event_writer: EventWriter<SpawnFormationEvent>,
     formations_res: Res<FormationPoolsResource>,
@@ -226,7 +226,7 @@ fn tick_run_system(
 }
 
 fn handle_objective_system(
-    mut run_res: ResMut<RunResource>,
+    mut run_res: ResMut<CurrentRunProgressResource>,
     mut bottom_gate_event: EventReader<MobReachedBottomGateEvent>,
     mut run_end_event: EventWriter<RunEndEvent>,
     mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
@@ -290,6 +290,6 @@ fn run_end_system(
     }
 }
 
-fn run_reset_system(mut run_resource: ResMut<RunResource>) {
-    *run_resource = RunResource::default();
+fn run_reset_system(mut run_resource: ResMut<CurrentRunProgressResource>) {
+    *run_resource = CurrentRunProgressResource::default();
 }
