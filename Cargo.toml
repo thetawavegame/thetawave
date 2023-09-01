@@ -21,6 +21,10 @@ bevy_ecs_macros = "0.11.2"
 bevy_ecs = "0.11.2"
 bevy_kira_audio = { version = "0.16.0", features = ["mp3", "wav"] }
 
+
+[dev-dependencies]
+rstest = "0.18.2"
+
 [dependencies]
 bevy = { workspace = true }
 bevy_rapier2d = { version = "0.22.0", features = [

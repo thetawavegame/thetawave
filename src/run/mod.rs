@@ -302,6 +302,7 @@ mod test {
     use bevy::log::{Level, LogPlugin};
     use bevy::prelude::{NextState, State};
     use bevy::MinimalPlugins;
+    use rstest::rstest;
     use thetawave_interface::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent};
     use thetawave_interface::objective::{DefenseInteraction, MobReachedBottomGateEvent};
     use thetawave_interface::states::{AppStates, GameStates};
@@ -326,12 +327,15 @@ mod test {
         app
     }
 
-    #[test]
-    fn test_gate_health_reaches_zero_triggers_game_over() {
+    #[rstest]
+    #[case::large_gate_damage_triggers_game_over(101, AppStates::GameOver)]
+    #[case::small_gate_damage_keeps_game_going(10, AppStates::Game)]
+    fn test_gate_health_transitions_app_state(
+        #[case] damage_amount: usize,
+        #[case] want_end_state: AppStates,
+    ) {
         // Defense starts with 100 HP
         let mut app = _minimal_app_for_run_progression_plugin_tests();
-        app.update();
-        app.update();
         // triggers => AppStates::Game and starts listening to events
         app.world
             .get_resource_mut::<NextState<AppStates>>()
@@ -342,14 +346,22 @@ mod test {
             .unwrap()
             .set(GameStates::Playing);
         app.update();
+        app.update();
+        // A system in this plugin _should_ kick off the game/run
+        assert_eq!(
+            &AppStates::Game,
+            app.world.get_resource::<State<AppStates>>().unwrap().get()
+        );
         // This is the main part of the test
         app.world
-            .send_event(MobReachedBottomGateEvent(DefenseInteraction::Damage(101)));
+            .send_event(MobReachedBottomGateEvent(DefenseInteraction::Damage(
+                damage_amount,
+            )));
         app.update();
         app.update();
         app.update();
         assert_eq!(
-            &AppStates::GameOver,
+            &want_end_state,
             app.world.get_resource::<State<AppStates>>().unwrap().get()
         );
     }
