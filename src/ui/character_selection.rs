@@ -621,7 +621,7 @@ pub fn select_character_system(
     )>,
 ) {
     let keyboard_input =
-        keyboard_input.just_pressed(KeyCode::D) || keyboard_input.just_released(KeyCode::A);
+        keyboard_input.just_pressed(KeyCode::D) || keyboard_input.just_pressed(KeyCode::A);
 
     let gamepad_join_inputs: HashMap<usize, bool> = gamepads
         .iter()
