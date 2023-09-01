@@ -1,23 +1,7 @@
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use bevy_kira_audio::AudioSource;
-use serde::Deserialize;
-use strum_macros::Display;
-
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
-pub enum BGMusicType {
-    Game,
-    Boss,
-    BossTransition,
-    Main,
-}
-
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display, Default)]
-pub enum CollisionSoundType {
-    Squishy,
-    #[default]
-    Normal,
-}
+use thetawave_interface::audio::{BGMusicType, CollisionSoundType, SoundEffectType};
 
 #[derive(AssetCollection, Resource)]
 pub struct GameAudioAssets {
@@ -73,13 +57,26 @@ impl GameAudioAssets {
         }
     }
 
-    pub fn get_collision_sound_asset(
-        &self,
-        collision_sound_type: &CollisionSoundType,
-    ) -> Handle<AudioSource> {
-        match collision_sound_type {
-            CollisionSoundType::Squishy => self.squishy_collision.clone(),
-            CollisionSoundType::Normal => self.collision.clone(),
+    pub fn get_sound_effect(&self, sound_type: &SoundEffectType) -> Handle<AudioSource> {
+        match sound_type {
+            SoundEffectType::Collision(collsion_type) => match collsion_type {
+                CollisionSoundType::Squishy => self.squishy_collision.clone(),
+                CollisionSoundType::Normal => self.collision.clone(),
+            },
+            SoundEffectType::BarrierBounce => self.barrier_bounce.clone(),
+            SoundEffectType::ConsumablePickup => self.consumable_pickup.clone(),
+            SoundEffectType::DefenseDamage => self.defense_damage.clone(),
+            SoundEffectType::DefenseHeal => self.defense_heal.clone(),
+            SoundEffectType::EnemyFireBlast => self.enemy_fire_blast.clone(),
+            SoundEffectType::MenuInputSuccess => self.menu_input_success.clone(),
+            SoundEffectType::MobExplosion => self.mob_explosion.clone(),
+            SoundEffectType::MobHit => self.mob_hit.clone(),
+            SoundEffectType::PlayerExplosion => self.player_explosion.clone(),
+            SoundEffectType::PlayerFireBlast => self.player_fire_blast.clone(),
+            SoundEffectType::PlayerHit => self.player_hit.clone(),
+            SoundEffectType::BulletDing => self.bullet_ding.clone(),
+            SoundEffectType::BulletBounce => self.bullet_bounce.clone(),
+            SoundEffectType::MegablastAbility => self.megablast_ability.clone(),
         }
     }
 }

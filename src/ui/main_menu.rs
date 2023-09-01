@@ -1,13 +1,12 @@
 use std::time::Duration;
 
 use bevy::prelude::*;
-use bevy_kira_audio::{AudioChannel, AudioControl, AudioEasing, AudioTween};
+use thetawave_interface::audio::{BGMusicType, ChangeBackgroundMusicEvent};
 use thetawave_interface::game::historical_metrics::{
     MobKillsByPlayerForCompletedGames, UserStatsByPlayerForCompletedGamesCache, DEFAULT_USER_ID,
 };
 
 use crate::states::MainMenuCleanup;
-use crate::{assets::GameAudioAssets, audio};
 
 #[derive(Component)]
 pub struct MainMenuUI;
@@ -21,8 +20,7 @@ pub struct BouncingPromptComponent {
 pub fn setup_main_menu_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<audio::BackgroundMusicAudioChannel>>,
-    audio_assets: Res<GameAudioAssets>,
+    mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     historical_games_shot_counts: Res<UserStatsByPlayerForCompletedGamesCache>,
     historical_games_enemy_mob_kill_counts: Res<MobKillsByPlayerForCompletedGames>,
 ) {
@@ -38,10 +36,12 @@ pub fn setup_main_menu_system(
         }
     };
 
-    audio_channel
-        .play(audio_assets.get_bg_music_asset(&crate::assets::BGMusicType::Main))
-        .looped()
-        .fade_in(AudioTween::new(Duration::from_secs(2), AudioEasing::Linear));
+    change_bg_music_event_writer.send(ChangeBackgroundMusicEvent {
+        bg_music_type: Some(BGMusicType::Main),
+        loop_from: Some(0.0),
+        fade_in: Some(Duration::from_secs(2)),
+        fade_out: Some(Duration::from_secs(2)),
+    });
 
     commands
         .spawn(NodeBundle {
@@ -149,85 +149,6 @@ pub fn setup_main_menu_system(
                         });
                 });
         });
-    /*
-    commands
-        .spawn(NodeBundle {
-            style: Style {
-                width: Val::Percent(100.),
-                height: Val::Percent(100.),
-                ..Default::default()
-            },
-            ..Default::default()
-        })
-        //.insert(AppStateComponent(AppStates::MainMenu))
-        .insert(states::MainMenuCleanup)
-        .insert(MainMenuUI)
-        .with_children(|parent| {
-            parent
-                .spawn(ImageBundle {
-                    image: asset_server
-                        .load("texture/main_menu_background_54.png")
-                        .into(),
-                    style: Style {
-                        width: Val::Percent(100.),
-                        height: Val::Percent(100.),
-                        align_items: AlignItems::Center,
-                        ..Default::default()
-                    },
-                    ..default()
-                })
-                .with_children(|parent| {
-                    parent
-                        .spawn(ImageBundle {
-                            image: asset_server
-                                .load(if cfg!(feature = "arcade") {
-                                    "texture/start_game_prompt_arcade.png"
-                                } else {
-                                    "texture/start_game_prompt_keyboard.png"
-                                })
-                                .into(),
-                            style: Style {
-                                width: Val::Px(400.),
-                                height: Val::Px(100.),
-                                margin: UiRect {
-                                    left: Val::Auto,
-                                    right: Val::Auto,
-                                    top: Val::Percent(20.0),
-                                    ..Default::default()
-                                },
-                                ..Default::default()
-                            },
-                            ..Default::default()
-                        })
-                        .insert(BouncingPromptComponent {
-                            flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
-                            is_active: true,
-                        });
-                    /*
-                    parent
-                        .spawn(ImageBundle {
-                            image: asset_server
-                                .load("texture/exit_game_prompt_controller.png")
-                                .into(),
-                            style: Style {
-                                size: Size::new(Val::Px(400.0), Val::Px(100.0)),
-                                margin: UiRect {
-                                    left: Val::Auto,
-                                    right: Val::Auto,
-                                    top: Val::Percent(20.0),
-                                    ..Default::default()
-                                },
-                                ..Default::default()
-                            },
-                            ..Default::default()
-                        })
-                        .insert(BouncingPromptComponent {
-                            flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
-                        });
-                        */
-                });
-        });
-        */
 }
 
 pub fn bouncing_prompt_system(

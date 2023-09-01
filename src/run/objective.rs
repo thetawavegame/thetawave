@@ -11,9 +11,9 @@ pub enum Objective {
 #[derive(Deserialize, Clone, Debug)]
 pub struct DefenseData {
     /// Current defense
-    defense: usize,
+    pub defense: usize,
     /// Maximum defense
-    max_defense: usize,
+    pub max_defense: usize,
 }
 
 impl DefenseData {

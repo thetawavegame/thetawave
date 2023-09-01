@@ -1,14 +1,14 @@
 use crate::{
     arena::ArenaBarrierComponent,
-    assets::{CollisionSoundType, GameAudioAssets},
-    audio,
     player::PlayerComponent,
     spawnable::{MobComponent, MobSegmentComponent, ProjectileComponent},
 };
 use bevy::prelude::*;
-use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
-use thetawave_interface::spawnable::{Faction, MobSegmentType, MobType, ProjectileType};
+use thetawave_interface::{
+    audio::{CollisionSoundType, PlaySoundEffectEvent, SoundEffectType},
+    spawnable::{Faction, MobSegmentType, MobType, ProjectileType},
+};
 
 use super::{CollidingEntityPair, SortedCollisionEvent};
 
@@ -22,8 +22,7 @@ pub fn contact_collision_system(
     mob_segment_query: Query<(Entity, &MobSegmentComponent)>,
     barrier_query: Query<Entity, With<ArenaBarrierComponent>>,
     projectile_query: Query<(Entity, &ProjectileComponent)>,
-    audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
-    audio_assets: Res<GameAudioAssets>,
+    mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
 ) {
     'collision_events: for contact_event in collision_events.iter() {
         if let CollisionEvent::Stopped(collider1_entity, collider2_entity, _) = contact_event {
@@ -53,9 +52,11 @@ pub fn contact_collision_system(
             {
                 // check if player collided with a mob
                 if let Ok((_entity, mob_component)) = mob_query.get(colliding_entities.secondary) {
-                    audio_channel.play(
-                        audio_assets.get_collision_sound_asset(&mob_component.collision_sound),
-                    );
+                    sound_effect_event_writer.send(PlaySoundEffectEvent {
+                        sound_effect_type: SoundEffectType::Collision(
+                            mob_component.collision_sound.clone(),
+                        ),
+                    });
                     collision_event_writer.send(SortedCollisionEvent::PlayerToMobContact {
                         player_entity: colliding_entities.primary,
                         mob_entity: colliding_entities.secondary,
@@ -71,17 +72,20 @@ pub fn contact_collision_system(
                 }
                 // check if player collided with a barrier
                 else if barrier_query.get(colliding_entities.secondary).is_ok() {
-                    audio_channel.play(audio_assets.barrier_bounce.clone());
+                    sound_effect_event_writer.send(PlaySoundEffectEvent {
+                        sound_effect_type: SoundEffectType::BarrierBounce,
+                    });
                     continue 'collision_events;
                 }
                 // check if player collided with segment
                 else if let Ok((_mob_segment_entity, mob_segment_component)) =
                     mob_segment_query.get(colliding_entities.secondary)
                 {
-                    audio_channel.play(
-                        audio_assets
-                            .get_collision_sound_asset(&mob_segment_component.collision_sound),
-                    );
+                    sound_effect_event_writer.send(PlaySoundEffectEvent {
+                        sound_effect_type: SoundEffectType::Collision(
+                            mob_segment_component.collision_sound.clone(),
+                        ),
+                    });
                     collision_event_writer.send(SortedCollisionEvent::PlayerToMobSegmentContact {
                         player_entity: colliding_entities.primary,
                         mob_segment_entity: colliding_entities.secondary,
@@ -119,19 +123,19 @@ pub fn contact_collision_system(
                 if let Ok((_mob_entity, mob_component_2)) =
                     mob_query.get(colliding_entities.secondary)
                 {
-                    if mob_component_1.collision_sound != CollisionSoundType::default() {
-                        audio_channel.play(
-                            audio_assets
-                                .get_collision_sound_asset(&mob_component_1.collision_sound),
-                        );
-                    } else if mob_component_2.collision_sound != CollisionSoundType::default() {
-                        audio_channel.play(
-                            audio_assets
-                                .get_collision_sound_asset(&mob_component_2.collision_sound),
-                        );
-                    } else {
-                        audio_channel.play(audio_assets.collision.clone());
-                    }
+                    sound_effect_event_writer.send(PlaySoundEffectEvent {
+                        sound_effect_type: SoundEffectType::Collision(
+                            if mob_component_1.collision_sound != CollisionSoundType::default() {
+                                mob_component_1.collision_sound.clone()
+                            } else if mob_component_2.collision_sound
+                                != CollisionSoundType::default()
+                            {
+                                mob_component_2.collision_sound.clone()
+                            } else {
+                                CollisionSoundType::default()
+                            },
+                        ),
+                    });
 
                     // send two sorted collision events, swapping the position of the mobs in the struct
                     collision_event_writer.send(SortedCollisionEvent::MobToMobContact {
@@ -174,27 +178,29 @@ pub fn contact_collision_system(
                         mob_entity: colliding_entities.primary,
                         barrier_entity,
                     });
-                    audio_channel.play(audio_assets.barrier_bounce.clone());
+                    sound_effect_event_writer.send(PlaySoundEffectEvent {
+                        sound_effect_type: SoundEffectType::BarrierBounce,
+                    });
                     continue 'collision_events;
                 }
                 // check if mob collided with mob segment
                 else if let Ok((_mob_segment_entity, mob_segment_component)) =
                     mob_segment_query.get(colliding_entities.secondary)
                 {
-                    if mob_component_1.collision_sound != CollisionSoundType::default() {
-                        audio_channel.play(
-                            audio_assets
-                                .get_collision_sound_asset(&mob_component_1.collision_sound),
-                        );
-                    } else if mob_segment_component.collision_sound != CollisionSoundType::default()
-                    {
-                        audio_channel.play(
-                            audio_assets
-                                .get_collision_sound_asset(&mob_segment_component.collision_sound),
-                        );
-                    } else {
-                        audio_channel.play(audio_assets.collision.clone());
-                    }
+                    sound_effect_event_writer.send(PlaySoundEffectEvent {
+                        sound_effect_type: SoundEffectType::Collision(
+                            if mob_component_1.collision_sound != CollisionSoundType::default() {
+                                mob_component_1.collision_sound.clone()
+                            } else if mob_segment_component.collision_sound
+                                != CollisionSoundType::default()
+                            {
+                                mob_segment_component.collision_sound.clone()
+                            } else {
+                                CollisionSoundType::default()
+                            },
+                        ),
+                    });
+
                     collision_event_writer.send(SortedCollisionEvent::MobToMobSegmentContact {
                         mob_entity: colliding_entities.primary,
                         mob_faction: match mob_component_1.mob_type {
@@ -242,23 +248,21 @@ pub fn contact_collision_system(
                 if let Ok((_mob_segment_entity_2, mob_segment_component_2)) =
                     mob_segment_query.get(colliding_entities.secondary)
                 {
-                    if mob_segment_component_1.collision_sound != CollisionSoundType::default() {
-                        audio_channel.play(
-                            audio_assets.get_collision_sound_asset(
-                                &mob_segment_component_1.collision_sound,
-                            ),
-                        );
-                    } else if mob_segment_component_2.collision_sound
-                        != CollisionSoundType::default()
-                    {
-                        audio_channel.play(
-                            audio_assets.get_collision_sound_asset(
-                                &mob_segment_component_2.collision_sound,
-                            ),
-                        );
-                    } else {
-                        audio_channel.play(audio_assets.collision.clone());
-                    }
+                    sound_effect_event_writer.send(PlaySoundEffectEvent {
+                        sound_effect_type: SoundEffectType::Collision(
+                            if mob_segment_component_1.collision_sound
+                                != CollisionSoundType::default()
+                            {
+                                mob_segment_component_1.collision_sound.clone()
+                            } else if mob_segment_component_2.collision_sound
+                                != CollisionSoundType::default()
+                            {
+                                mob_segment_component_2.collision_sound.clone()
+                            } else {
+                                CollisionSoundType::default()
+                            },
+                        ),
+                    });
 
                     // send two sorted collision events, swapping the position of the mob segments in the struct
                     collision_event_writer.send(
@@ -299,7 +303,9 @@ pub fn contact_collision_system(
                 else if let Ok((_projectile_entity, projectile_component)) =
                     projectile_query.get(colliding_entities.secondary)
                 {
-                    audio_channel.play(audio_assets.bullet_bounce.clone());
+                    sound_effect_event_writer.send(PlaySoundEffectEvent {
+                        sound_effect_type: SoundEffectType::BulletBounce,
+                    });
 
                     collision_event_writer.send(
                         SortedCollisionEvent::MobSegmentToProjectileContact {
@@ -320,7 +326,9 @@ pub fn contact_collision_system(
                 }
                 // check if mob segment collided with barrier
                 else if barrier_query.get(colliding_entities.secondary).is_ok() {
-                    audio_channel.play(audio_assets.barrier_bounce.clone());
+                    sound_effect_event_writer.send(PlaySoundEffectEvent {
+                        sound_effect_type: SoundEffectType::BarrierBounce,
+                    });
                     continue 'collision_events;
                 }
             }

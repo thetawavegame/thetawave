@@ -141,6 +141,23 @@ impl Plugin for StatesPlugin {
             Update,
             close_pause_menu_system.run_if(in_state(GameStates::Paused)),
         );
+
+        app.add_systems(
+            Update,
+            start_mainmenu_system.run_if(in_state(AppStates::Victory)),
+        );
+
+        app.add_systems(
+            Update,
+            start_mainmenu_system.run_if(in_state(AppStates::GameOver)),
+        );
+
+        app.add_systems(
+            Update,
+            start_mainmenu_system
+                .run_if(in_state(AppStates::Game))
+                .run_if(in_state(GameStates::Paused)),
+        );
     }
 }
 
@@ -172,5 +189,39 @@ pub fn clear_state_system<T: Component>(
 ) {
     for entity in despawn_entities_query.iter() {
         commands.entity(entity).despawn_recursive();
+    }
+}
+
+fn start_mainmenu_system(
+    gamepads: Res<Gamepads>,
+    mut gamepad_input: ResMut<Input<GamepadButton>>,
+    mut keyboard_input: ResMut<Input<KeyCode>>,
+    mut next_app_state: ResMut<NextState<AppStates>>,
+    mut next_game_state: ResMut<NextState<GameStates>>,
+) {
+    // get input
+    let mut reset = keyboard_input.just_released(KeyCode::R);
+
+    for gamepad in gamepads.iter() {
+        reset |= gamepad_input.just_released(GamepadButton {
+            gamepad,
+            button_type: GamepadButtonType::East,
+        });
+    }
+
+    // if reset input provided reset th run
+    if reset {
+        // go to the main menu state
+        next_app_state.set(AppStates::MainMenu);
+        next_game_state.set(GameStates::Playing);
+
+        // reset the input
+        keyboard_input.reset(KeyCode::R);
+        for gamepad in gamepads.iter() {
+            gamepad_input.reset(GamepadButton {
+                gamepad,
+                button_type: GamepadButtonType::East,
+            });
+        }
     }
 }

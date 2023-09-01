@@ -1,14 +1,15 @@
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
-use bevy_kira_audio::{AudioChannel, AudioControl};
 use bevy_rapier2d::{prelude::*, rapier::prelude::JointAxis};
 use rand::{thread_rng, Rng};
 use serde::Deserialize;
-use thetawave_interface::{health::DamageDealtEvent, spawnable::EffectType};
+use thetawave_interface::{
+    audio::{PlaySoundEffectEvent, SoundEffectType},
+    health::DamageDealtEvent,
+    spawnable::EffectType,
+};
 
 use crate::{
-    assets::GameAudioAssets,
-    audio,
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     loot::LootDropsResource,
@@ -72,8 +73,7 @@ pub fn mob_segment_execute_behavior_system(
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
     loot_drops_resource: Res<LootDropsResource>,
     mut spawn_consumable_event_writer: EventWriter<SpawnConsumableEvent>,
-    audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
-    audio_assets: Res<GameAudioAssets>,
+    mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
     time: Res<Time>,
     mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
     mut mob_segment_destroyed_event_writer: EventWriter<MobSegmentDestroyedEvent>,
@@ -109,7 +109,9 @@ pub fn mob_segment_execute_behavior_system(
                 }
                 MobSegmentBehavior::DieAtZeroHealth => {
                     if mob_seg_health.is_dead() {
-                        audio_channel.play(audio_assets.mob_explosion.clone());
+                        sound_effect_event_writer.send(PlaySoundEffectEvent {
+                            sound_effect_type: SoundEffectType::MobExplosion,
+                        });
 
                         // spawn mob explosion
                         spawn_effect_event_writer.send(SpawnEffectEvent {
@@ -195,6 +197,7 @@ pub fn mob_segment_execute_behavior_system(
                                 mob_type: mob_spawner.mob_type.clone(),
                                 position,
                                 rotation: mob_segment_transform.rotation, // passed rotation of the parent mob
+                                boss: false,
                             })
                         }
                     }

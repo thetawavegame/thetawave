@@ -8,10 +8,10 @@ use rand::{seq::IteratorRandom, Rng};
 use ron::de::from_bytes;
 use serde::Deserialize;
 use std::ops::Range;
+use thetawave_interface::run::{RunDefeatType, RunEndEvent, RunOutcomeType};
 use thiserror::Error;
 
 use crate::{
-    run::{RunDefeatType, RunEndEvent, RunOutcomeType},
     states::{self, GameCleanup},
     GameEnterSet,
 };

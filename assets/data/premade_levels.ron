@@ -1,0 +1,689 @@
+(
+	levels_data: {
+		"test_level_1": (
+			objective: Defense((
+				defense: 100,
+				max_defense: 100,
+			)),	
+			phases: [
+				(
+					phase_type: FormationSpawn(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 20,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						spawn_timer: (
+							mode: Once,
+							duration: (
+								secs: 1,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+							
+						),
+						formation_pool: "easy",
+					),
+					bg_music_transition: Some((
+						loop_from: Some(0.0),
+						bg_music_type: Some(Game),
+						fade_out: Some(2.0),
+						fade_in: Some(2.0),
+					)),
+				),
+				(
+					phase_type: Break(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 9,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+					),
+				),
+				(
+					phase_type: FormationSpawn(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 40,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						spawn_timer: (
+							mode: Once,
+							duration: (
+								secs: 1,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						formation_pool: "medium",
+					),
+				),
+				(
+					phase_type: Break(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 9,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+					),
+				),
+				(
+					phase_type: FormationSpawn(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 60,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						spawn_timer: (
+							mode: Once,
+							duration: (
+								secs: 1,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						formation_pool: "hard",
+					),
+					
+				),
+				(
+					phase_type: Break(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 5,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+					),
+				),
+				(
+					phase_type: Boss(
+						mob_type: Enemy(Repeater),
+						position: (0.0, 600.0),
+						spawn_timer: (
+							mode: Once,
+							duration: (
+								secs: 5,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+					),
+					bg_music_transition: Some((
+						loop_from: Some(9.615),
+						bg_music_type: Some(Boss),
+						fade_out: Some(8.0),
+					)),
+				)
+			],
+		),
+		"test_level_2": (
+			objective: Defense((
+				defense: 100,
+				max_defense: 100,
+			)),		
+			phases: [
+				(
+					phase_type: FormationSpawn(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 20,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						spawn_timer: (
+							mode: Once,
+							duration: (
+								secs: 1,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						formation_pool: "easy",
+					),
+					bg_music_transition: Some((
+						loop_from: Some(0.0),
+						bg_music_type: Some(Game),
+						fade_out: Some(2.0),
+						fade_in: Some(2.0),
+					)),
+				),
+				(
+					phase_type: Break(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 9,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+					),
+				),
+				(
+					phase_type: FormationSpawn(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 40,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						spawn_timer: (
+							mode: Once,
+							duration: (
+								secs: 1,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						formation_pool: "medium",
+					),
+				),
+				(
+					phase_type: Break(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 9,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+					),
+				),
+				(
+					phase_type: FormationSpawn(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 60,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						spawn_timer: (
+							mode: Once,
+							duration: (
+								secs: 1,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						formation_pool: "hard",
+					),
+					
+				),
+				(
+					phase_type: Break(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 5,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+					),
+				),
+				(
+					phase_type: Boss(
+						mob_type: Enemy(Repeater),
+						position: (0.0, 600.0),
+						spawn_timer: (
+							mode: Once,
+							duration: (
+								secs: 5,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),		
+					),
+					bg_music_transition: Some((
+						loop_from: Some(9.615),
+						bg_music_type: Some(Boss),
+						fade_out: Some(8.0),
+					)),
+				)
+			],
+		),
+		"test_level_3": (
+			objective: Defense((
+				defense: 100,
+				max_defense: 100,
+			)),
+			phases: [
+				(
+					phase_type: FormationSpawn(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 20,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						spawn_timer: (
+							mode: Once,
+							duration: (
+								secs: 1,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						formation_pool: "easy",
+					),
+					bg_music_transition: Some((
+						loop_from: Some(0.0),
+						bg_music_type: Some(Game),
+						fade_out: Some(2.0),
+						fade_in: Some(2.0),
+					)),
+				),
+				(
+					phase_type: Break(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 9,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+					),
+				),
+				(
+					phase_type: FormationSpawn(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 40,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						spawn_timer: (
+							mode: Once,
+							duration: (
+								secs: 1,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						formation_pool: "medium",
+					),
+				),
+				(
+					phase_type: Break(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 9,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+					),
+				),
+				(
+					phase_type: FormationSpawn(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 60,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						spawn_timer: (
+							mode: Once,
+							duration: (
+								secs: 1,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						formation_pool: "hard",
+					),
+					
+				),
+				(
+					phase_type: Break(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 5,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+					),
+				),
+				(
+					phase_type: Boss(
+						mob_type: Enemy(Repeater),
+						position: (0.0, 600.0),
+						spawn_timer: (
+							mode: Once,
+							duration: (
+								secs: 5,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),		
+					),
+					bg_music_transition: Some((
+						loop_from: Some(9.615),
+						bg_music_type: Some(Boss),
+						fade_out: Some(8.0),
+					)),
+				)
+			],
+		),
+		"test": (
+			objective: Defense((
+				defense: 100,
+				max_defense: 100,
+			)),
+			phases: [
+				(
+					phase_type: FormationSpawn(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 400000,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						spawn_timer: (
+							mode: Once,
+							duration: (
+								secs: 1,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						formation_pool: "medium",
+					),
+				),
+			],
+		),
+	}
+)

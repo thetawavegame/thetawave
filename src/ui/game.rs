@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use crate::{
     misc::HealthComponent,
     player::{PlayerComponent, PlayersResource},
-    run::{Objective, RunResource},
+    run::{CurrentRunProgressResource, Objective},
     states::GameCleanup,
 };
 
@@ -471,7 +471,7 @@ pub fn update_player1_ui(
         Query<&mut Style, (With<ShieldsUI>, With<Player1UI>)>,
     )>,
     player_query: Query<(&HealthComponent, &PlayerComponent)>,
-    run_resource: Res<RunResource>,
+    run_resource: Res<CurrentRunProgressResource>,
     time: Res<Time>,
 ) {
     // update player health ui
@@ -493,7 +493,7 @@ pub fn update_player1_ui(
     }
 
     for mut style_component in player1_ui_queries.p6().iter_mut() {
-        if let Some(level) = &run_resource.level {
+        if let Some(level) = &run_resource.current_level {
             match &level.objective {
                 Objective::Defense(data) => {
                     style_component.width = Val::Px(800.0 * data.get_percentage())

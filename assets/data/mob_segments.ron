@@ -14,7 +14,7 @@
                 )
             ],
             collision_damage: 6,
-            defense_affect: Heal(10),
+            defense_interaction: Some(Heal(10)),
             health: 60,
             consumable_drops: Standard,
             z_level: 5.0,
@@ -35,7 +35,7 @@
                 )
             ],
             collision_damage: 6,
-            defense_affect: Heal(10),
+            defense_interaction: Some(Heal(10)),
             health: 60,
             consumable_drops: Standard,
             z_level: 5.0,

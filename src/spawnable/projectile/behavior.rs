@@ -1,13 +1,11 @@
 use crate::{
-    assets::GameAudioAssets,
-    audio,
     collision::SortedCollisionEvent,
     spawnable::{MobComponent, MobSegmentComponent, PlayerComponent, SpawnEffectEvent},
 };
 use bevy::prelude::*;
-use bevy_kira_audio::prelude::*;
 use serde::Deserialize;
 use thetawave_interface::{
+    audio::{PlaySoundEffectEvent, SoundEffectType},
     health::DamageDealtEvent,
     spawnable::{EffectType, Faction, ProjectileType},
 };
@@ -35,8 +33,7 @@ pub fn projectile_execute_behavior_system(
     mut collision_events: EventReader<SortedCollisionEvent>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     time: Res<Time>,
-    audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
-    audio_assets: Res<GameAudioAssets>,
+    mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
     mut damage_dealt_event_writer: EventWriter<DamageDealtEvent>,
 ) {
     // Put all collision events in a vec so they can be read more than once
@@ -56,8 +53,7 @@ pub fn projectile_execute_behavior_system(
                     projectile_transform,
                     &collision_events_vec,
                     &mut spawn_effect_event_writer,
-                    &audio_channel,
-                    &audio_assets,
+                    &mut sound_effect_event_writer,
                 ),
                 ProjectileBehavior::ExplodeOnContact => explode_on_contact(
                     &mut commands,
@@ -65,8 +61,7 @@ pub fn projectile_execute_behavior_system(
                     projectile_transform,
                     &collision_events_vec,
                     &mut spawn_effect_event_writer,
-                    &audio_channel,
-                    &audio_assets,
+                    &mut sound_effect_event_writer,
                 ),
                 ProjectileBehavior::DealDamageOnContact => deal_damage_on_contact(
                     entity,
@@ -74,8 +69,7 @@ pub fn projectile_execute_behavior_system(
                     &player_query,
                     &mut mob_query,
                     &mut mob_segment_query,
-                    &audio_channel,
-                    &audio_assets,
+                    &mut sound_effect_event_writer,
                     &mut damage_dealt_event_writer,
                 ),
                 ProjectileBehavior::DealDamageOnIntersection => deal_damage_on_intersection(
@@ -84,8 +78,7 @@ pub fn projectile_execute_behavior_system(
                     &player_query,
                     &mut mob_query,
                     &mut mob_segment_query,
-                    &audio_channel,
-                    &audio_assets,
+                    &mut sound_effect_event_writer,
                     &mut damage_dealt_event_writer,
                 ),
                 ProjectileBehavior::TimedDespawn { despawn_time } => {
@@ -160,8 +153,7 @@ fn deal_damage_on_contact(
     player_query: &Query<(Entity, &PlayerComponent)>,
     mob_query: &mut Query<(Entity, &mut MobComponent)>,
     mob_segment_query: &mut Query<(Entity, &mut MobSegmentComponent)>,
-    audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
-    audio_assets: &GameAudioAssets,
+    sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
     damage_dealt_event_writer: &mut EventWriter<DamageDealtEvent>,
 ) {
     for collision_event in collision_events.iter() {
@@ -180,14 +172,14 @@ fn deal_damage_on_contact(
                     )
                 {
                     // deal damage to player
-                    audio_channel.play(audio_assets.player_hit.clone());
-                    for (player_entity_q, _player_component) in player_query.iter() {
-                        if *player_entity == player_entity_q && *projectile_damage > 0 {
-                            damage_dealt_event_writer.send(DamageDealtEvent {
-                                damage: *projectile_damage,
-                                target: player_entity_q,
-                            });
-                        }
+                    sound_effect_event_writer.send(PlaySoundEffectEvent {
+                        sound_effect_type: SoundEffectType::PlayerHit,
+                    });
+                    if player_query.contains(*player_entity) && *projectile_damage > 0 {
+                        damage_dealt_event_writer.send(DamageDealtEvent {
+                            damage: *projectile_damage,
+                            target: *player_entity,
+                        });
                     }
 
                     continue;
@@ -209,14 +201,14 @@ fn deal_damage_on_contact(
                     }
                 {
                     // deal damage to mob
-                    audio_channel.play(audio_assets.bullet_ding.clone());
-                    for (mob_entity_q, _mob_component) in mob_query.iter_mut() {
-                        if *mob_entity == mob_entity_q && *projectile_damage > 0 {
-                            damage_dealt_event_writer.send(DamageDealtEvent {
-                                damage: *projectile_damage,
-                                target: mob_entity_q,
-                            });
-                        }
+                    sound_effect_event_writer.send(PlaySoundEffectEvent {
+                        sound_effect_type: SoundEffectType::BulletDing,
+                    });
+                    if mob_query.contains(*mob_entity) && *projectile_damage > 0 {
+                        damage_dealt_event_writer.send(DamageDealtEvent {
+                            damage: *projectile_damage,
+                            target: *mob_entity,
+                        });
                     }
 
                     continue;
@@ -237,16 +229,14 @@ fn deal_damage_on_contact(
                     }
                 {
                     // deal damage to mob
-                    audio_channel.play(audio_assets.bullet_ding.clone());
-                    for (mob_segment_entity_q, _mob_segment_component) in
-                        mob_segment_query.iter_mut()
-                    {
-                        if *mob_segment_entity == mob_segment_entity_q && *projectile_damage > 0 {
-                            damage_dealt_event_writer.send(DamageDealtEvent {
-                                damage: *projectile_damage,
-                                target: mob_segment_entity_q,
-                            });
-                        }
+                    sound_effect_event_writer.send(PlaySoundEffectEvent {
+                        sound_effect_type: SoundEffectType::BulletDing,
+                    });
+                    if mob_segment_query.contains(*mob_segment_entity) && *projectile_damage > 0 {
+                        damage_dealt_event_writer.send(DamageDealtEvent {
+                            damage: *projectile_damage,
+                            target: *mob_segment_entity,
+                        });
                     }
 
                     continue;
@@ -264,8 +254,7 @@ fn deal_damage_on_intersection(
     player_query: &Query<(Entity, &PlayerComponent)>,
     mob_query: &mut Query<(Entity, &mut MobComponent)>,
     mob_segment_query: &mut Query<(Entity, &mut MobSegmentComponent)>,
-    audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
-    audio_assets: &GameAudioAssets,
+    sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
     damage_dealt_event_writer: &mut EventWriter<DamageDealtEvent>,
 ) {
     for collision_event in collision_events.iter() {
@@ -289,7 +278,9 @@ fn deal_damage_on_intersection(
                                 damage: *projectile_damage,
                                 target: player_entity_q,
                             });
-                            audio_channel.play(audio_assets.player_hit.clone());
+                            sound_effect_event_writer.send(PlaySoundEffectEvent {
+                                sound_effect_type: SoundEffectType::PlayerHit,
+                            });
                         }
                     }
 
@@ -366,8 +357,7 @@ fn explode_on_intersection(
     transform: &Transform,
     collision_events: &[&SortedCollisionEvent],
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
-    audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
-    audio_assets: &GameAudioAssets,
+    sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
@@ -416,7 +406,9 @@ fn explode_on_intersection(
                         Faction::Neutral => matches!(projectile_faction, Faction::Neutral),
                     }
                 {
-                    audio_channel.play(audio_assets.mob_hit.clone());
+                    sound_effect_event_writer.send(PlaySoundEffectEvent {
+                        sound_effect_type: SoundEffectType::MobHit,
+                    });
                     match projectile_faction {
                         Faction::Ally => {
                             // spawn explosion
@@ -464,7 +456,9 @@ fn explode_on_intersection(
                         Faction::Neutral => matches!(projectile_faction, Faction::Neutral),
                     }
                 {
-                    audio_channel.play(audio_assets.mob_hit.clone());
+                    sound_effect_event_writer.send(PlaySoundEffectEvent {
+                        sound_effect_type: SoundEffectType::MobHit,
+                    });
                     match projectile_faction {
                         Faction::Ally => {
                             // spawn explosion
@@ -510,8 +504,7 @@ fn explode_on_contact(
     transform: &Transform,
     collision_events: &[&SortedCollisionEvent],
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
-    audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
-    audio_assets: &GameAudioAssets,
+    sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
@@ -555,7 +548,9 @@ fn explode_on_contact(
                 projectile_source: _,
             } => {
                 if entity == *projectile_entity {
-                    audio_channel.play(audio_assets.mob_hit.clone());
+                    sound_effect_event_writer.send(PlaySoundEffectEvent {
+                        sound_effect_type: SoundEffectType::MobHit,
+                    });
                     match projectile_faction {
                         Faction::Ally => {
                             // spawn explosion
@@ -598,7 +593,9 @@ fn explode_on_contact(
                 projectile_damage: _,
             } => {
                 if entity == *projectile_entity {
-                    audio_channel.play(audio_assets.mob_hit.clone());
+                    sound_effect_event_writer.send(PlaySoundEffectEvent {
+                        sound_effect_type: SoundEffectType::MobHit,
+                    });
                     match projectile_faction {
                         Faction::Ally => {
                             // spawn explosion

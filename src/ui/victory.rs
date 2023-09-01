@@ -2,53 +2,30 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 
-use crate::audio::BackgroundMusicAudioChannel;
 use crate::states::VictoryCleanup;
 use crate::ui::BouncingPromptComponent;
-use crate::ui::EndGameTransitionResource;
-use bevy_kira_audio::prelude::*;
-use thetawave_interface::game::historical_metrics::{
-    MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
+use thetawave_interface::{
+    audio::ChangeBackgroundMusicEvent,
+    game::historical_metrics::{
+        MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
+    },
 };
-
-#[derive(Component)]
-pub struct VictoryFadeComponent;
 
 #[derive(Component)]
 pub struct VictoryUI;
 
-pub fn victory_fade_in_system(
-    time: Res<Time>,
-    mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
-    mut victory_fade_query: Query<&mut BackgroundColor, With<VictoryFadeComponent>>,
-) {
-    end_game_trans_resource.fade_in_timer.tick(time.delta());
-
-    let timer_finished = end_game_trans_resource.fade_in_timer.finished();
-
-    for mut color in victory_fade_query.iter_mut() {
-        if !timer_finished {
-            let alpha = (end_game_trans_resource.fade_in_speed
-                * end_game_trans_resource.fade_in_timer.elapsed_secs())
-            .min(1.0);
-
-            color.0.set_a(alpha);
-        } else {
-            color.0.set_a(1.0);
-        }
-    }
-}
-
 pub fn setup_victory_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
+    mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     current_game_shot_counts: Res<UserStatsByPlayerForCurrentGameCache>,
     current_game_enemy_mob_kill_counts: Res<MobKillsByPlayerForCurrentGame>,
 ) {
-    audio_channel
-        .stop()
-        .fade_out(AudioTween::linear(Duration::from_secs_f32(5.0)));
+    // fade music out
+    change_bg_music_event_writer.send(ChangeBackgroundMusicEvent {
+        fade_out: Some(Duration::from_secs(5)),
+        ..default()
+    });
 
     let maybe_current_game_stats = (**current_game_shot_counts).get(&DEFAULT_USER_ID);
     let (accuracy_rate, total_shots_fired): (f32, usize) = match maybe_current_game_stats {
@@ -84,10 +61,9 @@ pub fn setup_victory_system(
                         justify_content: JustifyContent::FlexEnd,
                         ..Default::default()
                     },
-                    background_color: Color::rgba(1.0, 1.0, 1.0, 0.0).into(),
+                    background_color: Color::rgba(1.0, 1.0, 1.0, 1.0).into(),
                     ..default()
                 })
-                .insert(VictoryFadeComponent)
                 .with_children(|parent| {
                     let font = asset_server.load("fonts/wibletown-regular.otf");
 

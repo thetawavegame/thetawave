@@ -9,8 +9,7 @@ use std::{
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
-    arena::DefenseAffect,
-    assets::{CollisionSoundType, MobAssets},
+    assets::MobAssets,
     game::GameParametersResource,
     loot::ConsumableDropListType,
     misc::HealthComponent,
@@ -24,7 +23,11 @@ mod mob_segment;
 pub use self::{behavior::*, mob_segment::*};
 
 use super::behavior_sequence::MobBehaviorSequenceType;
-use thetawave_interface::spawnable::{MobSegmentType, MobType, ProjectileType};
+use thetawave_interface::{
+    audio::CollisionSoundType,
+    objective::DefenseInteraction,
+    spawnable::{MobSegmentType, MobType, ProjectileType},
+};
 
 /// Core component for mobs
 #[derive(Component)]
@@ -53,7 +56,7 @@ pub struct MobComponent {
     pub collision_damage: usize,
     pub collision_sound: CollisionSoundType,
     /// Damage dealt to defense objective, after reaching bottom of arena
-    pub defense_affect: DefenseAffect,
+    pub defense_interaction: Option<DefenseInteraction>,
     /// List of consumable drops
     pub consumable_drops: ConsumableDropListType,
 }
@@ -102,11 +105,14 @@ impl From<&MobData> for MobComponent {
             attack_damage: mob_data.attack_damage,
             collision_damage: mob_data.collision_damage,
             collision_sound: mob_data.collision_sound.clone(),
-            defense_affect: mob_data.defense_affect.clone(),
+            defense_interaction: mob_data.defense_interaction.clone(),
             consumable_drops: mob_data.consumable_drops.clone(),
         }
     }
 }
+
+#[derive(Component)]
+pub struct BossComponent;
 
 #[derive(Deserialize, Clone, Debug)]
 pub struct MobSpawner {
@@ -230,8 +236,7 @@ pub struct MobData {
     /// Damage dealt to defense objective, after reaching bottom of arena
     #[serde(default)]
     pub collision_sound: CollisionSoundType,
-    #[serde(default)]
-    pub defense_affect: DefenseAffect,
+    pub defense_interaction: Option<DefenseInteraction>,
     /// Health of the mob
     pub health: usize,
     /// List of consumable drops
@@ -297,6 +302,8 @@ pub struct SpawnMobEvent {
     pub position: Vec2,
 
     pub rotation: Quat,
+
+    pub boss: bool,
 }
 
 /// Spawns mobs from events
@@ -316,6 +323,7 @@ pub fn spawn_mob_system(
             &mob_assets,
             event.position,
             event.rotation,
+            event.boss,
             &mut commands,
             &game_parameters,
         );
@@ -350,6 +358,7 @@ pub fn spawn_mob(
     mob_assets: &MobAssets,
     position: Vec2,
     rotation: Quat,
+    boss: bool,
     commands: &mut Commands,
     game_parameters: &GameParametersResource,
 ) {
@@ -402,6 +411,10 @@ pub fn spawn_mob(
     .insert(GameCleanup)
     .insert(Name::new(mob_data.mob_type.to_string()));
 
+    if boss {
+        mob.insert(BossComponent);
+    }
+
     // spawn thruster as child if mob has thruster
     if let Some(thruster) = &mob_data.thruster {
         mob.with_children(|parent| {
@@ -453,5 +466,19 @@ pub fn spawn_mob(
             commands,
             game_parameters,
         )
+    }
+}
+
+#[derive(Event)]
+pub struct BossesDestroyedEvent;
+
+pub fn check_boss_mobs_system(
+    boss_mobs_query: Query<&BossComponent>,
+    mob_destroyed_event_reader: EventReader<MobDestroyedEvent>,
+    mut bosses_destroyed_event_writer: EventWriter<BossesDestroyedEvent>,
+) {
+    // if a mob was just destroyed, check if there are any boss mobs left
+    if !mob_destroyed_event_reader.is_empty() && boss_mobs_query.get_single().is_err() {
+        bosses_destroyed_event_writer.send(BossesDestroyedEvent);
     }
 }

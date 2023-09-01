@@ -1,16 +1,14 @@
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
-use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 use thetawave_interface::{
+    audio::{PlaySoundEffectEvent, SoundEffectType},
     health::DamageDealtEvent,
     spawnable::{EffectType, MobType, ProjectileType},
 };
 
 use crate::{
-    assets::GameAudioAssets,
-    audio,
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     loot::LootDropsResource,
@@ -87,8 +85,7 @@ pub fn mob_execute_behavior_system(
     mut mob_destroyed_event_writer: EventWriter<MobDestroyedEvent>,
     mut damage_dealt_event_writer: EventWriter<DamageDealtEvent>,
     loot_drops_resource: Res<LootDropsResource>,
-    audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
-    audio_assets: Res<GameAudioAssets>,
+    mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
     game_parameters: Res<GameParametersResource>,
 ) {
     // Get all contact events first (can't be read more than once within a system)
@@ -139,7 +136,9 @@ pub fn mob_execute_behavior_system(
                             }
 
                             //spawn_blast
-                            audio_channel.play(audio_assets.enemy_fire_blast.clone());
+                            sound_effect_event_writer.send(PlaySoundEffectEvent {
+                                sound_effect_type: SoundEffectType::EnemyFireBlast,
+                            });
 
                             spawn_projectile_event_writer.send(SpawnProjectileEvent {
                                 projectile_type: projectile_spawner.projectile_type.clone(),
@@ -182,7 +181,8 @@ pub fn mob_execute_behavior_system(
                                 mob_type: mob_spawner.mob_type.clone(),
                                 position,
                                 rotation: mob_transform.rotation, // passed rotation of the parent mob
-                            })
+                                boss: false,
+                            });
                         }
                     }
                 }
@@ -193,9 +193,8 @@ pub fn mob_execute_behavior_system(
                         &collision_events_vec,
                         &mut spawn_effect_event_writer,
                         mob_transform,
-                        &audio_channel,
-                        &audio_assets,
                         &game_parameters,
+                        &mut sound_effect_event_writer,
                     );
                 }
                 MobBehavior::DealDamageToPlayerOnImpact => {
@@ -216,7 +215,9 @@ pub fn mob_execute_behavior_system(
                 }
                 MobBehavior::DieAtZeroHealth => {
                     if mob_health.is_dead() {
-                        audio_channel.play(audio_assets.mob_explosion.clone());
+                        sound_effect_event_writer.send(PlaySoundEffectEvent {
+                            sound_effect_type: SoundEffectType::MobExplosion,
+                        });
 
                         // spawn mob explosion
                         spawn_effect_event_writer.send(SpawnEffectEvent {
@@ -365,9 +366,8 @@ fn explode_on_impact(
     collision_events: &[&SortedCollisionEvent],
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
     transform: &Transform,
-    audio_channel: &AudioChannel<audio::SoundEffectsAudioChannel>,
-    audio_assets: &GameAudioAssets,
     game_parameters: &GameParametersResource,
+    sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
 ) {
     for collision_event in collision_events.iter() {
         match collision_event {
@@ -378,7 +378,9 @@ fn explode_on_impact(
                 player_damage: _,
                 mob_damage: _,
             } => {
-                audio_channel.play(audio_assets.mob_explosion.clone());
+                sound_effect_event_writer.send(PlaySoundEffectEvent {
+                    sound_effect_type: SoundEffectType::MobExplosion,
+                });
                 // remove faction check to allow allied mobs to harm players
                 if entity == *mob_entity {
                     // spawn mob explosion
@@ -408,7 +410,9 @@ fn explode_on_impact(
                 mob_faction_2: _,
                 mob_damage_2: _,
             } => {
-                audio_channel.play(audio_assets.mob_explosion.clone());
+                sound_effect_event_writer.send(PlaySoundEffectEvent {
+                    sound_effect_type: SoundEffectType::MobExplosion,
+                });
                 if entity == *mob_entity_1 {
                     // spawn mob explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
@@ -437,7 +441,9 @@ fn explode_on_impact(
                 mob_segment_faction: _,
                 mob_segment_damage: _,
             } => {
-                audio_channel.play(audio_assets.mob_explosion.clone());
+                sound_effect_event_writer.send(PlaySoundEffectEvent {
+                    sound_effect_type: SoundEffectType::MobExplosion,
+                });
                 if entity == *mob_entity {
                     spawn_effect_event_writer.send(SpawnEffectEvent {
                         effect_type: EffectType::MobExplosion,

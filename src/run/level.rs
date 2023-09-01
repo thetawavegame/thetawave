@@ -1,318 +1,21 @@
-use bevy::prelude::*;
-use bevy_kira_audio::prelude::*;
+use bevy::{prelude::*, time::Stopwatch};
 use serde::Deserialize;
-use std::{collections::HashMap, time::Duration};
-use thetawave_interface::spawnable::MobType;
-use thetawave_interface::states::AppStates;
-
-use crate::{
-    arena::MobReachedBottomGateEvent,
-    assets::{BGMusicType, GameAudioAssets},
-    audio,
-    spawnable::{MobDestroyedEvent, SpawnMobEvent},
-    tools::weighted_rng,
-    ui::EndGameTransitionResource,
+use std::{
+    collections::{HashMap, VecDeque},
+    time::Duration,
+};
+use thetawave_interface::{
+    audio::{BGMusicType, ChangeBackgroundMusicEvent},
+    spawnable::MobType,
 };
 
-use super::{formation, objective::Objective, RunDefeatType, RunEndEvent, RunOutcomeType};
+use crate::spawnable::{BossesDestroyedEvent, SpawnMobEvent};
 
-/// Structure stored in data file to describe level
-pub type LevelsResourceData = HashMap<String, LevelData>;
+use super::{objective::Objective, FormationPoolsResource, SpawnFormationEvent};
 
-/// Resource for storing defined predefined levels
-#[derive(Clone, Resource)]
-pub struct LevelsResource {
-    /// Leveltypes maped to levels
-    pub levels: HashMap<String, Level>,
-}
-
-impl From<LevelsResourceData> for LevelsResource {
-    fn from(resource_data: LevelsResourceData) -> Self {
-        LevelsResource {
-            levels: resource_data
-                .into_iter()
-                .map(|(k, v)| (k, v.into()))
-                .collect(),
-        }
-    }
-}
-
-/// Data used to initialize levels
-#[derive(Deserialize)]
-pub struct LevelData {
-    /// timeline of the phases of the level
-    pub timeline: LevelTimeline,
-    /// objective of the level (besides surviving)
-    pub objective: Objective,
-}
-
-/// Event to alert when level has been completed
-#[derive(Event)]
-pub struct LevelCompletedEvent;
-
-/// Struct to manage a level
-#[derive(Clone, Debug)]
-pub struct Level {
-    /// Index of the current phase
-    timeline_idx: usize,
-    /// Timeline
-    pub timeline: LevelTimeline,
-    /// Tracks time of phases
-    pub phase_timer: Option<Timer>,
-    /// Tracks time between spawns
-    pub spawn_timer: Option<Timer>,
-    /// Level objective
-    pub objective: Objective,
-}
-
-impl From<LevelData> for Level {
-    fn from(data: LevelData) -> Self {
-        Level {
-            timeline_idx: 0,
-            timeline: data.timeline,
-            phase_timer: None,
-            spawn_timer: None,
-            objective: data.objective,
-        }
-    }
-}
-
-impl Level {
-    /// Get a string name of the phase
-    #[allow(dead_code)]
-    pub fn get_phase_name(&self) -> String {
-        match &self.timeline.phases[self.timeline_idx].phase_type {
-            LevelPhaseType::FormationSpawn { formation_pool, .. } => {
-                format!("FormationSpawn({formation_pool:?})")
-            }
-            LevelPhaseType::Break { .. } => "Break".to_string(),
-            LevelPhaseType::Boss { mob_type, .. } => format!("Boss[{mob_type:?}]"),
-        }
-    }
-
-    /// Get the index of the current phase
-    #[allow(dead_code)]
-    pub fn get_phase_number(&self) -> String {
-        self.timeline_idx.to_string()
-    }
-
-    /// Tick the level - manage the objective and phase
-    #[allow(clippy::too_many_arguments)]
-    pub fn tick(
-        &mut self,
-        delta: Duration,
-        spawn_formation: &mut EventWriter<formation::SpawnFormationEvent>,
-        level_completed: &mut EventWriter<LevelCompletedEvent>,
-        spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
-        mob_destroyed_event_reader: &mut EventReader<MobDestroyedEvent>,
-        mob_reached_bottom: &mut EventReader<MobReachedBottomGateEvent>,
-        formation_pools: &formation::FormationPoolsResource,
-        end_game_trans_resource: &mut EndGameTransitionResource,
-        run_end_event_writer: &mut EventWriter<RunEndEvent>,
-        audio_channel: &AudioChannel<audio::BackgroundMusicAudioChannel>,
-        audio_assets: &GameAudioAssets,
-    ) {
-        // handle each of the objective types
-        #[allow(clippy::single_match)]
-        match &mut self.objective {
-            Objective::Defense(defense_data) => {
-                // iterate through all the mobs that have reached the bottom
-                for event in mob_reached_bottom.iter() {
-                    // heal or take damage based on the damage amount
-                    match event.0 {
-                        crate::arena::DefenseAffect::Heal(value) => {
-                            defense_data.gain_defense(value);
-                            audio_channel.play(audio_assets.defense_heal.clone());
-                        }
-                        crate::arena::DefenseAffect::Damage(value) => {
-                            defense_data.take_damage(value);
-                            audio_channel.play(audio_assets.defense_damage.clone());
-                        }
-                    }
-
-                    // end the game if defense dies
-                    if defense_data.is_failed() {
-                        // TODO: remove and use event instead
-                        run_end_event_writer.send(RunEndEvent {
-                            outcome: RunOutcomeType::Defeat(RunDefeatType::DefenseDestroyed),
-                        });
-                        end_game_trans_resource.start(AppStates::GameOver);
-                    }
-                }
-            }
-        }
-
-        // check if the current phase if valid and handle the phase
-        if let Some(current_phase) = self.get_current_phase() {
-            // handle the phase based on the type
-            match &current_phase.phase_type {
-                LevelPhaseType::FormationSpawn {
-                    time: _,
-                    initial_delay: _,
-                    formation_pool,
-                } => {
-                    let event_formation_pool = formation_pool.clone();
-
-                    // tick spawn timer and spawn from formation pool when finished
-                    if self
-                        .spawn_timer
-                        .as_mut()
-                        .unwrap()
-                        .tick(delta)
-                        .just_finished()
-                    {
-                        // get weights of each of the formations in the formation pool
-                        let weights = formation_pools.formation_pools[&event_formation_pool]
-                            .iter()
-                            .map(|x| x.weight)
-                            .collect();
-
-                        // get random formation index based on the weights
-                        let random_idx = weighted_rng(weights);
-
-                        // set spawn timer duration to the period of the selected formation
-                        self.spawn_timer
-                            .as_mut()
-                            .unwrap()
-                            .set_duration(Duration::from_secs_f32(
-                                formation_pools.formation_pools[&event_formation_pool][random_idx]
-                                    .period,
-                            ));
-
-                        // spawn the spawnables from the selected formation
-                        spawn_formation.send(formation::SpawnFormationEvent {
-                            formation: formation_pools.formation_pools[&event_formation_pool]
-                                [random_idx]
-                                .clone(),
-                        });
-                    }
-                }
-                LevelPhaseType::Boss {
-                    mob_type,
-                    position,
-                    initial_delay: _,
-                    is_defeated: _,
-                } => {
-                    let mob_type = mob_type.clone();
-                    let position = *position;
-
-                    // spawn the boss after the spawn timer has finished
-                    if self
-                        .spawn_timer
-                        .as_mut()
-                        .unwrap()
-                        .tick(delta)
-                        .just_finished()
-                    {
-                        // spawn the boss
-
-                        spawn_mob_event_writer.send(SpawnMobEvent {
-                            mob_type: mob_type.clone(),
-                            position,
-                            rotation: Quat::default(),
-                        });
-                    }
-
-                    // check if the boss mob type has been destroyed
-                    for event in mob_destroyed_event_reader.iter() {
-                        if event.mob_type == mob_type {
-                            info!("BOSS DESTROYED");
-                            if self.timeline.phases.len() > self.timeline_idx + 1 {
-                                self.timeline_idx += 1;
-                            } else {
-                                // send level completed event when level is completed
-                                level_completed.send(LevelCompletedEvent);
-                            }
-                            // setup the next phase
-                            self.setup_next_phase();
-                        }
-                    }
-                }
-                _ => {}
-            }
-
-            // if phase timer for phase, tick the timer
-            if let Some(phase_timer) = &mut self.phase_timer {
-                // check of the phase just ended
-                if phase_timer.tick(delta).just_finished() {
-                    // set level to next phase in timeline
-                    if self.timeline.phases.len() > self.timeline_idx + 1 {
-                        self.timeline_idx += 1;
-                        // TODO: change background music
-                        let current_phase = self.get_current_phase().unwrap();
-
-                        if let Some(bg_music_transition) = &current_phase.bg_music_transition {
-                            audio_channel
-                                .stop()
-                                .fade_out(AudioTween::linear(Duration::from_secs_f32(5.0)));
-                            audio_channel
-                                .play(
-                                    audio_assets.get_bg_music_asset(&bg_music_transition.bg_music),
-                                )
-                                .loop_from(bg_music_transition.loop_from);
-                        }
-                    } else {
-                        // send level completed event when level is completed
-                        // TODO: stop background music
-                        level_completed.send(LevelCompletedEvent);
-                    }
-                    // setup the next phase
-                    self.setup_next_phase();
-                } else {
-                    // continue with the current phase
-                }
-            }
-        } else {
-            error!("Timeline index: {:?}", self.timeline_idx);
-            panic!("Something is wrong. There is not phase at the current timeline index.")
-        }
-    }
-
-    /// Setup the next phase of the level
-    fn setup_next_phase(&mut self) {
-        // get the current phase (phase should already be set to the next phase)
-        let current_phase = self.get_current_phase();
-
-        if let Some(current_phase) = current_phase {
-            // perform setup based on the phase type
-            match current_phase.phase_type.clone() {
-                LevelPhaseType::FormationSpawn {
-                    time,
-                    initial_delay,
-                    formation_pool: _,
-                } => {
-                    self.spawn_timer =
-                        Some(Timer::from_seconds(initial_delay, TimerMode::Repeating));
-                    self.phase_timer = Some(Timer::from_seconds(time, TimerMode::Once));
-                }
-                LevelPhaseType::Break { time } => {
-                    self.spawn_timer = None;
-                    self.phase_timer = Some(Timer::from_seconds(time, TimerMode::Once));
-                }
-                LevelPhaseType::Boss {
-                    mob_type: _,
-                    position: _,
-                    initial_delay,
-                    is_defeated: _,
-                } => {
-                    self.spawn_timer = Some(Timer::from_seconds(initial_delay, TimerMode::Once));
-                    self.phase_timer = None;
-                }
-            }
-        }
-    }
-
-    /// Get the current phase of the level
-    fn get_current_phase(&self) -> Option<&LevelPhase> {
-        self.timeline.phases.get(self.timeline_idx)
-    }
-}
-
-/// Level timeline for carrying phases of the level
-#[derive(Deserialize, Clone, Debug)]
-pub struct LevelTimeline {
-    /// level phases
-    pub phases: Vec<LevelPhase>,
+#[derive(Resource, Deserialize)]
+pub struct PremadeLevelsResource {
+    pub levels_data: HashMap<String, LevelData>,
 }
 
 /// A defined section of the level
@@ -322,118 +25,213 @@ pub struct LevelPhase {
     pub phase_type: LevelPhaseType,
     /// music to play during phase
     pub bg_music_transition: Option<BGMusicTransition>,
+    #[serde(default)]
+    pub phase_time: Stopwatch,
 }
 
 /// Background music transition
 #[derive(Deserialize, Clone, Debug)]
 pub struct BGMusicTransition {
-    pub loop_from: f64,
-    pub bg_music: BGMusicType,
+    pub loop_from: Option<f64>,
+    pub bg_music_type: Option<BGMusicType>,
+    pub fade_in: Option<f32>,
+    pub fade_out: Option<f32>,
+}
+
+impl From<&BGMusicTransition> for ChangeBackgroundMusicEvent {
+    fn from(value: &BGMusicTransition) -> Self {
+        ChangeBackgroundMusicEvent {
+            bg_music_type: value.bg_music_type.clone(),
+            loop_from: value.loop_from,
+            fade_in: value
+                .fade_in
+                .map(|fade_in| Duration::from_secs_f32(fade_in)),
+            fade_out: value
+                .fade_out
+                .map(|fade_out| Duration::from_secs_f32(fade_out)),
+        }
+    }
 }
 
 /// Describes a distinct portion of the level
 #[derive(Deserialize, Clone, Debug)]
 pub enum LevelPhaseType {
     FormationSpawn {
-        time: f32,
-        initial_delay: f32,
+        phase_timer: Timer,
+        spawn_timer: Timer,
         formation_pool: String,
     },
     Break {
-        time: f32,
+        phase_timer: Timer,
     },
     Boss {
         mob_type: MobType,
         position: Vec2,
-        initial_delay: f32,
-        is_defeated: bool,
+        spawn_timer: Timer,
     },
 }
 
-/// Handles the progression of the level
-#[allow(clippy::too_many_arguments)]
-pub fn level_system(
-    mut run_resource: ResMut<super::RunResource>,
-    mut spawn_formation: EventWriter<formation::SpawnFormationEvent>,
-    mut level_completed: EventWriter<LevelCompletedEvent>,
-    mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
-    mut mob_destroyed_event_reader: EventReader<MobDestroyedEvent>,
-    mut mob_reached_bottom: EventReader<MobReachedBottomGateEvent>,
-    formation_pools: Res<formation::FormationPoolsResource>,
-    time: Res<Time>,
-    mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
-    audio_channel: Res<AudioChannel<audio::BackgroundMusicAudioChannel>>,
-    mut run_end_event_writer: EventWriter<RunEndEvent>,
-    audio_assets: Res<GameAudioAssets>,
-) {
-    // tick the run if ready and the game isn't over
-    if run_resource.is_ready() && !end_game_trans_resource.start {
-        run_resource.tick(
-            time.delta(),
-            &mut spawn_formation,
-            &mut level_completed,
-            &mut spawn_mob_event_writer,
-            &mut mob_destroyed_event_reader,
-            &mut mob_reached_bottom,
-            &formation_pools,
-            &mut end_game_trans_resource,
-            &mut run_end_event_writer,
-            &audio_channel,
-            &audio_assets,
-        );
-    }
+/// Data used to initialize levels
+#[derive(Deserialize)]
+pub struct LevelData {
+    /// timeline of the phases of the level
+    pub phases: Vec<LevelPhase>,
+    /// objective of the level (besides surviving)
+    pub objective: Objective,
 }
 
-/// Progress to the next level when current level is completed
-pub fn next_level_system(
-    mut level_completed: EventReader<LevelCompletedEvent>,
-    mut end_game_trans_resource: ResMut<EndGameTransitionResource>,
-) {
-    // TODO: add case for going to next level, instead of instantly winning after one level
-    for _level_completed in level_completed.iter() {
-        end_game_trans_resource.start(AppStates::Victory);
-    }
+/// Event to alert when level has been completed
+#[derive(Event)]
+pub struct LevelCompletedEvent;
+
+pub type LevelPhases = VecDeque<LevelPhase>;
+
+/// Struct to manage a level
+#[derive(Clone, Debug)]
+pub struct Level {
+    /// Phases that have been completed so far in the run
+    pub completed_phases: LevelPhases,
+    /// Phase that is currently active
+    pub current_phase: Option<LevelPhase>,
+    /// Phases that have yet to be played in the level
+    pub queued_phases: LevelPhases,
+    /// Objective is an additional failure condition for a level
+    pub objective: Objective,
+    /// Tracks how long the player has been in the level
+    pub level_time: Stopwatch,
 }
 
-/// Setup first level of the game using values from the first level (phase timer spawn timer, etc)
-pub fn setup_first_level(
-    mut run_resource: ResMut<super::RunResource>,
-    audio_channel: Res<AudioChannel<audio::BackgroundMusicAudioChannel>>,
-    audio_assets: Res<GameAudioAssets>,
-) {
-    if let Some(level) = &mut run_resource.level {
-        // start music for first phase
-
-        audio_channel
-            .stop()
-            .fade_out(AudioTween::linear(Duration::from_secs_f32(5.0)));
-        if let Some(bg_music_transition) = &level.timeline.phases[0].bg_music_transition {
-            audio_channel
-                .play(audio_assets.get_bg_music_asset(&bg_music_transition.bg_music))
-                .loop_from(bg_music_transition.loop_from);
+impl From<&LevelData> for Level {
+    fn from(data: &LevelData) -> Self {
+        Level {
+            completed_phases: vec![].into(),
+            current_phase: None,
+            queued_phases: data.phases.clone().into(),
+            objective: data.objective.clone(),
+            level_time: Stopwatch::new(),
         }
-        // setup first phase
-        match &level.timeline.phases[0].phase_type {
-            LevelPhaseType::FormationSpawn {
-                time,
-                initial_delay,
-                formation_pool: _,
-            } => {
-                level.spawn_timer = Some(Timer::from_seconds(*initial_delay, TimerMode::Repeating));
-                level.phase_timer = Some(Timer::from_seconds(*time, TimerMode::Once));
+    }
+}
+
+impl Level {
+    pub fn cycle_phase(&mut self) -> bool {
+        // clone the current phase (if it exists) into the back of the completed phases queue
+        if let Some(current_phase) = &self.current_phase {
+            self.completed_phases.push_back(current_phase.clone());
+            self.current_phase = None;
+        }
+
+        // pop the next level (if it exists) into the the current level
+        self.current_phase = self.queued_phases.pop_front();
+
+        info!("Phase cycled");
+
+        // return true if no phase was available to cycle to the current phase
+        self.current_phase.is_none()
+    }
+
+    pub fn init_phase(
+        &mut self,
+        change_bg_music_event_writer: &mut EventWriter<ChangeBackgroundMusicEvent>,
+    ) {
+        if let Some(current_phase) = &self.current_phase {
+            if let Some(bg_music_transition) = &current_phase.bg_music_transition {
+                // change music
+                change_bg_music_event_writer
+                    .send(ChangeBackgroundMusicEvent::from(bg_music_transition));
             }
-            LevelPhaseType::Break { time } => {
-                level.spawn_timer = None;
-                level.phase_timer = Some(Timer::from_seconds(*time, TimerMode::Once));
+        }
+    }
+
+    // returns true if level has been completed
+    pub fn tick(
+        &mut self,
+        time: &Time,
+        spawn_formation_event_writer: &mut EventWriter<SpawnFormationEvent>,
+        formations_res: &FormationPoolsResource,
+        spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
+        bosses_destroyed_event_reader: &mut EventReader<BossesDestroyedEvent>,
+        change_bg_music_event_writer: &mut EventWriter<ChangeBackgroundMusicEvent>,
+    ) -> bool {
+        self.level_time.tick(time.delta());
+
+        if let Some(mut modified_current_phase) = self.current_phase.clone() {
+            let phase_completed = match &mut modified_current_phase.phase_type {
+                LevelPhaseType::FormationSpawn {
+                    phase_timer,
+                    spawn_timer,
+                    formation_pool,
+                } => {
+                    Self::tick_spawn_timer(
+                        spawn_timer,
+                        time,
+                        spawn_formation_event_writer,
+                        formations_res,
+                        formation_pool.to_string(),
+                    );
+
+                    Self::tick_phase_timer(phase_timer, time)
+                }
+                LevelPhaseType::Break { phase_timer } => Self::tick_phase_timer(phase_timer, time),
+                LevelPhaseType::Boss {
+                    mob_type,
+                    position,
+                    spawn_timer,
+                } => {
+                    if spawn_timer.finished() {
+                        // check if no entities with a BossComponent tag exist
+                        !bosses_destroyed_event_reader.is_empty()
+                    } else {
+                        spawn_timer.tick(time.delta());
+                        if spawn_timer.just_finished() {
+                            spawn_mob_event_writer.send(SpawnMobEvent {
+                                mob_type: mob_type.clone(),
+                                position: *position,
+                                rotation: Quat::default(),
+                                boss: true,
+                            });
+                        }
+                        false
+                    }
+                }
+            };
+
+            self.current_phase = Some(modified_current_phase);
+
+            // this will short circuit and not call cycle_phase if !phase_completed
+            if phase_completed && !self.cycle_phase() {
+                self.init_phase(change_bg_music_event_writer);
             }
-            LevelPhaseType::Boss {
-                mob_type: _,
-                position: _,
-                initial_delay,
-                is_defeated: _,
-            } => {
-                level.spawn_timer = Some(Timer::from_seconds(*initial_delay, TimerMode::Once));
-                level.phase_timer = None;
+
+            false
+        } else {
+            true
+        }
+    }
+
+    fn tick_phase_timer(phase_timer: &mut Timer, time: &Time) -> bool {
+        phase_timer.tick(time.delta());
+
+        phase_timer.just_finished()
+    }
+
+    pub fn tick_spawn_timer(
+        spawn_timer: &mut Timer,
+        time: &Time,
+        spawn_formation_event_writer: &mut EventWriter<SpawnFormationEvent>,
+        formations_res: &FormationPoolsResource,
+        formation_key: String,
+    ) {
+        spawn_timer.tick(time.delta());
+
+        if spawn_timer.just_finished() {
+            if let Some(formation) = formations_res.get_random_formation(formation_key) {
+                spawn_formation_event_writer.send(SpawnFormationEvent {
+                    formation: formation.clone(),
+                });
+                spawn_timer.set_duration(Duration::from_secs_f32(formation.period));
+                spawn_timer.reset();
+                info!("Spawn timer duration reset to: {}", formation.period);
             }
         }
     }

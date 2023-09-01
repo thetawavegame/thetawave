@@ -1,12 +1,10 @@
 use std::{collections::HashMap, time::Duration};
 
 use bevy::prelude::*;
-use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
+use thetawave_interface::audio::{PlaySoundEffectEvent, SoundEffectType};
 
 use crate::{
-    assets::GameAudioAssets,
-    audio,
     player::{PlayerComponent, PlayerInput, PlayersResource},
     spawnable::{InitialMotion, SpawnProjectileEvent},
 };
@@ -29,8 +27,7 @@ pub fn player_fire_weapon_system(
     mut player_query: Query<(&mut PlayerComponent, &Velocity, &Transform, Entity)>,
     time: Res<Time>,
     mut spawn_projectile: EventWriter<SpawnProjectileEvent>,
-    audio_channel: Res<AudioChannel<audio::SoundEffectsAudioChannel>>,
-    audio_assets: Res<GameAudioAssets>,
+    mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
     players_resource: Res<PlayersResource>,
 ) {
     // get keyboard fire input
@@ -97,7 +94,9 @@ pub fn player_fire_weapon_system(
             });
 
             // play firing blast sound effect
-            audio_channel.play(audio_assets.player_fire_blast.clone());
+            sound_effect_event_writer.send(PlaySoundEffectEvent {
+                sound_effect_type: SoundEffectType::PlayerFireBlast,
+            });
 
             // reset the timer to the player's fire period stat
             let new_period = Duration::from_secs_f32(player_component.fire_period);

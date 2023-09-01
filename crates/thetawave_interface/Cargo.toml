@@ -6,9 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde = {workspace = true}
-strum = {workspace = true}
-strum_macros = {workspace = true}
-derive_more = {workspace = true}
-bevy_ecs_macros = {workspace = true}
-bevy_ecs = {workspace = true}
+serde = { workspace = true }
+strum = { workspace = true }
+strum_macros = { workspace = true }
+derive_more = { workspace = true }
+bevy_ecs_macros = { workspace = true }
+bevy_ecs = { workspace = true }
