@@ -1,6 +1,5 @@
 use bevy::prelude::*;
-
-use super::CharacterType;
+use thetawave_interface::character::CharacterType;
 
 #[derive(Resource, Debug)]
 pub struct PlayersResource {

@@ -3,5 +3,5 @@
 mod character;
 mod players;
 
-pub use self::character::{Character, CharacterType, CharactersResource};
+pub use self::character::{Character, CharactersResource};
 pub use self::players::{PlayerInput, PlayersResource};

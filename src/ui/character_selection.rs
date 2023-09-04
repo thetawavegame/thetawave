@@ -1,10 +1,10 @@
 use super::BouncingPromptComponent;
 use crate::{
-    player::{CharacterType, PlayerInput, PlayersResource},
+    player::{PlayerInput, PlayersResource},
     states,
 };
 use bevy::{prelude::*, utils::hashbrown::HashMap};
-use thetawave_interface::character_selection::PlayerJoinEvent;
+use thetawave_interface::{character::CharacterType, character_selection::PlayerJoinEvent};
 
 #[derive(Component)]
 pub struct CharacterSelectionUI;

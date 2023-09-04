@@ -18,6 +18,7 @@ use crate::{
 mod formation;
 mod level;
 mod objective;
+mod tutorial;
 
 use self::level::Level;
 pub use self::objective::Objective;

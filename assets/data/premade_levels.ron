@@ -640,6 +640,20 @@
 				)
 			],
 		),
+		"captain_tutorial": (
+			objective: Defense((
+				defense: 100,
+				max_defense: 100,
+			)),
+			phases: [
+				(
+					phase_type: Tutorial(
+						character_type: Captain,
+						tutorial_lesson_type: Movement,
+					),
+				),
+			],
+		),
 		"test": (
 			objective: Defense((
 				defense: 100,

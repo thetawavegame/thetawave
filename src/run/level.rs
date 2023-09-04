@@ -6,12 +6,15 @@ use std::{
 };
 use thetawave_interface::{
     audio::{BGMusicType, ChangeBackgroundMusicEvent},
+    character::CharacterType,
     spawnable::MobType,
 };
 
 use crate::spawnable::{BossesDestroyedEvent, SpawnMobEvent};
 
-use super::{objective::Objective, FormationPoolsResource, SpawnFormationEvent};
+use super::{
+    objective::Objective, tutorial::TutorialLessonType, FormationPoolsResource, SpawnFormationEvent,
+};
 
 #[derive(Resource, Deserialize)]
 pub struct PremadeLevelsResource {
@@ -68,6 +71,10 @@ pub enum LevelPhaseType {
         mob_type: MobType,
         position: Vec2,
         spawn_timer: Timer,
+    },
+    Tutorial {
+        character_type: CharacterType,
+        tutorial_lesson_type: TutorialLessonType,
     },
 }
 
@@ -194,6 +201,10 @@ impl Level {
                         false
                     }
                 }
+                LevelPhaseType::Tutorial {
+                    character_type,
+                    tutorial_lesson_type,
+                } => false,
             };
 
             self.current_phase = Some(modified_current_phase);

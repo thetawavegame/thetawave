@@ -12,7 +12,7 @@ use crate::{GameEnterSet, GameUpdateSet};
 
 pub use self::{
     components::PlayerComponent,
-    resources::{Character, CharacterType, CharactersResource, PlayerInput, PlayersResource},
+    resources::{Character, CharactersResource, PlayerInput, PlayersResource},
     spawn::spawn_players_system,
     systems::{
         player_ability_system, player_death_system, player_fire_weapon_system,

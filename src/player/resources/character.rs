@@ -2,7 +2,7 @@ use crate::misc::HealthComponent;
 use bevy::prelude::*;
 use serde::Deserialize;
 use std::collections::HashMap;
-use thetawave_interface::spawnable::ProjectileType;
+use thetawave_interface::{character::CharacterType, spawnable::ProjectileType};
 
 use crate::player::components::AbilityType;
 
@@ -64,12 +64,6 @@ impl From<&Character> for HealthComponent {
             character.shields_recharge_rate,
         )
     }
-}
-
-#[derive(Deserialize, Clone, Debug, Hash, PartialEq, Eq)]
-pub enum CharacterType {
-    Captain,
-    Juggernaut,
 }
 
 /// Manages all characters
