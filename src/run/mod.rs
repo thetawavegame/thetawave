@@ -5,7 +5,7 @@ use serde::Deserialize;
 use std::collections::{HashMap, VecDeque};
 use thetawave_interface::{
     audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent, SoundEffectType},
-    objective::{DefenseInteraction, MobReachedBottomGateEvent},
+    objective::{DefenseInteraction, MobReachedBottomGateEvent, NewObjectiveEvent, Objective},
     run::{RunDefeatType, RunEndEvent, RunOutcomeType},
     states::{AppStates, GameStates},
 };
@@ -17,11 +17,9 @@ use crate::{
 
 mod formation;
 mod level;
-mod objective;
 mod tutorial;
 
 use self::level::Level;
-pub use self::objective::Objective;
 pub use self::{
     formation::{spawn_formation_system, FormationPoolsResource, SpawnFormationEvent},
     level::{LevelCompletedEvent, PremadeLevelsResource},
@@ -51,7 +49,8 @@ impl Plugin for RunPlugin {
 
         app.add_event::<SpawnFormationEvent>()
             .add_event::<LevelCompletedEvent>()
-            .add_event::<RunEndEvent>();
+            .add_event::<RunEndEvent>()
+            .add_event::<NewObjectiveEvent>();
 
         app.add_systems(OnEnter(AppStates::InitializeRun), init_run_system);
 
@@ -115,7 +114,11 @@ impl CurrentRunProgressResource {
         info!("Generated premade level");
     }
 
-    pub fn cycle_level(&mut self, run_end_event_writer: &mut EventWriter<RunEndEvent>) {
+    pub fn cycle_level(
+        &mut self,
+        run_end_event_writer: &mut EventWriter<RunEndEvent>,
+        new_objective_event_writer: &mut EventWriter<NewObjectiveEvent>,
+    ) {
         // clone the current level (if it exists) into the back of the completed levels queue
         if let Some(current_level) = &self.current_level {
             self.completed_levels.push_back(current_level.clone());
@@ -125,8 +128,13 @@ impl CurrentRunProgressResource {
         // pop the next level (if it exists) into the the current level
         self.current_level = self.queued_levels.pop_front();
 
-        // if the current level is None, then the player has completed all the levels and has won the game
-        if self.current_level.is_none() {
+        // check if the current level is some
+        if let Some(current_level) = &self.current_level {
+            new_objective_event_writer.send(NewObjectiveEvent {
+                objective: current_level.objective.clone(),
+            });
+        } else {
+            // if the current level is None, then the player has completed all the levels and has won the game
             run_end_event_writer.send(RunEndEvent {
                 outcome: RunOutcomeType::Victory,
             });
@@ -139,6 +147,7 @@ impl CurrentRunProgressResource {
         &mut self,
         run_end_event_writer: &mut EventWriter<RunEndEvent>,
         change_bg_music_event_writer: &mut EventWriter<ChangeBackgroundMusicEvent>,
+        new_objective_event_writer: &mut EventWriter<NewObjectiveEvent>,
     ) {
         if let Some(current_level) = &mut self.current_level {
             let level_completed = current_level.cycle_phase();
@@ -146,7 +155,7 @@ impl CurrentRunProgressResource {
             if !level_completed {
                 current_level.init_phase(change_bg_music_event_writer);
             } else {
-                self.cycle_level(run_end_event_writer);
+                self.cycle_level(run_end_event_writer, new_objective_event_writer);
             }
         }
     }
@@ -160,6 +169,7 @@ impl CurrentRunProgressResource {
         bosses_destroyed_event_reader: &mut EventReader<BossesDestroyedEvent>,
         run_end_event_writer: &mut EventWriter<RunEndEvent>,
         change_bg_music_event_writer: &mut EventWriter<ChangeBackgroundMusicEvent>,
+        new_objective_event_writer: &mut EventWriter<NewObjectiveEvent>,
     ) {
         // TODO: handle none case to remove unwrap
         let current_level = self.current_level.as_mut().unwrap();
@@ -173,8 +183,12 @@ impl CurrentRunProgressResource {
             bosses_destroyed_event_reader,
             change_bg_music_event_writer,
         ) {
-            self.cycle_level(run_end_event_writer);
-            self.init_current_level(run_end_event_writer, change_bg_music_event_writer);
+            self.cycle_level(run_end_event_writer, new_objective_event_writer);
+            self.init_current_level(
+                run_end_event_writer,
+                change_bg_music_event_writer,
+                new_objective_event_writer,
+            );
         }
     }
 }
@@ -186,6 +200,7 @@ fn init_run_system(
     mut next_app_state: ResMut<NextState<AppStates>>,
     mut run_end_event_writer: EventWriter<RunEndEvent>,
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
+    mut new_objective_event_writer: EventWriter<NewObjectiveEvent>,
 ) {
     // generate the run
     run_res.generate_premade(
@@ -195,10 +210,14 @@ fn init_run_system(
     );
 
     // cycle to set the current level to the first level
-    run_res.cycle_level(&mut run_end_event_writer);
+    run_res.cycle_level(&mut run_end_event_writer, &mut new_objective_event_writer);
 
     // initialize the current level
-    run_res.init_current_level(&mut run_end_event_writer, &mut change_bg_music_event_writer);
+    run_res.init_current_level(
+        &mut run_end_event_writer,
+        &mut change_bg_music_event_writer,
+        &mut new_objective_event_writer,
+    );
 
     next_app_state.set(AppStates::Game);
 
@@ -214,6 +233,7 @@ fn tick_run_system(
     mut bosses_destroyed_event_reader: EventReader<BossesDestroyedEvent>,
     mut run_end_event_writer: EventWriter<RunEndEvent>,
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
+    mut new_objective_event_writer: EventWriter<NewObjectiveEvent>,
 ) {
     run_res.tick(
         &time,
@@ -223,6 +243,7 @@ fn tick_run_system(
         &mut bosses_destroyed_event_reader,
         &mut run_end_event_writer,
         &mut change_bg_music_event_writer,
+        &mut new_objective_event_writer,
     );
 }
 

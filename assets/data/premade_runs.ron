@@ -1,6 +1,6 @@
 (
     runs: {
-        "test_run": ["captain_tutorial","test_level_1", "test_level_2", "test_level_3"],
+        "test_run": ["captain_tutorial", "test_level_1", "test_level_2", "test_level_3"],
     }
 )
 

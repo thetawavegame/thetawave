@@ -1,11 +1,12 @@
 use std::time::Duration;
 
 use bevy::prelude::*;
+use thetawave_interface::objective::{NewObjectiveEvent, Objective};
 
 use crate::{
     misc::HealthComponent,
     player::{PlayerComponent, PlayersResource},
-    run::{CurrentRunProgressResource, Objective},
+    run::CurrentRunProgressResource,
     states::GameCleanup,
 };
 
@@ -29,7 +30,11 @@ pub struct ArmorUI;
 
 /// Tag for level ui
 #[derive(Component)]
-pub struct LevelUI;
+pub struct ObjectiveUI;
+
+/// Tag for level ui
+#[derive(Component)]
+pub struct ObjectiveLabelUI;
 
 /// Tag for level ui
 #[derive(Component)]
@@ -50,44 +55,72 @@ pub struct Player1UI;
 #[derive(Component)]
 pub struct Player2UI;
 
+/// Initialize objective ui when objective changes
+pub fn setup_level_objective_ui_system(
+    mut commands: Commands,
+    asset_server: ResMut<AssetServer>,
+    mut new_objective_event_reader: EventReader<NewObjectiveEvent>,
+    mut objective_ui_query: Query<Entity, With<ObjectiveUI>>,
+    mut objective_label_ui_query: Query<Entity, With<ObjectiveLabelUI>>,
+) {
+    // read event for new objective set
+    for event in new_objective_event_reader.iter() {
+        //remove existing objective ui
+        for entity in objective_ui_query.iter_mut() {
+            commands.entity(entity).despawn_recursive();
+        }
+        for entity in objective_label_ui_query.iter_mut() {
+            commands.entity(entity).despawn_recursive();
+        }
+
+        //create ui for new objective
+        if let Some(objective) = &event.objective {
+            match objective {
+                Objective::Defense(_) => {
+                    // level objective ui
+                    commands
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Px(800.0),
+                                height: Val::Px(30.0),
+                                left: Val::Percent(19.0),
+                                bottom: Val::Percent(2.0),
+                                position_type: PositionType::Absolute,
+                                ..Style::default()
+                            },
+                            background_color: Color::BLUE.into(),
+                            ..NodeBundle::default()
+                        })
+                        .insert(GameCleanup)
+                        .insert(ObjectiveUI);
+
+                    commands
+                        .spawn(ImageBundle {
+                            image: asset_server.load("texture/defense_bar_label.png").into(),
+                            style: Style {
+                                left: Val::Percent(42.5),
+                                bottom: Val::Percent(1.7),
+                                position_type: PositionType::Absolute,
+                                ..default()
+                            },
+                            transform: Transform::from_xyz(0.0, 0.0, 1.0),
+                            ..Default::default()
+                        })
+                        .insert(GameCleanup)
+                        .insert(ObjectiveLabelUI)
+                        .insert(StatBarLabel);
+                }
+            }
+        }
+    }
+}
+
 /// Initialize all ui
 pub fn setup_game_ui_system(
     mut commands: Commands,
     asset_server: ResMut<AssetServer>,
     players_resource: Res<PlayersResource>,
 ) {
-    // level objective ui
-    commands
-        .spawn(NodeBundle {
-            style: Style {
-                width: Val::Px(800.0),
-                height: Val::Px(30.0),
-                left: Val::Percent(19.0),
-                bottom: Val::Percent(2.0),
-                position_type: PositionType::Absolute,
-                ..Style::default()
-            },
-            background_color: Color::BLUE.into(),
-            ..NodeBundle::default()
-        })
-        .insert(GameCleanup)
-        .insert(LevelUI);
-
-    commands
-        .spawn(ImageBundle {
-            image: asset_server.load("texture/defense_bar_label.png").into(),
-            style: Style {
-                left: Val::Percent(42.5),
-                bottom: Val::Percent(1.7),
-                position_type: PositionType::Absolute,
-                ..default()
-            },
-            transform: Transform::from_xyz(0.0, 0.0, 1.0),
-            ..Default::default()
-        })
-        .insert(GameCleanup)
-        .insert(StatBarLabel);
-
     // player 1 ui
     commands
         .spawn(NodeBundle {
@@ -467,7 +500,7 @@ pub fn update_player1_ui(
         Query<&mut Style, (With<AbilityUI>, With<Player1UI>)>,
         Query<&mut Visibility, (With<AbilityChargingUI>, With<Player1UI>)>,
         Query<&mut Visibility, (With<AbilityReadyUI>, With<Player1UI>)>,
-        Query<&mut Style, With<LevelUI>>,
+        Query<&mut Style, With<ObjectiveUI>>,
         Query<&mut Style, (With<ShieldsUI>, With<Player1UI>)>,
     )>,
     player_query: Query<(&HealthComponent, &PlayerComponent)>,

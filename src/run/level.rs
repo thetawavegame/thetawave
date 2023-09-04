@@ -7,14 +7,13 @@ use std::{
 use thetawave_interface::{
     audio::{BGMusicType, ChangeBackgroundMusicEvent},
     character::CharacterType,
+    objective::Objective,
     spawnable::MobType,
 };
 
 use crate::spawnable::{BossesDestroyedEvent, SpawnMobEvent};
 
-use super::{
-    objective::Objective, tutorial::TutorialLessonType, FormationPoolsResource, SpawnFormationEvent,
-};
+use super::{tutorial::TutorialLessonType, FormationPoolsResource, SpawnFormationEvent};
 
 #[derive(Resource, Deserialize)]
 pub struct PremadeLevelsResource {
@@ -46,12 +45,8 @@ impl From<&BGMusicTransition> for ChangeBackgroundMusicEvent {
         ChangeBackgroundMusicEvent {
             bg_music_type: value.bg_music_type.clone(),
             loop_from: value.loop_from,
-            fade_in: value
-                .fade_in
-                .map(|fade_in| Duration::from_secs_f32(fade_in)),
-            fade_out: value
-                .fade_out
-                .map(|fade_out| Duration::from_secs_f32(fade_out)),
+            fade_in: value.fade_in.map(Duration::from_secs_f32),
+            fade_out: value.fade_out.map(Duration::from_secs_f32),
         }
     }
 }

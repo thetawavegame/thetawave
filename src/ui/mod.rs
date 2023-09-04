@@ -41,6 +41,7 @@ impl Plugin for UiPlugin {
             (
                 game::update_player1_ui.after(GameUpdateSet::UpdateUi),
                 game::update_player2_ui.after(GameUpdateSet::UpdateUi),
+                game::setup_level_objective_ui_system.after(GameUpdateSet::UpdateUi),
             )
                 .run_if(in_state(states::AppStates::Game))
                 .run_if(in_state(states::GameStates::Playing)),
