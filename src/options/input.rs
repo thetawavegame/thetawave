@@ -1,10 +1,13 @@
 use std::{env::current_dir, fs::read_to_string};
 
-use bevy::prelude::{GamepadButtonType, KeyCode, Resource};
-use leafwing_input_manager::prelude::InputMap;
+use bevy::prelude::*;
+use leafwing_input_manager::{
+    prelude::{ActionState, InputMap},
+    InputManagerBundle,
+};
 use ron::from_str;
 use serde::Deserialize;
-use thetawave_interface::options::input::{MenuAction, PlayerAction};
+use thetawave_interface::options::input::{MenuAction, MenuExplorer, PlayerAction};
 
 #[derive(Deserialize)]
 pub struct InputBindings {
@@ -60,17 +63,40 @@ fn get_input_bindings() -> InputBindings {
 }
 
 #[derive(Resource, Debug)]
-pub struct MenuInputsResource {
-    /// Menus can be controlled with any input from keyboard or gamepad
-    pub menu_keyboard: InputMap<MenuAction>,
-    pub menu_gamepad: InputMap<MenuAction>,
+pub struct InputsResource {
+    pub menu: InputMap<MenuAction>,
+    pub player_keyboard: InputMap<PlayerAction>,
+    pub player_gamepad: InputMap<PlayerAction>,
 }
 
-impl MenuInputsResource {
+impl InputsResource {
     pub fn new(bindings: InputBindings) -> Self {
-        MenuInputsResource {
-            menu_keyboard: InputMap::new(bindings.menu_keyboard),
-            menu_gamepad: InputMap::new(bindings.menu_gamepad),
+        InputsResource {
+            menu: InputMap::new(bindings.menu_keyboard)
+                .insert_multiple(bindings.menu_gamepad)
+                .to_owned(),
+            player_keyboard: InputMap::new(bindings.player_keyboard),
+            player_gamepad: InputMap::new(bindings.player_gamepad),
         }
+    }
+}
+
+/// Spawns entity to track navigation over menus
+pub fn spawn_menu_explorer_system(mut commands: Commands, inputs_res: Res<InputsResource>) {
+    commands
+        .spawn(InputManagerBundle::<MenuAction> {
+            action_state: ActionState::default(),
+            input_map: inputs_res.menu.clone(),
+        })
+        .insert(MenuExplorer);
+}
+
+pub fn read_menu_actions(query: Query<&ActionState<MenuAction>, With<MenuExplorer>>) {
+    let action_state = query.single();
+
+    if action_state.just_pressed(MenuAction::Back) {
+        info!("Menu back");
+    } else if action_state.just_pressed(MenuAction::Up) {
+        info!("Menu up");
     }
 }
