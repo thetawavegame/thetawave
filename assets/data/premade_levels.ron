@@ -645,7 +645,136 @@
 				(
 					phase_type: Tutorial(
 						character_type: Captain,
-						tutorial_lesson_type: Movement,
+						tutorial_lesson: Movement(
+							up_timer: (
+								mode: Once,
+								duration: (
+									secs: 2,
+									nanos: 0,
+								),
+								stopwatch: (
+									elapsed: (
+										secs: 0,
+										nanos: 0,
+									),
+									paused: false, 
+								),
+								finished: false,
+								times_finished_this_tick: 0,
+							),
+							down_timer: (
+								mode: Once,
+								duration: (
+									secs: 2,
+									nanos: 0,
+								),
+								stopwatch: (
+									elapsed: (
+										secs: 0,
+										nanos: 0,
+									),
+									paused: false, 
+								),
+								finished: false,
+								times_finished_this_tick: 0,
+							),
+							left_timer: (
+								mode: Once,
+								duration: (
+									secs: 2,
+									nanos: 0,
+								),
+								stopwatch: (
+									elapsed: (
+										secs: 0,
+										nanos: 0,
+									),
+									paused: false, 
+								),
+								finished: false,
+								times_finished_this_tick: 0,
+							),
+							right_timer: (
+								mode: Once,
+								duration: (
+									secs: 2,
+									nanos: 0,
+								),
+								stopwatch: (
+									elapsed: (
+										secs: 0,
+										nanos: 0,
+									),
+									paused: false, 
+								),
+								finished: false,
+								times_finished_this_tick: 0,
+							),
+							up_left_timer: (
+								mode: Once,
+								duration: (
+									secs: 2,
+									nanos: 0,
+								),
+								stopwatch: (
+									elapsed: (
+										secs: 0,
+										nanos: 0,
+									),
+									paused: false, 
+								),
+								finished: false,
+								times_finished_this_tick: 0,
+							),
+							up_right_timer: (
+								mode: Once,
+								duration: (
+									secs: 2,
+									nanos: 0,
+								),
+								stopwatch: (
+									elapsed: (
+										secs: 0,
+										nanos: 0,
+									),
+									paused: false, 
+								),
+								finished: false,
+								times_finished_this_tick: 0,
+							),
+							down_left_timer: (
+								mode: Once,
+								duration: (
+									secs: 2,
+									nanos: 0,
+								),
+								stopwatch: (
+									elapsed: (
+										secs: 0,
+										nanos: 0,
+									),
+									paused: false, 
+								),
+								finished: false,
+								times_finished_this_tick: 0,
+							),
+							down_right_timer: (
+								mode: Once,
+								duration: (
+									secs: 2,
+									nanos: 0,
+								),
+								stopwatch: (
+									elapsed: (
+										secs: 0,
+										nanos: 0,
+									),
+									paused: false, 
+								),
+								finished: false,
+								times_finished_this_tick: 0,
+							),
+						),
 					),
 				),
 			],

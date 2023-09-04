@@ -13,7 +13,7 @@ use thetawave_interface::{
 
 use crate::spawnable::{BossesDestroyedEvent, SpawnMobEvent};
 
-use super::{tutorial::TutorialLessonType, FormationPoolsResource, SpawnFormationEvent};
+use super::{tutorial::TutorialLesson, FormationPoolsResource, SpawnFormationEvent};
 
 #[derive(Resource, Deserialize)]
 pub struct PremadeLevelsResource {
@@ -69,7 +69,7 @@ pub enum LevelPhaseType {
     },
     Tutorial {
         character_type: CharacterType,
-        tutorial_lesson_type: TutorialLessonType,
+        tutorial_lesson: TutorialLesson,
     },
 }
 
@@ -198,8 +198,11 @@ impl Level {
                 }
                 LevelPhaseType::Tutorial {
                     character_type,
-                    tutorial_lesson_type,
-                } => false,
+                    tutorial_lesson,
+                } => {
+                    tutorial_lesson.update();
+                    false
+                }
             };
 
             self.current_phase = Some(modified_current_phase);
