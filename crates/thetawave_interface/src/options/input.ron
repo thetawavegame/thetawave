@@ -6,14 +6,16 @@
         (D, Right),
         (Return, Confirm),
         (Escape, Back),
+        (ShiftLeft, Join),
     ],
     menu_gamepad: [
         (DPadUp, Up),
         (DPadDown, Down),
         (DPadLeft, Left),
         (DPadRight, Right),
-        (South, Confirm),
+        (South, Join),
         (East, Back),
+        (Start, Confirm)
     ],
     player_keyboard: [
         (W, MoveUp),

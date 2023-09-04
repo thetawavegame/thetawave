@@ -32,6 +32,7 @@ fn get_input_bindings() -> InputBindings {
             (KeyCode::S, MenuAction::Down),
             (KeyCode::A, MenuAction::Left),
             (KeyCode::D, MenuAction::Right),
+            (KeyCode::ShiftLeft, MenuAction::Join),
             (KeyCode::Return, MenuAction::Confirm),
             (KeyCode::Escape, MenuAction::Back),
         ],
@@ -40,7 +41,8 @@ fn get_input_bindings() -> InputBindings {
             (GamepadButtonType::DPadDown, MenuAction::Down),
             (GamepadButtonType::DPadLeft, MenuAction::Left),
             (GamepadButtonType::DPadRight, MenuAction::Right),
-            (GamepadButtonType::South, MenuAction::Confirm),
+            (GamepadButtonType::Start, MenuAction::Confirm),
+            (GamepadButtonType::South, MenuAction::Join),
             (GamepadButtonType::East, MenuAction::Back),
         ],
         player_keyboard: vec![

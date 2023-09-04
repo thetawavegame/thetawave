@@ -13,6 +13,7 @@ pub enum MenuAction {
     Left,
     Right,
     Confirm,
+    Join,
     Back,
 }
 
