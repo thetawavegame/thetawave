@@ -1,0 +1,34 @@
+(
+    menu_keyboard: [
+        (W, Up),
+        (S, Down),
+        (A, Left),
+        (D, Right),
+        (Return, Confirm),
+        (Escape, Back),
+    ],
+    menu_gamepad: [
+        (DPadUp, Up),
+        (DPadDown, Down),
+        (DPadLeft, Left),
+        (DPadRight, Right),
+        (South, Confirm),
+        (East, Back),
+    ],
+    player_keyboard: [
+        (W, MoveUp),
+        (S, MoveDown),
+        (A, MoveLeft),
+        (D, MoveRight),
+        (Space, BasicAttack),
+        (ShiftLeft, SpecialAttack),
+    ],
+    player_gamepad: [
+        (DPadUp, MoveUp),
+        (DPadDown, MoveDown),
+        (DPadLeft, MoveLeft),
+        (DPadRight, MoveRight),
+        (RightTrigger, BasicAttack),
+        (LeftTrigger, SpecialAttack),
+    ],
+)

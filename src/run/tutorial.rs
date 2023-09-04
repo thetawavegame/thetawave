@@ -18,7 +18,7 @@ pub enum TutorialLesson {
 }
 
 impl TutorialLesson {
-    pub fn update(&mut self) {
+    pub fn update(&mut self) -> bool {
         match self {
             TutorialLesson::Movement {
                 up_timer,
@@ -29,7 +29,17 @@ impl TutorialLesson {
                 up_right_timer,
                 down_left_timer,
                 down_right_timer,
-            } => {}
+            } => {
+                // return true if all the timers are finished
+                up_timer.finished()
+                    && down_timer.finished()
+                    && left_timer.finished()
+                    && right_timer.finished()
+                    && up_left_timer.finished()
+                    && up_right_timer.finished()
+                    && down_left_timer.finished()
+                    && down_right_timer.finished()
+            }
             TutorialLesson::Attack => todo!(),
             TutorialLesson::SpecialAbility => todo!(),
         }

@@ -19,8 +19,10 @@ thiserror = "1.0"
 derive_more = "0.99.17"
 bevy_ecs_macros = "0.11.2"
 bevy_ecs = "0.11.2"
+bevy_reflect = "0.11.2"
 bevy_kira_audio = { version = "0.16.0", features = ["mp3", "wav"] }
-
+leafwing-input-manager = "0.10.0"
+ron = "0.8.0"
 
 [dev-dependencies]
 rstest = "0.18.2"
@@ -40,13 +42,14 @@ bevy_asset_loader = { version = "0.17.0", features = [
 serde = { workspace = true }
 strum = { workspace = true }
 strum_macros = { workspace = true }
-ron = "0.8.0"
+ron = { workspace = true }
 rand = "0.8.5"
 console_error_panic_hook = "0.1.7"
 bevy_kira_audio = { workspace = true }
 winit = "0.28.4"
 image = "0.24.6"
 thiserror = { workspace = true }
+leafwing-input-manager = { workspace = true }
 
 thetawave_interface = { path = "crates/thetawave_interface" }
 

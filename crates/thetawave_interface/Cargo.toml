@@ -12,3 +12,5 @@ strum_macros = { workspace = true }
 derive_more = { workspace = true }
 bevy_ecs_macros = { workspace = true }
 bevy_ecs = { workspace = true }
+bevy_reflect = { workspace = true }
+leafwing-input-manager = { workspace = true }

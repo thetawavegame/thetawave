@@ -3,7 +3,10 @@ use bevy_kira_audio::prelude::*;
 
 use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
-use thetawave_interface::states::{AppStates, GameStates};
+use thetawave_interface::{
+    options::generate_config_files,
+    states::{AppStates, GameStates},
+};
 
 pub const PHYSICS_SCALE: f32 = 10.0;
 pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_1;
@@ -55,26 +58,10 @@ pub enum GameUpdateSet {
     Cleanup,
 }
 
-/*
-// Don't generate a display config for wasm
-#[cfg(target_arch = "wasm32")]
-fn get_display_config() -> options::DisplayConfig {
-    use std::panic;
-    panic::set_hook(Box::new(console_error_panic_hook::hook)); // pushes rust errors to the browser console
-    options::DisplayConfig {
-        width: 1280.0,
-        height: 720.0,
-        fullscreen: false,
-    }
-}
-*/
-
 #[cfg(not(target_arch = "wasm32"))]
 fn get_display_config() -> options::DisplayConfig {
     use ron::de::from_str;
     use std::{env::current_dir, fs::read_to_string};
-
-    options::generate_config_files();
 
     let config_path = current_dir().unwrap().join("config");
 
@@ -102,6 +89,9 @@ fn setup_panic() {
 fn main() {
     #[cfg(target_arch = "wasm32")]
     setup_panic();
+
+    #[cfg(not(target_arch = "wasm32"))]
+    generate_config_files();
 
     let display_config = get_display_config();
 
