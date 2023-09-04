@@ -15,6 +15,8 @@ pub enum MenuAction {
     Confirm,
     Join,
     Back,
+    Reset,
+    ExitPauseMenu,
 }
 
 #[derive(Actionlike, PartialEq, Eq, Clone, Copy, Hash, Debug, Reflect, Deserialize)]

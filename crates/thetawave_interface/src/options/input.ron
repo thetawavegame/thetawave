@@ -7,6 +7,8 @@
         (Return, Confirm),
         (Escape, Back),
         (ShiftLeft, Join),
+        (R, Reset),
+        (Escape, ExitPauseMenu)
     ],
     menu_gamepad: [
         (DPadUp, Up),
@@ -15,7 +17,9 @@
         (DPadRight, Right),
         (South, Join),
         (East, Back),
-        (Start, Confirm)
+        (Start, Confirm),
+        (East, Reset),
+        (Start, ExitPauseMenu)
     ],
     player_keyboard: [
         (W, MoveUp),
