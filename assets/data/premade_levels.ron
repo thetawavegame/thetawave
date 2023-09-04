@@ -1,10 +1,10 @@
 (
 	levels_data: {
 		"test_level_1": (
-			objective: Defense((
+			objective: Some(Defense((
 				defense: 100,
 				max_defense: 100,
-			)),	
+			))),	
 			phases: [
 				(
 					phase_type: FormationSpawn(
@@ -215,10 +215,10 @@
 			],
 		),
 		"test_level_2": (
-			objective: Defense((
+			objective: Some(Defense((
 				defense: 100,
 				max_defense: 100,
-			)),		
+			))),		
 			phases: [
 				(
 					phase_type: FormationSpawn(
@@ -428,10 +428,10 @@
 			],
 		),
 		"test_level_3": (
-			objective: Defense((
+			objective: Some(Defense((
 				defense: 100,
 				max_defense: 100,
-			)),
+			))),
 			phases: [
 				(
 					phase_type: FormationSpawn(
@@ -641,10 +641,6 @@
 			],
 		),
 		"captain_tutorial": (
-			objective: Defense((
-				defense: 100,
-				max_defense: 100,
-			)),
 			phases: [
 				(
 					phase_type: Tutorial(
@@ -655,10 +651,10 @@
 			],
 		),
 		"test": (
-			objective: Defense((
+			objective: Some(Defense((
 				defense: 100,
 				max_defense: 100,
-			)),
+			))),
 			phases: [
 				(
 					phase_type: FormationSpawn(

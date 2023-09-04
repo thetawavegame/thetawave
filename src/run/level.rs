@@ -84,7 +84,7 @@ pub struct LevelData {
     /// timeline of the phases of the level
     pub phases: Vec<LevelPhase>,
     /// objective of the level (besides surviving)
-    pub objective: Objective,
+    pub objective: Option<Objective>,
 }
 
 /// Event to alert when level has been completed
@@ -102,8 +102,8 @@ pub struct Level {
     pub current_phase: Option<LevelPhase>,
     /// Phases that have yet to be played in the level
     pub queued_phases: LevelPhases,
-    /// Objective is an additional failure condition for a level
-    pub objective: Objective,
+    /// Optional objective is an additional failure condition for a level
+    pub objective: Option<Objective>,
     /// Tracks how long the player has been in the level
     pub level_time: Stopwatch,
 }

@@ -233,37 +233,37 @@ fn handle_objective_system(
     mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
 ) {
     if let Some(current_level) = &mut run_res.current_level {
-        let objective = &mut current_level.objective;
+        if let Some(objective) = &mut current_level.objective {
+            match objective {
+                Objective::Defense(defense_data) => {
+                    for event in bottom_gate_event.iter() {
+                        match event.0 {
+                            DefenseInteraction::Heal(value) => {
+                                // heal defense objective
+                                defense_data.gain_defense(value);
 
-        match objective {
-            Objective::Defense(defense_data) => {
-                for event in bottom_gate_event.iter() {
-                    match event.0 {
-                        DefenseInteraction::Heal(value) => {
-                            // heal defense objective
-                            defense_data.gain_defense(value);
+                                // play heal sound effect
+                                sound_effect_event_writer.send(PlaySoundEffectEvent {
+                                    sound_effect_type: SoundEffectType::DefenseHeal,
+                                });
+                            }
+                            DefenseInteraction::Damage(value) => {
+                                // damage defense objective
+                                defense_data.take_damage(value);
 
-                            // play heal sound effect
-                            sound_effect_event_writer.send(PlaySoundEffectEvent {
-                                sound_effect_type: SoundEffectType::DefenseHeal,
-                            });
-                        }
-                        DefenseInteraction::Damage(value) => {
-                            // damage defense objective
-                            defense_data.take_damage(value);
+                                //play damage sound effect
+                                sound_effect_event_writer.send(PlaySoundEffectEvent {
+                                    sound_effect_type: SoundEffectType::DefenseDamage,
+                                });
+                            }
+                        };
+                    }
 
-                            //play damage sound effect
-                            sound_effect_event_writer.send(PlaySoundEffectEvent {
-                                sound_effect_type: SoundEffectType::DefenseDamage,
-                            });
-                        }
-                    };
-                }
-
-                if defense_data.is_failed() {
-                    run_end_event.send(RunEndEvent {
-                        outcome: RunOutcomeType::Defeat(RunDefeatType::DefenseDestroyed),
-                    });
+                    if defense_data.is_failed() {
+                        run_end_event.send(RunEndEvent {
+                            outcome: RunOutcomeType::Defeat(RunDefeatType::DefenseDestroyed),
+                        });
+                    }
                 }
             }
         }
