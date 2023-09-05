@@ -1,10 +1,7 @@
-use crate::{
-    spawnable::{MobComponent, MobSegmentComponent, SpawnableComponent},
-    states::GameCleanup,
-};
+use crate::spawnable::{MobComponent, MobSegmentComponent, SpawnableComponent};
 use bevy::prelude::*;
 use bevy_rapier2d::{prelude::*, rapier::prelude::CollisionEventFlags};
-use thetawave_interface::objective::MobReachedBottomGateEvent;
+use thetawave_interface::{objective::MobReachedBottomGateEvent, states::GameCleanup};
 
 /// Despawn gate tag
 #[derive(Component)]

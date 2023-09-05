@@ -7,9 +7,10 @@ use thetawave_interface::{
     game::historical_metrics::{
         MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
     },
+    states::GameOverCleanup,
 };
 
-use crate::{states::GameOverCleanup, ui::BouncingPromptComponent};
+use crate::ui::BouncingPromptComponent;
 
 #[derive(Component)]
 pub struct GameOverUI;

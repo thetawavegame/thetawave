@@ -1,10 +1,12 @@
 use super::BouncingPromptComponent;
-use crate::{
-    player::{PlayerInput, PlayersResource},
-    states,
-};
+use crate::states;
 use bevy::{prelude::*, utils::hashbrown::HashMap};
-use thetawave_interface::{character::CharacterType, character_selection::PlayerJoinEvent};
+use thetawave_interface::{
+    character::CharacterType,
+    character_selection::PlayerJoinEvent,
+    player::{PlayerInput, PlayersResource},
+    states::CharacterSelectionCleanup,
+};
 
 #[derive(Component)]
 pub struct CharacterSelectionUI;
@@ -52,7 +54,7 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
             },
             ..Default::default()
         })
-        .insert(states::CharacterSelectionCleanup)
+        .insert(CharacterSelectionCleanup)
         .insert(CharacterSelectionUI)
         .with_children(|parent| {
             parent

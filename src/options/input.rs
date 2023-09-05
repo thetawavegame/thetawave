@@ -7,7 +7,11 @@ use leafwing_input_manager::{
 };
 use ron::from_str;
 use serde::Deserialize;
-use thetawave_interface::options::input::{MenuAction, MenuExplorer, PlayerAction};
+use thetawave_interface::{
+    options::input::{MenuAction, MenuExplorer, PlayerAction},
+    player::PlayersResource,
+    states::GameCleanup,
+};
 
 #[derive(Deserialize)]
 pub struct InputBindings {
@@ -56,6 +60,7 @@ fn get_input_bindings() -> InputBindings {
             (KeyCode::D, PlayerAction::MoveRight),
             (KeyCode::Space, PlayerAction::BasicAttack),
             (KeyCode::ShiftLeft, PlayerAction::SpecialAttack),
+            (KeyCode::Escape, PlayerAction::Pause),
         ],
         player_gamepad: vec![
             (GamepadButtonType::DPadUp, PlayerAction::MoveUp),
@@ -64,6 +69,7 @@ fn get_input_bindings() -> InputBindings {
             (GamepadButtonType::DPadRight, PlayerAction::MoveRight),
             (GamepadButtonType::RightTrigger, PlayerAction::BasicAttack),
             (GamepadButtonType::LeftTrigger, PlayerAction::SpecialAttack),
+            (GamepadButtonType::Start, PlayerAction::Pause),
         ],
     }
 }
@@ -95,6 +101,56 @@ pub fn spawn_menu_explorer_system(mut commands: Commands, inputs_res: Res<Inputs
             input_map: inputs_res.menu.clone(),
         })
         .insert(MenuExplorer);
+}
+
+#[derive(Component)]
+pub enum PlayerControllerComponent {
+    One,
+    Two,
+    Three,
+    Four,
+}
+
+impl PlayerControllerComponent {
+    pub fn get_from_idx(i: usize) -> Self {
+        if i == 0 {
+            return PlayerControllerComponent::One;
+        } else if i == 1 {
+            return PlayerControllerComponent::Two;
+        } else if i == 2 {
+            return PlayerControllerComponent::Three;
+        } else if i == 3 {
+            return PlayerControllerComponent::Four;
+        }
+
+        panic!("More than four players registered");
+    }
+}
+
+pub fn spawn_player_controllers_system(
+    mut commands: Commands,
+    inputs_res: Res<InputsResource>,
+    players_res: Res<PlayersResource>,
+) {
+    for (i, input) in players_res.player_inputs.iter().enumerate() {
+        if let Some(player_input) = input {
+            info!("Player controller spawned");
+            commands
+                .spawn(PlayerControllerComponent::get_from_idx(i))
+                .insert(InputManagerBundle::<PlayerAction> {
+                    action_state: ActionState::default(),
+                    input_map: match player_input {
+                        thetawave_interface::player::PlayerInput::Keyboard => {
+                            inputs_res.player_keyboard.clone()
+                        }
+                        thetawave_interface::player::PlayerInput::Gamepad(_) => {
+                            inputs_res.player_gamepad.clone()
+                        }
+                    },
+                })
+                .insert(GameCleanup);
+        }
+    }
 }
 
 pub fn read_menu_actions(query: Query<&ActionState<MenuAction>, With<MenuExplorer>>) {

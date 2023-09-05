@@ -6,6 +6,7 @@ use thetawave_interface::{
     audio::CollisionSoundType,
     objective::DefenseInteraction,
     spawnable::{MobSegmentType, SpawnableType},
+    states::GameCleanup,
 };
 
 use crate::{
@@ -15,7 +16,6 @@ use crate::{
     loot::ConsumableDropListType,
     misc::HealthComponent,
     spawnable::SpawnableComponent,
-    states::GameCleanup,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 

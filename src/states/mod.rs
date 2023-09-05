@@ -3,6 +3,13 @@ use bevy_asset_loader::prelude::*;
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::options::input::MenuAction;
 use thetawave_interface::options::input::MenuExplorer;
+use thetawave_interface::states::CharacterSelectionCleanup;
+use thetawave_interface::states::GameCleanup;
+use thetawave_interface::states::GameOverCleanup;
+use thetawave_interface::states::InstructionsCleanup;
+use thetawave_interface::states::MainMenuCleanup;
+use thetawave_interface::states::PauseCleanup;
+use thetawave_interface::states::VictoryCleanup;
 pub use thetawave_interface::states::{AppStates, GameStates};
 
 mod game;
@@ -163,27 +170,6 @@ impl Plugin for StatesPlugin {
         );
     }
 }
-
-#[derive(Component)]
-pub struct MainMenuCleanup;
-
-#[derive(Component)]
-pub struct GameCleanup;
-
-#[derive(Component)]
-pub struct GameOverCleanup;
-
-#[derive(Component)]
-pub struct VictoryCleanup;
-
-#[derive(Component)]
-pub struct PauseCleanup;
-
-#[derive(Component)]
-pub struct InstructionsCleanup;
-
-#[derive(Component)]
-pub struct CharacterSelectionCleanup;
 
 // remove entities tagged for the current app state
 pub fn clear_state_system<T: Component>(

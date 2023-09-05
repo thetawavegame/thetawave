@@ -1,7 +1,10 @@
 //! `thetawave` player module
 use bevy::prelude::*;
 use ron::de::from_bytes;
-use thetawave_interface::states::{AppStates, GameStates};
+use thetawave_interface::{
+    player::PlayersResource,
+    states::{AppStates, GameStates},
+};
 
 mod components;
 mod resources;
@@ -12,7 +15,7 @@ use crate::{GameEnterSet, GameUpdateSet};
 
 pub use self::{
     components::PlayerComponent,
-    resources::{Character, CharactersResource, PlayerInput, PlayersResource},
+    resources::{Character, CharactersResource},
     spawn::spawn_players_system,
     systems::{
         player_ability_system, player_death_system, player_fire_weapon_system,

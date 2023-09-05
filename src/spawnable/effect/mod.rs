@@ -1,14 +1,16 @@
 use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::EffectAssets,
-    states::GameCleanup,
 };
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use rand::Rng;
 use serde::Deserialize;
 use std::{collections::HashMap, ops::Range};
-use thetawave_interface::spawnable::{EffectType, TextEffectType};
+use thetawave_interface::{
+    spawnable::{EffectType, TextEffectType},
+    states::GameCleanup,
+};
 
 use super::InitialMotion;
 

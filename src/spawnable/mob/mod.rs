@@ -14,7 +14,6 @@ use crate::{
     loot::ConsumableDropListType,
     misc::HealthComponent,
     spawnable::{InitialMotion, SpawnableBehavior, SpawnableComponent},
-    states::GameCleanup,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 
@@ -27,6 +26,7 @@ use thetawave_interface::{
     audio::CollisionSoundType,
     objective::DefenseInteraction,
     spawnable::{MobSegmentType, MobType, ProjectileType},
+    states::GameCleanup,
 };
 
 /// Core component for mobs

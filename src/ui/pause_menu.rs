@@ -1,6 +1,7 @@
 use bevy::prelude::*;
+use thetawave_interface::states::PauseCleanup;
 
-use crate::{states::PauseCleanup, ui::BouncingPromptComponent};
+use crate::ui::BouncingPromptComponent;
 
 #[derive(Component)]
 pub struct PauseUI;

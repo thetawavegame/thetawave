@@ -1,5 +1,5 @@
-use bevy::prelude::*;
-use thetawave_interface::character::CharacterType;
+use crate::character::CharacterType;
+use bevy_ecs::system::Resource;
 
 #[derive(Resource, Debug)]
 pub struct PlayersResource {

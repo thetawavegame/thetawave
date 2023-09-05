@@ -12,7 +12,8 @@ pub use self::display::{
     set_window_icon, toggle_fullscreen_system, toggle_zoom_system, DisplayConfig,
 };
 use self::input::{
-    get_input_bindings, read_menu_actions, spawn_menu_explorer_system, InputsResource,
+    get_input_bindings, read_menu_actions, spawn_menu_explorer_system,
+    spawn_player_controllers_system, InputsResource,
 };
 
 pub struct OptionsPlugin;
@@ -37,5 +38,7 @@ impl Plugin for OptionsPlugin {
             Update,
             read_menu_actions.run_if(in_state(AppStates::MainMenu)),
         );
+
+        app.add_systems(OnEnter(AppStates::Game), spawn_player_controllers_system);
     }
 }

@@ -2,10 +2,13 @@ use std::collections::HashMap;
 
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::{ExternalImpulse, Velocity};
-use thetawave_interface::audio::{PlaySoundEffectEvent, SoundEffectType};
+use thetawave_interface::{
+    audio::{PlaySoundEffectEvent, SoundEffectType},
+    player::PlayerInput,
+};
 
 use crate::{
-    player::{components::AbilityType, PlayerComponent, PlayerInput, PlayersResource},
+    player::{components::AbilityType, PlayerComponent, PlayersResource},
     spawnable::{InitialMotion, SpawnProjectileEvent},
 };
 

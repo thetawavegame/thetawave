@@ -28,6 +28,7 @@
         (D, MoveRight),
         (Space, BasicAttack),
         (ShiftLeft, SpecialAttack),
+        (Escape, Pause),
     ],
     player_gamepad: [
         (DPadUp, MoveUp),
@@ -36,5 +37,6 @@
         (DPadRight, MoveRight),
         (RightTrigger, BasicAttack),
         (LeftTrigger, SpecialAttack),
+        (Start, Pause),
     ],
 )

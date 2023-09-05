@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use thetawave_interface::states::InstructionsCleanup;
 
 use crate::states;
 
@@ -17,7 +18,7 @@ pub fn setup_instructions_system(mut commands: Commands, asset_server: Res<Asset
             },
             ..Default::default()
         })
-        .insert(states::InstructionsCleanup)
+        .insert(InstructionsCleanup)
         .insert(InstructionsUI)
         .with_children(|parent| {
             parent

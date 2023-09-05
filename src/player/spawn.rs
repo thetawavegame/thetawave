@@ -1,12 +1,13 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
+use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
+use thetawave_interface::{options::input::PlayerAction, states::GameCleanup};
 
 use crate::{
     assets,
     game::GameParametersResource,
     misc::HealthComponent,
     player::{CharactersResource, PlayerComponent, PlayersResource},
-    states::GameCleanup,
 };
 
 /// Spawns player into the game

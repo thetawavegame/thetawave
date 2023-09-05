@@ -3,10 +3,11 @@ use bevy_kira_audio::prelude::*;
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::{
     options::input::{MenuAction, MenuExplorer},
+    player::PlayersResource,
     states::AppStates,
 };
 
-use crate::{audio, player::PlayersResource};
+use crate::audio;
 
 // Start the game by entering the Game state
 pub fn start_game_system(

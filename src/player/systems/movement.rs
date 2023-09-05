@@ -2,10 +2,11 @@ use std::collections::HashMap;
 
 use crate::{
     game::GameParametersResource,
-    player::{PlayerComponent, PlayerInput, PlayersResource},
+    player::{PlayerComponent, PlayersResource},
 };
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
+use thetawave_interface::player::PlayerInput;
 
 /// Move player by modifying velocity with input
 pub fn player_movement_system(

@@ -1,6 +1,7 @@
 use bevy_ecs::component::Component;
+use bevy_ecs_macros::Resource;
 use bevy_reflect::Reflect;
-use leafwing_input_manager::Actionlike;
+use leafwing_input_manager::{prelude::InputMap, Actionlike};
 use serde::Deserialize;
 
 #[derive(Component)]
@@ -27,4 +28,5 @@ pub enum PlayerAction {
     MoveRight,
     BasicAttack,
     SpecialAttack,
+    Pause,
 }
