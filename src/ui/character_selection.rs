@@ -1,5 +1,4 @@
 use super::BouncingPromptComponent;
-use crate::states;
 use bevy::{prelude::*, utils::hashbrown::HashMap};
 use thetawave_interface::{
     character::CharacterType,

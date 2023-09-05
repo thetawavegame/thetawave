@@ -143,9 +143,11 @@ pub fn spawn_player_controllers_system(
                         thetawave_interface::player::PlayerInput::Keyboard => {
                             inputs_res.player_keyboard.clone()
                         }
-                        thetawave_interface::player::PlayerInput::Gamepad(_) => {
-                            inputs_res.player_gamepad.clone()
-                        }
+                        thetawave_interface::player::PlayerInput::Gamepad(id) => inputs_res
+                            .player_gamepad
+                            .clone()
+                            .set_gamepad(Gamepad { id: *id })
+                            .build(),
                     },
                 })
                 .insert(GameCleanup);

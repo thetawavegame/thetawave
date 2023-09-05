@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
-use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
-use thetawave_interface::{options::input::PlayerAction, states::GameCleanup};
+use thetawave_interface::states::GameCleanup;
 
 use crate::{
     assets,

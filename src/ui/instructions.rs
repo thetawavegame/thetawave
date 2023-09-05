@@ -1,9 +1,6 @@
+use super::BouncingPromptComponent;
 use bevy::prelude::*;
 use thetawave_interface::states::InstructionsCleanup;
-
-use crate::states;
-
-use super::BouncingPromptComponent;
 
 #[derive(Component)]
 pub struct InstructionsUI;
