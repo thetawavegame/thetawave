@@ -6,20 +6,11 @@ use leafwing_input_manager::{
     InputManagerBundle,
 };
 use ron::from_str;
-use serde::Deserialize;
 use thetawave_interface::{
-    options::input::{MenuAction, MenuExplorer, PlayerAction},
+    options::input::{InputBindings, InputsResource, MenuAction, MenuExplorer, PlayerAction},
     player::PlayersResource,
     states::GameCleanup,
 };
-
-#[derive(Deserialize)]
-pub struct InputBindings {
-    pub menu_keyboard: Vec<(KeyCode, MenuAction)>,
-    pub menu_gamepad: Vec<(GamepadButtonType, MenuAction)>,
-    pub player_keyboard: Vec<(KeyCode, PlayerAction)>,
-    pub player_gamepad: Vec<(GamepadButtonType, PlayerAction)>,
-}
 
 #[cfg(not(target_arch = "wasm32"))]
 pub fn get_input_bindings() -> InputBindings {
@@ -71,25 +62,6 @@ fn get_input_bindings() -> InputBindings {
             (GamepadButtonType::LeftTrigger, PlayerAction::SpecialAttack),
             (GamepadButtonType::Start, PlayerAction::Pause),
         ],
-    }
-}
-
-#[derive(Resource, Debug)]
-pub struct InputsResource {
-    pub menu: InputMap<MenuAction>,
-    pub player_keyboard: InputMap<PlayerAction>,
-    pub player_gamepad: InputMap<PlayerAction>,
-}
-
-impl InputsResource {
-    pub fn new(bindings: InputBindings) -> Self {
-        InputsResource {
-            menu: InputMap::new(bindings.menu_keyboard)
-                .insert_multiple(bindings.menu_gamepad)
-                .to_owned(),
-            player_keyboard: InputMap::new(bindings.player_keyboard),
-            player_gamepad: InputMap::new(bindings.player_gamepad),
-        }
     }
 }
 

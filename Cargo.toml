@@ -20,6 +20,7 @@ derive_more = "0.99.17"
 bevy_ecs_macros = "0.11.2"
 bevy_ecs = "0.11.2"
 bevy_reflect = "0.11.2"
+bevy_input = "0.11.2"
 bevy_kira_audio = { version = "0.16.0", features = ["mp3", "wav"] }
 leafwing-input-manager = "0.10.0"
 ron = "0.8.0"
