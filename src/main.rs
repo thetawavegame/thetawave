@@ -183,7 +183,7 @@ impl PluginGroup for ThetawaveGamePlugins {
         // TODO: Remove this "not(test)" in a subsequent PR when that plugin removes an unwrap.
         #[cfg(all(feature = "arcade", not(test)))]
         {
-            res = res.add(thetawave_arcade::plugin::ArcadePlugin);
+            res = res.add(thetawave_arcade::arduino::ArcadeArduinoPlugin);
         }
         #[cfg(feature = "storage")]
         {

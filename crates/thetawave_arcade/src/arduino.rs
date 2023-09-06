@@ -26,6 +26,8 @@ impl ArduinoSerialPort {
     }
 }
 
+/// Find a serial port from all available ports where the manufacturer or product match a string
+/// pattern.
 fn first_usb_port_name_matching_str(lowercase_pattern: &str) -> Option<String> {
     match available_ports() {
         Ok(ports) => ports
@@ -49,10 +51,11 @@ fn first_usb_port_name_matching_str(lowercase_pattern: &str) -> Option<String> {
 use bytes::Bytes;
 use thetawave_interface::character_selection::PlayerJoinEvent;
 
-/// The entrypoint for accepting game input from an arcade machine.
-pub struct ArcadePlugin;
+/// Features specific to an Arduino that is only running on custom-made arcade machines. Mostly
+/// lighting. The plugin no-ops if an Arduino serial port cannot be accessed.
+pub struct ArcadeArduinoPlugin;
 
-impl Plugin for ArcadePlugin {
+impl Plugin for ArcadeArduinoPlugin {
     fn build(&self, app: &mut App) {
         if let Some(res) = ArduinoSerialPort::first_port_matching_manufacturer_product()
             .or_else(ArduinoSerialPort::from_envvar)
