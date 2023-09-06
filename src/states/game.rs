@@ -1,8 +1,8 @@
 use bevy::{app::AppExit, prelude::*};
-use bevy_kira_audio::prelude::*;
+use thetawave_interface::audio::{PlaySoundEffectEvent, SoundEffectType};
 use thetawave_interface::states::AppStates;
 
-use crate::{audio, player::PlayersResource};
+use crate::player::PlayersResource;
 
 // Start the game by entering the Game state
 pub fn start_game_system(
@@ -11,8 +11,7 @@ pub fn start_game_system(
     mut keyboard_input: ResMut<Input<KeyCode>>,
     mut next_app_state: ResMut<NextState<AppStates>>,
     players_resource: Res<PlayersResource>,
-    asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<audio::MenuAudioChannel>>,
+    mut sound_effect_pub: EventWriter<PlaySoundEffectEvent>,
 ) {
     // check for keyboard or gamepad input
     let mut start_input = keyboard_input.just_released(KeyCode::Return)
@@ -31,7 +30,9 @@ pub fn start_game_system(
         next_app_state.set(AppStates::InitializeRun);
 
         // play sound effect
-        audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
+        sound_effect_pub.send(PlaySoundEffectEvent {
+            sound_effect_type: SoundEffectType::MenuInputSuccess,
+        });
 
         // reset input
         keyboard_input.reset(KeyCode::Return);
@@ -52,8 +53,7 @@ pub fn start_instructions_system(
     mut gamepad_input: ResMut<Input<GamepadButton>>,
     mut keyboard_input: ResMut<Input<KeyCode>>,
     mut next_app_state: ResMut<NextState<AppStates>>,
-    asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<audio::MenuAudioChannel>>,
+    mut sound_effect_pub: EventWriter<PlaySoundEffectEvent>,
 ) {
     // check for keyboard or gamepad input
     let mut start_input = keyboard_input.just_released(KeyCode::Return)
@@ -71,8 +71,9 @@ pub fn start_instructions_system(
         // set the state to game
         next_app_state.set(AppStates::Instructions);
 
-        // play sound effect
-        audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
+        sound_effect_pub.send(PlaySoundEffectEvent {
+            sound_effect_type: SoundEffectType::MenuInputSuccess,
+        });
 
         // reset input
         keyboard_input.reset(KeyCode::Return);
@@ -92,8 +93,7 @@ pub fn start_character_selection_system(
     mut gamepad_input: ResMut<Input<GamepadButton>>,
     mut keyboard_input: ResMut<Input<KeyCode>>,
     mut next_app_state: ResMut<NextState<AppStates>>,
-    asset_server: Res<AssetServer>,
-    audio_channel: Res<AudioChannel<audio::MenuAudioChannel>>,
+    mut sound_effect_pub: EventWriter<PlaySoundEffectEvent>,
 ) {
     // check for keyboard or gamepad input
     let mut start_input = keyboard_input.just_released(KeyCode::Return)
@@ -111,8 +111,9 @@ pub fn start_character_selection_system(
         // set the state to game
         next_app_state.set(AppStates::CharacterSelection);
 
-        // play sound effect
-        audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
+        sound_effect_pub.send(PlaySoundEffectEvent {
+            sound_effect_type: SoundEffectType::MenuInputSuccess,
+        });
 
         // reset input
         keyboard_input.reset(KeyCode::Return);
