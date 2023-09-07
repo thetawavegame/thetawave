@@ -1,15 +1,10 @@
 use std::{env::current_dir, fs::read_to_string};
 
 use bevy::prelude::*;
-use leafwing_input_manager::{
-    prelude::{ActionState, InputMap},
-    InputManagerBundle,
-};
+use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
 use ron::from_str;
-use thetawave_interface::{
-    options::input::{InputBindings, InputsResource, MenuAction, MenuExplorer, PlayerAction},
-    player::PlayersResource,
-    states::GameCleanup,
+use thetawave_interface::options::input::{
+    InputBindings, InputsResource, MenuAction, MenuExplorer,
 };
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -73,58 +68,6 @@ pub fn spawn_menu_explorer_system(mut commands: Commands, inputs_res: Res<Inputs
             input_map: inputs_res.menu.clone(),
         })
         .insert(MenuExplorer);
-}
-
-#[derive(Component)]
-pub enum PlayerControllerComponent {
-    One,
-    Two,
-    Three,
-    Four,
-}
-
-impl PlayerControllerComponent {
-    pub fn get_from_idx(i: usize) -> Self {
-        if i == 0 {
-            return PlayerControllerComponent::One;
-        } else if i == 1 {
-            return PlayerControllerComponent::Two;
-        } else if i == 2 {
-            return PlayerControllerComponent::Three;
-        } else if i == 3 {
-            return PlayerControllerComponent::Four;
-        }
-
-        panic!("More than four players registered");
-    }
-}
-
-pub fn spawn_player_controllers_system(
-    mut commands: Commands,
-    inputs_res: Res<InputsResource>,
-    players_res: Res<PlayersResource>,
-) {
-    for (i, input) in players_res.player_inputs.iter().enumerate() {
-        if let Some(player_input) = input {
-            info!("Player controller spawned");
-            commands
-                .spawn(PlayerControllerComponent::get_from_idx(i))
-                .insert(InputManagerBundle::<PlayerAction> {
-                    action_state: ActionState::default(),
-                    input_map: match player_input {
-                        thetawave_interface::player::PlayerInput::Keyboard => {
-                            inputs_res.player_keyboard.clone()
-                        }
-                        thetawave_interface::player::PlayerInput::Gamepad(id) => inputs_res
-                            .player_gamepad
-                            .clone()
-                            .set_gamepad(Gamepad { id: *id })
-                            .build(),
-                    },
-                })
-                .insert(GameCleanup);
-        }
-    }
 }
 
 pub fn read_menu_actions(query: Query<&ActionState<MenuAction>, With<MenuExplorer>>) {

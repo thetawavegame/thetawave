@@ -21,8 +21,7 @@ pub fn start_game_system(
     let action_state = menu_input_query.single();
 
     // if input read enter the game state
-    if action_state.just_released(MenuAction::Confirm)
-        && players_resource.player_inputs[0].is_some()
+    if action_state.just_released(MenuAction::Confirm) && players_resource.player_data[0].is_some()
     {
         // set the state to game
         next_app_state.set(AppStates::InitializeRun);

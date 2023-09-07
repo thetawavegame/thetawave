@@ -1,9 +1,10 @@
 use super::BouncingPromptComponent;
+
 use bevy::{prelude::*, utils::hashbrown::HashMap};
 use thetawave_interface::{
     character::CharacterType,
     character_selection::PlayerJoinEvent,
-    player::{PlayerInput, PlayersResource},
+    player::{PlayerData, PlayerInput, PlayersResource},
     states::CharacterSelectionCleanup,
 };
 
@@ -517,11 +518,7 @@ pub fn player_join_system(
     mut player_join_event: EventWriter<PlayerJoinEvent>,
 ) {
     // get all of the already used inputs
-    let used_inputs: Vec<PlayerInput> = players_resource
-        .player_inputs
-        .iter()
-        .filter_map(|input| input.clone())
-        .collect();
+    let used_inputs = players_resource.get_used_inputs();
 
     // check for keyboard input
     let keyboard_join_input = keyboard_input.just_released(KeyCode::ShiftLeft)
@@ -530,18 +527,21 @@ pub fn player_join_system(
     // join with keyboard
     if keyboard_join_input {
         // set the first available player input to keyboard
-        for (idx, player_input) in players_resource.player_inputs.iter_mut().enumerate() {
-            if player_input.is_none() && !used_inputs.contains(&PlayerInput::Keyboard) {
-                *player_input = Some(PlayerInput::Keyboard);
+        for (i, player_data) in players_resource.player_data.iter_mut().enumerate() {
+            if player_data.is_none() && !used_inputs.contains(&PlayerInput::Keyboard) {
+                *player_data = Some(PlayerData {
+                    character: CharacterType::Captain,
+                    input: PlayerInput::Keyboard,
+                });
 
                 // send event that player joined
-                player_join_event.send(PlayerJoinEvent(idx));
+                player_join_event.send(PlayerJoinEvent(i));
 
                 // remove the player join prompt
-                if idx == 0 {
+                if i == 0 {
                     ui_queries.p0().single_mut().display = Display::None;
                     ui_queries.p2().single_mut().display = Display::Flex;
-                } else if idx == 1 {
+                } else if i == 1 {
                     ui_queries.p1().single_mut().display = Display::None;
                     ui_queries.p3().single_mut().display = Display::Flex;
                 } else {
@@ -567,21 +567,23 @@ pub fn player_join_system(
 
     for (gamepad_id, input) in gamepad_join_inputs.iter() {
         if *input {
-            //set the first available player input to gamepad
-            for (idx, player_input) in players_resource.player_inputs.iter_mut().enumerate() {
-                if player_input.is_none()
+            for (i, player_data) in players_resource.player_data.iter_mut().enumerate() {
+                if player_data.is_none()
                     && !used_inputs.contains(&PlayerInput::Gamepad(*gamepad_id))
                 {
-                    *player_input = Some(PlayerInput::Gamepad(*gamepad_id));
+                    *player_data = Some(PlayerData {
+                        character: CharacterType::Captain,
+                        input: PlayerInput::Gamepad(*gamepad_id),
+                    });
 
                     // send event that player joined
-                    player_join_event.send(PlayerJoinEvent(idx));
+                    player_join_event.send(PlayerJoinEvent(i));
 
                     // remove the player join prompt
-                    if idx == 0 {
+                    if i == 0 {
                         ui_queries.p0().single_mut().display = Display::None;
                         ui_queries.p2().single_mut().display = Display::Flex;
-                    } else if idx == 1 {
+                    } else if i == 1 {
                         ui_queries.p1().single_mut().display = Display::None;
                         ui_queries.p3().single_mut().display = Display::Flex;
                     } else {
@@ -594,7 +596,7 @@ pub fn player_join_system(
     }
 
     // show the start game prompt if at least one player has joined
-    if players_resource.player_inputs[0].is_some() {
+    if players_resource.player_data[0].is_some() {
         *start_game_prompt.single_mut() = Visibility::Inherited;
     } else {
         *start_game_prompt.single_mut() = Visibility::Hidden;
@@ -644,8 +646,8 @@ pub fn select_character_system(
     let children = player_1_selection.single();
     for child in children.iter() {
         let (mut choice, mut bounce, mut bg_color) = selection_choice.get_mut(*child).unwrap();
-        if let Some(input_type) = &players_resource.player_inputs[0] {
-            match input_type {
+        if let Some(player_data) = &mut players_resource.player_data[0] {
+            match player_data.input {
                 PlayerInput::Keyboard => {
                     if keyboard_input {
                         if choice.is_active {
@@ -656,12 +658,12 @@ pub fn select_character_system(
                             choice.is_active = true;
                             bounce.is_active = true;
                             *bg_color = BackgroundColor(Color::WHITE);
-                            players_resource.player_characters[0] = Some(choice.character.clone());
+                            player_data.character = choice.character.clone();
                         }
                     }
                 }
                 PlayerInput::Gamepad(gamepad_id) => {
-                    if gamepad_join_inputs[gamepad_id] {
+                    if gamepad_join_inputs[&gamepad_id] {
                         if choice.is_active {
                             choice.is_active = false;
                             bounce.is_active = false;
@@ -670,7 +672,7 @@ pub fn select_character_system(
                             choice.is_active = true;
                             bounce.is_active = true;
                             *bg_color = BackgroundColor(Color::WHITE);
-                            players_resource.player_characters[0] = Some(choice.character.clone());
+                            player_data.character = choice.character.clone();
                         }
                     }
                 }
@@ -682,8 +684,8 @@ pub fn select_character_system(
     let children = player_2_selection.single();
     for child in children.iter() {
         let (mut choice, mut bounce, mut bg_color) = selection_choice.get_mut(*child).unwrap();
-        if let Some(input_type) = &players_resource.player_inputs[1] {
-            match input_type {
+        if let Some(player_data) = &mut players_resource.player_data[1] {
+            match player_data.input {
                 PlayerInput::Keyboard => {
                     if keyboard_input {
                         if choice.is_active {
@@ -694,12 +696,12 @@ pub fn select_character_system(
                             choice.is_active = true;
                             bounce.is_active = true;
                             *bg_color = BackgroundColor(Color::WHITE);
-                            players_resource.player_characters[1] = Some(choice.character.clone());
+                            player_data.character = choice.character.clone();
                         }
                     }
                 }
                 PlayerInput::Gamepad(gamepad_id) => {
-                    if gamepad_join_inputs[gamepad_id] {
+                    if gamepad_join_inputs[&gamepad_id] {
                         if choice.is_active {
                             choice.is_active = false;
                             bounce.is_active = false;
@@ -708,7 +710,7 @@ pub fn select_character_system(
                             choice.is_active = true;
                             bounce.is_active = true;
                             *bg_color = BackgroundColor(Color::WHITE);
-                            players_resource.player_characters[1] = Some(choice.character.clone());
+                            player_data.character = choice.character.clone();
                         }
                     }
                 }
@@ -716,22 +718,13 @@ pub fn select_character_system(
         }
     }
 
-    // set default character to the captain
-    if players_resource.player_inputs[0].is_some()
-        && players_resource.player_characters[0].is_none()
-    {
-        players_resource.player_characters[0] = Some(CharacterType::Captain);
-    }
-
-    if players_resource.player_inputs[1].is_some()
-        && players_resource.player_characters[1].is_none()
-    {
-        players_resource.player_characters[1] = Some(CharacterType::Captain);
-    }
-
     // set the charcater description for player 1
     for (mut style, description) in character_description_queries.p0().iter_mut() {
-        if players_resource.player_characters[0] == description.character {
+        if players_resource.player_data[0]
+            .clone()
+            .map(|player_data| player_data.character)
+            == description.character
+        {
             style.display = Display::Flex;
         } else {
             style.display = Display::None;
@@ -740,7 +733,11 @@ pub fn select_character_system(
 
     // set the charcater description for player 2
     for (mut style, description) in character_description_queries.p1().iter_mut() {
-        if players_resource.player_characters[1] == description.character {
+        if players_resource.player_data[1]
+            .clone()
+            .map(|player_data| player_data.character)
+            == description.character
+        {
             style.display = Display::Flex;
         } else {
             style.display = Display::None;

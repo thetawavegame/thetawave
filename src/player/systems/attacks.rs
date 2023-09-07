@@ -53,9 +53,10 @@ pub fn player_fire_weapon_system(
 
     for (mut player_component, rb_vels, transform, entity) in player_query.iter_mut() {
         // check if player matches input
-        let player_input = players_resource.player_inputs[player_component.player_index]
+        let player_input = players_resource.player_data[player_component.player_index]
             .clone()
-            .unwrap();
+            .unwrap()
+            .input;
 
         // get fire input for player
         let fire_input = match player_input {

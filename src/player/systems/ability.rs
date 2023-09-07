@@ -116,9 +116,10 @@ pub fn player_ability_system(
         player_query.iter_mut()
     {
         // get the input for the queried player
-        let player_input = players_resource.player_inputs[player_component.player_index]
+        let player_input = players_resource.player_data[player_component.player_index]
             .clone()
-            .unwrap();
+            .unwrap()
+            .input;
 
         // check what actions given input matches
         let up = match player_input {

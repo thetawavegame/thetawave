@@ -3,16 +3,30 @@ use bevy_ecs::system::Resource;
 
 #[derive(Resource, Debug)]
 pub struct PlayersResource {
-    pub player_characters: Vec<Option<CharacterType>>,
-    pub player_inputs: Vec<Option<PlayerInput>>,
+    pub player_data: Vec<Option<PlayerData>>,
+}
+
+#[derive(Debug, Clone)]
+pub struct PlayerData {
+    pub character: CharacterType,
+    pub input: PlayerInput,
 }
 
 impl Default for PlayersResource {
     fn default() -> Self {
         PlayersResource {
-            player_characters: vec![None, None, None, None],
-            player_inputs: vec![None, None, None, None],
+            player_data: vec![None, None, None, None],
         }
+    }
+}
+
+impl PlayersResource {
+    // A method to get a vector of all used inputs
+    pub fn get_used_inputs(&self) -> Vec<PlayerInput> {
+        self.player_data
+            .iter()
+            .filter_map(|player_data| player_data.clone().map(|data| data.input))
+            .collect()
     }
 }
 

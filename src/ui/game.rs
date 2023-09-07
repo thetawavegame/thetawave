@@ -304,7 +304,7 @@ pub fn setup_game_ui_system(
         .insert(Player1UI);
 
     // player 2 ui if there is a second player
-    if players_resource.player_inputs[1].is_some() {
+    if players_resource.player_data[1].is_some() {
         commands
             .spawn(NodeBundle {
                 style: Style {

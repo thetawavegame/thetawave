@@ -79,9 +79,10 @@ pub fn player_movement_system(
         .collect();
 
     for (player, mut vel) in player_info.iter_mut() {
-        let player_input = players_resource.player_inputs[player.player_index]
+        let player_input = players_resource.player_data[player.player_index]
             .clone()
-            .unwrap();
+            .unwrap()
+            .input;
 
         let up = match player_input {
             PlayerInput::Keyboard => up_keyboard_input,
