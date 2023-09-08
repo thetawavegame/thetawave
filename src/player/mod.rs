@@ -1,7 +1,9 @@
 //! `thetawave` player module
 use bevy::prelude::*;
+use leafwing_input_manager::prelude::InputManagerPlugin;
 use ron::de::from_bytes;
 use thetawave_interface::{
+    options::input::PlayerAction,
     player::PlayersResource,
     states::{AppStates, GameStates},
 };
@@ -27,6 +29,8 @@ pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
+        app.add_plugins(InputManagerPlugin::<PlayerAction>::default());
+
         app.insert_resource(
             from_bytes::<CharactersResource>(include_bytes!("../../assets/data/characters.ron"))
                 .unwrap(),

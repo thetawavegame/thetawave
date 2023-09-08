@@ -1,9 +1,13 @@
+use crate::game;
+
 use super::BouncingPromptComponent;
 
-use bevy::{prelude::*, utils::hashbrown::HashMap};
+use bevy::{input::gamepad::GamepadButtonChangedEvent, prelude::*, utils::hashbrown::HashMap};
+use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::{
     character::CharacterType,
     character_selection::PlayerJoinEvent,
+    options::input::{InputsResource, MenuAction, MenuExplorer},
     player::{PlayerData, PlayerInput, PlayersResource},
     states::CharacterSelectionCleanup,
 };
@@ -504,9 +508,8 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
 
 /// Handles players joining the game
 pub fn player_join_system(
-    gamepads: Res<Gamepads>,
-    keyboard_input: Res<Input<KeyCode>>,
-    gamepad_input: Res<Input<GamepadButton>>,
+    menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
+    mut gamepad_events: EventReader<GamepadButtonChangedEvent>,
     mut players_resource: ResMut<PlayersResource>,
     mut start_game_prompt: Query<&mut Visibility, With<StartGamePrompt>>,
     mut ui_queries: ParamSet<(
@@ -520,12 +523,11 @@ pub fn player_join_system(
     // get all of the already used inputs
     let used_inputs = players_resource.get_used_inputs();
 
-    // check for keyboard input
-    let keyboard_join_input = keyboard_input.just_released(KeyCode::ShiftLeft)
-        || keyboard_input.just_released(KeyCode::ShiftRight);
+    // get menu action
+    let action_state = menu_input_query.single();
 
     // join with keyboard
-    if keyboard_join_input {
+    if action_state.just_released(MenuAction::JoinKeyboard) {
         // set the first available player input to keyboard
         for (i, player_data) in players_resource.player_data.iter_mut().enumerate() {
             if player_data.is_none() && !used_inputs.contains(&PlayerInput::Keyboard) {
@@ -552,45 +554,34 @@ pub fn player_join_system(
         }
     }
 
-    let gamepad_join_inputs: HashMap<usize, bool> = gamepads
-        .iter()
-        .map(|gamepad| {
-            (
-                gamepad.id,
-                gamepad_input.just_released(GamepadButton {
-                    gamepad,
-                    button_type: GamepadButtonType::South,
-                }),
-            )
-        })
-        .collect();
+    // join with gamepad
+    if action_state.just_released(MenuAction::JoinGamepad) {
+        let gamepad_event = gamepad_events.iter().next().unwrap();
 
-    for (gamepad_id, input) in gamepad_join_inputs.iter() {
-        if *input {
-            for (i, player_data) in players_resource.player_data.iter_mut().enumerate() {
-                if player_data.is_none()
-                    && !used_inputs.contains(&PlayerInput::Gamepad(*gamepad_id))
-                {
-                    *player_data = Some(PlayerData {
-                        character: CharacterType::Captain,
-                        input: PlayerInput::Gamepad(*gamepad_id),
-                    });
+        // set the first available player input the gamepad
+        for (i, player_data) in players_resource.player_data.iter_mut().enumerate() {
+            if player_data.is_none()
+                && !used_inputs.contains(&PlayerInput::Gamepad(gamepad_event.gamepad.id))
+            {
+                *player_data = Some(PlayerData {
+                    character: CharacterType::Captain,
+                    input: PlayerInput::Gamepad(gamepad_event.gamepad.id),
+                });
 
-                    // send event that player joined
-                    player_join_event.send(PlayerJoinEvent(i));
+                // send event that player joined
+                player_join_event.send(PlayerJoinEvent(i));
 
-                    // remove the player join prompt
-                    if i == 0 {
-                        ui_queries.p0().single_mut().display = Display::None;
-                        ui_queries.p2().single_mut().display = Display::Flex;
-                    } else if i == 1 {
-                        ui_queries.p1().single_mut().display = Display::None;
-                        ui_queries.p3().single_mut().display = Display::Flex;
-                    } else {
-                        todo!("implement more than 2 players")
-                    }
-                    break;
+                // remove the player join prompt
+                if i == 0 {
+                    ui_queries.p0().single_mut().display = Display::None;
+                    ui_queries.p2().single_mut().display = Display::Flex;
+                } else if i == 1 {
+                    ui_queries.p1().single_mut().display = Display::None;
+                    ui_queries.p3().single_mut().display = Display::Flex;
+                } else {
+                    todo!("implement more than 2 players")
                 }
+                break;
             }
         }
     }
@@ -606,9 +597,8 @@ pub fn player_join_system(
 // handle the character selection for each player
 #[allow(clippy::too_many_arguments)]
 pub fn select_character_system(
-    gamepads: Res<Gamepads>,
-    keyboard_input: Res<Input<KeyCode>>,
-    gamepad_input: Res<Input<GamepadButton>>,
+    menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
+    mut gamepad_events: EventReader<GamepadButtonChangedEvent>,
     mut players_resource: ResMut<PlayersResource>,
     player_1_selection: Query<&Children, With<Player1CharacterSelection>>,
     player_2_selection: Query<&Children, With<Player2CharacterSelection>>,
@@ -623,24 +613,20 @@ pub fn select_character_system(
         &mut BackgroundColor,
     )>,
 ) {
-    let keyboard_input =
-        keyboard_input.just_pressed(KeyCode::D) || keyboard_input.just_pressed(KeyCode::A);
+    let action_state = menu_input_query.single();
 
-    let gamepad_join_inputs: HashMap<usize, bool> = gamepads
-        .iter()
-        .map(|gamepad| {
-            (
-                gamepad.id,
-                gamepad_input.just_pressed(GamepadButton {
-                    gamepad,
-                    button_type: GamepadButtonType::DPadRight,
-                }) || gamepad_input.just_pressed(GamepadButton {
-                    gamepad,
-                    button_type: GamepadButtonType::DPadLeft,
-                }),
-            )
-        })
-        .collect();
+    let keyboard_input = action_state.just_pressed(MenuAction::ChangeCharacterKeyboard);
+
+    let gamepad_input = action_state.just_pressed(MenuAction::ChangeCharacterGamepad);
+
+    let gamepad_event_id = if gamepad_input {
+        gamepad_events
+            .iter()
+            .next()
+            .map(|gamepad_event| gamepad_event.gamepad.id)
+    } else {
+        None
+    };
 
     // handle player 1 selection
     let children = player_1_selection.single();
@@ -663,16 +649,18 @@ pub fn select_character_system(
                     }
                 }
                 PlayerInput::Gamepad(gamepad_id) => {
-                    if gamepad_join_inputs[&gamepad_id] {
-                        if choice.is_active {
-                            choice.is_active = false;
-                            bounce.is_active = false;
-                            *bg_color = BackgroundColor(Color::DARK_GRAY);
-                        } else {
-                            choice.is_active = true;
-                            bounce.is_active = true;
-                            *bg_color = BackgroundColor(Color::WHITE);
-                            player_data.character = choice.character.clone();
+                    if let Some(id) = gamepad_event_id {
+                        if gamepad_input && gamepad_id == id {
+                            if choice.is_active {
+                                choice.is_active = false;
+                                bounce.is_active = false;
+                                *bg_color = BackgroundColor(Color::DARK_GRAY);
+                            } else {
+                                choice.is_active = true;
+                                bounce.is_active = true;
+                                *bg_color = BackgroundColor(Color::WHITE);
+                                player_data.character = choice.character.clone();
+                            }
                         }
                     }
                 }
@@ -701,16 +689,18 @@ pub fn select_character_system(
                     }
                 }
                 PlayerInput::Gamepad(gamepad_id) => {
-                    if gamepad_join_inputs[&gamepad_id] {
-                        if choice.is_active {
-                            choice.is_active = false;
-                            bounce.is_active = false;
-                            *bg_color = BackgroundColor(Color::DARK_GRAY);
-                        } else {
-                            choice.is_active = true;
-                            bounce.is_active = true;
-                            *bg_color = BackgroundColor(Color::WHITE);
-                            player_data.character = choice.character.clone();
+                    if let Some(id) = gamepad_event_id {
+                        if gamepad_input && gamepad_id == id {
+                            if choice.is_active {
+                                choice.is_active = false;
+                                bounce.is_active = false;
+                                *bg_color = BackgroundColor(Color::DARK_GRAY);
+                            } else {
+                                choice.is_active = true;
+                                bounce.is_active = true;
+                                *bg_color = BackgroundColor(Color::WHITE);
+                                player_data.character = choice.character.clone();
+                            }
                         }
                     }
                 }

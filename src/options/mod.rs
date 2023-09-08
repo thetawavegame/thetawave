@@ -14,7 +14,7 @@ use crate::states;
 pub use self::display::{
     set_window_icon, toggle_fullscreen_system, toggle_zoom_system, DisplayConfig,
 };
-use self::input::{get_input_bindings, read_menu_actions, spawn_menu_explorer_system};
+use self::input::{get_input_bindings, spawn_menu_explorer_system};
 
 pub struct OptionsPlugin;
 
@@ -32,11 +32,6 @@ impl Plugin for OptionsPlugin {
         app.add_systems(
             Update,
             toggle_zoom_system.run_if(in_state(states::AppStates::Game)),
-        );
-
-        app.add_systems(
-            Update,
-            read_menu_actions.run_if(in_state(AppStates::MainMenu)),
         );
     }
 }

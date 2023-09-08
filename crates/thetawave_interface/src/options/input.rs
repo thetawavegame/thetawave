@@ -9,12 +9,11 @@ pub struct MenuExplorer;
 
 #[derive(Actionlike, PartialEq, Eq, Clone, Copy, Hash, Debug, Reflect, Deserialize)]
 pub enum MenuAction {
-    Up,
-    Down,
-    Left,
-    Right,
     Confirm,
-    Join,
+    JoinKeyboard,
+    ChangeCharacterKeyboard,
+    JoinGamepad,
+    ChangeCharacterGamepad,
     Back,
     Reset,
     ExitPauseMenu,

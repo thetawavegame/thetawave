@@ -69,13 +69,3 @@ pub fn spawn_menu_explorer_system(mut commands: Commands, inputs_res: Res<Inputs
         })
         .insert(MenuExplorer);
 }
-
-pub fn read_menu_actions(query: Query<&ActionState<MenuAction>, With<MenuExplorer>>) {
-    let action_state = query.single();
-
-    if action_state.just_pressed(MenuAction::Back) {
-        info!("Menu back");
-    } else if action_state.just_pressed(MenuAction::Up) {
-        info!("Menu up");
-    }
-}

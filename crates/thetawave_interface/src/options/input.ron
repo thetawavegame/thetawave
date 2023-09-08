@@ -1,21 +1,17 @@
 (
     menu_keyboard: [
-        (W, Up),
-        (S, Down),
-        (A, Left),
-        (D, Right),
+        (A, ChangeCharacterKeyboard),
+        (D, ChangeCharacterKeyboard),
         (Return, Confirm),
         (Escape, Back),
-        (ShiftLeft, Join),
+        (ShiftLeft, JoinKeyboard),
         (R, Reset),
         (Escape, ExitPauseMenu)
     ],
     menu_gamepad: [
-        (DPadUp, Up),
-        (DPadDown, Down),
-        (DPadLeft, Left),
-        (DPadRight, Right),
-        (South, Join),
+        (DPadLeft, ChangeCharacterGamepad),
+        (DPadRight, ChangeCharacterGamepad),
+        (South, JoinGamepad),
         (East, Back),
         (Start, Confirm),
         (East, Reset),
