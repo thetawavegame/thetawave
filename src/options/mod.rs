@@ -9,11 +9,36 @@ use std::{
 mod display;
 
 use crate::states;
+use std::default::Default;
+use std::path::PathBuf;
 
 pub use self::display::{
     set_window_icon, toggle_fullscreen_system, toggle_zoom_system, DisplayConfig,
 };
 
+#[cfg_attr(
+    all(not(target_arch = "wasm32"), feature = "cli"),
+    derive(argh::FromArgs)
+)]
+#[derive(Default, Debug, PartialEq, Eq)]
+/// Options used to start Thetawave. As many of these as possible are inferred/have "sensible"
+/// defaults.
+pub struct GameInitCLIOptions {
+    #[cfg_attr(all(not(target_arch = "wasm32"), feature = "cli"), argh(option))]
+    /// the directory that is used for `bevy::asset::AssetPlugin`. This is generally
+    /// 'EXECUTABLE_DIR/assets/' or 'CARGO_MANIFEST_DIR/assets'.
+    pub assets_dir: Option<PathBuf>,
+}
+impl GameInitCLIOptions {
+    pub fn from_environ_on_supported_platforms_with_default_fallback() -> Self {
+        #[cfg(all(not(target_arch = "wasm32"), feature = "cli"))]
+        {
+            return argh::from_env();
+        }
+        #[allow(unreachable_code)] // The CLI provides the default.
+        Default::default()
+    }
+}
 pub struct OptionsPlugin;
 
 impl Plugin for OptionsPlugin {
@@ -58,4 +83,17 @@ macro_rules! confgen {
 /// Generates the display config file
 pub fn generate_config_files() {
     confgen!("display.ron");
+}
+#[cfg(all(test, not(target_arch = "wasm32"), feature = "cli"))]
+mod cli_tests {
+    use argh::FromArgs;
+    #[test]
+    fn test_cli_parse_asset_path_dir() {
+        assert_eq!(
+            super::GameInitCLIOptions::from_args(&["thetawave"], &["--assets-dir", "myassets/"])
+                .unwrap()
+                .assets_dir,
+            Some(std::path::PathBuf::from("myassets/"))
+        );
+    }
 }

@@ -1,5 +1,5 @@
 use bevy::app::PluginGroupBuilder;
-use bevy::{pbr::AmbientLight, prelude::*};
+use bevy::{asset::AssetPlugin, pbr::AmbientLight, prelude::*};
 use bevy_kira_audio::prelude::*;
 
 use bevy_rapier2d::geometry::Group;
@@ -100,6 +100,25 @@ fn setup_panic() {
     panic::set_hook(Box::new(console_error_panic_hook::hook)); // pushes rust errors to the browser console
 }
 
+fn our_default_plugins(
+    display_config: options::DisplayConfig,
+    opts: options::GameInitCLIOptions,
+) -> PluginGroupBuilder {
+    let res = DefaultPlugins
+        .set(WindowPlugin {
+            primary_window: Some(Window::from(display_config)),
+            ..default()
+        })
+        .set(ImagePlugin::default_nearest());
+
+    match opts.assets_dir {
+        Some(path_) => res.set(AssetPlugin {
+            asset_folder: path_.to_string_lossy().to_string(),
+            ..Default::default()
+        }),
+        None => res,
+    }
+}
 fn main() {
     #[cfg(target_arch = "wasm32")]
     setup_panic();
@@ -107,12 +126,11 @@ fn main() {
     let display_config = get_display_config();
 
     let mut app = build_app(
-        DefaultPlugins
-            .set(WindowPlugin {
-                primary_window: Some(Window::from(display_config)),
-                ..default()
-            })
-            .set(ImagePlugin::default_nearest()),
+        our_default_plugins(
+            display_config,
+            options::GameInitCLIOptions::from_environ_on_supported_platforms_with_default_fallback(
+            ),
+        ),
         ThetawaveGamePlugins,
     );
 
