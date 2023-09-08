@@ -180,8 +180,7 @@ impl PluginGroup for ThetawaveGamePlugins {
             .add(ui::UiPlugin)
             .add(options::OptionsPlugin)
             .add(audio::ThetawaveAudioPlugin);
-        // TODO: Remove this "not(test)" in a subsequent PR when that plugin removes an unwrap.
-        #[cfg(all(feature = "arcade", not(test)))]
+        #[cfg(feature = "arcade")]
         {
             res = res.add(thetawave_arcade::arduino::ArcadeArduinoPlugin);
         }
