@@ -9,12 +9,12 @@ use serialport::{available_ports, SerialPortType};
 use thetawave_interface::states;
 
 /// Environment variable name of the serial port that handles lights.
-pub const THETAWAVE_ARCADE_LIGHT_SERIAL_PORT_NAME: &'static str =
+const THETAWAVE_ARCADE_LIGHT_SERIAL_PORT_NAME: &'static str =
     "THETAWAVE_ARCADE_LIGHT_SERIAL_PORT_NAME";
 
 /// The port for the Arduino that controls the lights.
 #[derive(Resource, Deref, DerefMut, From, Debug)]
-pub struct ArduinoSerialPort(String);
+struct ArduinoSerialPort(String);
 impl ArduinoSerialPort {
     fn first_port_matching_manufacturer_product() -> Option<Self> {
         first_usb_port_name_matching_str("arduino").map(Self)
