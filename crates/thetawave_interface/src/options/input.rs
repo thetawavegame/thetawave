@@ -17,6 +17,7 @@ pub enum MenuAction {
     Back,
     Reset,
     ExitPauseMenu,
+    PauseGame,
 }
 
 #[derive(Actionlike, PartialEq, Eq, Clone, Copy, Hash, Debug, Reflect, Deserialize)]
@@ -27,7 +28,6 @@ pub enum PlayerAction {
     MoveRight,
     BasicAttack,
     SpecialAttack,
-    Pause,
 }
 
 #[derive(Deserialize)]

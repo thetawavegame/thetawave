@@ -9,7 +9,7 @@ use thetawave_interface::{
 };
 
 use crate::{
-    player::{PlayerComponent, PlayersResource},
+    player::PlayerComponent,
     spawnable::{InitialMotion, SpawnProjectileEvent},
 };
 

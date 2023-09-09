@@ -6,7 +6,8 @@
         (Escape, Back),
         (ShiftLeft, JoinKeyboard),
         (R, Reset),
-        (Escape, ExitPauseMenu)
+        (Escape, ExitPauseMenu),
+        (Escape, PauseGame),
     ],
     menu_gamepad: [
         (DPadLeft, ChangeCharacterGamepad),
@@ -15,7 +16,8 @@
         (East, Back),
         (Start, Confirm),
         (East, Reset),
-        (Start, ExitPauseMenu)
+        (Start, ExitPauseMenu),
+        (Start, PauseGame),
     ],
     player_keyboard: [
         (W, MoveUp),
@@ -24,7 +26,6 @@
         (D, MoveRight),
         (Space, BasicAttack),
         (ShiftLeft, SpecialAttack),
-        (Escape, Pause),
     ],
     player_mouse: [
         (Left, BasicAttack),
@@ -37,6 +38,5 @@
         (DPadRight, MoveRight),
         (RightTrigger, BasicAttack),
         (LeftTrigger, SpecialAttack),
-        (Start, Pause),
     ],
 )

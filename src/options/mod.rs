@@ -1,10 +1,7 @@
 //! `thetawave` player module
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::InputManagerPlugin;
-use thetawave_interface::{
-    options::input::{InputsResource, MenuAction},
-    states::AppStates,
-};
+use thetawave_interface::options::input::{InputsResource, MenuAction};
 
 mod display;
 mod input;

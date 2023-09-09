@@ -11,43 +11,20 @@ use crate::audio;
 
 // opens pause menu if input given
 pub fn open_pause_menu_system(
-    gamepads: Res<Gamepads>,
-    mut gamepad_input: ResMut<Input<GamepadButton>>,
-    mut keyboard_input: ResMut<Input<KeyCode>>,
+    menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
     mut next_game_state: ResMut<NextState<GameStates>>,
     mut rapier_config: ResMut<RapierConfiguration>,
     asset_server: Res<AssetServer>,
     audio_channel: Res<AudioChannel<audio::MenuAudioChannel>>,
 ) {
-    // check for keyboard or gamepad input
-    let mut pause_input = keyboard_input.just_released(KeyCode::Escape);
-
-    for gamepad in gamepads.iter() {
-        pause_input |= gamepad_input.just_released(GamepadButton {
-            gamepad,
-            button_type: GamepadButtonType::Start,
-        });
-    }
+    let action_state = menu_input_query.single();
 
     // swiitch to pause menu state if input read
-    if pause_input {
-        // push pause state
-        //app_state.push(AppStates::PauseMenu); // TODO Fix pausing with orthoganal state set
-
+    if action_state.just_released(MenuAction::PauseGame) {
         next_game_state.set(GameStates::Paused);
 
         // play sound effect
         audio_channel.play(asset_server.load("sounds/menu_input_success.wav"));
-
-        // reset input
-        keyboard_input.reset(KeyCode::Escape);
-
-        for gamepad in gamepads.iter() {
-            gamepad_input.reset(GamepadButton {
-                gamepad,
-                button_type: GamepadButtonType::Start,
-            });
-        }
 
         // suspend the physics engine
         rapier_config.physics_pipeline_active = false;
