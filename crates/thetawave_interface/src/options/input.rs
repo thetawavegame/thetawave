@@ -1,5 +1,5 @@
 use bevy_ecs::{component::Component, system::Resource};
-use bevy_input::{gamepad::GamepadButtonType, keyboard::KeyCode};
+use bevy_input::{gamepad::GamepadButtonType, keyboard::KeyCode, mouse::MouseButton};
 use bevy_reflect::Reflect;
 use leafwing_input_manager::{prelude::InputMap, Actionlike};
 use serde::Deserialize;
@@ -36,6 +36,7 @@ pub struct InputBindings {
     pub menu_gamepad: Vec<(GamepadButtonType, MenuAction)>,
     pub player_keyboard: Vec<(KeyCode, PlayerAction)>,
     pub player_gamepad: Vec<(GamepadButtonType, PlayerAction)>,
+    pub player_mouse: Vec<(MouseButton, PlayerAction)>,
 }
 
 #[derive(Resource, Debug)]
@@ -51,7 +52,9 @@ impl InputsResource {
             menu: InputMap::new(bindings.menu_keyboard)
                 .insert_multiple(bindings.menu_gamepad)
                 .to_owned(),
-            player_keyboard: InputMap::new(bindings.player_keyboard),
+            player_keyboard: InputMap::new(bindings.player_keyboard)
+                .insert_multiple(bindings.player_mouse)
+                .to_owned(),
             player_gamepad: InputMap::new(bindings.player_gamepad),
         }
     }

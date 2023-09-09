@@ -1,13 +1,11 @@
-use crate::game;
-
 use super::BouncingPromptComponent;
 
-use bevy::{input::gamepad::GamepadButtonChangedEvent, prelude::*, utils::hashbrown::HashMap};
+use bevy::{input::gamepad::GamepadButtonChangedEvent, prelude::*};
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::{
     character::CharacterType,
     character_selection::PlayerJoinEvent,
-    options::input::{InputsResource, MenuAction, MenuExplorer},
+    options::input::{MenuAction, MenuExplorer},
     player::{PlayerData, PlayerInput, PlayersResource},
     states::CharacterSelectionCleanup,
 };

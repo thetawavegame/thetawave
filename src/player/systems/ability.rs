@@ -1,14 +1,13 @@
-use std::collections::HashMap;
-
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::{ExternalImpulse, Velocity};
+use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
-    player::PlayerInput,
+    options::input::PlayerAction,
 };
 
 use crate::{
-    player::{components::AbilityType, PlayerComponent, PlayersResource},
+    player::{components::AbilityType, PlayerComponent},
     spawnable::{InitialMotion, SpawnProjectileEvent},
 };
 
@@ -19,133 +18,27 @@ pub fn player_ability_system(
         &mut Velocity,
         &Transform,
         &mut ExternalImpulse,
+        &ActionState<PlayerAction>,
         Entity,
     )>,
     time: Res<Time>,
     mut spawn_projectile: EventWriter<SpawnProjectileEvent>,
-    keyboard_input: Res<Input<KeyCode>>,
-    gamepads: Res<Gamepads>,
-    gamepad_input: Res<Input<GamepadButton>>,
-    mouse_input: Res<Input<MouseButton>>,
-    players_resource: Res<PlayersResource>,
     mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
 ) {
-    // get keyboard directional inputs
-    let up_keyboard_input =
-        keyboard_input.pressed(KeyCode::W) || keyboard_input.pressed(KeyCode::Up);
-    let down_keyboard_input =
-        keyboard_input.pressed(KeyCode::S) || keyboard_input.pressed(KeyCode::Down);
-    let left_keyboard_input =
-        keyboard_input.pressed(KeyCode::A) || keyboard_input.pressed(KeyCode::Left);
-    let right_keyboard_input =
-        keyboard_input.pressed(KeyCode::D) || keyboard_input.pressed(KeyCode::Right);
-
-    // get gamepad directional inputs
-    let up_gamepad_inputs: HashMap<usize, bool> = gamepads
-        .iter()
-        .map(|gamepad| {
-            (
-                gamepad.id,
-                gamepad_input.pressed(GamepadButton {
-                    gamepad,
-                    button_type: GamepadButtonType::DPadUp,
-                }),
-            )
-        })
-        .collect();
-
-    let down_gamepad_inputs: HashMap<usize, bool> = gamepads
-        .iter()
-        .map(|gamepad| {
-            (
-                gamepad.id,
-                gamepad_input.pressed(GamepadButton {
-                    gamepad,
-                    button_type: GamepadButtonType::DPadDown,
-                }),
-            )
-        })
-        .collect();
-
-    let left_gamepad_inputs: HashMap<usize, bool> = gamepads
-        .iter()
-        .map(|gamepad| {
-            (
-                gamepad.id,
-                gamepad_input.pressed(GamepadButton {
-                    gamepad,
-                    button_type: GamepadButtonType::DPadLeft,
-                }),
-            )
-        })
-        .collect();
-
-    let right_gamepad_inputs: HashMap<usize, bool> = gamepads
-        .iter()
-        .map(|gamepad| {
-            (
-                gamepad.id,
-                gamepad_input.pressed(GamepadButton {
-                    gamepad,
-                    button_type: GamepadButtonType::DPadRight,
-                }),
-            )
-        })
-        .collect();
-
-    // get ability keyboard input
-    let ability_keyboard_input = keyboard_input.pressed(KeyCode::ShiftLeft)
-        || mouse_input.pressed(MouseButton::Right)
-        || keyboard_input.pressed(KeyCode::ShiftRight);
-
-    // get ability gamepad input
-    let ability_gamepad_inputs: HashMap<usize, bool> = gamepads
-        .iter()
-        .map(|gamepad| {
-            (
-                gamepad.id,
-                gamepad_input.pressed(GamepadButton {
-                    gamepad,
-                    button_type: GamepadButtonType::LeftTrigger,
-                }),
-            )
-        })
-        .collect();
-
-    for (mut player_component, mut player_vel, player_trans, mut player_ext_impulse, entity) in
-        player_query.iter_mut()
+    for (
+        mut player_component,
+        mut player_vel,
+        player_trans,
+        mut player_ext_impulse,
+        action_state,
+        entity,
+    ) in player_query.iter_mut()
     {
-        // get the input for the queried player
-        let player_input = players_resource.player_data[player_component.player_index]
-            .clone()
-            .unwrap()
-            .input;
-
-        // check what actions given input matches
-        let up = match player_input {
-            PlayerInput::Keyboard => up_keyboard_input,
-            PlayerInput::Gamepad(gamepad) => up_gamepad_inputs[&gamepad],
-        };
-
-        let down = match player_input {
-            PlayerInput::Keyboard => down_keyboard_input,
-            PlayerInput::Gamepad(gamepad) => down_gamepad_inputs[&gamepad],
-        };
-
-        let left = match player_input {
-            PlayerInput::Keyboard => left_keyboard_input,
-            PlayerInput::Gamepad(gamepad) => left_gamepad_inputs[&gamepad],
-        };
-
-        let right = match player_input {
-            PlayerInput::Keyboard => right_keyboard_input,
-            PlayerInput::Gamepad(gamepad) => right_gamepad_inputs[&gamepad],
-        };
-
-        let activate_ability_input = match player_input {
-            PlayerInput::Keyboard => ability_keyboard_input,
-            PlayerInput::Gamepad(gamepad) => ability_gamepad_inputs[&gamepad],
-        };
+        let activate_ability_input = action_state.pressed(PlayerAction::SpecialAttack);
+        let up = action_state.pressed(PlayerAction::MoveUp);
+        let down = action_state.pressed(PlayerAction::MoveDown);
+        let left = action_state.pressed(PlayerAction::MoveLeft);
+        let right = action_state.pressed(PlayerAction::MoveRight);
 
         // update ability cooldown timer
         player_component.ability_cooldown_timer.tick(time.delta());

@@ -1,10 +1,11 @@
-use std::{collections::HashMap, time::Duration};
+use std::time::Duration;
 
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
+use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
-    player::PlayerInput,
+    options::input::PlayerAction,
 };
 
 use crate::{
@@ -23,46 +24,20 @@ pub fn player_scale_fire_rate_system(mut player_query: Query<&mut PlayerComponen
 /// Manages the players firing weapons
 #[allow(clippy::too_many_arguments)]
 pub fn player_fire_weapon_system(
-    gamepads: Res<Gamepads>,
-    gamepad_input: Res<Input<GamepadButton>>,
-    mouse_input: Res<Input<MouseButton>>,
-    keyboard_input: Res<Input<KeyCode>>,
-    mut player_query: Query<(&mut PlayerComponent, &Velocity, &Transform, Entity)>,
+    mut player_query: Query<(
+        &mut PlayerComponent,
+        &Velocity,
+        &Transform,
+        &ActionState<PlayerAction>,
+        Entity,
+    )>,
     time: Res<Time>,
     mut spawn_projectile: EventWriter<SpawnProjectileEvent>,
     mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
-    players_resource: Res<PlayersResource>,
 ) {
-    // get keyboard fire input
-    let fire_keyboard_input =
-        keyboard_input.pressed(KeyCode::Space) || mouse_input.pressed(MouseButton::Left);
-
-    // get gamepad fire input
-    let fire_gamepad_inputs: HashMap<usize, bool> = gamepads
-        .iter()
-        .map(|gamepad| {
-            (
-                gamepad.id,
-                gamepad_input.pressed(GamepadButton {
-                    gamepad,
-                    button_type: GamepadButtonType::RightTrigger,
-                }),
-            )
-        })
-        .collect();
-
-    for (mut player_component, rb_vels, transform, entity) in player_query.iter_mut() {
-        // check if player matches input
-        let player_input = players_resource.player_data[player_component.player_index]
-            .clone()
-            .unwrap()
-            .input;
-
-        // get fire input for player
-        let fire_input = match player_input {
-            PlayerInput::Keyboard => fire_keyboard_input,
-            PlayerInput::Gamepad(gamepad) => fire_gamepad_inputs[&gamepad],
-        };
+    for (mut player_component, rb_vels, transform, action_state, entity) in player_query.iter_mut()
+    {
+        let fire_input = action_state.pressed(PlayerAction::BasicAttack);
 
         // tick fire timer
         player_component.fire_timer.tick(time.delta());

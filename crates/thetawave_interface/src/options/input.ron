@@ -26,6 +26,10 @@
         (ShiftLeft, SpecialAttack),
         (Escape, Pause),
     ],
+    player_mouse: [
+        (Left, BasicAttack),
+        (Right, SpecialAttack),
+    ],
     player_gamepad: [
         (DPadUp, MoveUp),
         (DPadDown, MoveDown),
