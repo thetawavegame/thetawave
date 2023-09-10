@@ -1,4 +1,5 @@
 use bevy::{prelude::*, time::Stopwatch};
+use leafwing_input_manager::prelude::ActionState;
 use serde::Deserialize;
 use std::{
     collections::{HashMap, VecDeque},
@@ -8,10 +9,14 @@ use thetawave_interface::{
     audio::{BGMusicType, ChangeBackgroundMusicEvent},
     character::CharacterType,
     objective::Objective,
+    options::input::PlayerAction,
     spawnable::MobType,
 };
 
-use crate::spawnable::{BossesDestroyedEvent, SpawnMobEvent};
+use crate::{
+    player::PlayerComponent,
+    spawnable::{BossesDestroyedEvent, SpawnMobEvent},
+};
 
 use super::{tutorial::TutorialLesson, FormationPoolsResource, SpawnFormationEvent};
 
@@ -149,6 +154,7 @@ impl Level {
     pub fn tick(
         &mut self,
         time: &Time,
+        player_query: &mut Query<&ActionState<PlayerAction>, With<PlayerComponent>>,
         spawn_formation_event_writer: &mut EventWriter<SpawnFormationEvent>,
         formations_res: &FormationPoolsResource,
         spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
@@ -199,10 +205,7 @@ impl Level {
                 LevelPhaseType::Tutorial {
                     character_type,
                     tutorial_lesson,
-                } => {
-                    tutorial_lesson.update();
-                    false
-                }
+                } => tutorial_lesson.update(player_query, time),
             };
 
             self.current_phase = Some(modified_current_phase);

@@ -1,16 +1,19 @@
 use bevy::prelude::*;
 
+use leafwing_input_manager::prelude::ActionState;
 use ron::de::from_bytes;
 use serde::Deserialize;
 use std::collections::{HashMap, VecDeque};
 use thetawave_interface::{
     audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent, SoundEffectType},
     objective::{DefenseInteraction, MobReachedBottomGateEvent, NewObjectiveEvent, Objective},
+    options::input::PlayerAction,
     run::{RunDefeatType, RunEndEvent, RunOutcomeType},
     states::{AppStates, GameStates},
 };
 
 use crate::{
+    player::PlayerComponent,
     spawnable::{BossesDestroyedEvent, SpawnMobEvent},
     GameUpdateSet,
 };
@@ -163,6 +166,7 @@ impl CurrentRunProgressResource {
     pub fn tick(
         &mut self,
         time: &Time,
+        player_query: &mut Query<&ActionState<PlayerAction>, With<PlayerComponent>>,
         spawn_formation_event_writer: &mut EventWriter<SpawnFormationEvent>,
         formations_res: &FormationPoolsResource,
         spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
@@ -177,6 +181,7 @@ impl CurrentRunProgressResource {
         // cycle level when done with all phases
         if current_level.tick(
             time,
+            player_query,
             spawn_formation_event_writer,
             formations_res,
             spawn_mob_event_writer,
@@ -227,6 +232,7 @@ fn init_run_system(
 fn tick_run_system(
     mut run_res: ResMut<CurrentRunProgressResource>,
     time: Res<Time>,
+    mut player_query: Query<&ActionState<PlayerAction>, With<PlayerComponent>>,
     mut spawn_formation_event_writer: EventWriter<SpawnFormationEvent>,
     formations_res: Res<FormationPoolsResource>,
     mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
@@ -237,6 +243,7 @@ fn tick_run_system(
 ) {
     run_res.tick(
         &time,
+        &mut player_query,
         &mut spawn_formation_event_writer,
         &formations_res,
         &mut spawn_mob_event_writer,

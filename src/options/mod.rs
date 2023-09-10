@@ -1,7 +1,7 @@
 //! `thetawave` player module
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::InputManagerPlugin;
-use thetawave_interface::options::input::{InputsResource, MenuAction};
+use thetawave_interface::options::input::{get_input_bindings, InputsResource, MenuAction};
 
 mod display;
 mod input;
@@ -11,7 +11,7 @@ use crate::states;
 pub use self::display::{
     set_window_icon, toggle_fullscreen_system, toggle_zoom_system, DisplayConfig,
 };
-use self::input::{get_input_bindings, spawn_menu_explorer_system};
+use self::input::spawn_menu_explorer_system;
 
 pub struct OptionsPlugin;
 

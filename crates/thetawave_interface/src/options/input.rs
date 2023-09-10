@@ -39,6 +39,23 @@ pub struct InputBindings {
     pub player_mouse: Vec<(MouseButton, PlayerAction)>,
 }
 
+#[cfg(not(target_arch = "wasm32"))]
+pub fn get_input_bindings() -> InputBindings {
+    use ron::from_str;
+    use std::{env::current_dir, fs::read_to_string};
+
+    let config_path = current_dir().unwrap().join("config");
+
+    from_str::<InputBindings>(&read_to_string(config_path.join("input.ron")).unwrap()).unwrap()
+}
+
+#[cfg(target_arch = "wasm32")]
+fn get_input_bindings() -> InputBindings {
+    use ron::de::from_bytes;
+
+    from_bytes::<InputBindings>(include_bytes!("input.ron")).unwrap()
+}
+
 #[derive(Resource, Debug)]
 pub struct InputsResource {
     pub menu: InputMap<MenuAction>,

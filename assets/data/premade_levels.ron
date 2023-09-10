@@ -649,8 +649,8 @@
 							up_timer: (
 								mode: Once,
 								duration: (
-									secs: 2,
-									nanos: 0,
+									secs: 0,
+									nanos: 500000000,
 								),
 								stopwatch: (
 									elapsed: (
@@ -665,8 +665,8 @@
 							down_timer: (
 								mode: Once,
 								duration: (
-									secs: 2,
-									nanos: 0,
+									secs: 0,
+									nanos: 500000000,
 								),
 								stopwatch: (
 									elapsed: (
@@ -681,8 +681,8 @@
 							left_timer: (
 								mode: Once,
 								duration: (
-									secs: 2,
-									nanos: 0,
+									secs: 0,
+									nanos: 500000000,
 								),
 								stopwatch: (
 									elapsed: (
@@ -697,8 +697,8 @@
 							right_timer: (
 								mode: Once,
 								duration: (
-									secs: 2,
-									nanos: 0,
+									secs: 0,
+									nanos: 500000000,
 								),
 								stopwatch: (
 									elapsed: (
@@ -713,8 +713,8 @@
 							up_left_timer: (
 								mode: Once,
 								duration: (
-									secs: 2,
-									nanos: 0,
+									secs: 0,
+									nanos: 500000000,
 								),
 								stopwatch: (
 									elapsed: (
@@ -729,8 +729,8 @@
 							up_right_timer: (
 								mode: Once,
 								duration: (
-									secs: 2,
-									nanos: 0,
+									secs: 0,
+									nanos: 500000000,
 								),
 								stopwatch: (
 									elapsed: (
@@ -745,8 +745,8 @@
 							down_left_timer: (
 								mode: Once,
 								duration: (
-									secs: 2,
-									nanos: 0,
+									secs: 0,
+									nanos: 500000000,
 								),
 								stopwatch: (
 									elapsed: (
@@ -761,8 +761,8 @@
 							down_right_timer: (
 								mode: Once,
 								duration: (
-									secs: 2,
-									nanos: 0,
+									secs: 0,
+									nanos: 500000000,
 								),
 								stopwatch: (
 									elapsed: (
