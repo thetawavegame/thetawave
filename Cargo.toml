@@ -22,9 +22,11 @@ bevy_ecs = "0.11.2"
 bevy_reflect = "0.11.2"
 bevy_input = "0.11.2"
 bevy_kira_audio = { version = "0.16.0", features = ["mp3", "wav"] }
-#leafwing-input-manager = "0.10.0"
-leafwing-input-manager = { git = "https://github.com/100-TomatoJuice/leafwing-input-manager.git", branch = "use-all-gamepads" }
+leafwing-input-manager = "0.10.0"
+#leafwing-input-manager = { git = "https://github.com/100-TomatoJuice/leafwing-input-manager.git", branch = "use-all-gamepads" }
 ron = "0.8.0"
+bevy_time = "0.11.2"
+bevy_math = "0.11.2"
 
 [dev-dependencies]
 rstest = "0.18.2"

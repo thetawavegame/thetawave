@@ -1,8 +1,8 @@
-use crate::{game::GameParametersResource, player::PlayerComponent};
+use crate::game::GameParametersResource;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use leafwing_input_manager::prelude::ActionState;
-use thetawave_interface::options::input::PlayerAction;
+use thetawave_interface::{options::input::PlayerAction, player::PlayerComponent};
 
 /// Move player by modifying velocity with input
 pub fn player_movement_system(

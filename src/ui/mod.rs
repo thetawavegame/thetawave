@@ -10,18 +10,20 @@ mod game_over;
 mod instructions;
 mod main_menu;
 mod pause_menu;
+mod phase;
 mod victory;
 
 pub use self::character_selection::{
     player_join_system, select_character_system, setup_character_selection_system,
 };
-use self::instructions::setup_instructions_system;
+use self::phase::update_phase_ui;
 pub use self::{
     game_over::setup_game_over_system,
     main_menu::{bouncing_prompt_system, setup_main_menu_system, BouncingPromptComponent},
     pause_menu::setup_pause_system,
     victory::setup_victory_system,
 };
+use self::{instructions::setup_instructions_system, phase::setup_phase_ui};
 
 pub struct UiPlugin;
 
@@ -33,7 +35,10 @@ impl Plugin for UiPlugin {
 
         app.add_systems(
             OnEnter(states::AppStates::Game),
-            game::setup_game_ui_system.after(GameEnterSet::BuildUi),
+            (
+                game::setup_game_ui_system.after(GameEnterSet::BuildUi),
+                //create_phase_ui.after(GameEnterSet::BuildUi),
+            ),
         );
 
         app.add_systems(
@@ -42,6 +47,8 @@ impl Plugin for UiPlugin {
                 game::update_player1_ui.after(GameUpdateSet::UpdateUi),
                 game::update_player2_ui.after(GameUpdateSet::UpdateUi),
                 game::setup_level_objective_ui_system.after(GameUpdateSet::UpdateUi),
+                setup_phase_ui.after(GameEnterSet::BuildUi),
+                update_phase_ui.after(GameUpdateSet::UpdateUi),
             )
                 .run_if(in_state(states::AppStates::Game))
                 .run_if(in_state(states::GameStates::Playing)),

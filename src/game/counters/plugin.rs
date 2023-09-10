@@ -1,18 +1,21 @@
 /// Expose all of the mutations for the within-game metric counters via a bevy plugin.
 use crate::{
     collision::SortedCollisionEvent,
-    player::PlayerComponent,
     spawnable::{MobDestroyedEvent, SpawnProjectileEvent},
 };
 use bevy::prelude::{debug, App, Entity, EventReader, OnEnter, Plugin, Query, ResMut, Update};
 
 use std::collections::HashMap;
-use thetawave_interface::game::historical_metrics::{
-    MobKillsByPlayerForCompletedGames, MobKillsByPlayerForCurrentGame, UserStat,
-    UserStatsByPlayerForCompletedGamesCache, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
-};
 use thetawave_interface::spawnable::MobType;
 use thetawave_interface::states::AppStates;
+use thetawave_interface::{
+    game::historical_metrics::{
+        MobKillsByPlayerForCompletedGames, MobKillsByPlayerForCurrentGame, UserStat,
+        UserStatsByPlayerForCompletedGamesCache, UserStatsByPlayerForCurrentGameCache,
+        DEFAULT_USER_ID,
+    },
+    player::PlayerComponent,
+};
 
 /// Maintains/mutates singleton resources that keep track of metrics for the current game. Mostly
 /// incrementing a reseting counters.
@@ -189,13 +192,14 @@ fn roll_current_game_counters_into_completed_game_metrics(
 mod test {
     use crate::collision::SortedCollisionEvent;
     use crate::game::counters::plugin::CountingMetricsPlugin;
-    use crate::player::{Character, CharactersResource, PlayerComponent, PlayerPlugin};
+    use crate::player::{CharactersResource, PlayerPlugin};
     use crate::spawnable::{MobDestroyedEvent, SpawnProjectileEvent};
     use bevy::prelude::{App, Component, Events};
-    use thetawave_interface::character::CharacterType;
+    use thetawave_interface::character::{Character, CharacterType};
     use thetawave_interface::game::historical_metrics::{
         MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
     };
+    use thetawave_interface::player::PlayerComponent;
     use thetawave_interface::spawnable::{EnemyMobType, Faction, MobType, ProjectileType};
     use thetawave_interface::states::{AppStates, GameStates};
 

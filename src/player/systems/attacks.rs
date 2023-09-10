@@ -6,12 +6,10 @@ use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     options::input::PlayerAction,
+    player::PlayerComponent,
 };
 
-use crate::{
-    player::PlayerComponent,
-    spawnable::{InitialMotion, SpawnProjectileEvent},
-};
+use crate::spawnable::{InitialMotion, SpawnProjectileEvent};
 
 /// Increase fire rate of player based on the amount of money collected
 // TODO: Remove hardcoded values

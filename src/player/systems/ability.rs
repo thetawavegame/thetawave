@@ -4,12 +4,10 @@ use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     options::input::PlayerAction,
+    player::{AbilityType, PlayerComponent},
 };
 
-use crate::{
-    player::{components::AbilityType, PlayerComponent},
-    spawnable::{InitialMotion, SpawnProjectileEvent},
-};
+use crate::spawnable::{InitialMotion, SpawnProjectileEvent};
 
 #[allow(clippy::too_many_arguments)]
 pub fn player_ability_system(

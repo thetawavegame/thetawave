@@ -12,6 +12,7 @@ pub fn setup_pause_system(mut commands: Commands, asset_server: Res<AssetServer>
             style: Style {
                 width: Val::Percent(100.0),
                 height: Val::Percent(100.0),
+                position_type: PositionType::Absolute,
                 ..Default::default()
             },
             background_color: Color::rgba(0.5, 0.5, 0.5, 0.1).into(),

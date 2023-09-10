@@ -7,18 +7,15 @@ use std::{
 };
 use thetawave_interface::{
     audio::{BGMusicType, ChangeBackgroundMusicEvent},
-    character::CharacterType,
     objective::Objective,
     options::input::PlayerAction,
-    spawnable::MobType,
-};
-
-use crate::{
     player::PlayerComponent,
-    spawnable::{BossesDestroyedEvent, SpawnMobEvent},
+    run::{CyclePhaseEvent, LevelPhaseType},
 };
 
-use super::{tutorial::TutorialLesson, FormationPoolsResource, SpawnFormationEvent};
+use crate::spawnable::{BossesDestroyedEvent, SpawnMobEvent};
+
+use super::{FormationPoolsResource, SpawnFormationEvent};
 
 #[derive(Resource, Deserialize)]
 pub struct PremadeLevelsResource {
@@ -56,28 +53,6 @@ impl From<&BGMusicTransition> for ChangeBackgroundMusicEvent {
     }
 }
 
-/// Describes a distinct portion of the level
-#[derive(Deserialize, Clone, Debug)]
-pub enum LevelPhaseType {
-    FormationSpawn {
-        phase_timer: Timer,
-        spawn_timer: Timer,
-        formation_pool: String,
-    },
-    Break {
-        phase_timer: Timer,
-    },
-    Boss {
-        mob_type: MobType,
-        position: Vec2,
-        spawn_timer: Timer,
-    },
-    Tutorial {
-        character_type: CharacterType,
-        tutorial_lesson: TutorialLesson,
-    },
-}
-
 /// Data used to initialize levels
 #[derive(Deserialize)]
 pub struct LevelData {
@@ -86,10 +61,6 @@ pub struct LevelData {
     /// objective of the level (besides surviving)
     pub objective: Option<Objective>,
 }
-
-/// Event to alert when level has been completed
-#[derive(Event)]
-pub struct LevelCompletedEvent;
 
 pub type LevelPhases = VecDeque<LevelPhase>;
 
@@ -121,7 +92,10 @@ impl From<&LevelData> for Level {
 }
 
 impl Level {
-    pub fn cycle_phase(&mut self) -> bool {
+    pub fn cycle_phase(
+        &mut self,
+        cycle_phase_event_writer: &mut EventWriter<CyclePhaseEvent>,
+    ) -> bool {
         // clone the current phase (if it exists) into the back of the completed phases queue
         if let Some(current_phase) = &self.current_phase {
             self.completed_phases.push_back(current_phase.clone());
@@ -132,6 +106,8 @@ impl Level {
         self.current_phase = self.queued_phases.pop_front();
 
         info!("Phase cycled");
+
+        cycle_phase_event_writer.send(CyclePhaseEvent);
 
         // return true if no phase was available to cycle to the current phase
         self.current_phase.is_none()
@@ -160,6 +136,7 @@ impl Level {
         spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
         bosses_destroyed_event_reader: &mut EventReader<BossesDestroyedEvent>,
         change_bg_music_event_writer: &mut EventWriter<ChangeBackgroundMusicEvent>,
+        cycle_phase_event_writer: &mut EventWriter<CyclePhaseEvent>,
     ) -> bool {
         self.level_time.tick(time.delta());
 
@@ -203,15 +180,14 @@ impl Level {
                     }
                 }
                 LevelPhaseType::Tutorial {
-                    character_type,
-                    tutorial_lesson,
+                    tutorial_lesson, ..
                 } => tutorial_lesson.update(player_query, time),
             };
 
             self.current_phase = Some(modified_current_phase);
 
             // this will short circuit and not call cycle_phase if !phase_completed
-            if phase_completed && !self.cycle_phase() {
+            if phase_completed && !self.cycle_phase(cycle_phase_event_writer) {
                 self.init_phase(change_bg_music_event_writer);
             }
 

@@ -5,7 +5,8 @@ use rand::{thread_rng, Rng};
 use serde::Deserialize;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
-    health::DamageDealtEvent,
+    health::{DamageDealtEvent, HealthComponent},
+    player::PlayerComponent,
     spawnable::EffectType,
 };
 
@@ -13,8 +14,6 @@ use crate::{
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     loot::LootDropsResource,
-    misc::HealthComponent,
-    player::PlayerComponent,
     spawnable::{
         behavior_sequence::EntityPair, MobDestroyedEvent, SpawnConsumableEvent, SpawnEffectEvent,
         SpawnMobEvent, SpawnPosition,

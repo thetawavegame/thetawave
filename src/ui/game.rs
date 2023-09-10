@@ -2,12 +2,13 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 use thetawave_interface::{
+    health::HealthComponent,
     objective::{NewObjectiveEvent, Objective},
-    player::PlayersResource,
+    player::{PlayerComponent, PlayersResource},
     states::GameCleanup,
 };
 
-use crate::{misc::HealthComponent, player::PlayerComponent, run::CurrentRunProgressResource};
+use crate::run::CurrentRunProgressResource;
 
 use super::BouncingPromptComponent;
 

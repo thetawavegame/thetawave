@@ -8,24 +8,23 @@ use thetawave_interface::{
     audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent, SoundEffectType},
     objective::{DefenseInteraction, MobReachedBottomGateEvent, NewObjectiveEvent, Objective},
     options::input::PlayerAction,
-    run::{RunDefeatType, RunEndEvent, RunOutcomeType},
+    player::PlayerComponent,
+    run::{CyclePhaseEvent, RunDefeatType, RunEndEvent, RunOutcomeType},
     states::{AppStates, GameStates},
 };
 
 use crate::{
-    player::PlayerComponent,
     spawnable::{BossesDestroyedEvent, SpawnMobEvent},
     GameUpdateSet,
 };
 
 mod formation;
 mod level;
-mod tutorial;
 
 use self::level::Level;
 pub use self::{
     formation::{spawn_formation_system, FormationPoolsResource, SpawnFormationEvent},
-    level::{LevelCompletedEvent, PremadeLevelsResource},
+    level::PremadeLevelsResource,
 };
 
 pub struct RunPlugin;
@@ -51,8 +50,8 @@ impl Plugin for RunPlugin {
         .insert_resource(CurrentRunProgressResource::default());
 
         app.add_event::<SpawnFormationEvent>()
-            .add_event::<LevelCompletedEvent>()
             .add_event::<RunEndEvent>()
+            .add_event::<CyclePhaseEvent>()
             .add_event::<NewObjectiveEvent>();
 
         app.add_systems(OnEnter(AppStates::InitializeRun), init_run_system);
@@ -151,9 +150,10 @@ impl CurrentRunProgressResource {
         run_end_event_writer: &mut EventWriter<RunEndEvent>,
         change_bg_music_event_writer: &mut EventWriter<ChangeBackgroundMusicEvent>,
         new_objective_event_writer: &mut EventWriter<NewObjectiveEvent>,
+        cycle_phase_event_writer: &mut EventWriter<CyclePhaseEvent>,
     ) {
         if let Some(current_level) = &mut self.current_level {
-            let level_completed = current_level.cycle_phase();
+            let level_completed = current_level.cycle_phase(cycle_phase_event_writer);
 
             if !level_completed {
                 current_level.init_phase(change_bg_music_event_writer);
@@ -174,6 +174,7 @@ impl CurrentRunProgressResource {
         run_end_event_writer: &mut EventWriter<RunEndEvent>,
         change_bg_music_event_writer: &mut EventWriter<ChangeBackgroundMusicEvent>,
         new_objective_event_writer: &mut EventWriter<NewObjectiveEvent>,
+        cycle_phase_event_writer: &mut EventWriter<CyclePhaseEvent>,
     ) {
         // TODO: handle none case to remove unwrap
         let current_level = self.current_level.as_mut().unwrap();
@@ -187,12 +188,14 @@ impl CurrentRunProgressResource {
             spawn_mob_event_writer,
             bosses_destroyed_event_reader,
             change_bg_music_event_writer,
+            cycle_phase_event_writer,
         ) {
             self.cycle_level(run_end_event_writer, new_objective_event_writer);
             self.init_current_level(
                 run_end_event_writer,
                 change_bg_music_event_writer,
                 new_objective_event_writer,
+                cycle_phase_event_writer,
             );
         }
     }
@@ -206,6 +209,7 @@ fn init_run_system(
     mut run_end_event_writer: EventWriter<RunEndEvent>,
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     mut new_objective_event_writer: EventWriter<NewObjectiveEvent>,
+    mut cycle_phase_event_writer: EventWriter<CyclePhaseEvent>,
 ) {
     // generate the run
     run_res.generate_premade(
@@ -222,6 +226,7 @@ fn init_run_system(
         &mut run_end_event_writer,
         &mut change_bg_music_event_writer,
         &mut new_objective_event_writer,
+        &mut cycle_phase_event_writer,
     );
 
     next_app_state.set(AppStates::Game);
@@ -240,6 +245,7 @@ fn tick_run_system(
     mut run_end_event_writer: EventWriter<RunEndEvent>,
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     mut new_objective_event_writer: EventWriter<NewObjectiveEvent>,
+    mut cycle_phase_event_writer: EventWriter<CyclePhaseEvent>,
 ) {
     run_res.tick(
         &time,
@@ -251,6 +257,7 @@ fn tick_run_system(
         &mut run_end_event_writer,
         &mut change_bg_music_event_writer,
         &mut new_objective_event_writer,
+        &mut cycle_phase_event_writer,
     );
 }
 

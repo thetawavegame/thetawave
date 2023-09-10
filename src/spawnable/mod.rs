@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use crate::player::PlayerComponent;
 use crate::{states, GameUpdateSet};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::Velocity;
