@@ -44,8 +44,8 @@ impl Plugin for UiPlugin {
         app.add_systems(
             Update,
             (
-                game::update_player1_ui.after(GameUpdateSet::UpdateUi),
-                game::update_player2_ui.after(GameUpdateSet::UpdateUi),
+                //game::update_player1_ui.after(GameUpdateSet::UpdateUi),
+                //game::update_player2_ui.after(GameUpdateSet::UpdateUi),
                 game::setup_level_objective_ui_system.after(GameUpdateSet::UpdateUi),
                 setup_phase_ui.after(GameEnterSet::BuildUi),
                 update_phase_ui.after(GameUpdateSet::UpdateUi),
