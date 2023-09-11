@@ -7,11 +7,7 @@ use thetawave_interface::{
 
 use crate::run::CurrentRunProgressResource;
 
-#[derive(Component)]
-pub struct PhaseUiComponent;
-
-#[derive(Component)]
-pub struct TutorialPhaseUI;
+use super::game::{PhaseUiComponent, TutorialPhaseUI};
 
 pub fn update_phase_ui(
     mut tutorial_ui_query: Query<&mut Text, With<TutorialPhaseUI>>,
@@ -54,6 +50,7 @@ pub fn setup_phase_ui(
     asset_server: Res<AssetServer>,
     phase_ui_query: Query<Entity, With<PhaseUiComponent>>,
 ) {
+    /*
     for _ in cycle_phase_event_reader.iter() {
         if let Some(current_level) = &run_resource.current_level {
             if let Some(current_phase) = &current_level.current_phase {
@@ -258,4 +255,5 @@ pub fn setup_phase_ui(
             }
         }
     }
+    */
 }

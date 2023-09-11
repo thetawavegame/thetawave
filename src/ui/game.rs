@@ -50,10 +50,45 @@ pub struct AbilityChargingUI;
 pub struct AbilityReadyUI;
 
 #[derive(Component)]
+pub struct GameUI;
+
+#[derive(Component)]
+pub struct PhaseUiComponent;
+
+#[derive(Component)]
+pub struct TutorialPhaseUI;
+
+//Player UIs on the sides
+#[derive(Component)]
 pub struct Player1UI;
 
 #[derive(Component)]
 pub struct Player2UI;
+
+#[derive(Component)]
+pub struct Player3UI;
+
+#[derive(Component)]
+pub struct Player4UI;
+
+// Fundametal UIs for for dividing screen
+#[derive(Component)]
+pub struct TopUI;
+
+#[derive(Component)]
+pub struct MiddleUI;
+
+#[derive(Component)]
+pub struct BottomUI;
+
+#[derive(Component)]
+pub struct LeftUI;
+
+#[derive(Component)]
+pub struct RightUI;
+
+#[derive(Component)]
+pub struct CenterUI;
 
 /// Initialize objective ui when objective changes
 pub fn setup_level_objective_ui_system(
@@ -63,6 +98,7 @@ pub fn setup_level_objective_ui_system(
     mut objective_ui_query: Query<Entity, With<ObjectiveUI>>,
     mut objective_label_ui_query: Query<Entity, With<ObjectiveLabelUI>>,
 ) {
+    /*
     // read event for new objective set
     for event in new_objective_event_reader.iter() {
         //remove existing objective ui
@@ -113,6 +149,7 @@ pub fn setup_level_objective_ui_system(
             }
         }
     }
+    */
 }
 
 /// Initialize all ui
@@ -121,6 +158,186 @@ pub fn setup_game_ui_system(
     asset_server: ResMut<AssetServer>,
     players_resource: Res<PlayersResource>,
 ) {
+    commands
+        .spawn(NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                flex_direction: FlexDirection::Column,
+                ..default()
+            },
+            //background_color: Color::BLACK.with_a(0.8).into(),
+            ..default()
+        })
+        .insert(GameUI)
+        .insert(GameCleanup)
+        .with_children(|game_ui_node| {
+            game_ui_node
+                .spawn(NodeBundle {
+                    style: Style {
+                        width: Val::Percent(100.0),
+                        height: Val::Percent(16.0),
+                        ..default()
+                    },
+                    background_color: Color::WHITE.with_a(0.25).into(),
+                    ..default()
+                })
+                .insert(TopUI);
+
+            game_ui_node
+                .spawn(NodeBundle {
+                    style: Style {
+                        width: Val::Percent(100.0),
+                        height: Val::Percent(68.0),
+                        flex_direction: FlexDirection::Row,
+                        ..default()
+                    },
+                    //background_color: Color::ANTIQUE_WHITE.with_a(0.25).into(),
+                    ..default()
+                })
+                .insert(MiddleUI)
+                .with_children(|middle_ui_node| {
+                    middle_ui_node
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Percent(12.0),
+                                height: Val::Percent(100.0),
+                                flex_direction: FlexDirection::Column,
+                                ..default()
+                            },
+                            //background_color: Color::GREEN.with_a(0.25).into(),
+                            ..default()
+                        })
+                        .insert(LeftUI)
+                        .with_children(|left_ui_node| {
+                            left_ui_node
+                                .spawn(NodeBundle {
+                                    style: Style {
+                                        width: Val::Percent(100.0),
+                                        height: Val::Percent(50.0),
+                                        ..default()
+                                    },
+                                    background_color: Color::RED.with_a(0.25).into(),
+                                    ..default()
+                                })
+                                .insert(Player1UI);
+
+                            left_ui_node
+                                .spawn(NodeBundle {
+                                    style: Style {
+                                        width: Val::Percent(100.0),
+                                        height: Val::Percent(50.0),
+                                        ..default()
+                                    },
+                                    background_color: Color::YELLOW.with_a(0.25).into(),
+                                    ..default()
+                                })
+                                .insert(Player3UI);
+                        });
+
+                    middle_ui_node
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Percent(76.0),
+                                height: Val::Percent(100.0),
+                                ..default()
+                            },
+                            //background_color: Color::YELLOW.with_a(0.25).into(),
+                            ..default()
+                        })
+                        .insert(CenterUI);
+
+                    middle_ui_node
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Percent(12.0),
+                                height: Val::Percent(100.0),
+                                flex_direction: FlexDirection::Column,
+                                ..default()
+                            },
+                            //background_color: Color::GREEN.with_a(0.25).into(),
+                            ..default()
+                        })
+                        .insert(RightUI)
+                        .with_children(|right_ui_node| {
+                            right_ui_node
+                                .spawn(NodeBundle {
+                                    style: Style {
+                                        width: Val::Percent(100.0),
+                                        height: Val::Percent(50.0),
+                                        ..default()
+                                    },
+                                    background_color: Color::BLUE.with_a(0.25).into(),
+                                    ..default()
+                                })
+                                .insert(Player2UI);
+
+                            right_ui_node
+                                .spawn(NodeBundle {
+                                    style: Style {
+                                        width: Val::Percent(100.0),
+                                        height: Val::Percent(50.0),
+                                        ..default()
+                                    },
+                                    background_color: Color::GREEN.with_a(0.25).into(),
+                                    ..default()
+                                })
+                                .insert(Player4UI);
+                        });
+                });
+
+            game_ui_node
+                .spawn(NodeBundle {
+                    style: Style {
+                        width: Val::Percent(100.0),
+                        height: Val::Percent(16.0),
+                        ..default()
+                    },
+                    background_color: Color::WHITE.with_a(0.25).into(),
+                    ..default()
+                })
+                .insert(BottomUI);
+
+            /*
+            game_ui_node
+                .spawn(NodeBundle {
+                    style: Style {
+                        width: Val::Percent(13.0),
+                        height: Val::Percent(100.0),
+                        ..default()
+                    },
+                    background_color: Color::RED.with_a(0.8).into(),
+                    ..default()
+                })
+                .insert(Player1UI);
+
+            game_ui_node
+                .spawn(NodeBundle {
+                    style: Style {
+                        width: Val::Percent(74.0),
+                        height: Val::Percent(100.0),
+                        ..default()
+                    },
+                    background_color: Color::YELLOW.with_a(0.8).into(),
+                    ..default()
+                })
+                .insert(Player2UI);
+
+            game_ui_node
+                .spawn(NodeBundle {
+                    style: Style {
+                        width: Val::Percent(13.0),
+                        height: Val::Percent(100.0),
+                        ..default()
+                    },
+                    background_color: Color::BLUE.with_a(0.8).into(),
+                    ..default()
+                })
+                .insert(Player2UI);
+            */
+        });
+
+    /*
     // player 1 ui
     commands
         .spawn(NodeBundle {
@@ -488,6 +705,7 @@ pub fn setup_game_ui_system(
             .insert(StatBarLabel)
             .insert(Player2UI);
     }
+    */
 }
 
 #[allow(clippy::type_complexity)]
