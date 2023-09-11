@@ -31,4 +31,10 @@ impl ProjectileAssets {
             },
         }
     }
+    pub fn get_color(&self, projectile_type: &ProjectileType) -> Color {
+        match projectile_type {
+            ProjectileType::Blast(_) => Color::rgb(6.0, 6.0, 6.0),
+            ProjectileType::Bullet(_) => Color::rgb(2.0, 2.0, 02.0),
+        }
+    }
 }
