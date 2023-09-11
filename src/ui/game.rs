@@ -112,6 +112,28 @@ pub struct RightUI;
 #[derive(Component)]
 pub struct CenterUI;
 
+#[derive(Component)]
+pub struct TopLeftCornerUI;
+
+#[derive(Component)]
+pub struct TopMiddleUI;
+
+#[derive(Component)]
+pub struct TopMiddleLeftUI;
+
+#[derive(Component)]
+pub struct TopMiddleRightUI;
+
+#[derive(Component)]
+pub struct TopRightCornerUI;
+
+//Phase UI
+#[derive(Component)]
+pub struct PhaseNameUI;
+
+#[derive(Component)]
+pub struct PhaseDataUI;
+
 /// Initialize objective ui when objective changes
 pub fn setup_level_objective_ui_system(
     mut commands: Commands,
@@ -180,6 +202,8 @@ pub fn setup_game_ui_system(
     asset_server: ResMut<AssetServer>,
     players_resource: Res<PlayersResource>,
 ) {
+    let font = asset_server.load("fonts/wibletown-regular.otf");
+
     commands
         .spawn(NodeBundle {
             style: Style {
@@ -198,19 +222,122 @@ pub fn setup_game_ui_system(
                 .spawn(NodeBundle {
                     style: Style {
                         width: Val::Percent(100.0),
-                        height: Val::Percent(16.0),
+                        height: Val::Percent(13.0),
+                        flex_direction: FlexDirection::Row,
                         ..default()
                     },
                     //background_color: Color::WHITE.with_a(0.25).into(),
                     ..default()
                 })
-                .insert(TopUI);
+                .insert(TopUI)
+                .with_children(|top_node| {
+                    top_node
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Percent(10.0),
+                                height: Val::Percent(100.0),
+                                ..default()
+                            },
+                            background_color: Color::BLACK.with_a(0.5).into(),
+                            ..default()
+                        })
+                        .insert(TopLeftCornerUI);
+
+                    top_node
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Percent(80.0),
+                                height: Val::Percent(100.0),
+                                flex_direction: FlexDirection::Row,
+                                ..default()
+                            },
+                            background_color: Color::BLACK.with_a(0.5).into(),
+                            ..default()
+                        })
+                        .insert(TopMiddleUI)
+                        .with_children(|top_middle_ui| {
+                            top_middle_ui
+                                .spawn(NodeBundle {
+                                    style: Style {
+                                        width: Val::Percent(50.0),
+                                        height: Val::Percent(100.0),
+                                        justify_content: JustifyContent::Center,
+                                        ..default()
+                                    },
+                                    //background_color: Color::GREEN.with_a(0.25).into(),
+                                    ..default()
+                                })
+                                .insert(TopMiddleLeftUI)
+                                .with_children(|top_middle_left_ui| {
+                                    top_middle_left_ui
+                                        .spawn(TextBundle {
+                                            style: Style {
+                                                align_self: AlignSelf::Center,
+                                                ..default()
+                                            },
+                                            text: Text::from_section(
+                                                "Phase Name",
+                                                TextStyle {
+                                                    font: font.clone(),
+                                                    font_size: 48.0,
+                                                    color: Color::WHITE,
+                                                },
+                                            ),
+                                            ..default()
+                                        })
+                                        .insert(PhaseNameUI);
+                                });
+
+                            top_middle_ui
+                                .spawn(NodeBundle {
+                                    style: Style {
+                                        width: Val::Percent(50.0),
+                                        height: Val::Percent(100.0),
+                                        padding: UiRect::new(
+                                            Val::Vw(1.0),
+                                            Val::Vw(1.0),
+                                            Val::Vh(2.0),
+                                            Val::Vh(2.0),
+                                        ),
+                                        ..default()
+                                    },
+                                    background_color: Color::YELLOW.with_a(0.25).into(),
+                                    ..default()
+                                })
+                                .insert(TopMiddleRightUI)
+                                .with_children(|top_middle_right_ui| {
+                                    top_middle_right_ui
+                                        .spawn(NodeBundle {
+                                            style: Style {
+                                                width: Val::Percent(100.0),
+                                                height: Val::Percent(100.0),
+                                                ..default()
+                                            },
+                                            background_color: Color::BLUE.with_a(0.25).into(),
+                                            ..default()
+                                        })
+                                        .insert(PhaseDataUI);
+                                });
+                        });
+
+                    top_node
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Percent(10.0),
+                                height: Val::Percent(100.0),
+                                ..default()
+                            },
+                            background_color: Color::BLACK.with_a(0.5).into(),
+                            ..default()
+                        })
+                        .insert(TopRightCornerUI);
+                });
 
             game_ui_node
                 .spawn(NodeBundle {
                     style: Style {
                         width: Val::Percent(100.0),
-                        height: Val::Percent(68.0),
+                        height: Val::Percent(74.0),
                         flex_direction: FlexDirection::Row,
                         ..default()
                     },
@@ -501,7 +628,7 @@ pub fn setup_game_ui_system(
                 .spawn(NodeBundle {
                     style: Style {
                         width: Val::Percent(100.0),
-                        height: Val::Percent(16.0),
+                        height: Val::Percent(13.0),
                         ..default()
                     },
                     //background_color: Color::WHITE.with_a(0.25).into(),
