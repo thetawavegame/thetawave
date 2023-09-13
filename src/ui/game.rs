@@ -10,7 +10,7 @@ use thetawave_interface::{
 
 use crate::run::CurrentRunProgressResource;
 
-use super::BouncingPromptComponent;
+use super::{phase, BouncingPromptComponent};
 
 /// Tag for level ui
 #[derive(Component)]
@@ -104,6 +104,21 @@ pub struct MiddleUI;
 pub struct BottomUI;
 
 #[derive(Component)]
+pub struct BottomLeftCornerUI;
+
+#[derive(Component)]
+pub struct BottomMiddleUI;
+
+#[derive(Component)]
+pub struct BottomMiddleLeftUI;
+
+#[derive(Component)]
+pub struct BottomMiddleRightUI;
+
+#[derive(Component)]
+pub struct BottomRightCornerUI;
+
+#[derive(Component)]
 pub struct LeftUI;
 
 #[derive(Component)]
@@ -133,6 +148,25 @@ pub struct PhaseNameUI;
 
 #[derive(Component)]
 pub struct PhaseDataUI;
+
+#[derive(Component)]
+pub struct TextPhaseObjective;
+
+#[derive(Component)]
+pub struct BossHealthUI;
+
+#[derive(Component)]
+pub struct BossHealthValueUI;
+
+//Level UI
+#[derive(Component)]
+pub struct LevelNameUI;
+
+#[derive(Component)]
+pub struct DefenseUI;
+
+#[derive(Component)]
+pub struct DefenseValueUI;
 
 /// Initialize objective ui when objective changes
 pub fn setup_level_objective_ui_system(
@@ -238,7 +272,7 @@ pub fn setup_game_ui_system(
                                 height: Val::Percent(100.0),
                                 ..default()
                             },
-                            background_color: Color::BLACK.with_a(0.5).into(),
+                            background_color: Color::BLACK.with_a(0.75).into(),
                             ..default()
                         })
                         .insert(TopLeftCornerUI);
@@ -251,7 +285,7 @@ pub fn setup_game_ui_system(
                                 flex_direction: FlexDirection::Row,
                                 ..default()
                             },
-                            background_color: Color::BLACK.with_a(0.5).into(),
+                            background_color: Color::BLACK.with_a(0.75).into(),
                             ..default()
                         })
                         .insert(TopMiddleUI)
@@ -276,7 +310,7 @@ pub fn setup_game_ui_system(
                                                 ..default()
                                             },
                                             text: Text::from_section(
-                                                "Phase Name",
+                                                "Tutorial: Movement",
                                                 TextStyle {
                                                     font: font.clone(),
                                                     font_size: 48.0,
@@ -299,24 +333,93 @@ pub fn setup_game_ui_system(
                                             Val::Vh(2.0),
                                             Val::Vh(2.0),
                                         ),
+                                        align_items: AlignItems::Center,
+                                        justify_content: JustifyContent::Center,
                                         ..default()
                                     },
-                                    background_color: Color::YELLOW.with_a(0.25).into(),
+                                    //background_color: Color::YELLOW.with_a(0.1).into(),
                                     ..default()
                                 })
                                 .insert(TopMiddleRightUI)
                                 .with_children(|top_middle_right_ui| {
+                                    // Uncomment for text phase objective
+
+                                    top_middle_right_ui
+                                        .spawn(NodeBundle {
+                                            style: Style {
+                                                width: Val::Percent(80.0),
+                                                height: Val::Percent(60.0),
+                                                flex_direction: FlexDirection::Row,
+                                                ..default()
+                                            },
+                                            background_color: Color::RED.with_a(0.05).into(),
+                                            ..default()
+                                        })
+                                        .insert(BossHealthUI)
+                                        .with_children(|boss_health_ui| {
+                                            boss_health_ui
+                                                .spawn(NodeBundle {
+                                                    style: Style {
+                                                        width: Val::Percent(40.0),
+                                                        height: Val::Percent(100.0),
+                                                        ..default()
+                                                    },
+                                                    background_color: Color::RED
+                                                        .with_a(0.75)
+                                                        .into(),
+                                                    ..default()
+                                                })
+                                                .insert(BossHealthValueUI);
+                                        });
+
+                                    /*
                                     top_middle_right_ui
                                         .spawn(NodeBundle {
                                             style: Style {
                                                 width: Val::Percent(100.0),
                                                 height: Val::Percent(100.0),
+                                                flex_direction: FlexDirection::Column,
+                                                flex_wrap: FlexWrap::Wrap,
                                                 ..default()
                                             },
-                                            background_color: Color::BLUE.with_a(0.25).into(),
+                                            //background_color: Color::BLUE.with_a(0.25).into(),
                                             ..default()
                                         })
-                                        .insert(PhaseDataUI);
+                                        .insert(PhaseDataUI)
+                                        .with_children(|phase_data_ui| {
+                                            let text_sections = [
+                                                "Up",
+                                                "Down",
+                                                "Left",
+                                                "Right",
+                                                "Up+Left",
+                                                "Up+Right",
+                                                "Down+Left",
+                                                "Down+Right",
+                                            ];
+
+                                            for section in &text_sections {
+                                                phase_data_ui
+                                                    .spawn(TextBundle {
+                                                        style: Style {
+                                                            height: Val::Px(30.0), // Set a fixed height for each text section
+                                                            ..default()
+                                                        },
+                                                        text: Text::from_section(
+                                                            section.to_string(),
+                                                            TextStyle {
+                                                                font: font.clone(),
+                                                                font_size: 24.0,
+                                                                color: Color::WHITE,
+                                                            },
+                                                        )
+                                                        .with_alignment(TextAlignment::Left),
+                                                        ..default()
+                                                    })
+                                                    .insert(TextPhaseObjective);
+                                            }
+                                        });
+                                        */
                                 });
                         });
 
@@ -327,7 +430,7 @@ pub fn setup_game_ui_system(
                                 height: Val::Percent(100.0),
                                 ..default()
                             },
-                            background_color: Color::BLACK.with_a(0.5).into(),
+                            background_color: Color::BLACK.with_a(0.75).into(),
                             ..default()
                         })
                         .insert(TopRightCornerUI);
@@ -367,7 +470,7 @@ pub fn setup_game_ui_system(
                                         flex_direction: FlexDirection::Row,
                                         ..default()
                                     },
-                                    //background_color: Color::RED.with_a(0.1).into(),
+                                    background_color: Color::BLACK.with_a(0.75).into(),
                                     ..default()
                                 })
                                 .insert(Player1UI)
@@ -605,7 +708,7 @@ pub fn setup_game_ui_system(
                                 flex_direction: FlexDirection::Column,
                                 ..default()
                             },
-                            //background_color: Color::GREEN.with_a(0.25).into(),
+                            background_color: Color::BLACK.with_a(0.75).into(),
                             ..default()
                         })
                         .insert(RightUI)
@@ -620,7 +723,219 @@ pub fn setup_game_ui_system(
                                     //background_color: Color::BLUE.with_a(0.1).into(),
                                     ..default()
                                 })
-                                .insert(Player2UI);
+                                .insert(Player2UI)
+                                .with_children(|player2_ui_node| {
+                                    // spawn 2 player ui if registered
+                                    //if let Some(player_data) = &players_resource.player_data[0] {
+                                    player2_ui_node
+                                        .spawn(NodeBundle {
+                                            style: Style {
+                                                width: Val::Percent(50.0),
+                                                height: Val::Percent(100.0),
+                                                padding: UiRect::all(Val::Percent(5.0)),
+                                                flex_direction: FlexDirection::Row,
+                                                ..default()
+                                            },
+                                            //background_color: Color::PURPLE.with_a(0.25).into(),
+                                            ..default()
+                                        })
+                                        .insert(Player2LeftUI)
+                                        .with_children(|player2_left_node| {
+                                            player2_left_node
+                                                .spawn(NodeBundle {
+                                                    style: Style {
+                                                        width: Val::Percent(25.0),
+                                                        height: Val::Percent(100.0),
+                                                        padding: UiRect::new(
+                                                            Val::Percent(8.0),
+                                                            Val::Percent(8.0),
+                                                            Val::Percent(0.0),
+                                                            Val::Percent(0.0),
+                                                        ),
+                                                        flex_direction:
+                                                            FlexDirection::ColumnReverse,
+                                                        ..default()
+                                                    },
+                                                    ..default()
+                                                })
+                                                .insert(ArmorUI)
+                                                .with_children(|armor_ui_node| {
+                                                    for _ in 0..5 {
+                                                        armor_ui_node
+                                                            .spawn(NodeBundle {
+                                                                style: Style {
+                                                                    width: Val::Percent(100.0),
+                                                                    aspect_ratio: Some(0.2),
+                                                                    margin: UiRect::new(
+                                                                        Val::Px(0.0),
+                                                                        Val::Px(0.0),
+                                                                        Val::Px(3.0),
+                                                                        Val::Px(3.0),
+                                                                    ),
+                                                                    ..default()
+                                                                },
+                                                                background_color: Color::YELLOW
+                                                                    .with_a(1.0)
+                                                                    .into(),
+                                                                ..default()
+                                                            })
+                                                            .insert(ArmorCounterUI);
+                                                    }
+                                                });
+
+                                            player2_left_node
+                                                .spawn(NodeBundle {
+                                                    style: Style {
+                                                        width: Val::Percent(30.0),
+                                                        height: Val::Percent(100.0),
+                                                        flex_direction:
+                                                            FlexDirection::ColumnReverse,
+                                                        ..default()
+                                                    },
+                                                    background_color: Color::TEAL
+                                                        .with_a(0.05)
+                                                        .into(),
+                                                    ..default()
+                                                })
+                                                .insert(ShieldsUI)
+                                                .with_children(|shields_ui_node| {
+                                                    shields_ui_node
+                                                        .spawn(NodeBundle {
+                                                            style: Style {
+                                                                width: Val::Percent(100.0),
+                                                                height: Val::Percent(80.0),
+                                                                ..default()
+                                                            },
+                                                            background_color: Color::TEAL
+                                                                .with_a(0.75)
+                                                                .into(),
+                                                            ..default()
+                                                        })
+                                                        .insert(ShieldsValueUI(1));
+                                                });
+
+                                            player2_left_node
+                                                .spawn(NodeBundle {
+                                                    style: Style {
+                                                        width: Val::Percent(45.0),
+                                                        height: Val::Percent(100.0),
+                                                        flex_direction:
+                                                            FlexDirection::ColumnReverse,
+                                                        ..default()
+                                                    },
+                                                    background_color: Color::RED
+                                                        .with_a(0.05)
+                                                        .into(),
+                                                    ..default()
+                                                })
+                                                .insert(HealthUI)
+                                                .with_children(|health_ui_node| {
+                                                    health_ui_node
+                                                        .spawn(NodeBundle {
+                                                            style: Style {
+                                                                width: Val::Percent(100.0),
+                                                                height: Val::Percent(15.0),
+                                                                ..default()
+                                                            },
+                                                            background_color: Color::RED
+                                                                .with_a(0.75)
+                                                                .into(),
+                                                            ..default()
+                                                        })
+                                                        .insert(HealthValueUI(1));
+                                                });
+                                        });
+
+                                    player2_ui_node
+                                        .spawn(NodeBundle {
+                                            style: Style {
+                                                width: Val::Percent(50.0),
+                                                height: Val::Percent(100.0),
+                                                flex_direction: FlexDirection::ColumnReverse,
+                                                padding: UiRect::all(Val::Percent(5.0)),
+                                                ..default()
+                                            },
+                                            //background_color: Color::RED.with_a(0.25).into(),
+                                            ..default()
+                                        })
+                                        .insert(Player2RightUI)
+                                        .with_children(|player2_right_node| {
+                                            player2_right_node
+                                                .spawn(NodeBundle {
+                                                    style: Style {
+                                                        width: Val::Percent(100.0),
+                                                        aspect_ratio: Some(1.0),
+                                                        margin: UiRect::new(
+                                                            Val::Px(0.0),
+                                                            Val::Px(0.0),
+                                                            Val::Px(10.0),
+                                                            Val::Px(10.0),
+                                                        ),
+                                                        flex_direction:
+                                                            FlexDirection::ColumnReverse,
+                                                        ..default()
+                                                    },
+                                                    background_color: Color::ORANGE
+                                                        .with_a(0.05)
+                                                        .into(),
+                                                    ..default()
+                                                })
+                                                .insert(BasicAttackUI)
+                                                .with_children(|basic_attack_node| {
+                                                    basic_attack_node
+                                                        .spawn(NodeBundle {
+                                                            style: Style {
+                                                                width: Val::Percent(100.0),
+                                                                height: Val::Percent(80.0),
+                                                                ..default()
+                                                            },
+                                                            background_color: Color::ORANGE
+                                                                .with_a(0.75)
+                                                                .into(),
+                                                            ..default()
+                                                        })
+                                                        .insert(BasicAttackValueUI(1));
+                                                });
+
+                                            player2_right_node
+                                                .spawn(NodeBundle {
+                                                    style: Style {
+                                                        width: Val::Percent(100.0),
+                                                        aspect_ratio: Some(1.0),
+                                                        margin: UiRect::new(
+                                                            Val::Px(0.0),
+                                                            Val::Px(0.0),
+                                                            Val::Px(10.0),
+                                                            Val::Px(10.0),
+                                                        ),
+                                                        flex_direction:
+                                                            FlexDirection::ColumnReverse,
+                                                        ..default()
+                                                    },
+                                                    background_color: Color::GREEN
+                                                        .with_a(0.05)
+                                                        .into(),
+                                                    ..default()
+                                                })
+                                                .insert(SpecialAbilityUI)
+                                                .with_children(|special_ability_node| {
+                                                    special_ability_node
+                                                        .spawn(NodeBundle {
+                                                            style: Style {
+                                                                width: Val::Percent(100.0),
+                                                                height: Val::Percent(40.0),
+                                                                ..default()
+                                                            },
+                                                            background_color: Color::GREEN
+                                                                .with_a(0.75)
+                                                                .into(),
+                                                            ..default()
+                                                        })
+                                                        .insert(SpecialAbilityValueUI(1));
+                                                });
+                                        });
+                                    //}
+                                });
                         });
                 });
 
@@ -634,7 +949,178 @@ pub fn setup_game_ui_system(
                     //background_color: Color::WHITE.with_a(0.25).into(),
                     ..default()
                 })
-                .insert(BottomUI);
+                .insert(BottomUI)
+                .with_children(|bottom_ui| {
+                    bottom_ui
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Percent(10.0),
+                                height: Val::Percent(100.0),
+                                ..default()
+                            },
+                            background_color: Color::BLACK.with_a(0.75).into(),
+                            ..default()
+                        })
+                        .insert(BottomLeftCornerUI);
+
+                    bottom_ui
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Percent(80.0),
+                                height: Val::Percent(100.0),
+                                flex_direction: FlexDirection::Row,
+                                ..default()
+                            },
+                            background_color: Color::BLACK.with_a(0.75).into(),
+                            ..default()
+                        })
+                        .insert(BottomMiddleUI)
+                        .with_children(|bottom_middle_ui| {
+                            bottom_middle_ui
+                                .spawn(NodeBundle {
+                                    style: Style {
+                                        width: Val::Percent(50.0),
+                                        height: Val::Percent(100.0),
+                                        justify_content: JustifyContent::Center,
+                                        ..default()
+                                    },
+                                    //background_color: Color::GREEN.with_a(0.25).into(),
+                                    ..default()
+                                })
+                                .insert(BottomMiddleLeftUI)
+                                .with_children(|bottom_middle_left_ui| {
+                                    bottom_middle_left_ui
+                                        .spawn(TextBundle {
+                                            style: Style {
+                                                align_self: AlignSelf::Center,
+                                                ..default()
+                                            },
+                                            text: Text::from_section(
+                                                "Defense",
+                                                TextStyle {
+                                                    font: font.clone(),
+                                                    font_size: 48.0,
+                                                    color: Color::WHITE,
+                                                },
+                                            ),
+                                            ..default()
+                                        })
+                                        .insert(LevelNameUI);
+                                });
+
+                            bottom_middle_ui
+                                .spawn(NodeBundle {
+                                    style: Style {
+                                        width: Val::Percent(50.0),
+                                        height: Val::Percent(100.0),
+                                        padding: UiRect::new(
+                                            Val::Vw(1.0),
+                                            Val::Vw(1.0),
+                                            Val::Vh(2.0),
+                                            Val::Vh(2.0),
+                                        ),
+                                        align_items: AlignItems::Center,
+                                        justify_content: JustifyContent::Center,
+                                        ..default()
+                                    },
+                                    //background_color: Color::YELLOW.with_a(0.1).into(),
+                                    ..default()
+                                })
+                                .insert(BottomMiddleRightUI)
+                                .with_children(|bottom_middle_right_ui| {
+                                    // Uncomment for text phase objective
+
+                                    bottom_middle_right_ui
+                                        .spawn(NodeBundle {
+                                            style: Style {
+                                                width: Val::Percent(80.0),
+                                                height: Val::Percent(60.0),
+                                                flex_direction: FlexDirection::Row,
+                                                ..default()
+                                            },
+                                            background_color: Color::BLUE.with_a(0.05).into(),
+                                            ..default()
+                                        })
+                                        .insert(DefenseUI)
+                                        .with_children(|boss_health_ui| {
+                                            boss_health_ui
+                                                .spawn(NodeBundle {
+                                                    style: Style {
+                                                        width: Val::Percent(90.0),
+                                                        height: Val::Percent(100.0),
+                                                        ..default()
+                                                    },
+                                                    background_color: Color::BLUE
+                                                        .with_a(0.75)
+                                                        .into(),
+                                                    ..default()
+                                                })
+                                                .insert(DefenseValueUI);
+                                        });
+
+                                    /*
+                                    top_middle_right_ui
+                                        .spawn(NodeBundle {
+                                            style: Style {
+                                                width: Val::Percent(100.0),
+                                                height: Val::Percent(100.0),
+                                                flex_direction: FlexDirection::Column,
+                                                flex_wrap: FlexWrap::Wrap,
+                                                ..default()
+                                            },
+                                            //background_color: Color::BLUE.with_a(0.25).into(),
+                                            ..default()
+                                        })
+                                        .insert(PhaseDataUI)
+                                        .with_children(|phase_data_ui| {
+                                            let text_sections = [
+                                                "Up",
+                                                "Down",
+                                                "Left",
+                                                "Right",
+                                                "Up+Left",
+                                                "Up+Right",
+                                                "Down+Left",
+                                                "Down+Right",
+                                            ];
+
+                                            for section in &text_sections {
+                                                phase_data_ui
+                                                    .spawn(TextBundle {
+                                                        style: Style {
+                                                            height: Val::Px(30.0), // Set a fixed height for each text section
+                                                            ..default()
+                                                        },
+                                                        text: Text::from_section(
+                                                            section.to_string(),
+                                                            TextStyle {
+                                                                font: font.clone(),
+                                                                font_size: 24.0,
+                                                                color: Color::WHITE,
+                                                            },
+                                                        )
+                                                        .with_alignment(TextAlignment::Left),
+                                                        ..default()
+                                                    })
+                                                    .insert(TextPhaseObjective);
+                                            }
+                                        });
+                                        */
+                                });
+                        });
+
+                    bottom_ui
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Percent(10.0),
+                                height: Val::Percent(100.0),
+                                ..default()
+                            },
+                            background_color: Color::BLACK.with_a(0.75).into(),
+                            ..default()
+                        })
+                        .insert(BottomRightCornerUI);
+                });
 
             /*
             game_ui_node
