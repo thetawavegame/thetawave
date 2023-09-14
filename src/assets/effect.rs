@@ -49,17 +49,17 @@ impl EffectAssets {
 
     pub fn get_color(&self, effect_type: &EffectType) -> Color {
         match effect_type {
-            EffectType::BarrierGlow => Color::rgb(1.8, 1.8, 2.4),
-            EffectType::AllyBlastExplosion => Color::rgb(10.0, 10.0, 10.0),
-            EffectType::EnemyBlastExplosion => Color::rgb(10.0, 10.0, 10.0),
-            EffectType::AllyBulletExplosion => Color::rgb(10.0, 10.0, 10.0),
-            EffectType::EnemyBulletExplosion => Color::rgb(10.0, 10.0, 10.0),
-            EffectType::MobExplosion => Color::rgb(10.0, 10.0, 10.0),
-            EffectType::AllyBlastDespawn => Color::rgb(6.0, 6.0, 6.0),
-            EffectType::ConsumableDespawn => Color::rgb(6.0, 6.0, 6.0),
-            EffectType::EnemyBlastDespawn => Color::rgb(6.0, 6.0, 6.0),
-            EffectType::AllyBulletDespawn => Color::rgb(6.0, 6.0, 6.0),
-            EffectType::EnemyBulletDespawn => Color::rgb(6.0, 6.0, 6.0),
+            EffectType::BarrierGlow => Color::rgb(1.0, 1.0, 1.4),
+            EffectType::AllyBlastExplosion => Color::rgb(4.0, 4.0, 4.0),
+            EffectType::EnemyBlastExplosion => Color::rgb(4.0, 4.0, 4.0),
+            EffectType::AllyBulletExplosion => Color::rgb(5.0, 5.0, 5.0),
+            EffectType::EnemyBulletExplosion => Color::rgb(5.0, 5.0, 5.0),
+            EffectType::MobExplosion => Color::rgb(6.0, 6.0, 6.0),
+            EffectType::AllyBlastDespawn => Color::rgb(4.0, 4.0, 4.0),
+            EffectType::ConsumableDespawn => Color::rgb(3.0, 3.0, 3.0),
+            EffectType::EnemyBlastDespawn => Color::rgb(4.0, 4.0, 4.0),
+            EffectType::AllyBulletDespawn => Color::rgb(5.0, 5.0, 5.0),
+            EffectType::EnemyBulletDespawn => Color::rgb(5.0, 5.0, 5.0),
             EffectType::Text(_) => Color::rgb(0.0, 0.0, 0.0),
         }
     }
