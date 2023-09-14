@@ -11,6 +11,7 @@ mod instructions;
 mod main_menu;
 mod pause_menu;
 mod phase;
+mod player;
 mod victory;
 
 pub use self::character_selection::{
