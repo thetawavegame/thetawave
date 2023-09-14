@@ -8,6 +8,7 @@ mod character_selection;
 mod game;
 mod game_over;
 mod instructions;
+mod level;
 mod main_menu;
 mod pause_menu;
 mod phase;
@@ -47,7 +48,7 @@ impl Plugin for UiPlugin {
             (
                 //game::update_player1_ui.after(GameUpdateSet::UpdateUi),
                 //game::update_player2_ui.after(GameUpdateSet::UpdateUi),
-                game::setup_level_objective_ui_system.after(GameUpdateSet::UpdateUi),
+                level::setup_level_objective_ui_system.after(GameUpdateSet::UpdateUi),
                 setup_phase_ui.after(GameEnterSet::BuildUi),
                 update_phase_ui.after(GameUpdateSet::UpdateUi),
             )

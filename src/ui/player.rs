@@ -61,7 +61,6 @@ pub fn build_player_1_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                 flex_direction: FlexDirection::Row,
                 ..default()
             },
-            background_color: Color::BLACK.with_a(0.75).into(),
             ..default()
         })
         .insert(Player1UI)
@@ -264,7 +263,6 @@ pub fn build_player_2_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                 height: Val::Percent(100.0),
                 ..default()
             },
-            //background_color: Color::BLUE.with_a(0.1).into(),
             ..default()
         })
         .insert(Player2UI)
