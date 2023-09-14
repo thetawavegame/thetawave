@@ -7,29 +7,11 @@ use super::{
     player::{build_player_1_ui, build_player_2_ui},
 };
 
-/// Tag for level ui
-#[derive(Component)]
-pub struct PowerGlowUI(Timer);
-
-#[derive(Component)]
-pub struct StatBarLabel;
-
-#[derive(Component)]
-pub struct AbilityChargingUI;
-
-#[derive(Component)]
-pub struct AbilityReadyUI;
-
+// top level ui tag component for all ui in the game state
 #[derive(Component)]
 pub struct GameUI;
 
-#[derive(Component)]
-pub struct PhaseUiComponent;
-
-#[derive(Component)]
-pub struct TutorialPhaseUI;
-
-// Fundametal UIs for for dividing screen
+// fundametal ui component tags for for dividing screen
 #[derive(Component)]
 pub struct TopUI;
 
@@ -39,24 +21,7 @@ pub struct MiddleUI;
 #[derive(Component)]
 pub struct BottomUI;
 
-#[derive(Component)]
-pub struct BottomLeftCornerUI;
-
-#[derive(Component)]
-pub struct BottomMiddleUI;
-
-#[derive(Component)]
-pub struct BottomRightCornerUI;
-
-#[derive(Component)]
-pub struct LeftUI;
-
-#[derive(Component)]
-pub struct RightUI;
-
-#[derive(Component)]
-pub struct CenterUI;
-
+// ui component tags for dividing the top ui row
 #[derive(Component)]
 pub struct TopLeftCornerUI;
 
@@ -66,7 +31,27 @@ pub struct TopMiddleUI;
 #[derive(Component)]
 pub struct TopRightCornerUI;
 
-/// Initialize all ui
+// ui component tags for dividing the middle ui row
+#[derive(Component)]
+pub struct LeftUI;
+
+#[derive(Component)]
+pub struct RightUI;
+
+#[derive(Component)]
+pub struct CenterUI;
+
+// ui component tags for dividing the bottom ui row
+#[derive(Component)]
+pub struct BottomLeftCornerUI;
+
+#[derive(Component)]
+pub struct BottomMiddleUI;
+
+#[derive(Component)]
+pub struct BottomRightCornerUI;
+
+/// initializes the game ui hierarchy
 pub fn setup_game_ui_system(
     mut commands: Commands,
     asset_server: ResMut<AssetServer>,

@@ -7,8 +7,6 @@ use thetawave_interface::{
 
 use crate::run::CurrentRunProgressResource;
 
-use super::game::{PhaseUiComponent, TutorialPhaseUI};
-
 #[derive(Component)]
 pub struct TopMiddleLeftUI;
 
@@ -30,6 +28,13 @@ pub struct BossHealthUI;
 
 #[derive(Component)]
 pub struct BossHealthValueUI;
+
+// OLD phase ui - remove
+#[derive(Component)]
+pub struct PhaseUiComponent;
+
+#[derive(Component)]
+pub struct TutorialPhaseUI;
 
 pub fn build_phase_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
     parent
