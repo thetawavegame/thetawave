@@ -18,7 +18,6 @@ mod victory;
 pub use self::character_selection::{
     player_join_system, select_character_system, setup_character_selection_system,
 };
-use self::phase::update_phase_ui;
 pub use self::{
     game_over::setup_game_over_system,
     main_menu::{bouncing_prompt_system, setup_main_menu_system, BouncingPromptComponent},
@@ -26,6 +25,7 @@ pub use self::{
     victory::setup_victory_system,
 };
 use self::{instructions::setup_instructions_system, phase::setup_phase_ui};
+use self::{phase::update_phase_ui, player::update_player_ui_system};
 
 pub struct UiPlugin;
 
@@ -48,6 +48,7 @@ impl Plugin for UiPlugin {
             (
                 //game::update_player1_ui.after(GameUpdateSet::UpdateUi),
                 //game::update_player2_ui.after(GameUpdateSet::UpdateUi),
+                update_player_ui_system,
                 level::setup_level_objective_ui_system.after(GameUpdateSet::UpdateUi),
                 setup_phase_ui.after(GameEnterSet::BuildUi),
                 update_phase_ui.after(GameUpdateSet::UpdateUi),

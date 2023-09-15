@@ -1,5 +1,10 @@
 use bevy::prelude::*;
-use thetawave_interface::player::PlayersResource;
+use thetawave_interface::{
+    health::HealthComponent,
+    player::{PlayerComponent, PlayersResource},
+};
+
+use crate::player;
 
 // Player UIs on the sides
 #[derive(Component)]
@@ -35,7 +40,7 @@ pub struct ShieldsUI;
 pub struct ShieldsValueUI(usize);
 
 #[derive(Component)]
-pub struct ArmorUI;
+pub struct ArmorUI(usize);
 
 #[derive(Component)]
 pub struct ArmorCounterUI;
@@ -66,8 +71,8 @@ pub fn build_player_1_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                 ..default()
             })
             .insert(Player1UI)
-            .with_children(|player1_ui_node| {
-                player1_ui_node
+            .with_children(|player1_ui| {
+                player1_ui
                     .spawn(NodeBundle {
                         style: Style {
                             width: Val::Percent(50.0),
@@ -80,8 +85,8 @@ pub fn build_player_1_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                         ..default()
                     })
                     .insert(Player1LeftUI)
-                    .with_children(|player1_left_node| {
-                        player1_left_node
+                    .with_children(|player1_left_ui| {
+                        player1_left_ui
                             .spawn(NodeBundle {
                                 style: Style {
                                     width: Val::Percent(100.0),
@@ -99,8 +104,8 @@ pub fn build_player_1_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                                 ..default()
                             })
                             .insert(BasicAttackUI)
-                            .with_children(|basic_attack_node| {
-                                basic_attack_node
+                            .with_children(|basic_attack_ui| {
+                                basic_attack_ui
                                     .spawn(NodeBundle {
                                         style: Style {
                                             width: Val::Percent(100.0),
@@ -113,7 +118,7 @@ pub fn build_player_1_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                                     .insert(BasicAttackValueUI(0));
                             });
 
-                        player1_left_node
+                        player1_left_ui
                             .spawn(NodeBundle {
                                 style: Style {
                                     width: Val::Percent(100.0),
@@ -131,8 +136,8 @@ pub fn build_player_1_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                                 ..default()
                             })
                             .insert(SpecialAbilityUI)
-                            .with_children(|special_ability_node| {
-                                special_ability_node
+                            .with_children(|special_ability_ui| {
+                                special_ability_ui
                                     .spawn(NodeBundle {
                                         style: Style {
                                             width: Val::Percent(100.0),
@@ -146,7 +151,7 @@ pub fn build_player_1_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                             });
                     });
 
-                player1_ui_node
+                player1_ui
                     .spawn(NodeBundle {
                         style: Style {
                             width: Val::Percent(50.0),
@@ -159,8 +164,8 @@ pub fn build_player_1_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                         ..default()
                     })
                     .insert(Player1RightUI)
-                    .with_children(|player1_right_node| {
-                        player1_right_node
+                    .with_children(|player1_right_ui| {
+                        player1_right_ui
                             .spawn(NodeBundle {
                                 style: Style {
                                     width: Val::Percent(45.0),
@@ -172,8 +177,8 @@ pub fn build_player_1_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                                 ..default()
                             })
                             .insert(HealthUI)
-                            .with_children(|health_ui_node| {
-                                health_ui_node
+                            .with_children(|health_ui| {
+                                health_ui
                                     .spawn(NodeBundle {
                                         style: Style {
                                             width: Val::Percent(100.0),
@@ -186,7 +191,7 @@ pub fn build_player_1_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                                     .insert(HealthValueUI(0));
                             });
 
-                        player1_right_node
+                        player1_right_ui
                             .spawn(NodeBundle {
                                 style: Style {
                                     width: Val::Percent(30.0),
@@ -198,8 +203,8 @@ pub fn build_player_1_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                                 ..default()
                             })
                             .insert(ShieldsUI)
-                            .with_children(|shields_ui_node| {
-                                shields_ui_node
+                            .with_children(|shields_ui| {
+                                shields_ui
                                     .spawn(NodeBundle {
                                         style: Style {
                                             width: Val::Percent(100.0),
@@ -212,7 +217,7 @@ pub fn build_player_1_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                                     .insert(ShieldsValueUI(0));
                             });
 
-                        player1_right_node
+                        player1_right_ui
                             .spawn(NodeBundle {
                                 style: Style {
                                     width: Val::Percent(25.0),
@@ -228,8 +233,8 @@ pub fn build_player_1_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                                 },
                                 ..default()
                             })
-                            .insert(ArmorUI)
-                            .with_children(|armor_ui_node| {
+                            .insert(ArmorUI(0))
+                            .with_children(|armor_ui| {
                                 /*
                                 for _ in 0..20 {
                                     armor_ui_node
@@ -270,10 +275,10 @@ pub fn build_player_2_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                 ..default()
             })
             .insert(Player2UI)
-            .with_children(|player2_ui_node| {
+            .with_children(|player2_ui| {
                 // spawn 2 player ui if registered
                 //if let Some(player_data) = &players_resource.player_data[0] {
-                player2_ui_node
+                player2_ui
                     .spawn(NodeBundle {
                         style: Style {
                             width: Val::Percent(50.0),
@@ -286,8 +291,8 @@ pub fn build_player_2_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                         ..default()
                     })
                     .insert(Player2LeftUI)
-                    .with_children(|player2_left_node| {
-                        player2_left_node
+                    .with_children(|player2_left_ui| {
+                        player2_left_ui
                             .spawn(NodeBundle {
                                 style: Style {
                                     width: Val::Percent(25.0),
@@ -303,30 +308,10 @@ pub fn build_player_2_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                                 },
                                 ..default()
                             })
-                            .insert(ArmorUI)
-                            .with_children(|armor_ui_node| {
-                                for _ in 0..5 {
-                                    armor_ui_node
-                                        .spawn(NodeBundle {
-                                            style: Style {
-                                                width: Val::Percent(100.0),
-                                                aspect_ratio: Some(0.2),
-                                                margin: UiRect::new(
-                                                    Val::Px(0.0),
-                                                    Val::Px(0.0),
-                                                    Val::Px(3.0),
-                                                    Val::Px(3.0),
-                                                ),
-                                                ..default()
-                                            },
-                                            background_color: Color::YELLOW.with_a(1.0).into(),
-                                            ..default()
-                                        })
-                                        .insert(ArmorCounterUI);
-                                }
-                            });
+                            .insert(ArmorUI(1))
+                            .with_children(|armor_ui| {});
 
-                        player2_left_node
+                        player2_left_ui
                             .spawn(NodeBundle {
                                 style: Style {
                                     width: Val::Percent(30.0),
@@ -338,12 +323,12 @@ pub fn build_player_2_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                                 ..default()
                             })
                             .insert(ShieldsUI)
-                            .with_children(|shields_ui_node| {
-                                shields_ui_node
+                            .with_children(|shields_ui| {
+                                shields_ui
                                     .spawn(NodeBundle {
                                         style: Style {
                                             width: Val::Percent(100.0),
-                                            height: Val::Percent(80.0),
+                                            height: Val::Percent(100.0),
                                             ..default()
                                         },
                                         background_color: Color::TEAL.with_a(0.75).into(),
@@ -352,7 +337,7 @@ pub fn build_player_2_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                                     .insert(ShieldsValueUI(1));
                             });
 
-                        player2_left_node
+                        player2_left_ui
                             .spawn(NodeBundle {
                                 style: Style {
                                     width: Val::Percent(45.0),
@@ -364,12 +349,12 @@ pub fn build_player_2_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                                 ..default()
                             })
                             .insert(HealthUI)
-                            .with_children(|health_ui_node| {
-                                health_ui_node
+                            .with_children(|health_ui| {
+                                health_ui
                                     .spawn(NodeBundle {
                                         style: Style {
                                             width: Val::Percent(100.0),
-                                            height: Val::Percent(15.0),
+                                            height: Val::Percent(100.0),
                                             ..default()
                                         },
                                         background_color: Color::RED.with_a(0.75).into(),
@@ -379,7 +364,7 @@ pub fn build_player_2_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                             });
                     });
 
-                player2_ui_node
+                player2_ui
                     .spawn(NodeBundle {
                         style: Style {
                             width: Val::Percent(50.0),
@@ -388,12 +373,11 @@ pub fn build_player_2_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                             padding: UiRect::all(Val::Percent(5.0)),
                             ..default()
                         },
-                        //background_color: Color::RED.with_a(0.25).into(),
                         ..default()
                     })
                     .insert(Player2RightUI)
-                    .with_children(|player2_right_node| {
-                        player2_right_node
+                    .with_children(|player2_right_ui| {
+                        player2_right_ui
                             .spawn(NodeBundle {
                                 style: Style {
                                     width: Val::Percent(100.0),
@@ -411,12 +395,12 @@ pub fn build_player_2_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                                 ..default()
                             })
                             .insert(BasicAttackUI)
-                            .with_children(|basic_attack_node| {
-                                basic_attack_node
+                            .with_children(|basic_attack_ui| {
+                                basic_attack_ui
                                     .spawn(NodeBundle {
                                         style: Style {
                                             width: Val::Percent(100.0),
-                                            height: Val::Percent(80.0),
+                                            height: Val::Percent(100.0),
                                             ..default()
                                         },
                                         background_color: Color::ORANGE.with_a(0.75).into(),
@@ -425,7 +409,7 @@ pub fn build_player_2_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                                     .insert(BasicAttackValueUI(1));
                             });
 
-                        player2_right_node
+                        player2_right_ui
                             .spawn(NodeBundle {
                                 style: Style {
                                     width: Val::Percent(100.0),
@@ -443,12 +427,12 @@ pub fn build_player_2_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                                 ..default()
                             })
                             .insert(SpecialAbilityUI)
-                            .with_children(|special_ability_node| {
-                                special_ability_node
+                            .with_children(|special_ability_ui| {
+                                special_ability_ui
                                     .spawn(NodeBundle {
                                         style: Style {
                                             width: Val::Percent(100.0),
-                                            height: Val::Percent(40.0),
+                                            height: Val::Percent(100.0),
                                             ..default()
                                         },
                                         background_color: Color::GREEN.with_a(0.75).into(),
@@ -458,5 +442,81 @@ pub fn build_player_2_ui(parent: &mut ChildBuilder, players_resource: &PlayersRe
                             });
                     });
             });
+    }
+}
+
+pub fn update_player_ui_system(
+    mut commands: Commands,
+    player_query: Query<(&HealthComponent, &PlayerComponent)>,
+    mut player_ui: ParamSet<(
+        Query<(&mut Style, &HealthValueUI)>,
+        Query<(&mut Style, &ShieldsValueUI)>,
+        Query<(Entity, &ArmorUI)>,
+        Query<(&mut Style, &BasicAttackValueUI)>,
+        Query<(&mut Style, &SpecialAbilityValueUI)>,
+    )>,
+) {
+    for (player_health, player_component) in player_query.iter() {
+        let player_index = player_component.player_index;
+
+        // health ui
+        for (mut style, health_value_ui) in player_ui.p0().iter_mut() {
+            if player_index == health_value_ui.0 {
+                style.height = Val::Percent(100.0 * player_health.get_health_percentage());
+            }
+        }
+
+        // shields ui
+        for (mut style, shields_value_ui) in player_ui.p1().iter_mut() {
+            if player_index == shields_value_ui.0 {
+                style.height = Val::Percent(100.0 * player_health.get_shields_percentage());
+            }
+        }
+
+        // armor ui
+        for (entity, armor_value_ui) in player_ui.p2().iter() {
+            if player_index == armor_value_ui.0 {
+                // spawn all of the existing child armor ticks
+                commands.entity(entity).despawn_descendants();
+
+                // spawn armor ticks
+                commands.entity(entity).with_children(|armor_ui| {
+                    for _ in 0..player_health.get_armor() {
+                        armor_ui
+                            .spawn(NodeBundle {
+                                style: Style {
+                                    width: Val::Percent(100.0),
+                                    aspect_ratio: Some(0.05),
+                                    margin: UiRect::new(
+                                        Val::Px(0.0),
+                                        Val::Px(0.0),
+                                        Val::Px(3.0),
+                                        Val::Px(3.0),
+                                    ),
+                                    ..default()
+                                },
+                                background_color: Color::YELLOW.with_a(0.75).into(),
+                                ..default()
+                            })
+                            .insert(ArmorCounterUI);
+                    }
+                });
+            }
+        }
+
+        // basic attack ui
+        for (mut style, basic_attack_ui) in player_ui.p3().iter_mut() {
+            if player_index == basic_attack_ui.0 {
+                style.height = Val::Percent(100.0 * player_component.fire_timer.percent());
+            }
+        }
+
+        // special ability ui
+        for (mut style, special_ability_ui) in player_ui.p4().iter_mut() {
+            if player_index == special_ability_ui.0 {
+                style.height =
+                    Val::Percent(100.0 * player_component.ability_cooldown_timer.percent());
+            }
+        }
     }
 }
