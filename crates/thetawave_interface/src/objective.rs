@@ -12,6 +12,14 @@ pub enum Objective {
     Defense(DefenseData),
 }
 
+impl Objective {
+    pub fn get_name(self) -> String {
+        match self {
+            Objective::Defense(_) => "Defense".to_string(),
+        }
+    }
+}
+
 /// Tracks data for the defense objective
 #[derive(Deserialize, Clone, Debug)]
 pub struct DefenseData {

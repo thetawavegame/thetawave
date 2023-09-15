@@ -60,6 +60,8 @@ pub struct LevelData {
     pub phases: Vec<LevelPhase>,
     /// objective of the level (besides surviving)
     pub objective: Option<Objective>,
+    /// descriptive name of the level
+    pub name: String,
 }
 
 pub type LevelPhases = VecDeque<LevelPhase>;
@@ -77,6 +79,18 @@ pub struct Level {
     pub objective: Option<Objective>,
     /// Tracks how long the player has been in the level
     pub level_time: Stopwatch,
+    /// Name of the level
+    pub name: String,
+}
+
+impl Level {
+    pub fn get_name(&self) -> String {
+        if let Some(objective) = &self.objective {
+            format!("{}: {}", self.name, objective.clone().get_name())
+        } else {
+            self.name.clone()
+        }
+    }
 }
 
 impl From<&LevelData> for Level {
@@ -87,6 +101,7 @@ impl From<&LevelData> for Level {
             queued_phases: data.phases.clone().into(),
             objective: data.objective.clone(),
             level_time: Stopwatch::new(),
+            name: data.name.clone(),
         }
     }
 }

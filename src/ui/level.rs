@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use thetawave_interface::objective::NewObjectiveEvent;
 
+use crate::run::CurrentRunProgressResource;
+
 #[derive(Component)]
 pub struct BottomMiddleLeftUI;
 
@@ -47,7 +49,7 @@ pub fn build_level_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
                         ..default()
                     },
                     text: Text::from_section(
-                        "Defense",
+                        "",
                         TextStyle {
                             font: font.clone(),
                             font_size: 48.0,
@@ -102,6 +104,17 @@ pub fn build_level_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
                         .insert(DefenseValueUI);
                 });
         });
+}
+
+pub fn update_level_ui(
+    mut level_name_ui_query: Query<&mut Text, With<LevelNameUI>>,
+    run_resource: Res<CurrentRunProgressResource>,
+) {
+    if let Some(current_level) = &run_resource.current_level {
+        if let Ok(mut text) = level_name_ui_query.get_single_mut() {
+            text.sections[0].value = current_level.get_name();
+        }
+    }
 }
 
 /// Initialize objective ui when objective changes

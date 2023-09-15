@@ -57,7 +57,7 @@ pub fn build_phase_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
                         ..default()
                     },
                     text: Text::from_section(
-                        "Tutorial: Movement",
+                        "",
                         TextStyle {
                             font,
                             font_size: 48.0,

@@ -1,6 +1,7 @@
 (
 	levels_data: {
 		"test_level_1": (
+			name: "Test Level I",
 			objective: Some(Defense((
 				defense: 100,
 				max_defense: 100,
@@ -215,6 +216,7 @@
 			],
 		),
 		"test_level_2": (
+			name: "Test Level II",
 			objective: Some(Defense((
 				defense: 100,
 				max_defense: 100,
@@ -428,6 +430,7 @@
 			],
 		),
 		"test_level_3": (
+			name: "Test Level III",
 			objective: Some(Defense((
 				defense: 100,
 				max_defense: 100,
@@ -641,6 +644,7 @@
 			],
 		),
 		"captain_tutorial": (
+			name: "Captain Tutorial",
 			phases: [
 				(
 					phase_type: Tutorial(
@@ -780,6 +784,7 @@
 			],
 		),
 		"test": (
+			name: "Test",
 			objective: Some(Defense((
 				defense: 100,
 				max_defense: 100,
