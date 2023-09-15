@@ -59,6 +59,31 @@ pub enum MobType {
     Neutral(NeutralMobType),
 }
 
+impl MobType {
+    pub fn get_name(&self) -> String {
+        match self {
+            MobType::Enemy(enemy_type) => match enemy_type {
+                EnemyMobType::Pawn => "Pawn",
+                EnemyMobType::Drone => "Drone",
+                EnemyMobType::StraferRight | EnemyMobType::StraferLeft => "Strafer",
+                EnemyMobType::MissileLauncher => "Missile Launcher",
+                EnemyMobType::Missile => "Missile",
+                EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => "Crustling",
+                EnemyMobType::Repeater => "Repeater",
+                EnemyMobType::Shelly => "Shelly",
+            },
+            MobType::Ally(ally_type) => match ally_type {
+                AllyMobType::Hauler2 => "Hauler",
+                AllyMobType::Hauler3 => "Hauler",
+            },
+            MobType::Neutral(neutral_type) => match neutral_type {
+                NeutralMobType::MoneyAsteroid => "Money Asteroid",
+            },
+        }
+        .to_string()
+    }
+}
+
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum MobSegmentType {
     Neutral(NeutralMobSegmentType),

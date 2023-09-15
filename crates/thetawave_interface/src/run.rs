@@ -49,6 +49,19 @@ pub enum LevelPhaseType {
     },
 }
 
+impl LevelPhaseType {
+    pub fn get_name(&self) -> String {
+        match self {
+            LevelPhaseType::FormationSpawn { .. } => "Formation Invasion".to_string(),
+            LevelPhaseType::Break { .. } => "Break".to_string(),
+            LevelPhaseType::Boss { mob_type, .. } => format!("Boss: {}", mob_type.get_name()),
+            LevelPhaseType::Tutorial {
+                tutorial_lesson, ..
+            } => format!("Tutorial: {}", tutorial_lesson.get_name()),
+        }
+    }
+}
+
 #[derive(Deserialize, Clone, Debug)]
 pub enum TutorialLesson {
     Movement {
@@ -68,9 +81,9 @@ pub enum TutorialLesson {
 impl TutorialLesson {
     pub fn get_name(&self) -> String {
         match self {
-            TutorialLesson::Movement { .. } => "Movement Tutorial".to_string(),
-            TutorialLesson::Attack => "Attack Tutorial".to_string(),
-            TutorialLesson::SpecialAbility => "Special Ability Tutorial".to_string(),
+            TutorialLesson::Movement { .. } => "Movement".to_string(),
+            TutorialLesson::Attack => "Attack".to_string(),
+            TutorialLesson::SpecialAbility => "Special Ability".to_string(),
         }
     }
 
