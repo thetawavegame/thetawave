@@ -1,11 +1,11 @@
 use crate::game;
+use bevy::core_pipeline::bloom::BloomPrefilterSettings;
 use bevy::{
     core_pipeline::{
         bloom::BloomSettings, clear_color::ClearColorConfig, tonemapping::Tonemapping,
     },
     prelude::*,
 };
-use bevy::core_pipeline::bloom::BloomPrefilterSettings;
 
 pub struct CameraPlugin;
 
@@ -36,13 +36,16 @@ pub fn setup_cameras_system(
         ..default()
     };
 
-    commands.spawn((camera_2d, BloomSettings {
-        prefilter_settings: BloomPrefilterSettings {
-            threshold: 1.0,
-            threshold_softness: 0.2,
+    commands.spawn((
+        camera_2d,
+        BloomSettings {
+            prefilter_settings: BloomPrefilterSettings {
+                threshold: 1.0,
+                threshold_softness: 0.2,
+            },
+            ..BloomSettings::OLD_SCHOOL
         },
-        ..BloomSettings::OLD_SCHOOL
-    }));
+    ));
 
     // 3d camera for background objects
     let camera_3d = Camera3dBundle {
