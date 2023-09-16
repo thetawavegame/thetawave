@@ -60,8 +60,3 @@ pub enum DefenseInteraction {
     Heal(usize),
     Damage(usize),
 }
-
-#[derive(Event)]
-pub struct NewObjectiveEvent {
-    pub objective: Option<Objective>,
-}

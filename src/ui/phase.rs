@@ -74,9 +74,6 @@ pub fn build_phase_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
             style: Style {
                 width: Val::Percent(50.0),
                 height: Val::Percent(100.0),
-                padding: UiRect::new(Val::Vw(1.0), Val::Vw(1.0), Val::Vh(2.0), Val::Vh(2.0)),
-                align_items: AlignItems::Center,
-                justify_content: JustifyContent::Center,
                 ..default()
             },
             //background_color: Color::YELLOW.with_a(0.1).into(),
@@ -84,6 +81,26 @@ pub fn build_phase_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
         })
         .insert(TopMiddleRightUI)
         .with_children(|top_middle_right_ui| {
+            top_middle_right_ui
+                .spawn(NodeBundle {
+                    style: Style {
+                        width: Val::Percent(100.0),
+                        height: Val::Percent(100.0),
+                        padding: UiRect::new(
+                            Val::Vw(1.0),
+                            Val::Vw(1.0),
+                            Val::Vh(2.0),
+                            Val::Vh(2.0),
+                        ),
+                        align_items: AlignItems::Center,
+                        justify_content: JustifyContent::Center,
+                        ..default()
+                    },
+                    ..default()
+                })
+                .insert(PhaseDataUI);
+
+            /*
             // Uncomment for text phase objective
 
             top_middle_right_ui
@@ -111,7 +128,7 @@ pub fn build_phase_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
                         })
                         .insert(BossHealthValueUI);
                 });
-
+            */
             /*
             top_middle_right_ui
                 .spawn(NodeBundle {
@@ -163,7 +180,7 @@ pub fn build_phase_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
         });
 }
 
-pub fn update_phase_ui(
+pub fn update_phase_ui_system(
     mut phase_name_ui_query: Query<&mut Text, With<PhaseNameUI>>,
     run_resource: Res<CurrentRunProgressResource>,
 ) {

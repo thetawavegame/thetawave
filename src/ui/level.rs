@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use thetawave_interface::objective::NewObjectiveEvent;
 
 use crate::run::CurrentRunProgressResource;
 
@@ -14,19 +13,13 @@ pub struct BottomMiddleRightUI;
 pub struct LevelNameUI;
 
 #[derive(Component)]
+pub struct LevelDataUI;
+
+#[derive(Component)]
 pub struct DefenseUI;
 
 #[derive(Component)]
 pub struct DefenseValueUI;
-
-// USED FOR OLD UI LAYOUT
-/// Tag for level ui
-#[derive(Component)]
-pub struct ObjectiveUI;
-
-/// Tag for level ui
-#[derive(Component)]
-pub struct ObjectiveLabelUI;
 
 pub fn build_level_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
     parent
@@ -66,9 +59,6 @@ pub fn build_level_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
             style: Style {
                 width: Val::Percent(50.0),
                 height: Val::Percent(100.0),
-                padding: UiRect::new(Val::Vw(1.0), Val::Vw(1.0), Val::Vh(2.0), Val::Vh(2.0)),
-                align_items: AlignItems::Center,
-                justify_content: JustifyContent::Center,
                 ..default()
             },
             //background_color: Color::YELLOW.with_a(0.1).into(),
@@ -76,105 +66,77 @@ pub fn build_level_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
         })
         .insert(BottomMiddleRightUI)
         .with_children(|bottom_middle_right_ui| {
-            // Uncomment for text phase objective
-
             bottom_middle_right_ui
                 .spawn(NodeBundle {
                     style: Style {
-                        width: Val::Percent(80.0),
-                        height: Val::Percent(60.0),
-                        flex_direction: FlexDirection::Row,
+                        width: Val::Percent(100.0),
+                        height: Val::Percent(100.0),
+                        padding: UiRect::new(
+                            Val::Vw(1.0),
+                            Val::Vw(1.0),
+                            Val::Vh(2.0),
+                            Val::Vh(2.0),
+                        ),
+                        align_items: AlignItems::Center,
+                        justify_content: JustifyContent::Center,
                         ..default()
                     },
-                    background_color: Color::BLUE.with_a(0.05).into(),
                     ..default()
                 })
-                .insert(DefenseUI)
-                .with_children(|defense_ui| {
-                    defense_ui
-                        .spawn(NodeBundle {
-                            style: Style {
-                                width: Val::Percent(90.0),
-                                height: Val::Percent(100.0),
-                                ..default()
-                            },
-                            background_color: Color::BLUE.with_a(0.75).into(),
-                            ..default()
-                        })
-                        .insert(DefenseValueUI);
-                });
+                .insert(LevelDataUI);
         });
 }
 
-pub fn update_level_ui(
+pub fn update_level_ui_system(
+    mut commands: Commands,
+    mut level_data_ui_query: Query<Entity, With<LevelDataUI>>,
     mut level_name_ui_query: Query<&mut Text, With<LevelNameUI>>,
+    //mut bottom_middle_right_ui
     run_resource: Res<CurrentRunProgressResource>,
 ) {
     if let Some(current_level) = &run_resource.current_level {
         if let Ok(mut text) = level_name_ui_query.get_single_mut() {
             text.sections[0].value = current_level.get_name();
         }
-    }
-}
 
-/// Initialize objective ui when objective changes
-pub fn setup_level_objective_ui_system(
-    mut commands: Commands,
-    asset_server: ResMut<AssetServer>,
-    mut new_objective_event_reader: EventReader<NewObjectiveEvent>,
-    mut objective_ui_query: Query<Entity, With<ObjectiveUI>>,
-    mut objective_label_ui_query: Query<Entity, With<ObjectiveLabelUI>>,
-) {
-    /*
-    // read event for new objective set
-    for event in new_objective_event_reader.iter() {
-        //remove existing objective ui
-        for entity in objective_ui_query.iter_mut() {
-            commands.entity(entity).despawn_recursive();
-        }
-        for entity in objective_label_ui_query.iter_mut() {
-            commands.entity(entity).despawn_recursive();
-        }
+        if let Ok(entity) = level_data_ui_query.get_single() {
+            commands.entity(entity).despawn_descendants();
 
-        //create ui for new objective
-        if let Some(objective) = &event.objective {
-            match objective {
-                Objective::Defense(_) => {
-                    // level objective ui
-                    commands
-                        .spawn(NodeBundle {
-                            style: Style {
-                                width: Val::Px(800.0),
-                                height: Val::Px(30.0),
-                                left: Val::Percent(19.0),
-                                bottom: Val::Percent(2.0),
-                                position_type: PositionType::Absolute,
-                                ..Style::default()
-                            },
-                            background_color: Color::BLUE.into(),
-                            ..NodeBundle::default()
-                        })
-                        .insert(GameCleanup)
-                        .insert(ObjectiveUI);
-
-                    commands
-                        .spawn(ImageBundle {
-                            image: asset_server.load("texture/defense_bar_label.png").into(),
-                            style: Style {
-                                left: Val::Percent(42.5),
-                                bottom: Val::Percent(1.7),
-                                position_type: PositionType::Absolute,
-                                ..default()
-                            },
-                            transform: Transform::from_xyz(0.0, 0.0, 1.0),
-                            ..Default::default()
-                        })
-                        .insert(GameCleanup)
-                        .insert(ObjectiveLabelUI)
-                        .insert(StatBarLabel);
+            if let Some(objective) = &current_level.objective {
+                match objective {
+                    thetawave_interface::objective::Objective::Defense(defense_data) => {
+                        commands.entity(entity).with_children(|level_data_ui| {
+                            level_data_ui
+                                .spawn(NodeBundle {
+                                    style: Style {
+                                        width: Val::Percent(80.0),
+                                        height: Val::Percent(60.0),
+                                        flex_direction: FlexDirection::Row,
+                                        ..default()
+                                    },
+                                    background_color: Color::BLUE.with_a(0.05).into(),
+                                    ..default()
+                                })
+                                .insert(DefenseUI)
+                                .with_children(|defense_ui| {
+                                    defense_ui
+                                        .spawn(NodeBundle {
+                                            style: Style {
+                                                width: Val::Percent(
+                                                    100.0 * defense_data.get_percentage(),
+                                                ),
+                                                height: Val::Percent(100.0),
+                                                ..default()
+                                            },
+                                            background_color: Color::BLUE.with_a(0.75).into(),
+                                            ..default()
+                                        })
+                                        .insert(DefenseValueUI);
+                                });
+                        });
+                    }
                 }
             }
         }
     }
-    */
 }

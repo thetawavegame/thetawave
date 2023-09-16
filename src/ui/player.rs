@@ -4,8 +4,6 @@ use thetawave_interface::{
     player::{PlayerComponent, PlayersResource},
 };
 
-use crate::player;
-
 // Player UIs on the sides
 #[derive(Component)]
 pub struct Player1UI;
