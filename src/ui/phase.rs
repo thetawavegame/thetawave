@@ -1,11 +1,7 @@
-use bevy::prelude::EventReader;
 use bevy::prelude::*;
-use thetawave_interface::{
-    run::{CyclePhaseEvent, LevelPhaseType},
-    states::GameCleanup,
-};
+use thetawave_interface::{health::HealthComponent, run::LevelPhaseType};
 
-use crate::run::CurrentRunProgressResource;
+use crate::{run::CurrentRunProgressResource, spawnable::BossComponent};
 
 #[derive(Component)]
 pub struct TopMiddleLeftUI;
@@ -21,7 +17,13 @@ pub struct PhaseNameUI;
 pub struct PhaseDataUI;
 
 #[derive(Component)]
-pub struct TextPhaseObjective;
+pub struct PhaseDataTextUI;
+
+#[derive(Component)]
+pub struct PhaseDataObjectivesListUI;
+
+#[derive(Component)]
+pub struct PhaseTextObjectiveUI;
 
 #[derive(Component)]
 pub struct BossHealthUI;
@@ -45,7 +47,6 @@ pub fn build_phase_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
                 justify_content: JustifyContent::Center,
                 ..default()
             },
-            //background_color: Color::GREEN.with_a(0.25).into(),
             ..default()
         })
         .insert(TopMiddleLeftUI)
@@ -76,7 +77,6 @@ pub fn build_phase_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
                 height: Val::Percent(100.0),
                 ..default()
             },
-            //background_color: Color::YELLOW.with_a(0.1).into(),
             ..default()
         })
         .insert(TopMiddleRightUI)
@@ -99,126 +99,156 @@ pub fn build_phase_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
                     ..default()
                 })
                 .insert(PhaseDataUI);
-
-            /*
-            // Uncomment for text phase objective
-
-            top_middle_right_ui
-                .spawn(NodeBundle {
-                    style: Style {
-                        width: Val::Percent(80.0),
-                        height: Val::Percent(60.0),
-                        flex_direction: FlexDirection::Row,
-                        ..default()
-                    },
-                    background_color: Color::RED.with_a(0.05).into(),
-                    ..default()
-                })
-                .insert(BossHealthUI)
-                .with_children(|boss_health_ui| {
-                    boss_health_ui
-                        .spawn(NodeBundle {
-                            style: Style {
-                                width: Val::Percent(40.0),
-                                height: Val::Percent(100.0),
-                                ..default()
-                            },
-                            background_color: Color::RED.with_a(0.75).into(),
-                            ..default()
-                        })
-                        .insert(BossHealthValueUI);
-                });
-            */
-            /*
-            top_middle_right_ui
-                .spawn(NodeBundle {
-                    style: Style {
-                        width: Val::Percent(100.0),
-                        height: Val::Percent(100.0),
-                        flex_direction: FlexDirection::Column,
-                        flex_wrap: FlexWrap::Wrap,
-                        ..default()
-                    },
-                    //background_color: Color::BLUE.with_a(0.25).into(),
-                    ..default()
-                })
-                .insert(PhaseDataUI)
-                .with_children(|phase_data_ui| {
-                    let text_sections = [
-                        "Up",
-                        "Down",
-                        "Left",
-                        "Right",
-                        "Up+Left",
-                        "Up+Right",
-                        "Down+Left",
-                        "Down+Right",
-                    ];
-
-                    for section in &text_sections {
-                        phase_ata_ui
-                            .spawn(TextBundle {
-                                style: Style {
-                                    height: Val::Px(30.0), // Set a fixed height for each text section
-                                    ..default()
-                                },
-                                text: Text::from_section(
-                                    section.to_string(),
-                                    TextStyle {
-                                        font: font.clone(),
-                                        font_size: 24.0,
-                                        color: Color::WHITE,
-                                    },
-                                )
-                                .with_alignment(TextAlignment::Left),
-                                ..default()
-                            })
-                            .insert(TextPhaseObjective);
-                    }
-                });
-                */
         });
 }
 
 pub fn update_phase_ui_system(
+    asset_server: ResMut<AssetServer>,
+    mut commands: Commands,
     mut phase_name_ui_query: Query<&mut Text, With<PhaseNameUI>>,
+    phase_data_ui_query: Query<Entity, With<PhaseDataUI>>,
     run_resource: Res<CurrentRunProgressResource>,
+    boss_mobs_query: Query<&HealthComponent, With<BossComponent>>,
 ) {
     if let Some(current_level) = &run_resource.current_level {
         if let Some(current_phase) = &current_level.current_phase {
             if let Ok(mut text) = phase_name_ui_query.get_single_mut() {
                 text.sections[0].value = current_phase.phase_type.get_name()
             }
-        }
-    }
-    /*
-    if let Some(current_level) = &run_resource.current_level {
-        if let Some(current_phase) = &current_level.current_phase {
-            match &current_phase.phase_type {
-                thetawave_interface::run::LevelPhaseType::FormationSpawn { .. } => {}
-                thetawave_interface::run::LevelPhaseType::Break { .. } => {}
-                thetawave_interface::run::LevelPhaseType::Boss { .. } => {}
-                thetawave_interface::run::LevelPhaseType::Tutorial {
-                    tutorial_lesson, ..
-                } => {
-                    if let Ok(mut tutorial_text) = tutorial_ui_query.get_single_mut() {
-                        for (section, progress_str) in tutorial_text
-                            .sections
-                            .iter_mut()
-                            .zip(tutorial_lesson.get_movement_timer_strs().iter())
-                        {
-                            section.value = format!("{}\n", progress_str.0);
 
-                            section.style.color = if progress_str.1 {
-                                Color::GREEN
-                            } else {
-                                Color::WHITE
-                            }
+            if let Ok(entity) = phase_data_ui_query.get_single() {
+                commands.entity(entity).despawn_descendants();
+
+                match &current_phase.phase_type {
+                    LevelPhaseType::FormationSpawn { phase_timer, .. } => {
+                        let font = asset_server.load("fonts/wibletown-regular.otf");
+
+                        commands.entity(entity).with_children(|phase_data_ui| {
+                            phase_data_ui
+                                .spawn(TextBundle {
+                                    style: Style {
+                                        align_self: AlignSelf::Center,
+                                        ..default()
+                                    },
+                                    text: Text::from_section(
+                                        format!("{:.0}", phase_timer.remaining_secs()),
+                                        TextStyle {
+                                            font,
+                                            font_size: 48.0,
+                                            color: Color::WHITE,
+                                        },
+                                    ),
+                                    ..default()
+                                })
+                                .insert(PhaseDataTextUI);
+                        });
+                    }
+                    LevelPhaseType::Break { phase_timer } => {
+                        let font = asset_server.load("fonts/wibletown-regular.otf");
+
+                        commands.entity(entity).with_children(|phase_data_ui| {
+                            phase_data_ui
+                                .spawn(TextBundle {
+                                    style: Style {
+                                        align_self: AlignSelf::Center,
+                                        ..default()
+                                    },
+                                    text: Text::from_section(
+                                        format!("{:.0}", phase_timer.remaining_secs()),
+                                        TextStyle {
+                                            font,
+                                            font_size: 48.0,
+                                            color: Color::WHITE,
+                                        },
+                                    ),
+                                    ..default()
+                                })
+                                .insert(PhaseDataTextUI);
+                        });
+                    }
+                    LevelPhaseType::Boss { .. } => {
+                        if let Ok(health) = boss_mobs_query.get_single() {
+                            commands.entity(entity).with_children(|phase_data_ui| {
+                                phase_data_ui
+                                    .spawn(NodeBundle {
+                                        style: Style {
+                                            width: Val::Percent(80.0),
+                                            height: Val::Percent(60.0),
+                                            flex_direction: FlexDirection::Row,
+                                            ..default()
+                                        },
+                                        background_color: Color::RED.with_a(0.05).into(),
+                                        ..default()
+                                    })
+                                    .insert(BossHealthUI)
+                                    .with_children(|boss_health_ui| {
+                                        boss_health_ui
+                                            .spawn(NodeBundle {
+                                                style: Style {
+                                                    width: Val::Percent(
+                                                        100.0 * health.get_health_percentage(),
+                                                    ),
+                                                    height: Val::Percent(100.0),
+                                                    ..default()
+                                                },
+                                                background_color: Color::RED.with_a(0.75).into(),
+                                                ..default()
+                                            })
+                                            .insert(BossHealthValueUI);
+                                    });
+                            });
                         }
+                    }
+                    LevelPhaseType::Tutorial {
+                        tutorial_lesson, ..
+                    } => {
+                        let font = asset_server.load("fonts/wibletown-regular.otf");
+
+                        commands.entity(entity).with_children(|phase_data_ui| {
+                            phase_data_ui
+                                .spawn(NodeBundle {
+                                    style: Style {
+                                        width: Val::Percent(100.0),
+                                        height: Val::Percent(100.0),
+                                        flex_direction: FlexDirection::Column,
+                                        flex_wrap: FlexWrap::Wrap,
+                                        ..default()
+                                    },
+                                    ..default()
+                                })
+                                .insert(PhaseDataObjectivesListUI)
+                                .with_children(|phase_data_list_ui| {
+                                    for (progress_str, completed) in
+                                        tutorial_lesson.get_movement_timer_strs().iter()
+                                    {
+                                        phase_data_list_ui
+                                            .spawn(TextBundle {
+                                                style: Style {
+                                                    height: Val::Px(30.0), // Set a fixed height for each text section
+                                                    ..default()
+                                                },
+                                                text: Text::from_section(
+                                                    progress_str,
+                                                    TextStyle {
+                                                        font: font.clone(),
+                                                        font_size: 24.0,
+                                                        color: if *completed {
+                                                            Color::GREEN
+                                                        } else {
+                                                            Color::WHITE
+                                                        },
+                                                    },
+                                                )
+                                                .with_alignment(TextAlignment::Left),
+                                                ..default()
+                                            })
+                                            .insert(PhaseTextObjectiveUI);
+                                    }
+                                });
+                        });
                     }
                 }
             }
         }
     }
-    */
 }

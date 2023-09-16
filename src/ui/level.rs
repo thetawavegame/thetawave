@@ -89,9 +89,8 @@ pub fn build_level_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
 
 pub fn update_level_ui_system(
     mut commands: Commands,
-    mut level_data_ui_query: Query<Entity, With<LevelDataUI>>,
+    level_data_ui_query: Query<Entity, With<LevelDataUI>>,
     mut level_name_ui_query: Query<&mut Text, With<LevelNameUI>>,
-    //mut bottom_middle_right_ui
     run_resource: Res<CurrentRunProgressResource>,
 ) {
     if let Some(current_level) = &run_resource.current_level {
