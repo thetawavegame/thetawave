@@ -123,6 +123,10 @@ pub fn spawn_consumable(
     consumable
         .insert(SpriteSheetBundle {
             texture_atlas: consumable_assets.get_asset(consumable_type),
+            sprite: TextureAtlasSprite {
+                color: consumable_assets.get_color(consumable_type),
+                ..Default::default()
+            },
             ..Default::default()
         })
         .insert(AnimationComponent {

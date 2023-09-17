@@ -422,6 +422,10 @@ pub fn spawn_mob(
                 .spawn(SpriteSheetBundle {
                     texture_atlas: mob_assets.get_thruster_asset(mob_type).unwrap(),
                     transform: Transform::from_xyz(0.0, thruster.y_offset, -1.0),
+                    sprite: TextureAtlasSprite {
+                        color: mob_assets.get_thruster_color(mob_type),
+                        ..Default::default()
+                    },
                     ..Default::default()
                 })
                 .insert(AnimationComponent {

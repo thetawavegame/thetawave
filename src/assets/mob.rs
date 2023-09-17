@@ -161,4 +161,12 @@ impl MobAssets {
             },
         }
     }
+
+    pub fn get_thruster_color(&self, mob_type: &MobType) -> Color {
+        match mob_type {
+            MobType::Enemy(_) => Color::rgb(3.8, 2.2, 1.0),
+            MobType::Ally(_) => Color::rgb(3.8, 2.2, 1.0),
+            MobType::Neutral(_) => Color::rgb(3.8, 2.2, 1.0),
+        }
+    }
 }
