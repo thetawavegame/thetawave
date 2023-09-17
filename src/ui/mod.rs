@@ -2,7 +2,7 @@ use bevy::prelude::*;
 pub use thetawave_interface::character_selection::PlayerJoinEvent;
 use thetawave_interface::game::historical_metrics::{MobsKilledByPlayerCacheT, DEFAULT_USER_ID};
 
-use crate::{states, GameEnterSet, GameUpdateSet};
+use crate::{states, GameEnterSet};
 
 mod character_selection;
 mod game;
@@ -38,10 +38,7 @@ impl Plugin for UiPlugin {
 
         app.add_systems(
             OnEnter(states::AppStates::Game),
-            (
-                game::setup_game_ui_system.after(GameEnterSet::BuildUi),
-                //create_phase_ui.after(GameEnterSet::BuildUi),
-            ),
+            (game::setup_game_ui_system.after(GameEnterSet::BuildUi),),
         );
 
         app.add_systems(

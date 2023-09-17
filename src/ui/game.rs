@@ -54,7 +54,7 @@ pub struct BottomRightCornerUI;
 /// initializes the game ui hierarchy
 pub fn setup_game_ui_system(
     mut commands: Commands,
-    asset_server: ResMut<AssetServer>,
+    asset_server: Res<AssetServer>,
     players_resource: Res<PlayersResource>,
 ) {
     let font = asset_server.load("fonts/wibletown-regular.otf");
@@ -158,7 +158,7 @@ pub fn setup_game_ui_system(
                         })
                         .insert(LeftUI)
                         .with_children(|left_ui| {
-                            build_player_1_ui(left_ui, &players_resource);
+                            build_player_1_ui(left_ui, &players_resource, &asset_server);
                         });
 
                     // middle column of ui at the center of the window (over the top of the arena)
@@ -187,7 +187,7 @@ pub fn setup_game_ui_system(
                         })
                         .insert(RightUI)
                         .with_children(|right_ui_node| {
-                            build_player_2_ui(right_ui_node, &players_resource)
+                            build_player_2_ui(right_ui_node, &players_resource, &asset_server)
                         });
                 });
 

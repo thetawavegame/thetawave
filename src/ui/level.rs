@@ -30,7 +30,6 @@ pub fn build_level_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
                 justify_content: JustifyContent::Center,
                 ..default()
             },
-            //background_color: Color::GREEN.with_a(0.25).into(),
             ..default()
         })
         .insert(BottomMiddleLeftUI)
@@ -61,7 +60,6 @@ pub fn build_level_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
                 height: Val::Percent(100.0),
                 ..default()
             },
-            //background_color: Color::YELLOW.with_a(0.1).into(),
             ..default()
         })
         .insert(BottomMiddleRightUI)
