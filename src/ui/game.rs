@@ -1,11 +1,7 @@
 use bevy::prelude::*;
 use thetawave_interface::{player::PlayersResource, states::GameCleanup};
 
-use super::{
-    level::build_level_ui,
-    phase::build_phase_ui,
-    player::{build_player_1_ui, build_player_2_ui},
-};
+use super::{level::build_level_ui, phase::build_phase_ui, player::build_player_ui};
 
 // top level ui tag component for all ui in the game state
 #[derive(Component)]
@@ -158,7 +154,8 @@ pub fn setup_game_ui_system(
                         })
                         .insert(LeftUI)
                         .with_children(|left_ui| {
-                            build_player_1_ui(left_ui, &players_resource, &asset_server);
+                            // build player 1 ui
+                            build_player_ui(0, left_ui, &players_resource, &asset_server);
                         });
 
                     // middle column of ui at the center of the window (over the top of the arena)
@@ -186,8 +183,9 @@ pub fn setup_game_ui_system(
                             ..default()
                         })
                         .insert(RightUI)
-                        .with_children(|right_ui_node| {
-                            build_player_2_ui(right_ui_node, &players_resource, &asset_server)
+                        .with_children(|right_ui| {
+                            // build player 2 ui
+                            build_player_ui(1, right_ui, &players_resource, &asset_server);
                         });
                 });
 
