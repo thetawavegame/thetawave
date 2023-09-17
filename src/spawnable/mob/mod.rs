@@ -25,7 +25,7 @@ use thetawave_interface::{
     audio::CollisionSoundType,
     health::HealthComponent,
     objective::DefenseInteraction,
-    spawnable::{MobSegmentType, MobType, ProjectileType},
+    spawnable::{MobDestroyedEvent, MobSegmentType, MobType, ProjectileType},
     states::GameCleanup,
 };
 

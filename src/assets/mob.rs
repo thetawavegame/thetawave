@@ -1,9 +1,13 @@
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
-use thetawave_interface::spawnable::{EnemyMobType, MobSegmentType, MobType};
+use thetawave_interface::spawnable::{
+    AllyMobType, EnemyMobType, MobSegmentType, MobType, NeutralMobType,
+};
 
 #[derive(AssetCollection, Resource)]
 pub struct MobAssets {
+    #[asset(key = "tutorial_drone")]
+    pub tutorial_drone: Handle<TextureAtlas>,
     #[asset(key = "shelly")]
     pub shelly: Handle<TextureAtlas>,
     #[asset(key = "drone")]
@@ -85,6 +89,9 @@ impl MobAssets {
                 thetawave_interface::spawnable::NeutralMobType::MoneyAsteroid => {
                     self.money_asteroid.clone()
                 }
+                thetawave_interface::spawnable::NeutralMobType::TutorialDrone => {
+                    self.tutorial_drone.clone()
+                }
             },
         }
     }
@@ -149,15 +156,12 @@ impl MobAssets {
                 EnemyMobType::Shelly => None,
             },
             MobType::Ally(ally_type) => match ally_type {
-                thetawave_interface::spawnable::AllyMobType::Hauler2 => {
-                    Some(self.hauler_thruster.clone())
-                }
-                thetawave_interface::spawnable::AllyMobType::Hauler3 => {
-                    Some(self.hauler_thruster.clone())
-                }
+                AllyMobType::Hauler2 => Some(self.hauler_thruster.clone()),
+                AllyMobType::Hauler3 => Some(self.hauler_thruster.clone()),
             },
             MobType::Neutral(neutral_type) => match neutral_type {
-                thetawave_interface::spawnable::NeutralMobType::MoneyAsteroid => None,
+                NeutralMobType::MoneyAsteroid => None,
+                NeutralMobType::TutorialDrone => None,
             },
         }
     }

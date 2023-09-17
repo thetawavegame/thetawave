@@ -44,7 +44,7 @@ pub fn player_fire_weapon_system(
                 tutorial_lesson, ..
             } = phase.phase_type
             {
-                matches!(tutorial_lesson, TutorialLesson::Attack)
+                matches!(tutorial_lesson, TutorialLesson::Attack { .. })
             } else {
                 true
             }
