@@ -36,3 +36,17 @@ pub fn generate_config_files() {
     confgen!("display.ron");
     confgen!("input.ron");
 }
+
+#[cfg(all(test, not(target_arch = "wasm32"), feature = "cli"))]
+mod cli_tests {
+    use argh::FromArgs;
+    #[test]
+    fn test_cli_parse_asset_path_dir() {
+        assert_eq!(
+            super::GameInitCLIOptions::from_args(&["thetawave"], &["--assets-dir", "myassets/"])
+                .unwrap()
+                .assets_dir,
+            Some(std::path::PathBuf::from("myassets/"))
+        );
+    }
+}

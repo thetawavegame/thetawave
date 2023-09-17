@@ -197,6 +197,10 @@ pub fn spawn_effect(
     effect
         .insert(SpriteSheetBundle {
             texture_atlas: effect_assets.get_asset(effect_type).unwrap_or_default(),
+            sprite: TextureAtlasSprite {
+                color: effect_assets.get_color(effect_type),
+                ..Default::default()
+            },
             ..Default::default()
         })
         .insert(AnimationComponent {

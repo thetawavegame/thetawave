@@ -136,6 +136,10 @@ pub fn spawn_projectile(
         .insert(LockedAxes::ROTATION_LOCKED)
         .insert(SpriteSheetBundle {
             texture_atlas: projectile_assets.get_asset(projectile_type),
+            sprite: TextureAtlasSprite {
+                color: projectile_assets.get_color(projectile_type),
+                ..Default::default()
+            },
             ..Default::default()
         })
         .insert(AnimationComponent {
