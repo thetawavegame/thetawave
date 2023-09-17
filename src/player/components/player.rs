@@ -51,6 +51,8 @@ pub struct PlayerComponent {
     pub incoming_damage_multiplier: f32,
     /// Index of the player
     pub player_index: usize,
+    /// Number of projectiles fired per shot
+    pub projectile_count: usize,
 }
 
 impl From<&Character> for PlayerComponent {
@@ -78,6 +80,7 @@ impl From<&Character> for PlayerComponent {
             movement_enabled: true,
             incoming_damage_multiplier: 1.0,
             player_index: 0,
+            projectile_count: character.projectile_count,
         }
     }
 }

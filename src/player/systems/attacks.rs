@@ -1,7 +1,9 @@
 use std::{collections::HashMap, time::Duration};
 
 use bevy::prelude::*;
+use bevy_rapier2d::na::clamp;
 use bevy_rapier2d::prelude::*;
+
 use thetawave_interface::audio::{PlaySoundEffectEvent, SoundEffectType};
 
 use crate::{
@@ -64,7 +66,19 @@ pub fn player_fire_weapon_system(
         player_component.fire_timer.tick(time.delta());
 
         // fire blast if timer finished and input pressed
-        if player_component.fire_timer.finished() && fire_input {
+        if !player_component.fire_timer.finished() || !fire_input {
+            continue;
+        }
+
+        let spread_angle = clamp(
+            300.0 / player_component.projectile_count as f32,
+            0.0,
+            300.0,
+        );
+        let center_projectile_index = (player_component.projectile_count - 1) as f32 / 2.0;
+
+        for i in 0..player_component.projectile_count {
+            let center_adjusted_index = i as f32 - center_projectile_index;
             let projectile_transform = Transform {
                 translation: Vec3::new(
                     transform.translation.x + player_component.projectile_offset_position.x,
@@ -77,8 +91,8 @@ pub fn player_fire_weapon_system(
             // pass player velocity into the spawned blast
             let initial_motion = InitialMotion {
                 linvel: Some(Vec2::new(
-                    (player_component.projectile_velocity.x) + rb_vels.linvel.x,
-                    (player_component.projectile_velocity.y) + rb_vels.linvel.y,
+                    (player_component.projectile_velocity.x) + rb_vels.linvel.x + center_adjusted_index * spread_angle,
+                    (player_component.projectile_velocity.y) + rb_vels.linvel.y - f32::abs(center_adjusted_index * spread_angle),
                 )),
                 ..Default::default()
             };
@@ -92,16 +106,16 @@ pub fn player_fire_weapon_system(
                 initial_motion,
                 source: entity,
             });
-
-            // play firing blast sound effect
-            sound_effect_event_writer.send(PlaySoundEffectEvent {
-                sound_effect_type: SoundEffectType::PlayerFireBlast,
-            });
-
-            // reset the timer to the player's fire period stat
-            let new_period = Duration::from_secs_f32(player_component.fire_period);
-            player_component.fire_timer.reset();
-            player_component.fire_timer.set_duration(new_period);
         }
+
+        // play firing blast sound effect
+        sound_effect_event_writer.send(PlaySoundEffectEvent {
+            sound_effect_type: SoundEffectType::PlayerFireBlast,
+        });
+
+        // reset the timer to the player's fire period stat
+        let new_period = Duration::from_secs_f32(player_component.fire_period);
+        player_component.fire_timer.reset();
+        player_component.fire_timer.set_duration(new_period);
     }
 }

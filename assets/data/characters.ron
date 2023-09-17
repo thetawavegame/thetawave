@@ -22,6 +22,7 @@
 			money: 0,
 			ability_period: 5.0,
 			ability_type: MegaBlast(5.0),
+			projectile_count: 1,
 		),
 		Juggernaut: (
 			acceleration: (25.0, 25.0),
@@ -45,6 +46,7 @@
 			money: 0,
 			ability_period: 2.0,
 			ability_type: Charge(0.5),
+			projectile_count: 1,
 		),
 	}
 )

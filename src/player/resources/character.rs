@@ -46,7 +46,7 @@ pub struct Character {
     pub collision_damage: usize,
     /// Distance to attract items and consumables
     pub attraction_distance: f32,
-    /// Acceleration applied to items and conumables in attraction distance
+    /// Acceleration applied to items and consumables in attraction distance
     pub attraction_acceleration: f32,
     /// Amount of money character has collected
     pub money: usize,
@@ -54,6 +54,8 @@ pub struct Character {
     pub ability_period: f32,
     /// Type of ability
     pub ability_type: AbilityType,
+    /// Number of projectiles fired per shot
+    pub projectile_count: usize,
 }
 
 impl From<&Character> for HealthComponent {

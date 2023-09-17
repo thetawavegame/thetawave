@@ -13,6 +13,8 @@ pub struct ConsumableAssets {
     pub money1: Handle<TextureAtlas>,
     #[asset(key = "armor")]
     pub armor: Handle<TextureAtlas>,
+    #[asset(key = "gain_projectiles")]
+    pub gain_projectiles: Handle<TextureAtlas>,
 }
 
 impl ConsumableAssets {
@@ -22,6 +24,7 @@ impl ConsumableAssets {
             ConsumableType::Money3 => self.money3.clone(),
             ConsumableType::HealthWrench => self.health_wrench.clone(),
             ConsumableType::Armor => self.armor.clone(),
+            ConsumableType::GainProjectiles => self.gain_projectiles.clone(),
         }
     }
 
@@ -31,6 +34,7 @@ impl ConsumableAssets {
             ConsumableType::Money3 => Color::rgb(1.6, 1.6, 1.6),
             ConsumableType::HealthWrench => Color::rgb(1.6, 1.6, 1.6),
             ConsumableType::Armor => Color::rgb(1.6, 1.6, 1.6),
+            ConsumableType::GainProjectiles => Color::rgb(1.6, 1.6, 1.6),
         }
     }
 }

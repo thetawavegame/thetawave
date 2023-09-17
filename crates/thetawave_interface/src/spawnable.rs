@@ -106,6 +106,7 @@ pub enum ConsumableType {
     Money3,
     HealthWrench,
     Armor,
+    GainProjectiles,
 }
 
 /// Type that encompasses all spawnable items

@@ -13,6 +13,7 @@ pub enum ConsumableDropListType {
     Nothing,
     Standard,
     MoneyAsteroid,
+    RepeaterBoss,
 }
 
 /// Probability profile for a single consumable drop

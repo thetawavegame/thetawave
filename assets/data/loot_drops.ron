@@ -17,6 +17,11 @@
                 probability: 0.1,
                 consumable: Money1,
             ),
+            (
+                rolls: 1,
+                probability: 0.01,
+                consumable: GainProjectiles,
+            ),
         ],
         MoneyAsteroid: [
             (
@@ -33,6 +38,28 @@
                 rolls: 1,
                 probability: 0.1,
                 consumable: Money3,
+            ),
+        ],
+        RepeaterBoss: [
+            (
+                rolls: 1,
+                probability: 0.03,
+                consumable: Armor,
+            ),
+            (
+                rolls: 2,
+                probability: 0.4,
+                consumable: HealthWrench,
+            ),
+            (
+                rolls: 2,
+                probability: 0.1,
+                consumable: Money1,
+            ),
+            (
+                rolls: 1,
+                probability: 1.0,
+                consumable: GainProjectiles,
             ),
         ],
     }

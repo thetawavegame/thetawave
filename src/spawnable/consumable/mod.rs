@@ -22,6 +22,7 @@ pub enum ConsumableEffect {
     GainHealth(usize),
     GainArmor(usize),
     GainMoney(usize),
+    GainProjectiles(usize),
 }
 
 /// Core component for a consumable

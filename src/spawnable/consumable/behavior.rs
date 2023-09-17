@@ -209,6 +209,9 @@ fn apply_effects_on_impact(
                                 ConsumableEffect::GainMoney(money) => {
                                     player_component.money += *money;
                                 }
+                                ConsumableEffect::GainProjectiles(projectile) => {
+                                    player_component.projectile_count += *projectile;
+                                }
                             }
                         }
                     }

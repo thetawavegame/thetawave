@@ -10,12 +10,12 @@
         speed: (0.0, 110.0),
         z_level: 15.0,
         initial_motion: (
-            random_linvel: Some(((-100, 50),(100, 100))),
+            random_linvel: Some(((-100, 50), (100, 100))),
             random_angvel: Some((-3.0, 3.0)),
         ),
         animation: (
             frame_duration: 1.0,
-			direction: None,
+            direction: None,
         ),
     ),
     Money3: (
@@ -29,12 +29,12 @@
         speed: (0.0, 110.0),
         z_level: 15.0,
         initial_motion: (
-            random_linvel: Some(((-100, 50),(100, 100))),
+            random_linvel: Some(((-100, 50), (100, 100))),
             random_angvel: Some((-3.0, 3.0)),
         ),
         animation: (
             frame_duration: 1.0,
-			direction: None,
+            direction: None,
         ),
     ),
     Money1: (
@@ -48,12 +48,12 @@
         speed: (0.0, 110.0),
         z_level: 15.0,
         initial_motion: (
-            random_linvel: Some(((-120, 50),(120, 120))),
+            random_linvel: Some(((-120, 50), (120, 120))),
             random_angvel: Some((-5.0, 5.0)),
         ),
         animation: (
             frame_duration: 1.0,
-			direction: None,
+            direction: None,
         ),
     ),
     Armor: (
@@ -67,12 +67,31 @@
         speed: (0.0, 110.0),
         z_level: 15.0,
         initial_motion: (
-            random_linvel: Some(((-100, 50),(100, 100))),
+            random_linvel: Some(((-100, 50), (100, 100))),
             random_angvel: Some((-3.0, 3.0)),
         ),
         animation: (
             frame_duration: 1.0,
-			direction: None,
+            direction: None,
+        ),
+    ),
+    GainProjectiles: (
+        consumable_type: GainProjectiles,
+        collider_dimensions: (1.5, 1.5),
+        spawnable_behaviors: [BrakeHorizontal, MoveDown],
+        consumable_effects: [GainProjectiles(1)],
+        consumable_behaviors: [ApplyEffectsOnImpact, AttractToPlayer],
+        acceleration: (0.0, 2.0),
+        deceleration: (0.5, 1.0),
+        speed: (0.0, 110.0),
+        z_level: 15.0,
+        initial_motion: (
+            random_linvel: Some(((-100, 50), (100, 100))),
+            random_angvel: Some((-3.0, 3.0)),
+        ),
+        animation: (
+            frame_duration: 1.0,
+            direction: None,
         ),
     ),
 }
