@@ -27,9 +27,14 @@ leafwing-input-manager = "0.10.0"
 ron = "0.8.0"
 bevy_time = "0.11.2"
 bevy_math = "0.11.2"
+# We value minimizing the binary sizes and keeping the CLI maximally simple over a more feature complete CLI library
+# like clap.
+argh = "0.1.12"
+
 
 [dev-dependencies]
 rstest = "0.18.2"
+assert_cmd = "2.0.12"
 
 [dependencies]
 bevy = { workspace = true }
@@ -62,6 +67,7 @@ thetawave_interface = { path = "crates/thetawave_interface" }
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 thetawave_storage = { path = "crates/thetawave_storage", optional = true }
 thetawave_arcade = { path = "crates/thetawave_arcade", optional = true }
+argh = { workspace = true, optional = true }
 
 
 # optimize dev packages as we don't need them in debug version
@@ -78,3 +84,4 @@ codegen-units = 1
 [features]
 arcade = ["thetawave_arcade"]
 storage = ["thetawave_storage"]
+cli = ["argh"]

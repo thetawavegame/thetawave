@@ -24,4 +24,13 @@ impl ConsumableAssets {
             ConsumableType::Armor => self.armor.clone(),
         }
     }
+
+    pub fn get_color(&self, consumable_type: &ConsumableType) -> Color {
+        match consumable_type {
+            ConsumableType::Money1 => Color::rgb(1.6, 1.6, 1.6),
+            ConsumableType::Money3 => Color::rgb(1.6, 1.6, 1.6),
+            ConsumableType::HealthWrench => Color::rgb(1.6, 1.6, 1.6),
+            ConsumableType::Armor => Color::rgb(1.6, 1.6, 1.6),
+        }
+    }
 }
