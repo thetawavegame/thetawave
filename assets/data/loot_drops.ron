@@ -3,7 +3,7 @@
         Nothing: [],
         Standard: [
             (
-                rolls: 1,
+                rolls: 100,
                 probability: 0.03,
                 consumable: Armor,
             ),
