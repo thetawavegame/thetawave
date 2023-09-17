@@ -1,5 +1,6 @@
 use std::default::Default;
 
+use bevy_ecs::{entity::Entity, event::Event};
 use serde::Deserialize;
 use strum_macros::{Display, EnumString};
 
@@ -78,6 +79,7 @@ impl MobType {
             },
             MobType::Neutral(neutral_type) => match neutral_type {
                 NeutralMobType::MoneyAsteroid => "Money Asteroid",
+                NeutralMobType::TutorialDrone => "Tutorial Drone",
             },
         }
         .to_string()
@@ -122,6 +124,7 @@ pub enum EnemyMobSegmentType {
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum NeutralMobType {
     MoneyAsteroid,
+    TutorialDrone,
 }
 
 /// Type that encompasses all spawnable consumables
@@ -176,4 +179,10 @@ pub enum EffectType {
 pub enum TextEffectType {
     DamageDealt,
     ConsumableCollected(ConsumableType),
+}
+
+#[derive(Event)]
+pub struct MobDestroyedEvent {
+    pub mob_type: MobType,
+    pub entity: Entity,
 }

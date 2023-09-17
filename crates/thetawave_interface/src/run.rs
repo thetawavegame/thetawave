@@ -1,12 +1,14 @@
-use bevy_ecs::{prelude::Event, query::With, system::Query};
+use bevy_ecs::{event::EventReader, prelude::Event, query::With, system::Query};
 use bevy_math::Vec2;
 use bevy_time::{Time, Timer};
 use leafwing_input_manager::prelude::ActionState;
 use serde::Deserialize;
 
 use crate::{
-    character::CharacterType, options::input::PlayerAction, player::PlayerComponent,
-    spawnable::MobType,
+    character::CharacterType,
+    options::input::PlayerAction,
+    player::PlayerComponent,
+    spawnable::{MobDestroyedEvent, MobType, NeutralMobType},
 };
 
 pub enum RunOutcomeType {
@@ -74,7 +76,9 @@ pub enum TutorialLesson {
         down_left_timer: Timer,
         down_right_timer: Timer,
     },
-    Attack,
+    Attack {
+        mobs_to_destroy: usize,
+    },
     SpecialAbility,
 }
 
@@ -82,7 +86,7 @@ impl TutorialLesson {
     pub fn get_name(&self) -> String {
         match self {
             TutorialLesson::Movement { .. } => "Movement".to_string(),
-            TutorialLesson::Attack => "Attack".to_string(),
+            TutorialLesson::Attack { .. } => "Attack".to_string(),
             TutorialLesson::SpecialAbility => "Special Ability".to_string(),
         }
     }
@@ -229,15 +233,35 @@ impl TutorialLesson {
     pub fn update(
         &mut self,
         player_query: &mut Query<&ActionState<PlayerAction>, With<PlayerComponent>>,
+        mob_destroyed_event: &mut EventReader<MobDestroyedEvent>,
         time: &Time,
     ) -> bool {
         // tutorial will only be run for single player
         let action_state = player_query.single();
 
         match self {
-            TutorialLesson::Attack => todo!(),
+            TutorialLesson::Attack { .. } => self.attack_tutorial(mob_destroyed_event),
             TutorialLesson::SpecialAbility => todo!(),
             TutorialLesson::Movement { .. } => self.movement_tutorial(action_state, time),
+        }
+    }
+
+    fn attack_tutorial(
+        &mut self,
+        mob_destroyed_event: &mut EventReader<MobDestroyedEvent>,
+    ) -> bool {
+        if let TutorialLesson::Attack { mobs_to_destroy } = self {
+            for event in mob_destroyed_event.iter() {
+                if matches!(
+                    event.mob_type,
+                    MobType::Neutral(NeutralMobType::TutorialDrone)
+                ) {
+                    *mobs_to_destroy -= 1;
+                }
+            }
+            *mobs_to_destroy == 0
+        } else {
+            false
         }
     }
 

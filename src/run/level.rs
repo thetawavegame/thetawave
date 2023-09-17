@@ -11,6 +11,7 @@ use thetawave_interface::{
     options::input::PlayerAction,
     player::PlayerComponent,
     run::{CyclePhaseEvent, LevelPhaseType},
+    spawnable::MobDestroyedEvent,
 };
 
 use crate::spawnable::{BossesDestroyedEvent, SpawnMobEvent};
@@ -152,6 +153,7 @@ impl Level {
         bosses_destroyed_event_reader: &mut EventReader<BossesDestroyedEvent>,
         change_bg_music_event_writer: &mut EventWriter<ChangeBackgroundMusicEvent>,
         cycle_phase_event_writer: &mut EventWriter<CyclePhaseEvent>,
+        mob_destroyed_event: &mut EventReader<MobDestroyedEvent>,
     ) -> bool {
         self.level_time.tick(time.delta());
 
@@ -196,7 +198,7 @@ impl Level {
                 }
                 LevelPhaseType::Tutorial {
                     tutorial_lesson, ..
-                } => tutorial_lesson.update(player_query, time),
+                } => tutorial_lesson.update(player_query, mob_destroyed_event, time),
             };
 
             self.current_phase = Some(modified_current_phase);

@@ -6,7 +6,7 @@ use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     health::{DamageDealtEvent, HealthComponent},
     player::PlayerComponent,
-    spawnable::{EffectType, MobType, ProjectileType},
+    spawnable::{EffectType, MobDestroyedEvent, MobType, ProjectileType},
 };
 
 use crate::{
@@ -251,12 +251,6 @@ pub fn mob_execute_behavior_system(
             }
         }
     }
-}
-
-#[derive(Event)]
-pub struct MobDestroyedEvent {
-    pub mob_type: MobType,
-    pub entity: Entity,
 }
 
 /// Take damage from colliding entity on impact

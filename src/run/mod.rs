@@ -10,6 +10,7 @@ use thetawave_interface::{
     options::input::PlayerAction,
     player::PlayerComponent,
     run::{CyclePhaseEvent, RunDefeatType, RunEndEvent, RunOutcomeType},
+    spawnable::MobDestroyedEvent,
     states::{AppStates, GameStates},
 };
 
@@ -163,6 +164,7 @@ impl CurrentRunProgressResource {
         run_end_event_writer: &mut EventWriter<RunEndEvent>,
         change_bg_music_event_writer: &mut EventWriter<ChangeBackgroundMusicEvent>,
         cycle_phase_event_writer: &mut EventWriter<CyclePhaseEvent>,
+        mob_destroyed_event: &mut EventReader<MobDestroyedEvent>,
     ) {
         // TODO: handle none case to remove unwrap
         let current_level = self.current_level.as_mut().unwrap();
@@ -177,6 +179,7 @@ impl CurrentRunProgressResource {
             bosses_destroyed_event_reader,
             change_bg_music_event_writer,
             cycle_phase_event_writer,
+            mob_destroyed_event,
         ) {
             self.cycle_level(run_end_event_writer);
             self.init_current_level(
@@ -230,6 +233,7 @@ fn tick_run_system(
     mut run_end_event_writer: EventWriter<RunEndEvent>,
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     mut cycle_phase_event_writer: EventWriter<CyclePhaseEvent>,
+    mut mob_destroyed_event_reader: EventReader<MobDestroyedEvent>,
 ) {
     run_res.tick(
         &time,
@@ -241,6 +245,7 @@ fn tick_run_system(
         &mut run_end_event_writer,
         &mut change_bg_music_event_writer,
         &mut cycle_phase_event_writer,
+        &mut mob_destroyed_event_reader,
     );
 }
 
