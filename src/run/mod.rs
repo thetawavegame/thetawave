@@ -164,6 +164,7 @@ impl CurrentRunProgressResource {
         mob_destroyed_event: &mut EventReader<MobDestroyedEvent>,
         mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
         mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
+        play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
     ) {
         // TODO: handle none case to remove unwrap
         let current_level = self.current_level.as_mut().unwrap();
@@ -181,6 +182,7 @@ impl CurrentRunProgressResource {
             mob_destroyed_event,
             mob_reached_bottom_event,
             mob_segment_destroyed_event,
+            play_sound_effect_event_writer,
         ) {
             self.cycle_level(run_end_event_writer);
             self.init_current_level(
@@ -237,6 +239,7 @@ fn tick_run_system(
     mut mob_destroyed_event_reader: EventReader<MobDestroyedEvent>,
     mut mob_reached_bottom_event_reader: EventReader<MobReachedBottomGateEvent>,
     mut mob_segment_destroyed_event_reader: EventReader<MobSegmentDestroyedEvent>,
+    mut play_sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
 ) {
     run_res.tick(
         &time,
@@ -251,6 +254,7 @@ fn tick_run_system(
         &mut mob_destroyed_event_reader,
         &mut mob_reached_bottom_event_reader,
         &mut mob_segment_destroyed_event_reader,
+        &mut play_sound_effect_event_writer,
     );
 }
 

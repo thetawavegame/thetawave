@@ -6,7 +6,7 @@ use std::{
     time::Duration,
 };
 use thetawave_interface::{
-    audio::{BGMusicType, ChangeBackgroundMusicEvent},
+    audio::{BGMusicType, ChangeBackgroundMusicEvent, PlaySoundEffectEvent},
     objective::{MobReachedBottomGateEvent, Objective},
     options::input::PlayerAction,
     player::PlayerComponent,
@@ -156,6 +156,7 @@ impl Level {
         mob_destroyed_event: &mut EventReader<MobDestroyedEvent>,
         mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
         mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
+        play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
     ) -> bool {
         self.level_time.tick(time.delta());
 
@@ -207,6 +208,7 @@ impl Level {
                     spawn_mob_event_writer,
                     mob_reached_bottom_event,
                     mob_segment_destroyed_event,
+                    play_sound_effect_event_writer,
                 ),
             };
 

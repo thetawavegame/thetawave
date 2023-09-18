@@ -13,6 +13,7 @@ use leafwing_input_manager::prelude::ActionState;
 use serde::Deserialize;
 
 use crate::{
+    audio::{PlaySoundEffectEvent, SoundEffectType},
     character::CharacterType,
     objective::MobReachedBottomGateEvent,
     options::input::PlayerAction,
@@ -289,6 +290,7 @@ impl TutorialLesson {
         spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
         mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
         mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
+        play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
     ) -> bool {
         // tutorial will only be run for single player
         let action_state = player_query.single();
@@ -300,9 +302,12 @@ impl TutorialLesson {
                 spawn_mob_event_writer,
                 mob_reached_bottom_event,
                 mob_segment_destroyed_event,
+                play_sound_effect_event_writer,
             ),
             TutorialLesson::SpecialAbility => todo!(),
-            TutorialLesson::Movement { .. } => self.movement_tutorial(action_state, time),
+            TutorialLesson::Movement { .. } => {
+                self.movement_tutorial(action_state, time, play_sound_effect_event_writer)
+            }
         }
     }
 
@@ -313,6 +318,7 @@ impl TutorialLesson {
         spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
         mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
         mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
+        play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
     ) -> bool {
         if let TutorialLesson::Attack {
             mobs_to_destroy,
@@ -352,6 +358,10 @@ impl TutorialLesson {
                             boss: false,
                         });
                     } else if *mobs_to_protect > 0 {
+                        play_sound_effect_event_writer.send(PlaySoundEffectEvent {
+                            sound_effect_type: SoundEffectType::ObjectiveCompleted,
+                        });
+
                         spawn_mob_event_writer.send(SpawnMobEvent {
                             mob_type: MobType::Ally(AllyMobType::TutorialHauler2),
                             position: (thread_rng().gen_range(spawn_range_x.clone()), *spawn_y)
@@ -395,6 +405,10 @@ impl TutorialLesson {
                                 rotation: Quat::default(),
                                 boss: false,
                             });
+                        } else {
+                            play_sound_effect_event_writer.send(PlaySoundEffectEvent {
+                                sound_effect_type: SoundEffectType::ObjectiveCompleted,
+                            });
                         }
                     }
                 } else if let Some(mob_type) = &event.mob_type {
@@ -416,7 +430,12 @@ impl TutorialLesson {
         }
     }
 
-    fn movement_tutorial(&mut self, action_state: &ActionState<PlayerAction>, time: &Time) -> bool {
+    fn movement_tutorial(
+        &mut self,
+        action_state: &ActionState<PlayerAction>,
+        time: &Time,
+        play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
+    ) -> bool {
         // return true if all the timers are finished
         if let TutorialLesson::Movement {
             up_timer,
@@ -451,6 +470,21 @@ impl TutorialLesson {
                 down_left_timer.tick(time.delta());
             } else if !up && down && !left && right {
                 down_right_timer.tick(time.delta());
+            }
+
+            // play objective completed sound if any timer just finished
+            if up_timer.just_finished()
+                || down_timer.just_finished()
+                || left_timer.just_finished()
+                || right_timer.just_finished()
+                || up_left_timer.just_finished()
+                || up_right_timer.just_finished()
+                || down_left_timer.just_finished()
+                || down_right_timer.just_finished()
+            {
+                play_sound_effect_event_writer.send(PlaySoundEffectEvent {
+                    sound_effect_type: SoundEffectType::ObjectiveCompleted,
+                });
             }
 
             // return true if all timers are finshed
