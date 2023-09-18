@@ -123,13 +123,6 @@ impl CurrentRunProgressResource {
         // pop the next level (if it exists) into the the current level
         self.current_level = self.queued_levels.pop_front();
 
-        if self.current_level.is_none() {
-            // if the current level is None, then the player has completed all the levels and has won the game
-            run_end_event_writer.send(RunEndEvent {
-                outcome: RunOutcomeType::Victory,
-            });
-        }
-
         info!("Level cycled");
     }
 
@@ -166,30 +159,33 @@ impl CurrentRunProgressResource {
         mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
         play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
     ) {
-        // TODO: handle none case to remove unwrap
-        let current_level = self.current_level.as_mut().unwrap();
-
-        // cycle level when done with all phases
-        if current_level.tick(
-            time,
-            player_query,
-            spawn_formation_event_writer,
-            formations_res,
-            spawn_mob_event_writer,
-            bosses_destroyed_event_reader,
-            change_bg_music_event_writer,
-            cycle_phase_event_writer,
-            mob_destroyed_event,
-            mob_reached_bottom_event,
-            mob_segment_destroyed_event,
-            play_sound_effect_event_writer,
-        ) {
-            self.cycle_level(run_end_event_writer);
-            self.init_current_level(
-                run_end_event_writer,
+        if let Some(current_level) = &mut self.current_level {
+            // cycle level when done with all phases
+            if current_level.tick(
+                time,
+                player_query,
+                spawn_formation_event_writer,
+                formations_res,
+                spawn_mob_event_writer,
+                bosses_destroyed_event_reader,
                 change_bg_music_event_writer,
                 cycle_phase_event_writer,
-            );
+                mob_destroyed_event,
+                mob_reached_bottom_event,
+                mob_segment_destroyed_event,
+                play_sound_effect_event_writer,
+            ) {
+                self.cycle_level(run_end_event_writer);
+                self.init_current_level(
+                    run_end_event_writer,
+                    change_bg_music_event_writer,
+                    cycle_phase_event_writer,
+                );
+            }
+        } else {
+            run_end_event_writer.send(RunEndEvent {
+                outcome: RunOutcomeType::Victory,
+            });
         }
     }
 }
