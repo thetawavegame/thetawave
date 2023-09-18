@@ -6,7 +6,7 @@ use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     health::{DamageDealtEvent, HealthComponent},
     player::PlayerComponent,
-    spawnable::{EffectType, MobDestroyedEvent, MobType, ProjectileType},
+    spawnable::{EffectType, MobDestroyedEvent, MobType, ProjectileType, SpawnMobEvent},
 };
 
 use crate::{
@@ -16,7 +16,7 @@ use crate::{
     spawnable::{InitialMotion, SpawnConsumableEvent, SpawnEffectEvent, SpawnProjectileEvent},
 };
 
-use super::{MobComponent, SpawnMobEvent, SpawnPosition};
+use super::{MobComponent, SpawnPosition};
 
 /// Types of behaviors that can be performed by mobs
 #[derive(Deserialize, Clone)]

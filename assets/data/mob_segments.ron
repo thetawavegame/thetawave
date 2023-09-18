@@ -1,5 +1,26 @@
 (
     mob_segments: {
+        Neutral(TutorialHaulerBack): (
+            mob_segment_type: Neutral(TutorialHaulerBack),
+            animation: (
+                direction: None,
+                frame_duration: 1.0,
+            ),
+            colliders: [
+                (
+                    dimensions: (5.25, 8.25),
+                    position: (0.0, 0.0),
+                    rotation: 0.0,
+                )
+            ],
+            collision_damage: 0,
+            defense_interaction: Some(Heal(10)),
+            health: 60,
+            consumable_drops: Nothing,
+            z_level: 5.0,
+            anchor_point: (0.0, -30.0),
+            behaviors: [ReceiveDamageOnImpact, DieAtZeroHealth],
+        ),
         Neutral(HaulerBack): (
             mob_segment_type: Neutral(HaulerBack),
             animation: (

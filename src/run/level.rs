@@ -7,14 +7,14 @@ use std::{
 };
 use thetawave_interface::{
     audio::{BGMusicType, ChangeBackgroundMusicEvent},
-    objective::Objective,
+    objective::{MobReachedBottomGateEvent, Objective},
     options::input::PlayerAction,
     player::PlayerComponent,
     run::{CyclePhaseEvent, LevelPhaseType},
-    spawnable::MobDestroyedEvent,
+    spawnable::{MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent},
 };
 
-use crate::spawnable::{BossesDestroyedEvent, SpawnMobEvent};
+use crate::spawnable::BossesDestroyedEvent;
 
 use super::{FormationPoolsResource, SpawnFormationEvent};
 
@@ -154,6 +154,8 @@ impl Level {
         change_bg_music_event_writer: &mut EventWriter<ChangeBackgroundMusicEvent>,
         cycle_phase_event_writer: &mut EventWriter<CyclePhaseEvent>,
         mob_destroyed_event: &mut EventReader<MobDestroyedEvent>,
+        mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
+        mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
     ) -> bool {
         self.level_time.tick(time.delta());
 
@@ -198,7 +200,14 @@ impl Level {
                 }
                 LevelPhaseType::Tutorial {
                     tutorial_lesson, ..
-                } => tutorial_lesson.update(player_query, mob_destroyed_event, time),
+                } => tutorial_lesson.update(
+                    player_query,
+                    mob_destroyed_event,
+                    time,
+                    spawn_mob_event_writer,
+                    mob_reached_bottom_event,
+                    mob_segment_destroyed_event,
+                ),
             };
 
             self.current_phase = Some(modified_current_phase);

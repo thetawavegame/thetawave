@@ -7,7 +7,7 @@ use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     health::{DamageDealtEvent, HealthComponent},
     player::PlayerComponent,
-    spawnable::{EffectType, MobDestroyedEvent},
+    spawnable::{EffectType, MobDestroyedEvent, MobSegmentDestroyedEvent},
 };
 
 use crate::{
@@ -137,8 +137,10 @@ pub fn mob_segment_execute_behavior_system(
                         // despawn mob
                         commands.entity(entity).despawn_recursive();
 
-                        mob_segment_destroyed_event_writer
-                            .send(MobSegmentDestroyedEvent { entity });
+                        mob_segment_destroyed_event_writer.send(MobSegmentDestroyedEvent {
+                            mob_segment_type: mob_segment_component.mob_segment_type.clone(),
+                            entity,
+                        });
                     }
                 }
                 MobSegmentBehavior::RandomRotation(data) => {
@@ -204,12 +206,6 @@ pub fn mob_segment_execute_behavior_system(
             }
         }
     }
-}
-
-/// Event to be sent when a mob segment is destroyed
-#[derive(Event)]
-pub struct MobSegmentDestroyedEvent {
-    pub entity: Entity,
 }
 
 /// Applies disconnected behaviors to other parts of the mob when a mob segment is destroyed

@@ -1,9 +1,15 @@
 use bevy_ecs::prelude::Event;
 use serde::Deserialize;
 
+use crate::spawnable::{MobSegmentType, MobType};
+
 // Event for sending damage dealt from mob reaching bottom of arena
 #[derive(Event)]
-pub struct MobReachedBottomGateEvent(pub DefenseInteraction);
+pub struct MobReachedBottomGateEvent {
+    pub mob_type: Option<MobType>,
+    pub mob_segment_type: Option<MobSegmentType>,
+    pub defense_interaction: DefenseInteraction,
+}
 
 /// Additional fail condition for a level
 #[derive(Deserialize, Clone, Debug)]

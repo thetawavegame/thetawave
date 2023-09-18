@@ -18,3 +18,4 @@ bevy_input = { workspace = true }
 ron = { workspace = true }
 bevy_time = { workspace = true }
 bevy_math = { workspace = true }
+rand = { workspace = true }

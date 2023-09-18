@@ -25,7 +25,7 @@ use thetawave_interface::{
     audio::CollisionSoundType,
     health::HealthComponent,
     objective::DefenseInteraction,
-    spawnable::{MobDestroyedEvent, MobSegmentType, MobType, ProjectileType},
+    spawnable::{MobDestroyedEvent, MobSegmentType, MobType, ProjectileType, SpawnMobEvent},
     states::GameCleanup,
 };
 
@@ -291,19 +291,6 @@ pub struct MobSegmentAnchorPointData {
 #[derive(Deserialize, Clone)]
 pub enum JointType {
     Revolute,
-}
-
-/// Event for spawning mobs
-#[derive(Event)]
-pub struct SpawnMobEvent {
-    /// Type of mob to spawn
-    pub mob_type: MobType,
-    /// Position to spawn mob
-    pub position: Vec2,
-
-    pub rotation: Quat,
-
-    pub boss: bool,
 }
 
 /// Spawns mobs from events

@@ -10,14 +10,11 @@ use thetawave_interface::{
     options::input::PlayerAction,
     player::PlayerComponent,
     run::{CyclePhaseEvent, RunDefeatType, RunEndEvent, RunOutcomeType},
-    spawnable::MobDestroyedEvent,
+    spawnable::{MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent},
     states::{AppStates, GameStates},
 };
 
-use crate::{
-    spawnable::{BossesDestroyedEvent, SpawnMobEvent},
-    GameUpdateSet,
-};
+use crate::{spawnable::BossesDestroyedEvent, GameUpdateSet};
 
 mod formation;
 mod level;
@@ -165,6 +162,8 @@ impl CurrentRunProgressResource {
         change_bg_music_event_writer: &mut EventWriter<ChangeBackgroundMusicEvent>,
         cycle_phase_event_writer: &mut EventWriter<CyclePhaseEvent>,
         mob_destroyed_event: &mut EventReader<MobDestroyedEvent>,
+        mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
+        mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
     ) {
         // TODO: handle none case to remove unwrap
         let current_level = self.current_level.as_mut().unwrap();
@@ -180,6 +179,8 @@ impl CurrentRunProgressResource {
             change_bg_music_event_writer,
             cycle_phase_event_writer,
             mob_destroyed_event,
+            mob_reached_bottom_event,
+            mob_segment_destroyed_event,
         ) {
             self.cycle_level(run_end_event_writer);
             self.init_current_level(
@@ -234,6 +235,8 @@ fn tick_run_system(
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     mut cycle_phase_event_writer: EventWriter<CyclePhaseEvent>,
     mut mob_destroyed_event_reader: EventReader<MobDestroyedEvent>,
+    mut mob_reached_bottom_event_reader: EventReader<MobReachedBottomGateEvent>,
+    mut mob_segment_destroyed_event_reader: EventReader<MobSegmentDestroyedEvent>,
 ) {
     run_res.tick(
         &time,
@@ -246,6 +249,8 @@ fn tick_run_system(
         &mut change_bg_music_event_writer,
         &mut cycle_phase_event_writer,
         &mut mob_destroyed_event_reader,
+        &mut mob_reached_bottom_event_reader,
+        &mut mob_segment_destroyed_event_reader,
     );
 }
 
@@ -260,7 +265,7 @@ fn handle_objective_system(
             match objective {
                 Objective::Defense(defense_data) => {
                     for event in bottom_gate_event.iter() {
-                        match event.0 {
+                        match event.defense_interaction {
                             DefenseInteraction::Heal(value) => {
                                 // heal defense objective
                                 defense_data.gain_defense(value);
@@ -321,7 +326,7 @@ fn run_reset_system(mut run_resource: ResMut<CurrentRunProgressResource>) {
 #[cfg(test)]
 mod test {
     use crate::run::{RunPlugin, SpawnFormationEvent};
-    use crate::spawnable::{BossesDestroyedEvent, SpawnConsumableEvent, SpawnMobEvent};
+    use crate::spawnable::{BossesDestroyedEvent, SpawnConsumableEvent};
     use bevy::app::App;
     use bevy::log::{Level, LogPlugin};
     use bevy::prelude::{NextState, State};
@@ -329,6 +334,7 @@ mod test {
     use rstest::rstest;
     use thetawave_interface::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent};
     use thetawave_interface::objective::{DefenseInteraction, MobReachedBottomGateEvent};
+    use thetawave_interface::spawnable::SpawnMobEvent;
     use thetawave_interface::states::{AppStates, GameStates};
 
     fn _minimal_app_for_run_progression_plugin_tests() -> App {
@@ -377,10 +383,11 @@ mod test {
             app.world.get_resource::<State<AppStates>>().unwrap().get()
         );
         // This is the main part of the test
-        app.world
-            .send_event(MobReachedBottomGateEvent(DefenseInteraction::Damage(
-                damage_amount,
-            )));
+        app.world.send_event(MobReachedBottomGateEvent {
+            defense_interaction: DefenseInteraction::Damage(damage_amount),
+            mob_type: None,
+            mob_segment_type: None,
+        });
         app.update();
         app.update();
         app.update();
