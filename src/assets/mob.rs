@@ -1,7 +1,8 @@
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use thetawave_interface::spawnable::{
-    AllyMobType, EnemyMobType, MobSegmentType, MobType, NeutralMobType,
+    AllyMobType, EnemyMobSegmentType, EnemyMobType, MobSegmentType, MobType, NeutralMobSegmentType,
+    NeutralMobType,
 };
 
 #[derive(AssetCollection, Resource)]
@@ -82,16 +83,13 @@ impl MobAssets {
                 EnemyMobType::Shelly => self.shelly.clone(),
             },
             MobType::Ally(ally_type) => match ally_type {
-                thetawave_interface::spawnable::AllyMobType::Hauler2 => self.hauler_front.clone(),
-                thetawave_interface::spawnable::AllyMobType::Hauler3 => self.hauler_front.clone(),
+                AllyMobType::TutorialHauler2 => self.hauler_front.clone(),
+                AllyMobType::Hauler2 => self.hauler_front.clone(),
+                AllyMobType::Hauler3 => self.hauler_front.clone(),
             },
             MobType::Neutral(neutral_type) => match neutral_type {
-                thetawave_interface::spawnable::NeutralMobType::MoneyAsteroid => {
-                    self.money_asteroid.clone()
-                }
-                thetawave_interface::spawnable::NeutralMobType::TutorialDrone => {
-                    self.tutorial_drone.clone()
-                }
+                NeutralMobType::MoneyAsteroid => self.money_asteroid.clone(),
+                NeutralMobType::TutorialDrone => self.tutorial_drone.clone(),
             },
         }
     }
@@ -99,44 +97,21 @@ impl MobAssets {
     pub fn get_mob_segment_asset(&self, mob_segment_type: &MobSegmentType) -> Handle<TextureAtlas> {
         match mob_segment_type {
             MobSegmentType::Neutral(neutral_type) => match neutral_type {
-                thetawave_interface::spawnable::NeutralMobSegmentType::HaulerBack => {
-                    self.hauler_back.clone()
-                }
-                thetawave_interface::spawnable::NeutralMobSegmentType::HaulerMiddle => {
-                    self.hauler_middle.clone()
-                }
+                NeutralMobSegmentType::HaulerBack => self.hauler_back.clone(),
+                NeutralMobSegmentType::HaulerMiddle => self.hauler_middle.clone(),
+                NeutralMobSegmentType::TutorialHaulerBack => self.hauler_back.clone(),
             },
             MobSegmentType::Enemy(enemy_type) => match enemy_type {
-                thetawave_interface::spawnable::EnemyMobSegmentType::CrustlingTentacle1 => {
-                    self.crustling_tentacle1.clone()
-                }
-                thetawave_interface::spawnable::EnemyMobSegmentType::CrustlingTentacle2 => {
-                    self.crustling_tentacle2.clone()
-                }
-                thetawave_interface::spawnable::EnemyMobSegmentType::CrustlingTentacle3 => {
-                    self.crustling_tentacle3.clone()
-                }
-                thetawave_interface::spawnable::EnemyMobSegmentType::RepeaterBody => {
-                    self.repeater_body.clone()
-                }
-                thetawave_interface::spawnable::EnemyMobSegmentType::RepeaterRightShoulder => {
-                    self.repeater_right_shoulder.clone()
-                }
-                thetawave_interface::spawnable::EnemyMobSegmentType::RepeaterLeftShoulder => {
-                    self.repeater_left_shoulder.clone()
-                }
-                thetawave_interface::spawnable::EnemyMobSegmentType::RepeaterRightArm => {
-                    self.repeater_right_arm.clone()
-                }
-                thetawave_interface::spawnable::EnemyMobSegmentType::RepeaterLeftArm => {
-                    self.repeater_left_arm.clone()
-                }
-                thetawave_interface::spawnable::EnemyMobSegmentType::RepeaterRightClaw => {
-                    self.repeater_right_claw.clone()
-                }
-                thetawave_interface::spawnable::EnemyMobSegmentType::RepeaterLeftClaw => {
-                    self.repeater_left_claw.clone()
-                }
+                EnemyMobSegmentType::CrustlingTentacle1 => self.crustling_tentacle1.clone(),
+                EnemyMobSegmentType::CrustlingTentacle2 => self.crustling_tentacle2.clone(),
+                EnemyMobSegmentType::CrustlingTentacle3 => self.crustling_tentacle3.clone(),
+                EnemyMobSegmentType::RepeaterBody => self.repeater_body.clone(),
+                EnemyMobSegmentType::RepeaterRightShoulder => self.repeater_right_shoulder.clone(),
+                EnemyMobSegmentType::RepeaterLeftShoulder => self.repeater_left_shoulder.clone(),
+                EnemyMobSegmentType::RepeaterRightArm => self.repeater_right_arm.clone(),
+                EnemyMobSegmentType::RepeaterLeftArm => self.repeater_left_arm.clone(),
+                EnemyMobSegmentType::RepeaterRightClaw => self.repeater_right_claw.clone(),
+                EnemyMobSegmentType::RepeaterLeftClaw => self.repeater_left_claw.clone(),
             },
         }
     }
@@ -156,6 +131,7 @@ impl MobAssets {
                 EnemyMobType::Shelly => None,
             },
             MobType::Ally(ally_type) => match ally_type {
+                AllyMobType::TutorialHauler2 => Some(self.hauler_thruster.clone()),
                 AllyMobType::Hauler2 => Some(self.hauler_thruster.clone()),
                 AllyMobType::Hauler3 => Some(self.hauler_thruster.clone()),
             },

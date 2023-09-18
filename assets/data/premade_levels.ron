@@ -754,7 +754,7 @@
 								),
 								stopwatch: (
 									elapsed: (
-										secs: 0,
+									secs: 0,
 										nanos: 0,
 									),
 									paused: false, 
@@ -781,6 +781,36 @@
 						),
 					),
 				),
+				(
+					phase_type: Tutorial(
+						character_type: Captain,
+						tutorial_lesson: Attack(
+							mobs_to_destroy: 5,
+							mobs_to_protect: 1,
+							spawn_range_x: (
+								start: -300.0,
+								end: 300.0,
+							),
+							spawn_y: 500.0,
+							initial_spawn_timer: (
+								mode: Once,
+								duration: (
+									secs: 2,
+									nanos: 0,
+								),
+								stopwatch: (
+									elapsed: (
+										secs: 0,
+										nanos: 0,
+									),
+									paused: false, 
+								),
+								finished: false,
+								times_finished_this_tick: 0,
+							),
+						),
+					)
+				)
 			],
 		),
 		"test": (

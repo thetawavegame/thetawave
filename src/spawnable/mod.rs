@@ -9,7 +9,9 @@ use serde::Deserialize;
 pub use thetawave_interface::spawnable::{
     ConsumableType, EffectType, MobType, ProjectileType, SpawnableType,
 };
-use thetawave_interface::spawnable::{MobDestroyedEvent, TextEffectType};
+use thetawave_interface::spawnable::{
+    MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent, TextEffectType,
+};
 
 mod behavior;
 mod behavior_sequence;

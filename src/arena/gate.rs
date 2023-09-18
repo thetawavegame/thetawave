@@ -71,8 +71,11 @@ pub fn despawn_gates_system(
                             if let Some(defense_interaction) =
                                 mob_component.defense_interaction.clone()
                             {
-                                enemy_bottom_event
-                                    .send(MobReachedBottomGateEvent(defense_interaction));
+                                enemy_bottom_event.send(MobReachedBottomGateEvent {
+                                    mob_type: Some(mob_component.mob_type.clone()),
+                                    mob_segment_type: None,
+                                    defense_interaction,
+                                });
                             }
                         }
                     }
@@ -84,8 +87,13 @@ pub fn despawn_gates_system(
                             if let Some(defense_interaction) =
                                 mob_segment_component.defense_interaction.clone()
                             {
-                                enemy_bottom_event
-                                    .send(MobReachedBottomGateEvent(defense_interaction));
+                                enemy_bottom_event.send(MobReachedBottomGateEvent {
+                                    mob_type: None,
+                                    mob_segment_type: Some(
+                                        mob_segment_component.mob_segment_type.clone(),
+                                    ),
+                                    defense_interaction,
+                                });
                             }
                         }
                     }

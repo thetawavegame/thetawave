@@ -1,5 +1,8 @@
 use bevy::prelude::*;
-use thetawave_interface::{health::HealthComponent, run::LevelPhaseType};
+use thetawave_interface::{
+    health::HealthComponent,
+    run::{LevelPhaseType, TutorialLesson},
+};
 
 use crate::{run::CurrentRunProgressResource, spawnable::BossComponent};
 
@@ -218,31 +221,64 @@ pub fn update_phase_ui_system(
                                 })
                                 .insert(PhaseDataObjectivesListUI)
                                 .with_children(|phase_data_list_ui| {
-                                    for (progress_str, completed) in
-                                        tutorial_lesson.get_movement_timer_strs().iter()
-                                    {
-                                        phase_data_list_ui
-                                            .spawn(TextBundle {
-                                                style: Style {
-                                                    height: Val::Px(30.0), // Set a fixed height for each text section
-                                                    ..default()
-                                                },
-                                                text: Text::from_section(
-                                                    progress_str,
-                                                    TextStyle {
-                                                        font: font.clone(),
-                                                        font_size: 24.0,
-                                                        color: if *completed {
-                                                            Color::GREEN
-                                                        } else {
-                                                            Color::WHITE
+                                    match tutorial_lesson {
+                                        TutorialLesson::Movement { .. } => {
+                                            for (progress_str, completed) in
+                                                tutorial_lesson.get_movement_timer_strs().iter()
+                                            {
+                                                phase_data_list_ui
+                                                    .spawn(TextBundle {
+                                                        style: Style {
+                                                            height: Val::Px(30.0), // Set a fixed height for each text section
+                                                            ..default()
                                                         },
-                                                    },
-                                                )
-                                                .with_alignment(TextAlignment::Left),
-                                                ..default()
-                                            })
-                                            .insert(PhaseTextObjectiveUI);
+                                                        text: Text::from_section(
+                                                            progress_str,
+                                                            TextStyle {
+                                                                font: font.clone(),
+                                                                font_size: 24.0,
+                                                                color: if *completed {
+                                                                    Color::GREEN
+                                                                } else {
+                                                                    Color::WHITE
+                                                                },
+                                                            },
+                                                        )
+                                                        .with_alignment(TextAlignment::Left),
+                                                        ..default()
+                                                    })
+                                                    .insert(PhaseTextObjectiveUI);
+                                            }
+                                        }
+                                        TutorialLesson::Attack { .. } => {
+                                            for (progress_str, completed) in
+                                                tutorial_lesson.get_attack_strs().iter()
+                                            {
+                                                phase_data_list_ui
+                                                    .spawn(TextBundle {
+                                                        style: Style {
+                                                            height: Val::Px(30.0), // Set a fixed height for each text section
+                                                            ..default()
+                                                        },
+                                                        text: Text::from_section(
+                                                            progress_str,
+                                                            TextStyle {
+                                                                font: font.clone(),
+                                                                font_size: 24.0,
+                                                                color: if *completed {
+                                                                    Color::GREEN
+                                                                } else {
+                                                                    Color::WHITE
+                                                                },
+                                                            },
+                                                        )
+                                                        .with_alignment(TextAlignment::Left),
+                                                        ..default()
+                                                    })
+                                                    .insert(PhaseTextObjectiveUI);
+                                            }
+                                        }
+                                        TutorialLesson::SpecialAbility => {}
                                     }
                                 });
                         });
