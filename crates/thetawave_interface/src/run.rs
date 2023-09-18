@@ -454,34 +454,36 @@ impl TutorialLesson {
             let right = action_state.pressed(PlayerAction::MoveRight);
 
             // tick timers
-            if up && !down && !left && !right {
+            let objective_completed = if up && !down && !left && !right {
                 up_timer.tick(time.delta());
+                up_timer.just_finished()
             } else if !up && down && !left && !right {
                 down_timer.tick(time.delta());
+                down_timer.just_finished()
             } else if !up && !down && left && !right {
                 left_timer.tick(time.delta());
+                left_timer.just_finished()
             } else if !up && !down && !left && right {
                 right_timer.tick(time.delta());
+                right_timer.just_finished()
             } else if up && !down && left && !right {
                 up_left_timer.tick(time.delta());
+                up_left_timer.just_finished()
             } else if up && !down && !left && right {
                 up_right_timer.tick(time.delta());
+                up_right_timer.just_finished()
             } else if !up && down && left && !right {
                 down_left_timer.tick(time.delta());
+                down_left_timer.just_finished()
             } else if !up && down && !left && right {
                 down_right_timer.tick(time.delta());
-            }
+                down_right_timer.just_finished()
+            } else {
+                false
+            };
 
             // play objective completed sound if any timer just finished
-            if up_timer.just_finished()
-                || down_timer.just_finished()
-                || left_timer.just_finished()
-                || right_timer.just_finished()
-                || up_left_timer.just_finished()
-                || up_right_timer.just_finished()
-                || down_left_timer.just_finished()
-                || down_right_timer.just_finished()
-            {
+            if objective_completed {
                 play_sound_effect_event_writer.send(PlaySoundEffectEvent {
                     sound_effect_type: SoundEffectType::ObjectiveCompleted,
                 });
