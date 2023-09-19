@@ -96,7 +96,12 @@ pub enum TutorialLesson {
         spawn_range_x: Range<f32>,
         spawn_y: f32,
     },
-    SpecialAbility,
+    CaptainAbility {
+        mobs_to_destroy: usize,
+        initial_spawn_timer: Timer,
+        spawn_range_x: Range<f32>,
+        spawn_y: f32,
+    },
 }
 
 impl TutorialLesson {
@@ -104,8 +109,22 @@ impl TutorialLesson {
         match self {
             TutorialLesson::Movement { .. } => "Movement".to_string(),
             TutorialLesson::Attack { .. } => "Attack".to_string(),
-            TutorialLesson::SpecialAbility => "Special Ability".to_string(),
+            TutorialLesson::CaptainAbility { .. } => "Captain Ability".to_string(),
         }
+    }
+
+    pub fn get_captain_ability_strs(&self) -> Vec<(String, bool)> {
+        vec![if let Self::CaptainAbility {
+            mobs_to_destroy, ..
+        } = self
+        {
+            (
+                format!("Destroy drones: {}", mobs_to_destroy,),
+                *mobs_to_destroy == 0,
+            )
+        } else {
+            ("".to_string(), false)
+        }]
     }
 
     pub fn get_attack_strs(&self) -> Vec<(String, bool)> {
@@ -304,7 +323,13 @@ impl TutorialLesson {
                 mob_segment_destroyed_event,
                 play_sound_effect_event_writer,
             ),
-            TutorialLesson::SpecialAbility => todo!(),
+            TutorialLesson::CaptainAbility { .. } => self.captain_ability_tutorial(
+                mob_destroyed_event,
+                time,
+                spawn_mob_event_writer,
+                mob_reached_bottom_event,
+                play_sound_effect_event_writer,
+            ),
             TutorialLesson::Movement { .. } => {
                 self.movement_tutorial(action_state, time, play_sound_effect_event_writer)
             }
@@ -401,7 +426,8 @@ impl TutorialLesson {
                         if *mobs_to_protect != 0 {
                             spawn_mob_event_writer.send(SpawnMobEvent {
                                 mob_type: MobType::Ally(AllyMobType::TutorialHauler2),
-                                position: (0.0, 500.0).into(),
+                                position: (thread_rng().gen_range(spawn_range_x.clone()), *spawn_y)
+                                    .into(),
                                 rotation: Quat::default(),
                                 boss: false,
                             });
@@ -415,7 +441,8 @@ impl TutorialLesson {
                     if matches!(mob_type, MobType::Neutral(NeutralMobType::TutorialDrone)) {
                         spawn_mob_event_writer.send(SpawnMobEvent {
                             mob_type: MobType::Neutral(NeutralMobType::TutorialDrone),
-                            position: (0.0, 500.0).into(),
+                            position: (thread_rng().gen_range(spawn_range_x.clone()), *spawn_y)
+                                .into(),
                             rotation: Quat::default(),
                             boss: false,
                         });
@@ -425,6 +452,80 @@ impl TutorialLesson {
 
             // return true if there are no more mobs to destroy or protect
             *mobs_to_destroy == 0 && *mobs_to_protect == 0
+        } else {
+            false
+        }
+    }
+
+    fn captain_ability_tutorial(
+        &mut self,
+        mob_destroyed_event: &mut EventReader<MobDestroyedEvent>,
+        time: &Time,
+        spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
+        mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
+        play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
+    ) -> bool {
+        if let TutorialLesson::CaptainAbility {
+            mobs_to_destroy,
+            initial_spawn_timer,
+            spawn_range_x,
+            spawn_y,
+        } = self
+        {
+            // spawn initial mob
+            initial_spawn_timer.tick(time.delta());
+            if initial_spawn_timer.just_finished() {
+                spawn_mob_event_writer.send(SpawnMobEvent {
+                    mob_type: MobType::Neutral(NeutralMobType::TutorialDrone),
+                    position: (thread_rng().gen_range(spawn_range_x.clone()), *spawn_y).into(),
+                    rotation: Quat::default(),
+                    boss: false,
+                });
+            }
+
+            // check if mob was destroyed
+            for event in mob_destroyed_event.iter() {
+                if matches!(
+                    event.mob_type,
+                    MobType::Neutral(NeutralMobType::TutorialDrone)
+                ) {
+                    // update mobs left to destroy
+                    *mobs_to_destroy = mobs_to_destroy.checked_sub(1).unwrap_or(0);
+
+                    // spawn another mob if more are left
+                    if *mobs_to_destroy != 0 {
+                        spawn_mob_event_writer.send(SpawnMobEvent {
+                            mob_type: MobType::Neutral(NeutralMobType::TutorialDrone),
+                            position: (thread_rng().gen_range(spawn_range_x.clone()), *spawn_y)
+                                .into(),
+                            rotation: Quat::default(),
+                            boss: false,
+                        });
+                    } else {
+                        play_sound_effect_event_writer.send(PlaySoundEffectEvent {
+                            sound_effect_type: SoundEffectType::ObjectiveCompleted,
+                        });
+                    }
+                }
+            }
+
+            // check if mob reached the bottom of the arena
+            for event in mob_reached_bottom_event.iter() {
+                if let Some(mob_type) = &event.mob_type {
+                    if matches!(mob_type, MobType::Neutral(NeutralMobType::TutorialDrone)) {
+                        spawn_mob_event_writer.send(SpawnMobEvent {
+                            mob_type: MobType::Neutral(NeutralMobType::TutorialDrone),
+                            position: (thread_rng().gen_range(spawn_range_x.clone()), *spawn_y)
+                                .into(),
+                            rotation: Quat::default(),
+                            boss: false,
+                        });
+                    }
+                }
+            }
+
+            // return true if there are no more mobs to destroy
+            *mobs_to_destroy == 0
         } else {
             false
         }
