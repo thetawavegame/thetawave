@@ -113,7 +113,7 @@ impl CurrentRunProgressResource {
         info!("Generated premade level");
     }
 
-    pub fn cycle_level(&mut self, run_end_event_writer: &mut EventWriter<RunEndEvent>) {
+    pub fn cycle_level(&mut self) {
         // clone the current level (if it exists) into the back of the completed levels queue
         if let Some(current_level) = &self.current_level {
             self.completed_levels.push_back(current_level.clone());
@@ -128,7 +128,6 @@ impl CurrentRunProgressResource {
 
     pub fn init_current_level(
         &mut self,
-        run_end_event_writer: &mut EventWriter<RunEndEvent>,
         change_bg_music_event_writer: &mut EventWriter<ChangeBackgroundMusicEvent>,
         cycle_phase_event_writer: &mut EventWriter<CyclePhaseEvent>,
     ) {
@@ -138,7 +137,7 @@ impl CurrentRunProgressResource {
             if !level_completed {
                 current_level.init_phase(change_bg_music_event_writer);
             } else {
-                self.cycle_level(run_end_event_writer);
+                self.cycle_level();
             }
         }
     }
@@ -175,12 +174,8 @@ impl CurrentRunProgressResource {
                 mob_segment_destroyed_event,
                 play_sound_effect_event_writer,
             ) {
-                self.cycle_level(run_end_event_writer);
-                self.init_current_level(
-                    run_end_event_writer,
-                    change_bg_music_event_writer,
-                    cycle_phase_event_writer,
-                );
+                self.cycle_level();
+                self.init_current_level(change_bg_music_event_writer, cycle_phase_event_writer);
             }
         } else {
             run_end_event_writer.send(RunEndEvent {
@@ -195,7 +190,6 @@ fn init_run_system(
     premade_runs_res: Res<PremadeRunsResource>,
     premade_levels_res: Res<PremadeLevelsResource>,
     mut next_app_state: ResMut<NextState<AppStates>>,
-    mut run_end_event_writer: EventWriter<RunEndEvent>,
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     mut cycle_phase_event_writer: EventWriter<CyclePhaseEvent>,
 ) {
@@ -207,11 +201,10 @@ fn init_run_system(
     );
 
     // cycle to set the current level to the first level
-    run_res.cycle_level(&mut run_end_event_writer);
+    run_res.cycle_level();
 
     // initialize the current level
     run_res.init_current_level(
-        &mut run_end_event_writer,
         &mut change_bg_music_event_writer,
         &mut cycle_phase_event_writer,
     );

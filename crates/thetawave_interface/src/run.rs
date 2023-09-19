@@ -14,7 +14,6 @@ use serde::Deserialize;
 
 use crate::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
-    character::CharacterType,
     objective::MobReachedBottomGateEvent,
     options::input::PlayerAction,
     player::PlayerComponent,
@@ -59,7 +58,6 @@ pub enum LevelPhaseType {
         spawn_timer: Timer,
     },
     Tutorial {
-        character_type: CharacterType,
         tutorial_lesson: TutorialLesson,
     },
 }
@@ -96,7 +94,7 @@ pub enum TutorialLesson {
         spawn_range_x: Range<f32>,
         spawn_y: f32,
     },
-    CaptainAbility {
+    Ability {
         mobs_to_destroy: usize,
         initial_spawn_timer: Timer,
         spawn_range_x: Range<f32>,
@@ -109,12 +107,12 @@ impl TutorialLesson {
         match self {
             TutorialLesson::Movement { .. } => "Movement".to_string(),
             TutorialLesson::Attack { .. } => "Attack".to_string(),
-            TutorialLesson::CaptainAbility { .. } => "Captain Ability".to_string(),
+            TutorialLesson::Ability { .. } => "Ability".to_string(),
         }
     }
 
-    pub fn get_captain_ability_strs(&self) -> Vec<(String, bool)> {
-        vec![if let Self::CaptainAbility {
+    pub fn get_ability_strs(&self) -> Vec<(String, bool)> {
+        vec![if let Self::Ability {
             mobs_to_destroy, ..
         } = self
         {
@@ -323,7 +321,7 @@ impl TutorialLesson {
                 mob_segment_destroyed_event,
                 play_sound_effect_event_writer,
             ),
-            TutorialLesson::CaptainAbility { .. } => self.captain_ability_tutorial(
+            TutorialLesson::Ability { .. } => self.ability_tutorial(
                 mob_destroyed_event,
                 time,
                 spawn_mob_event_writer,
@@ -457,7 +455,7 @@ impl TutorialLesson {
         }
     }
 
-    fn captain_ability_tutorial(
+    fn ability_tutorial(
         &mut self,
         mob_destroyed_event: &mut EventReader<MobDestroyedEvent>,
         time: &Time,
@@ -465,7 +463,7 @@ impl TutorialLesson {
         mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
         play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
     ) -> bool {
-        if let TutorialLesson::CaptainAbility {
+        if let TutorialLesson::Ability {
             mobs_to_destroy,
             initial_spawn_timer,
             spawn_range_x,

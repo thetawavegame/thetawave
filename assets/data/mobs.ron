@@ -806,7 +806,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Nothing,
-		health: 30,
+		health: 15,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,

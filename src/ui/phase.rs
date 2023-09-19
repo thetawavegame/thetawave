@@ -278,9 +278,9 @@ pub fn update_phase_ui_system(
                                                     .insert(PhaseTextObjectiveUI);
                                             }
                                         }
-                                        TutorialLesson::CaptainAbility { .. } => {
+                                        TutorialLesson::Ability { .. } => {
                                             for (progress_str, completed) in
-                                                tutorial_lesson.get_captain_ability_strs().iter()
+                                                tutorial_lesson.get_ability_strs().iter()
                                             {
                                                 phase_data_list_ui
                                                     .spawn(TextBundle {
