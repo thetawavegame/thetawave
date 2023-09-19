@@ -643,12 +643,11 @@
 				)
 			],
 		),
-		"captain_tutorial": (
-			name: "Captain Tutorial",
+		"tutorial": (
+			name: "Tutorial",
 			phases: [
 				(
 					phase_type: Tutorial(
-						character_type: Captain,
 						tutorial_lesson: Movement(
 							up_timer: (
 								mode: Once,
@@ -783,7 +782,6 @@
 				),
 				(
 					phase_type: Tutorial(
-						character_type: Captain,
 						tutorial_lesson: Attack(
 							mobs_to_destroy: 5,
 							mobs_to_protect: 1,
@@ -813,8 +811,7 @@
 				),
 				(
 					phase_type: Tutorial(
-						character_type: Captain,
-						tutorial_lesson: CaptainAbility(
+						tutorial_lesson: Ability(
 							mobs_to_destroy: 5,
 							spawn_range_x: (
 								start: -300.0,
