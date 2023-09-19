@@ -278,7 +278,34 @@ pub fn update_phase_ui_system(
                                                     .insert(PhaseTextObjectiveUI);
                                             }
                                         }
-                                        TutorialLesson::SpecialAbility => {}
+                                        TutorialLesson::CaptainAbility { .. } => {
+                                            for (progress_str, completed) in
+                                                tutorial_lesson.get_captain_ability_strs().iter()
+                                            {
+                                                phase_data_list_ui
+                                                    .spawn(TextBundle {
+                                                        style: Style {
+                                                            height: Val::Px(30.0), // Set a fixed height for each text section
+                                                            ..default()
+                                                        },
+                                                        text: Text::from_section(
+                                                            progress_str,
+                                                            TextStyle {
+                                                                font: font.clone(),
+                                                                font_size: 24.0,
+                                                                color: if *completed {
+                                                                    Color::GREEN
+                                                                } else {
+                                                                    Color::WHITE
+                                                                },
+                                                            },
+                                                        )
+                                                        .with_alignment(TextAlignment::Left),
+                                                        ..default()
+                                                    })
+                                                    .insert(PhaseTextObjectiveUI);
+                                            }
+                                        }
                                     }
                                 });
                         });

@@ -35,7 +35,7 @@ pub fn player_ability_system(
                 tutorial_lesson, ..
             } = phase.phase_type
             {
-                matches!(tutorial_lesson, TutorialLesson::SpecialAbility)
+                matches!(tutorial_lesson, TutorialLesson::CaptainAbility { .. })
             } else {
                 true
             }
