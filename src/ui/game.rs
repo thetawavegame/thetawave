@@ -164,11 +164,29 @@ pub fn setup_game_ui_system(
                             style: Style {
                                 width: Val::Percent(80.0),
                                 height: Val::Percent(100.0),
+                                align_items: AlignItems::Center,
+                                justify_content: JustifyContent::Center,
                                 ..default()
                             },
                             ..default()
                         })
-                        .insert(CenterUI);
+                        .insert(CenterUI)
+                        .with_children(|center_ui| {
+                            center_ui.spawn(TextBundle {
+                                style: Style::default(),
+                                text: Text::from_section(
+                                    "Destroy 5 drones using\nbasic attacks",
+                                    TextStyle {
+                                        font: font.clone(),
+                                        font_size: 120.0,
+                                        color: Color::WHITE.with_a(0.05),
+                                    },
+                                )
+                                .with_alignment(TextAlignment::Center),
+                                background_color: Color::BLACK.with_a(0.02).into(),
+                                ..default()
+                            });
+                        });
 
                     // right column of ui at very right of the window (excluding the corners)
                     middle_ui

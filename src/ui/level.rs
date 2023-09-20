@@ -27,6 +27,7 @@ pub fn build_level_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
             style: Style {
                 width: Val::Percent(50.0),
                 height: Val::Percent(100.0),
+                align_items: AlignItems::Center,
                 justify_content: JustifyContent::Center,
                 ..default()
             },
@@ -36,10 +37,7 @@ pub fn build_level_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
         .with_children(|bottom_middle_left_ui| {
             bottom_middle_left_ui
                 .spawn(TextBundle {
-                    style: Style {
-                        align_self: AlignSelf::Center,
-                        ..default()
-                    },
+                    style: Style::default(),
                     text: Text::from_section(
                         "",
                         TextStyle {

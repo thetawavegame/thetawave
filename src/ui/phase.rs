@@ -47,6 +47,7 @@ pub fn build_phase_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
             style: Style {
                 width: Val::Percent(50.0),
                 height: Val::Percent(100.0),
+                align_items: AlignItems::Center,
                 justify_content: JustifyContent::Center,
                 ..default()
             },
@@ -56,10 +57,7 @@ pub fn build_phase_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
         .with_children(|top_middle_left_ui| {
             top_middle_left_ui
                 .spawn(TextBundle {
-                    style: Style {
-                        align_self: AlignSelf::Center,
-                        ..default()
-                    },
+                    style: Style { ..default() },
                     text: Text::from_section(
                         "",
                         TextStyle {
@@ -129,10 +127,7 @@ pub fn update_phase_ui_system(
                         commands.entity(entity).with_children(|phase_data_ui| {
                             phase_data_ui
                                 .spawn(TextBundle {
-                                    style: Style {
-                                        align_self: AlignSelf::Center,
-                                        ..default()
-                                    },
+                                    style: Style::default(),
                                     text: Text::from_section(
                                         format!("{:.0}", phase_timer.remaining_secs()),
                                         TextStyle {
@@ -152,10 +147,7 @@ pub fn update_phase_ui_system(
                         commands.entity(entity).with_children(|phase_data_ui| {
                             phase_data_ui
                                 .spawn(TextBundle {
-                                    style: Style {
-                                        align_self: AlignSelf::Center,
-                                        ..default()
-                                    },
+                                    style: Style::default(),
                                     text: Text::from_section(
                                         format!("{:.0}", phase_timer.remaining_secs()),
                                         TextStyle {
