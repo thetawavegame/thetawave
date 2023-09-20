@@ -32,6 +32,7 @@ pub struct LevelPhase {
     pub bg_music_transition: Option<BGMusicTransition>,
     #[serde(default)]
     pub phase_time: Stopwatch,
+    pub intro_text: Option<String>,
 }
 
 /// Background music transition
@@ -166,6 +167,7 @@ impl Level {
                     phase_timer,
                     spawn_timer,
                     formation_pool,
+                    ..
                 } => {
                     Self::tick_spawn_timer(
                         spawn_timer,
@@ -177,11 +179,14 @@ impl Level {
 
                     Self::tick_phase_timer(phase_timer, time)
                 }
-                LevelPhaseType::Break { phase_timer } => Self::tick_phase_timer(phase_timer, time),
+                LevelPhaseType::Break { phase_timer, .. } => {
+                    Self::tick_phase_timer(phase_timer, time)
+                }
                 LevelPhaseType::Boss {
                     mob_type,
                     position,
                     spawn_timer,
+                    ..
                 } => {
                     if spawn_timer.finished() {
                         // check if no entities with a BossComponent tag exist
