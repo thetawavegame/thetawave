@@ -23,6 +23,7 @@ bevy_kira_audio = { version = "0.16.0", features = ["mp3", "wav"] }
 # We value minimizing the binary sizes and keeping the CLI maximally simple over a more feature complete CLI library
 # like clap.
 argh = "0.1.12"
+console_error_panic_hook = "0.1.7"
 
 
 [dev-dependencies]
@@ -46,7 +47,6 @@ strum = { workspace = true }
 strum_macros = { workspace = true }
 ron = "0.8.0"
 rand = "0.8.5"
-console_error_panic_hook = "0.1.7"
 bevy_kira_audio = { workspace = true }
 winit = "0.28.4"
 image = "0.24.6"
@@ -61,6 +61,8 @@ thetawave_storage = { path = "crates/thetawave_storage", optional = true }
 thetawave_arcade = { path = "crates/thetawave_arcade", optional = true }
 argh = { workspace = true, optional = true}
 
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+console_error_panic_hook = { workspace = true }
 
 # optimize dev packages as we don't need them in debug version
 [profile.dev.package."*"]

@@ -94,12 +94,6 @@ fn get_display_config() -> options::DisplayConfig {
     }
 }
 
-#[allow(dead_code)]
-fn setup_panic() {
-    use std::panic;
-    panic::set_hook(Box::new(console_error_panic_hook::hook)); // pushes rust errors to the browser console
-}
-
 fn our_default_plugins(
     display_config: options::DisplayConfig,
     opts: options::GameInitCLIOptions,
@@ -120,8 +114,9 @@ fn our_default_plugins(
     }
 }
 fn main() {
+    // pushes rust errors to the browser console
     #[cfg(target_arch = "wasm32")]
-    setup_panic();
+    std::panic::set_hook(Box::new(console_error_panic_hook::hook));
 
     let display_config = get_display_config();
 
