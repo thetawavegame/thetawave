@@ -8,6 +8,7 @@
 			))),	
 			phases: [
 				(
+					intro_text: Some("Decimate the invaders!"),
 					phase_type: FormationSpawn(
 						phase_timer: (
 							mode: Once,
@@ -187,6 +188,7 @@
 					),
 				),
 				(
+					intro_text: Some("Defeat the command ship!"),
 					phase_type: Boss(
 						mob_type: Enemy(Repeater),
 						position: (0.0, 600.0),
@@ -223,6 +225,7 @@
 			))),		
 			phases: [
 				(
+					intro_text: Some("Decimate the invaders!"),
 					phase_type: FormationSpawn(
 						phase_timer: (
 							mode: Once,
@@ -401,6 +404,7 @@
 					),
 				),
 				(
+					intro_text: Some("Defeat the command ship!"),
 					phase_type: Boss(
 						mob_type: Enemy(Repeater),
 						position: (0.0, 600.0),
@@ -437,6 +441,7 @@
 			))),
 			phases: [
 				(
+					intro_text: Some("Decimate the invaders!"),
 					phase_type: FormationSpawn(
 						phase_timer: (
 							mode: Once,
@@ -615,6 +620,7 @@
 					),
 				),
 				(
+					intro_text: Some("Defeat the command ship!"),
 					phase_type: Boss(
 						mob_type: Enemy(Repeater),
 						position: (0.0, 600.0),
@@ -647,6 +653,7 @@
 			name: "Tutorial",
 			phases: [
 				(
+					intro_text: Some("Move in every direction"),
 					phase_type: Tutorial(
 						tutorial_lesson: Movement(
 							up_timer: (
@@ -781,6 +788,7 @@
 					),
 				),
 				(
+					intro_text: Some("Destroy enemies and protect your ally using your basic attack"),
 					phase_type: Tutorial(
 						tutorial_lesson: Attack(
 							mobs_to_destroy: 5,
@@ -810,9 +818,10 @@
 					)
 				),
 				(
+					intro_text: Some("Destroy enemies using your special ability"),
 					phase_type: Tutorial(
 						tutorial_lesson: Ability(
-							mobs_to_destroy: 5,
+							mobs_to_destroy: 3,
 							spawn_range_x: (
 								start: -300.0,
 								end: 300.0,
@@ -847,6 +856,7 @@
 			))),
 			phases: [
 				(
+					intro_text: Some("Test"),
 					phase_type: FormationSpawn(
 						phase_timer: (
 							mode: Once,

@@ -141,7 +141,7 @@ pub fn update_phase_ui_system(
                                 .insert(PhaseDataTextUI);
                         });
                     }
-                    LevelPhaseType::Break { phase_timer } => {
+                    LevelPhaseType::Break { phase_timer, .. } => {
                         let font = asset_server.load("fonts/wibletown-regular.otf");
 
                         commands.entity(entity).with_children(|phase_data_ui| {

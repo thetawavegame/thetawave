@@ -6,6 +6,7 @@ use crate::{states, GameEnterSet};
 
 mod character_selection;
 mod game;
+mod game_center;
 mod game_over;
 mod instructions;
 mod level;
@@ -18,8 +19,8 @@ mod victory;
 pub use self::character_selection::{
     player_join_system, select_character_system, setup_character_selection_system,
 };
-use self::instructions::setup_instructions_system;
 use self::player::update_player_ui_system;
+use self::{game_center::update_center_text_ui_system, instructions::setup_instructions_system};
 pub use self::{
     game_over::setup_game_over_system,
     main_menu::{bouncing_prompt_system, setup_main_menu_system, BouncingPromptComponent},
@@ -47,6 +48,7 @@ impl Plugin for UiPlugin {
                 update_player_ui_system,
                 update_phase_ui_system,
                 update_level_ui_system,
+                update_center_text_ui_system,
             )
                 .run_if(in_state(states::AppStates::Game))
                 .run_if(in_state(states::GameStates::Playing)),

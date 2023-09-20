@@ -1,7 +1,10 @@
 use bevy::prelude::*;
 use thetawave_interface::{player::PlayersResource, states::GameCleanup};
 
-use super::{level::build_level_ui, phase::build_phase_ui, player::build_player_ui};
+use super::{
+    game_center::build_center_text_ui, level::build_level_ui, phase::build_phase_ui,
+    player::build_player_ui,
+};
 
 // top level ui tag component for all ui in the game state
 #[derive(Component)]
@@ -171,22 +174,7 @@ pub fn setup_game_ui_system(
                             ..default()
                         })
                         .insert(CenterUI)
-                        .with_children(|center_ui| {
-                            center_ui.spawn(TextBundle {
-                                style: Style::default(),
-                                text: Text::from_section(
-                                    "Destroy 5 drones using\nbasic attacks",
-                                    TextStyle {
-                                        font: font.clone(),
-                                        font_size: 120.0,
-                                        color: Color::WHITE.with_a(0.05),
-                                    },
-                                )
-                                .with_alignment(TextAlignment::Center),
-                                background_color: Color::BLACK.with_a(0.02).into(),
-                                ..default()
-                            });
-                        });
+                        .with_children(|center_ui| build_center_text_ui(center_ui, font.clone()));
 
                     // right column of ui at very right of the window (excluding the corners)
                     middle_ui
