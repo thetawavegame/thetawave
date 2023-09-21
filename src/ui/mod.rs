@@ -16,9 +16,11 @@ mod phase;
 mod player;
 mod victory;
 
+use self::character_selection::toggle_tutorial_system;
 pub use self::character_selection::{
     player_join_system, select_character_system, setup_character_selection_system,
 };
+use self::game_center::text_fade_out_system;
 use self::player::update_player_ui_system;
 use self::{game_center::update_center_text_ui_system, instructions::setup_instructions_system};
 pub use self::{
@@ -49,6 +51,7 @@ impl Plugin for UiPlugin {
                 update_phase_ui_system,
                 update_level_ui_system,
                 update_center_text_ui_system,
+                text_fade_out_system,
             )
                 .run_if(in_state(states::AppStates::Game))
                 .run_if(in_state(states::GameStates::Playing)),
@@ -68,7 +71,11 @@ impl Plugin for UiPlugin {
 
         app.add_systems(
             Update,
-            (player_join_system, select_character_system)
+            (
+                player_join_system,
+                select_character_system,
+                toggle_tutorial_system,
+            )
                 .run_if(in_state(states::AppStates::CharacterSelection)),
         );
 

@@ -2,6 +2,8 @@
     menu_keyboard: [
         (A, ChangeCharacterKeyboard),
         (D, ChangeCharacterKeyboard),
+        (W, ToggleTutorial),
+        (S, ToggleTutorial),
         (Return, Confirm),
         (Escape, Back),
         (ShiftLeft, JoinKeyboard),
@@ -12,6 +14,8 @@
     menu_gamepad: [
         (DPadLeft, ChangeCharacterGamepad),
         (DPadRight, ChangeCharacterGamepad),
+        (DPadUp, ToggleTutorial),
+        (DPadDown, ToggleTutorial),
         (South, JoinGamepad),
         (East, Back),
         (Start, Confirm),

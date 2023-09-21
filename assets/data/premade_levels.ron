@@ -188,7 +188,7 @@
 					),
 				),
 				(
-					intro_text: Some("Defeat the command ship!"),
+					intro_text: Some("Destroy the command ship!"),
 					phase_type: Boss(
 						mob_type: Enemy(Repeater),
 						position: (0.0, 600.0),
@@ -404,7 +404,7 @@
 					),
 				),
 				(
-					intro_text: Some("Defeat the command ship!"),
+					intro_text: Some("Destroy the command ship!"),
 					phase_type: Boss(
 						mob_type: Enemy(Repeater),
 						position: (0.0, 600.0),
@@ -620,7 +620,7 @@
 					),
 				),
 				(
-					intro_text: Some("Defeat the command ship!"),
+					intro_text: Some("Destroy the command ship!"),
 					phase_type: Boss(
 						mob_type: Enemy(Repeater),
 						position: (0.0, 600.0),
@@ -791,7 +791,7 @@
 					intro_text: Some("Destroy enemies and protect your ally using your basic attack"),
 					phase_type: Tutorial(
 						tutorial_lesson: Attack(
-							mobs_to_destroy: 5,
+							mobs_to_destroy: 3,
 							mobs_to_protect: 1,
 							spawn_range_x: (
 								start: -300.0,

@@ -18,6 +18,7 @@ pub enum MenuAction {
     Reset,
     ExitPauseMenu,
     PauseGame,
+    ToggleTutorial,
 }
 
 #[derive(Actionlike, PartialEq, Eq, Clone, Copy, Hash, Debug, Reflect, Deserialize)]
