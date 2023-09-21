@@ -81,13 +81,26 @@ pub struct PremadeRunsResource {
     pub runs: HashMap<String, Vec<String>>,
 }
 
-#[derive(Resource, Default, Debug)]
+#[derive(Resource, Debug)]
 pub struct CurrentRunProgressResource {
     /// List of string level keys that are matched to values in the levelsresource
     pub queued_levels: VecDeque<Level>,
     pub completed_levels: VecDeque<Level>,
     /// Tracks the level currently being played
     pub current_level: Option<Level>,
+    /// If true will append tutorial level to beginning of the run
+    pub tutorials_on: bool,
+}
+
+impl Default for CurrentRunProgressResource {
+    fn default() -> Self {
+        CurrentRunProgressResource {
+            queued_levels: VecDeque::new(),
+            completed_levels: VecDeque::new(),
+            current_level: None,
+            tutorials_on: true,
+        }
+    }
 }
 
 impl CurrentRunProgressResource {
@@ -102,10 +115,17 @@ impl CurrentRunProgressResource {
         let level_keys = premade_runs_res.runs.get(&run_key).unwrap();
 
         // get levels from the levels resource
-        let levels: VecDeque<Level> = level_keys
+        let mut levels: VecDeque<Level> = level_keys
             .iter()
             .map(|key| Level::from(premade_levels_res.levels_data.get(key).unwrap()))
             .collect();
+
+        // push a tutorial level to be the first level played
+        if self.tutorials_on {
+            levels.push_front(Level::from(
+                premade_levels_res.levels_data.get("tutorial").unwrap(),
+            ));
+        }
 
         // set levels in the run resource
         self.queued_levels = levels;

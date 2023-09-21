@@ -549,9 +549,9 @@
 		mob_type: Ally(TutorialHauler2),
 		spawnable_behaviors: [MoveDown, BrakeHorizontal],
 		mob_behaviors: [ReceiveDamageOnImpact, DieAtZeroHealth],
-		acceleration: (0.0, 2.0),
+		acceleration: (0.0, 3.0),
 		deceleration: (2.0, 1.0),
-		speed: (0.0, 70.0),
+		speed: (0.0, 100.0),
 		collision_damage: 0,
 		colliders: [
 			(

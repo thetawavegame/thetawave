@@ -1,8 +1,11 @@
+use crate::run::CurrentRunProgressResource;
+
 use super::BouncingPromptComponent;
 
 use bevy::{input::gamepad::GamepadButtonChangedEvent, prelude::*};
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::{
+    audio::{PlaySoundEffectEvent, SoundEffectType},
     character::CharacterType,
     character_selection::PlayerJoinEvent,
     options::input::{MenuAction, MenuExplorer},
@@ -45,13 +48,20 @@ pub struct Player2Description;
 #[derive(Component)]
 pub struct StartGamePrompt;
 
+#[derive(Component)]
+pub struct ToggleTutorialUI;
+
 /// Setup the character selection UI
 pub fn setup_character_selection_system(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let font = asset_server.load("fonts/wibletown-regular.otf");
+
     commands
         .spawn(NodeBundle {
             style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
+                width: Val::Percent(100.0),              // Adjusted to 90% of window width
+                height: Val::Percent(90.0),              // Adjusted to 90% of window height
+                justify_content: JustifyContent::Center, // Center content horizontally
+                align_items: AlignItems::Center,         // Center content vertically
                 ..Default::default()
             },
             ..Default::default()
@@ -70,7 +80,7 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                         align_items: AlignItems::Center,
                         ..Default::default()
                     },
-                    ..default()
+                    ..Default::default()
                 })
                 .with_children(|parent| {
                     parent
@@ -481,12 +491,12 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                         })
                                         .into(),
                                     style: Style {
-                                        width: Val::Px(400.0),
-                                        height: Val::Px(100.0),
+                                        width: Val::Px(300.0),
+                                        height: Val::Px(75.0),
                                         margin: UiRect {
                                             left: Val::Auto,
                                             right: Val::Auto,
-                                            bottom: Val::Percent(2.0),
+                                            bottom: Val::Percent(1.0),
                                             ..Default::default()
                                         },
                                         ..Default::default()
@@ -499,6 +509,26 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                     is_active: true,
                                 })
                                 .insert(StartGamePrompt);
+
+                            parent
+                                .spawn(TextBundle {
+                                    style: Style {
+                                        justify_self: JustifySelf::Center,
+                                        align_self: AlignSelf::Center,
+                                        ..default()
+                                    },
+                                    text: Text::from_section(
+                                        "Tutorials On",
+                                        TextStyle {
+                                            font,
+                                            font_size: 30.0,
+                                            color: Color::WHITE,
+                                        },
+                                    )
+                                    .with_alignment(TextAlignment::Center),
+                                    ..default()
+                                })
+                                .insert(ToggleTutorialUI);
                         });
                 });
         });
@@ -509,14 +539,16 @@ pub fn player_join_system(
     menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
     mut gamepad_events: EventReader<GamepadButtonChangedEvent>,
     mut players_resource: ResMut<PlayersResource>,
-    mut start_game_prompt: Query<&mut Visibility, With<StartGamePrompt>>,
     mut ui_queries: ParamSet<(
         Query<&mut Style, With<Player1JoinPrompt>>,
         Query<&mut Style, With<Player2JoinPrompt>>,
         Query<&mut Style, With<Player1CharacterSelection>>,
         Query<&mut Style, With<Player2CharacterSelection>>,
+        Query<&mut Visibility, With<StartGamePrompt>>,
+        Query<&mut Visibility, With<ToggleTutorialUI>>,
     )>,
     mut player_join_event: EventWriter<PlayerJoinEvent>,
+    mut run_resource: ResMut<CurrentRunProgressResource>,
 ) {
     // get all of the already used inputs
     let used_inputs = players_resource.get_used_inputs();
@@ -586,14 +618,58 @@ pub fn player_join_system(
 
     // show the start game prompt if at least one player has joined
     if players_resource.player_data[0].is_some() {
-        *start_game_prompt.single_mut() = Visibility::Inherited;
+        *ui_queries.p4().single_mut() = Visibility::Inherited;
     } else {
-        *start_game_prompt.single_mut() = Visibility::Hidden;
+        *ui_queries.p4().single_mut() = Visibility::Hidden;
+    }
+
+    // turn tutorials off if there is more than one player
+    if players_resource.player_data[1].is_some() {
+        if let Ok(mut vis) = ui_queries.p5().get_single_mut() {
+            *vis = Visibility::Hidden;
+        }
+
+        run_resource.tutorials_on = false;
+    }
+}
+
+// Toggle whether to enable tutorials for the run
+pub fn toggle_tutorial_system(
+    menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
+    mut run_resource: ResMut<CurrentRunProgressResource>,
+    mut sound_effect_pub: EventWriter<PlaySoundEffectEvent>,
+    mut tutorial_text_query: Query<&mut Text, With<ToggleTutorialUI>>,
+) {
+    // read menu input action
+    let action_state = menu_input_query.single();
+
+    // if input read enter the game state
+    if action_state.just_released(MenuAction::ToggleTutorial) {
+        // set the state to game
+        run_resource.tutorials_on = !run_resource.tutorials_on;
+
+        if let Ok(mut text) = tutorial_text_query.get_single_mut() {
+            text.sections[0].value = if run_resource.tutorials_on {
+                "Tutorials On".to_string()
+            } else {
+                "Tutorials Off".to_string()
+            };
+
+            text.sections[0].style.color = if run_resource.tutorials_on {
+                Color::WHITE
+            } else {
+                Color::GRAY
+            };
+        }
+
+        // play sound effect
+        sound_effect_pub.send(PlaySoundEffectEvent {
+            sound_effect_type: SoundEffectType::MenuInputSuccess,
+        });
     }
 }
 
 // handle the character selection for each player
-#[allow(clippy::too_many_arguments)]
 pub fn select_character_system(
     menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
     mut gamepad_events: EventReader<GamepadButtonChangedEvent>,
