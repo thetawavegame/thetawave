@@ -1,7 +1,11 @@
 [[redirects]]
 from = "/assets/backgrounds/*"
-to = "https://assets.thetawave.metalmancy.tech/free_assets/backgrounds/:splat"
+to = "https://assets.thetawave.metalmancy.tech/free_assets/texture/backgrounds/:splat"
 
 [[redirects]]
 from = "/assets/planets/*"
-to = "https://assets.thetawave.metalmancy.tech/free_assets/planets/:splat"
+to = "https://assets.thetawave.metalmancy.tech/free_assets/models/planets/:splat"
+
+[[redirects]]
+from = "/assets/sounds/*"
+to = "https://assets.thetawave.metalmancy.tech/free_assets/sounds/:splat"
