@@ -6,40 +6,13 @@ use thetawave_interface::{
 
 use crate::{run::CurrentRunProgressResource, spawnable::BossComponent};
 
-#[derive(Component)]
-pub struct TopMiddleLeftUI;
-
-#[derive(Component)]
-pub struct TopMiddleRightUI;
-
-//Phase UI
+/// Used for querying UI for displaying name
 #[derive(Component)]
 pub struct PhaseNameUI;
 
+/// Used for querying UI for displaying phase information
 #[derive(Component)]
 pub struct PhaseDataUI;
-
-#[derive(Component)]
-pub struct PhaseDataTextUI;
-
-#[derive(Component)]
-pub struct PhaseDataObjectivesListUI;
-
-#[derive(Component)]
-pub struct PhaseTextObjectiveUI;
-
-#[derive(Component)]
-pub struct BossHealthUI;
-
-#[derive(Component)]
-pub struct BossHealthValueUI;
-
-// OLD phase ui - remove
-#[derive(Component)]
-pub struct PhaseUiComponent;
-
-#[derive(Component)]
-pub struct TutorialPhaseUI;
 
 pub fn build_phase_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
     parent
@@ -53,7 +26,6 @@ pub fn build_phase_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
             },
             ..default()
         })
-        .insert(TopMiddleLeftUI)
         .with_children(|top_middle_left_ui| {
             top_middle_left_ui
                 .spawn(TextBundle {
@@ -80,7 +52,6 @@ pub fn build_phase_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
             },
             ..default()
         })
-        .insert(TopMiddleRightUI)
         .with_children(|top_middle_right_ui| {
             top_middle_right_ui
                 .spawn(NodeBundle {
@@ -125,40 +96,36 @@ pub fn update_phase_ui_system(
                         let font = asset_server.load("fonts/wibletown-regular.otf");
 
                         commands.entity(entity).with_children(|phase_data_ui| {
-                            phase_data_ui
-                                .spawn(TextBundle {
-                                    style: Style::default(),
-                                    text: Text::from_section(
-                                        format!("{:.0}", phase_timer.remaining_secs()),
-                                        TextStyle {
-                                            font,
-                                            font_size: 48.0,
-                                            color: Color::WHITE,
-                                        },
-                                    ),
-                                    ..default()
-                                })
-                                .insert(PhaseDataTextUI);
+                            phase_data_ui.spawn(TextBundle {
+                                style: Style::default(),
+                                text: Text::from_section(
+                                    format!("{:.0}", phase_timer.remaining_secs()),
+                                    TextStyle {
+                                        font,
+                                        font_size: 48.0,
+                                        color: Color::WHITE,
+                                    },
+                                ),
+                                ..default()
+                            });
                         });
                     }
                     LevelPhaseType::Break { phase_timer, .. } => {
                         let font = asset_server.load("fonts/wibletown-regular.otf");
 
                         commands.entity(entity).with_children(|phase_data_ui| {
-                            phase_data_ui
-                                .spawn(TextBundle {
-                                    style: Style::default(),
-                                    text: Text::from_section(
-                                        format!("{:.0}", phase_timer.remaining_secs()),
-                                        TextStyle {
-                                            font,
-                                            font_size: 48.0,
-                                            color: Color::WHITE,
-                                        },
-                                    ),
-                                    ..default()
-                                })
-                                .insert(PhaseDataTextUI);
+                            phase_data_ui.spawn(TextBundle {
+                                style: Style::default(),
+                                text: Text::from_section(
+                                    format!("{:.0}", phase_timer.remaining_secs()),
+                                    TextStyle {
+                                        font,
+                                        font_size: 48.0,
+                                        color: Color::WHITE,
+                                    },
+                                ),
+                                ..default()
+                            });
                         });
                     }
                     LevelPhaseType::Boss { .. } => {
@@ -175,21 +142,18 @@ pub fn update_phase_ui_system(
                                         background_color: Color::RED.with_a(0.05).into(),
                                         ..default()
                                     })
-                                    .insert(BossHealthUI)
                                     .with_children(|boss_health_ui| {
-                                        boss_health_ui
-                                            .spawn(NodeBundle {
-                                                style: Style {
-                                                    width: Val::Percent(
-                                                        100.0 * health.get_health_percentage(),
-                                                    ),
-                                                    height: Val::Percent(100.0),
-                                                    ..default()
-                                                },
-                                                background_color: Color::RED.with_a(0.75).into(),
+                                        boss_health_ui.spawn(NodeBundle {
+                                            style: Style {
+                                                width: Val::Percent(
+                                                    100.0 * health.get_health_percentage(),
+                                                ),
+                                                height: Val::Percent(100.0),
                                                 ..default()
-                                            })
-                                            .insert(BossHealthValueUI);
+                                            },
+                                            background_color: Color::RED.with_a(0.75).into(),
+                                            ..default()
+                                        });
                                     });
                             });
                         }
@@ -211,91 +175,84 @@ pub fn update_phase_ui_system(
                                     },
                                     ..default()
                                 })
-                                .insert(PhaseDataObjectivesListUI)
                                 .with_children(|phase_data_list_ui| {
                                     match tutorial_lesson {
                                         TutorialLesson::Movement { .. } => {
                                             for (progress_str, completed) in
                                                 tutorial_lesson.get_movement_timer_strs().iter()
                                             {
-                                                phase_data_list_ui
-                                                    .spawn(TextBundle {
-                                                        style: Style {
-                                                            height: Val::Px(30.0), // Set a fixed height for each text section
-                                                            ..default()
-                                                        },
-                                                        text: Text::from_section(
-                                                            progress_str,
-                                                            TextStyle {
-                                                                font: font.clone(),
-                                                                font_size: 24.0,
-                                                                color: if *completed {
-                                                                    Color::GREEN
-                                                                } else {
-                                                                    Color::WHITE
-                                                                },
-                                                            },
-                                                        )
-                                                        .with_alignment(TextAlignment::Left),
+                                                phase_data_list_ui.spawn(TextBundle {
+                                                    style: Style {
+                                                        height: Val::Px(30.0), // Set a fixed height for each text section
                                                         ..default()
-                                                    })
-                                                    .insert(PhaseTextObjectiveUI);
+                                                    },
+                                                    text: Text::from_section(
+                                                        progress_str,
+                                                        TextStyle {
+                                                            font: font.clone(),
+                                                            font_size: 24.0,
+                                                            color: if *completed {
+                                                                Color::GREEN
+                                                            } else {
+                                                                Color::WHITE
+                                                            },
+                                                        },
+                                                    )
+                                                    .with_alignment(TextAlignment::Left),
+                                                    ..default()
+                                                });
                                             }
                                         }
                                         TutorialLesson::Attack { .. } => {
                                             for (progress_str, completed) in
                                                 tutorial_lesson.get_attack_strs().iter()
                                             {
-                                                phase_data_list_ui
-                                                    .spawn(TextBundle {
-                                                        style: Style {
-                                                            height: Val::Px(30.0), // Set a fixed height for each text section
-                                                            ..default()
-                                                        },
-                                                        text: Text::from_section(
-                                                            progress_str,
-                                                            TextStyle {
-                                                                font: font.clone(),
-                                                                font_size: 24.0,
-                                                                color: if *completed {
-                                                                    Color::GREEN
-                                                                } else {
-                                                                    Color::WHITE
-                                                                },
-                                                            },
-                                                        )
-                                                        .with_alignment(TextAlignment::Left),
+                                                phase_data_list_ui.spawn(TextBundle {
+                                                    style: Style {
+                                                        height: Val::Px(30.0), // Set a fixed height for each text section
                                                         ..default()
-                                                    })
-                                                    .insert(PhaseTextObjectiveUI);
+                                                    },
+                                                    text: Text::from_section(
+                                                        progress_str,
+                                                        TextStyle {
+                                                            font: font.clone(),
+                                                            font_size: 24.0,
+                                                            color: if *completed {
+                                                                Color::GREEN
+                                                            } else {
+                                                                Color::WHITE
+                                                            },
+                                                        },
+                                                    )
+                                                    .with_alignment(TextAlignment::Left),
+                                                    ..default()
+                                                });
                                             }
                                         }
                                         TutorialLesson::Ability { .. } => {
                                             for (progress_str, completed) in
                                                 tutorial_lesson.get_ability_strs().iter()
                                             {
-                                                phase_data_list_ui
-                                                    .spawn(TextBundle {
-                                                        style: Style {
-                                                            height: Val::Px(30.0), // Set a fixed height for each text section
-                                                            ..default()
-                                                        },
-                                                        text: Text::from_section(
-                                                            progress_str,
-                                                            TextStyle {
-                                                                font: font.clone(),
-                                                                font_size: 24.0,
-                                                                color: if *completed {
-                                                                    Color::GREEN
-                                                                } else {
-                                                                    Color::WHITE
-                                                                },
-                                                            },
-                                                        )
-                                                        .with_alignment(TextAlignment::Left),
+                                                phase_data_list_ui.spawn(TextBundle {
+                                                    style: Style {
+                                                        height: Val::Px(30.0), // Set a fixed height for each text section
                                                         ..default()
-                                                    })
-                                                    .insert(PhaseTextObjectiveUI);
+                                                    },
+                                                    text: Text::from_section(
+                                                        progress_str,
+                                                        TextStyle {
+                                                            font: font.clone(),
+                                                            font_size: 24.0,
+                                                            color: if *completed {
+                                                                Color::GREEN
+                                                            } else {
+                                                                Color::WHITE
+                                                            },
+                                                        },
+                                                    )
+                                                    .with_alignment(TextAlignment::Left),
+                                                    ..default()
+                                                });
                                             }
                                         }
                                     }
