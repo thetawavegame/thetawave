@@ -347,10 +347,14 @@ mod test {
     use rstest::rstest;
     use thetawave_interface::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent};
     use thetawave_interface::objective::{DefenseInteraction, MobReachedBottomGateEvent};
-    use thetawave_interface::spawnable::SpawnMobEvent;
+    use thetawave_interface::spawnable::{
+        MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent,
+    };
     use thetawave_interface::states::{AppStates, GameStates};
 
-    fn _minimal_app_for_run_progression_plugin_tests() -> App {
+    use super::CurrentRunProgressResource;
+
+    fn _minimal_app_for_run_progression_defend_gate_objective() -> App {
         let mut app = App::new();
         app.add_plugins(MinimalPlugins)
             .add_plugins(LogPlugin {
@@ -366,7 +370,13 @@ mod test {
             .add_event::<BossesDestroyedEvent>()
             .add_event::<SpawnFormationEvent>()
             .add_event::<SpawnMobEvent>()
+            .add_event::<MobDestroyedEvent>()
+            .add_event::<MobSegmentDestroyedEvent>()
             .add_plugins(RunPlugin);
+        app.world
+            .get_resource_mut::<CurrentRunProgressResource>()
+            .unwrap()
+            .tutorials_on = false; // We have the gate defense objective after tutorials
         app
     }
 
@@ -378,7 +388,7 @@ mod test {
         #[case] want_end_state: AppStates,
     ) {
         // Defense starts with 100 HP
-        let mut app = _minimal_app_for_run_progression_plugin_tests();
+        let mut app = _minimal_app_for_run_progression_defend_gate_objective();
         // triggers => AppStates::Game and starts listening to events
         app.world
             .get_resource_mut::<NextState<AppStates>>()
