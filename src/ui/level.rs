@@ -2,24 +2,13 @@ use bevy::prelude::*;
 
 use crate::run::CurrentRunProgressResource;
 
-#[derive(Component)]
-pub struct BottomMiddleLeftUI;
-
-#[derive(Component)]
-pub struct BottomMiddleRightUI;
-
-//Level UI
+/// Used for querying UI for displaying name
 #[derive(Component)]
 pub struct LevelNameUI;
 
+/// Used for querying UI for displaying level information
 #[derive(Component)]
 pub struct LevelDataUI;
-
-#[derive(Component)]
-pub struct DefenseUI;
-
-#[derive(Component)]
-pub struct DefenseValueUI;
 
 pub fn build_level_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
     parent
@@ -33,7 +22,6 @@ pub fn build_level_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
             },
             ..default()
         })
-        .insert(BottomMiddleLeftUI)
         .with_children(|bottom_middle_left_ui| {
             bottom_middle_left_ui
                 .spawn(TextBundle {
@@ -60,7 +48,6 @@ pub fn build_level_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
             },
             ..default()
         })
-        .insert(BottomMiddleRightUI)
         .with_children(|bottom_middle_right_ui| {
             bottom_middle_right_ui
                 .spawn(NodeBundle {
@@ -112,21 +99,18 @@ pub fn update_level_ui_system(
                                     background_color: Color::BLUE.with_a(0.05).into(),
                                     ..default()
                                 })
-                                .insert(DefenseUI)
                                 .with_children(|defense_ui| {
-                                    defense_ui
-                                        .spawn(NodeBundle {
-                                            style: Style {
-                                                width: Val::Percent(
-                                                    100.0 * defense_data.get_percentage(),
-                                                ),
-                                                height: Val::Percent(100.0),
-                                                ..default()
-                                            },
-                                            background_color: Color::BLUE.with_a(0.75).into(),
+                                    defense_ui.spawn(NodeBundle {
+                                        style: Style {
+                                            width: Val::Percent(
+                                                100.0 * defense_data.get_percentage(),
+                                            ),
+                                            height: Val::Percent(100.0),
                                             ..default()
-                                        })
-                                        .insert(DefenseValueUI);
+                                        },
+                                        background_color: Color::BLUE.with_a(0.75).into(),
+                                        ..default()
+                                    });
                                 });
                         });
                     }
