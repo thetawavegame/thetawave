@@ -310,27 +310,29 @@ impl TutorialLesson {
         play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
     ) -> bool {
         // tutorial will only be run for single player
-        let action_state = player_query.single();
-
-        match self {
-            TutorialLesson::Attack { .. } => self.attack_tutorial(
-                mob_destroyed_event,
-                time,
-                spawn_mob_event_writer,
-                mob_reached_bottom_event,
-                mob_segment_destroyed_event,
-                play_sound_effect_event_writer,
-            ),
-            TutorialLesson::Ability { .. } => self.ability_tutorial(
-                mob_destroyed_event,
-                time,
-                spawn_mob_event_writer,
-                mob_reached_bottom_event,
-                play_sound_effect_event_writer,
-            ),
-            TutorialLesson::Movement { .. } => {
-                self.movement_tutorial(action_state, time, play_sound_effect_event_writer)
+        if let Ok(action_state) = player_query.get_single() {
+            match self {
+                TutorialLesson::Attack { .. } => self.attack_tutorial(
+                    mob_destroyed_event,
+                    time,
+                    spawn_mob_event_writer,
+                    mob_reached_bottom_event,
+                    mob_segment_destroyed_event,
+                    play_sound_effect_event_writer,
+                ),
+                TutorialLesson::Ability { .. } => self.ability_tutorial(
+                    mob_destroyed_event,
+                    time,
+                    spawn_mob_event_writer,
+                    mob_reached_bottom_event,
+                    play_sound_effect_event_writer,
+                ),
+                TutorialLesson::Movement { .. } => {
+                    self.movement_tutorial(action_state, time, play_sound_effect_event_writer)
+                }
             }
+        } else {
+            false
         }
     }
 
