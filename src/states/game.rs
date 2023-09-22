@@ -37,17 +37,17 @@ pub fn start_instructions_system(
     mut sound_effect_pub: EventWriter<PlaySoundEffectEvent>,
 ) {
     // read menu input action
-    let action_state = menu_input_query.single();
+    if let Ok(action_state) = menu_input_query.get_single() {
+        // if input read enter the game state
+        if action_state.just_released(MenuAction::Confirm) {
+            // set the state to game
+            next_app_state.set(AppStates::Instructions);
 
-    // if input read enter the game state
-    if action_state.just_released(MenuAction::Confirm) {
-        // set the state to game
-        next_app_state.set(AppStates::Instructions);
-
-        // play sound effect
-        sound_effect_pub.send(PlaySoundEffectEvent {
-            sound_effect_type: SoundEffectType::MenuInputSuccess,
-        });
+            // play sound effect
+            sound_effect_pub.send(PlaySoundEffectEvent {
+                sound_effect_type: SoundEffectType::MenuInputSuccess,
+            });
+        }
     }
 }
 
