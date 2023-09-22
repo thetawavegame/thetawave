@@ -193,12 +193,10 @@ mod test {
     use crate::spawnable::SpawnProjectileEvent;
     use bevy::input::InputPlugin;
     use bevy::prelude::{App, Component, Events};
-    use leafwing_input_manager::prelude::ActionState;
     use thetawave_interface::character::{Character, CharacterType};
     use thetawave_interface::game::historical_metrics::{
         MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
     };
-    use thetawave_interface::options::input::PlayerAction;
     use thetawave_interface::player::PlayerComponent;
     use thetawave_interface::spawnable::{
         EnemyMobType, Faction, MobDestroyedEvent, MobType, ProjectileType,
