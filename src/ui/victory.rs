@@ -5,10 +5,10 @@ use bevy::prelude::*;
 use crate::ui::BouncingPromptComponent;
 use thetawave_interface::{
     audio::ChangeBackgroundMusicEvent,
+    cleanup_tags::VictoryCleanup,
     game::historical_metrics::{
         MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
     },
-    states::VictoryCleanup,
 };
 
 #[derive(Component)]

@@ -8,8 +8,8 @@ use rand::Rng;
 use serde::Deserialize;
 use std::{collections::HashMap, ops::Range};
 use thetawave_interface::{
+    cleanup_tags::GameCleanup,
     spawnable::{EffectType, TextEffectType},
-    states::GameCleanup,
 };
 
 use super::InitialMotion;

@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use thetawave_interface::states::PauseCleanup;
+use thetawave_interface::cleanup_tags::PauseCleanup;
 
 use crate::ui::BouncingPromptComponent;
 

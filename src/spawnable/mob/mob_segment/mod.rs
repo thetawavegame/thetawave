@@ -4,10 +4,10 @@ use serde::Deserialize;
 use std::collections::{hash_map::Entry, HashMap};
 use thetawave_interface::{
     audio::CollisionSoundType,
+    cleanup_tags::GameCleanup,
     health::HealthComponent,
     objective::DefenseInteraction,
     spawnable::{MobSegmentType, SpawnableType},
-    states::GameCleanup,
 };
 
 use crate::{

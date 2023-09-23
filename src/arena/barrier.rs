@@ -5,7 +5,7 @@ use crate::{
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use std::f32::consts::FRAC_PI_2;
-use thetawave_interface::{spawnable::EffectType, states::GameCleanup};
+use thetawave_interface::{cleanup_tags::GameCleanup, spawnable::EffectType};
 
 /// Tag component for arena barriers
 #[derive(Component)]

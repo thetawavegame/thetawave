@@ -3,8 +3,8 @@ use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 use std::collections::HashMap;
 use thetawave_interface::{
+    cleanup_tags::GameCleanup,
     spawnable::{ConsumableType, SpawnableType},
-    states::GameCleanup,
 };
 
 use crate::{

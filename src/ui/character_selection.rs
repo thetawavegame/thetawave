@@ -8,9 +8,9 @@ use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     character::CharacterType,
     character_selection::PlayerJoinEvent,
+    cleanup_tags::CharacterSelectionCleanup,
     options::input::{MenuAction, MenuExplorer},
     player::{PlayerData, PlayerInput, PlayersResource},
-    states::CharacterSelectionCleanup,
 };
 
 #[derive(Component)]

@@ -23,10 +23,10 @@ pub use self::{behavior::*, mob_segment::*};
 use super::behavior_sequence::MobBehaviorSequenceType;
 use thetawave_interface::{
     audio::CollisionSoundType,
+    cleanup_tags::GameCleanup,
     health::HealthComponent,
     objective::DefenseInteraction,
     spawnable::{MobDestroyedEvent, MobSegmentType, MobType, ProjectileType, SpawnMobEvent},
-    states::GameCleanup,
 };
 
 /// Core component for mobs

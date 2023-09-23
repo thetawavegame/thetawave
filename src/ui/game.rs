@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use thetawave_interface::{player::PlayersResource, states::GameCleanup};
+use thetawave_interface::{cleanup_tags::GameCleanup, player::PlayersResource};
 
 use super::{
     game_center::build_center_text_ui, level::build_level_ui, phase::build_phase_ui,

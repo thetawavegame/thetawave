@@ -2,10 +2,10 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 use thetawave_interface::audio::{BGMusicType, ChangeBackgroundMusicEvent};
+use thetawave_interface::cleanup_tags::MainMenuCleanup;
 use thetawave_interface::game::historical_metrics::{
     MobKillsByPlayerForCompletedGames, UserStatsByPlayerForCompletedGamesCache, DEFAULT_USER_ID,
 };
-use thetawave_interface::states::MainMenuCleanup;
 
 #[derive(Component)]
 pub struct MainMenuUI;

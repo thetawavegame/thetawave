@@ -1,15 +1,15 @@
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use leafwing_input_manager::prelude::ActionState;
+use thetawave_interface::cleanup_tags::CharacterSelectionCleanup;
+use thetawave_interface::cleanup_tags::GameCleanup;
+use thetawave_interface::cleanup_tags::GameOverCleanup;
+use thetawave_interface::cleanup_tags::InstructionsCleanup;
+use thetawave_interface::cleanup_tags::MainMenuCleanup;
+use thetawave_interface::cleanup_tags::PauseCleanup;
+use thetawave_interface::cleanup_tags::VictoryCleanup;
 use thetawave_interface::options::input::MenuAction;
 use thetawave_interface::options::input::MenuExplorer;
-use thetawave_interface::states::CharacterSelectionCleanup;
-use thetawave_interface::states::GameCleanup;
-use thetawave_interface::states::GameOverCleanup;
-use thetawave_interface::states::InstructionsCleanup;
-use thetawave_interface::states::MainMenuCleanup;
-use thetawave_interface::states::PauseCleanup;
-use thetawave_interface::states::VictoryCleanup;
 pub use thetawave_interface::states::{AppStates, GameStates};
 
 mod game;

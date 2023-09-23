@@ -2,10 +2,10 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
 use thetawave_interface::{
+    cleanup_tags::GameCleanup,
     health::HealthComponent,
     options::input::{InputsResource, PlayerAction},
     player::{PlayerComponent, PlayerInput},
-    states::GameCleanup,
 };
 
 use crate::{

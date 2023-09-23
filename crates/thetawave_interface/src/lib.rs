@@ -1,6 +1,7 @@
 pub mod audio;
 pub mod character;
 pub mod character_selection;
+pub mod cleanup_tags;
 pub mod game;
 pub mod health;
 pub mod objective;
