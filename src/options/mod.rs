@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use leafwing_input_manager::prelude::InputManagerPlugin;
 use thetawave_interface::options::input::{get_input_bindings, InputsResource, MenuAction};
 
+mod config;
 mod display;
 mod input;
 
@@ -10,9 +11,11 @@ use crate::states;
 use std::default::Default;
 use std::path::PathBuf;
 
+pub use self::config::generate_config_files;
 pub use self::display::{
     set_window_icon, toggle_fullscreen_system, toggle_zoom_system, DisplayConfig,
 };
+
 use self::input::spawn_menu_explorer_system;
 
 #[cfg_attr(
