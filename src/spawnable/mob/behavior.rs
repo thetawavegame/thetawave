@@ -177,8 +177,8 @@ pub fn mob_execute_behavior_system(
                             spawn_mob_event_writer.send(SpawnMobEvent {
                                 mob_type: mob_spawner.mob_type.clone(),
                                 position,
-                                rotation: mob_transform.rotation, // passed rotation of the parent mob
-                                boss: false,
+                                rotation: mob_transform.rotation.z, // passed rotation of the parent mob
+                                ..default()
                             });
                         }
                     }

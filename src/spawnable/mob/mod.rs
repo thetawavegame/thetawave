@@ -344,7 +344,7 @@ pub fn spawn_mob(
     mob_segments_resource: &MobSegmentsResource,
     mob_assets: &MobAssets,
     position: Vec2,
-    rotation: Quat,
+    rotation: f32,
     boss: bool,
     commands: &mut Commands,
     game_parameters: &GameParametersResource,
@@ -364,7 +364,7 @@ pub fn spawn_mob(
                 game_parameters.sprite_scale,
                 1.0,
             ),
-            rotation,
+            rotation: Quat::from_rotation_z(rotation),
         },
         ..Default::default()
     })

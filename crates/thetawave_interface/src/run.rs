@@ -359,8 +359,7 @@ impl TutorialLesson {
                 spawn_mob_event_writer.send(SpawnMobEvent {
                     mob_type: MobType::Neutral(NeutralMobType::TutorialDrone),
                     position: (thread_rng().gen_range(spawn_range_x.clone()), *spawn_y).into(),
-                    rotation: Quat::default(),
-                    boss: false,
+                    ..Default::default()
                 });
             }
 
@@ -379,7 +378,7 @@ impl TutorialLesson {
                             mob_type: MobType::Neutral(NeutralMobType::TutorialDrone),
                             position: (thread_rng().gen_range(spawn_range_x.clone()), *spawn_y)
                                 .into(),
-                            rotation: Quat::default(),
+                            rotation: 0.0,
                             boss: false,
                         });
                     } else if *mobs_to_protect > 0 {
@@ -391,7 +390,7 @@ impl TutorialLesson {
                             mob_type: MobType::Ally(AllyMobType::TutorialHauler2),
                             position: (thread_rng().gen_range(spawn_range_x.clone()), *spawn_y)
                                 .into(),
-                            rotation: Quat::default(),
+                            rotation: 0.0,
                             boss: false,
                         });
                     }
@@ -407,7 +406,7 @@ impl TutorialLesson {
                     spawn_mob_event_writer.send(SpawnMobEvent {
                         mob_type: MobType::Ally(AllyMobType::TutorialHauler2),
                         position: (thread_rng().gen_range(spawn_range_x.clone()), *spawn_y).into(),
-                        rotation: Quat::default(),
+                        rotation: 0.0,
                         boss: false,
                     });
                 }
@@ -428,7 +427,7 @@ impl TutorialLesson {
                                 mob_type: MobType::Ally(AllyMobType::TutorialHauler2),
                                 position: (thread_rng().gen_range(spawn_range_x.clone()), *spawn_y)
                                     .into(),
-                                rotation: Quat::default(),
+                                rotation: 0.0,
                                 boss: false,
                             });
                         } else {
@@ -443,7 +442,7 @@ impl TutorialLesson {
                             mob_type: MobType::Neutral(NeutralMobType::TutorialDrone),
                             position: (thread_rng().gen_range(spawn_range_x.clone()), *spawn_y)
                                 .into(),
-                            rotation: Quat::default(),
+                            rotation: 0.0,
                             boss: false,
                         });
                     }
@@ -478,8 +477,7 @@ impl TutorialLesson {
                 spawn_mob_event_writer.send(SpawnMobEvent {
                     mob_type: MobType::Neutral(NeutralMobType::TutorialDrone),
                     position: (thread_rng().gen_range(spawn_range_x.clone()), *spawn_y).into(),
-                    rotation: Quat::default(),
-                    boss: false,
+                    ..Default::default()
                 });
             }
 
@@ -498,8 +496,7 @@ impl TutorialLesson {
                             mob_type: MobType::Neutral(NeutralMobType::TutorialDrone),
                             position: (thread_rng().gen_range(spawn_range_x.clone()), *spawn_y)
                                 .into(),
-                            rotation: Quat::default(),
-                            boss: false,
+                            ..Default::default()
                         });
                     } else {
                         play_sound_effect_event_writer.send(PlaySoundEffectEvent {
@@ -517,8 +514,7 @@ impl TutorialLesson {
                             mob_type: MobType::Neutral(NeutralMobType::TutorialDrone),
                             position: (thread_rng().gen_range(spawn_range_x.clone()), *spawn_y)
                                 .into(),
-                            rotation: Quat::default(),
-                            boss: false,
+                            ..Default::default()
                         });
                     }
                 }

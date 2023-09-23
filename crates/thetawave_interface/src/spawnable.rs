@@ -205,7 +205,19 @@ pub struct SpawnMobEvent {
     /// Position to spawn mob
     pub position: Vec2,
 
-    pub rotation: Quat,
+    pub rotation: f32,
 
     pub boss: bool,
+}
+
+impl Default for SpawnMobEvent {
+    fn default() -> Self {
+        Self {
+            // spawns a tutorial drone if no mob specified
+            mob_type: MobType::Neutral(NeutralMobType::TutorialDrone),
+            position: Default::default(),
+            rotation: Default::default(),
+            boss: Default::default(),
+        }
+    }
 }

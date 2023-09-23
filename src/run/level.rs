@@ -197,8 +197,8 @@ impl Level {
                             spawn_mob_event_writer.send(SpawnMobEvent {
                                 mob_type: mob_type.clone(),
                                 position: *position,
-                                rotation: Quat::default(),
                                 boss: true,
+                                ..default()
                             });
                         }
                         false
