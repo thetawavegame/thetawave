@@ -3,19 +3,18 @@ use bevy::prelude::*;
 use leafwing_input_manager::prelude::InputManagerPlugin;
 use ron::de::from_bytes;
 use thetawave_interface::{
+    character::CharactersResource,
     options::input::PlayerAction,
     player::PlayersResource,
     states::{AppStates, GameStates},
 };
 
-mod resources;
 mod spawn;
 mod systems;
 
 use crate::{GameEnterSet, GameUpdateSet};
 
 pub use self::{
-    resources::CharactersResource,
     spawn::spawn_players_system,
     systems::{
         player_ability_system, player_death_system, player_fire_weapon_system,

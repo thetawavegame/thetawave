@@ -1,3 +1,6 @@
+use std::collections::HashMap;
+
+use bevy_ecs::system::Resource;
 use bevy_math::Vec2;
 use serde::Deserialize;
 
@@ -67,4 +70,12 @@ impl From<&Character> for HealthComponent {
             character.shields_recharge_rate,
         )
     }
+}
+
+/// Character types mapped to Character struct
+/// which contain the base attributes for characters
+/// in the game
+#[derive(Resource, Deserialize)]
+pub struct CharactersResource {
+    pub characters: HashMap<CharacterType, Character>,
 }

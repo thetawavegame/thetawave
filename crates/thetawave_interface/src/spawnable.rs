@@ -1,7 +1,7 @@
 use std::default::Default;
 
 use bevy_ecs::{entity::Entity, event::Event};
-use bevy_math::{Quat, Vec2};
+use bevy_math::Vec2;
 use serde::Deserialize;
 use strum_macros::{Display, EnumString};
 

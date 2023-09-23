@@ -189,11 +189,11 @@ fn roll_current_game_counters_into_completed_game_metrics(
 mod test {
     use crate::collision::SortedCollisionEvent;
     use crate::game::counters::plugin::CountingMetricsPlugin;
-    use crate::player::{CharactersResource, PlayerPlugin};
+    use crate::player::PlayerPlugin;
     use crate::spawnable::SpawnProjectileEvent;
     use bevy::input::InputPlugin;
     use bevy::prelude::{App, Component, Events};
-    use thetawave_interface::character::{Character, CharacterType};
+    use thetawave_interface::character::{Character, CharacterType, CharactersResource};
     use thetawave_interface::game::historical_metrics::{
         MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
     };

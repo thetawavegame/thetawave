@@ -7,7 +7,7 @@ use bevy_ecs::{
     query::With,
     system::Query,
 };
-use bevy_math::{Quat, Vec2};
+use bevy_math::Vec2;
 use bevy_time::{Time, Timer};
 use leafwing_input_manager::prelude::ActionState;
 use serde::Deserialize;
