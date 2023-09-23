@@ -37,19 +37,24 @@ pub fn player_fire_weapon_system(
     mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
     run_resource: Res<CurrentRunProgressResource>,
 ) {
-    // first make sure that the players can shoot based on the level
-    let can_fire_weapon = run_resource.current_level.clone().is_some_and(|level| {
-        level.current_phase.is_some_and(|phase| {
+    // make sure that the players can shoot based on the current phase
+    let can_fire_weapon = if let Some(level) = &run_resource.current_level {
+        if let Some(phase) = &level.current_phase {
+            // if in a tutorial phase, you can only fire weapon if in the attack tutorial
             if let LevelPhaseType::Tutorial {
                 tutorial_lesson, ..
-            } = phase.phase_type
+            } = &phase.phase_type
             {
                 matches!(tutorial_lesson, TutorialLesson::Attack { .. })
             } else {
                 true
             }
-        })
-    });
+        } else {
+            false
+        }
+    } else {
+        false
+    };
 
     if can_fire_weapon {
         for (mut player_component, rb_vels, transform, action_state, entity) in
