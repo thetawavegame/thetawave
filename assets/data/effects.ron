@@ -100,7 +100,7 @@
 	),
 	Text(DamageDealt): (
 		effect_type: Text(DamageDealt),
-		effect_behaviors: [FadeOutMs((
+		effect_behaviors: [FadeOut((
 			mode: Once,
 			duration: (
 				secs: 0,
@@ -124,7 +124,7 @@
 	),
 	Text(ConsumableCollected(Money1)): (
 		effect_type: Text(ConsumableCollected(Money1)),
-		effect_behaviors: [FadeOutMs((
+		effect_behaviors: [FadeOut((
 			mode: Once,
 			duration: (
 				secs: 0,
@@ -148,7 +148,7 @@
 	),
 	Text(ConsumableCollected(Money3)): (
 		effect_type: Text(ConsumableCollected(Money3)),
-		effect_behaviors: [FadeOutMs((
+		effect_behaviors: [FadeOut((
 			mode: Once,
 			duration: (
 				secs: 0,
@@ -172,7 +172,7 @@
 	),
 	Text(ConsumableCollected(HealthWrench)): (
 		effect_type: Text(ConsumableCollected(HealthWrench)),
-		effect_behaviors: [FadeOutMs((
+		effect_behaviors: [FadeOut((
 			mode: Once,
 			duration: (
 				secs: 0,
@@ -196,7 +196,7 @@
 	),
 	Text(ConsumableCollected(Armor)): (
 		effect_type: Text(ConsumableCollected(Armor)),
-		effect_behaviors: [FadeOutMs((
+		effect_behaviors: [FadeOut((
 			mode: Once,
 			duration: (
 				secs: 0,

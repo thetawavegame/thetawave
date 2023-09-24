@@ -7,7 +7,7 @@ use super::EffectComponent;
 #[derive(Deserialize, Clone)]
 pub enum EffectBehavior {
     DespawnAfterAnimation,
-    FadeOutMs(Timer),
+    FadeOut(Timer),
 }
 
 /// Execute behaviors specific to effects
@@ -35,7 +35,7 @@ pub fn effect_execute_behavior_system(
                         commands.entity(entity).despawn_recursive();
                     }
                 }
-                EffectBehavior::FadeOutMs(timer) => {
+                EffectBehavior::FadeOut(timer) => {
                     timer.tick(time.delta());
 
                     // if the effect has a text field set the alpha to the percent left in the timer
@@ -95,7 +95,7 @@ pub fn fade_out_text_effect_behavior_system(
 ) {
     for (entity, mut effect_component, mut text) in effect_query.iter_mut() {
         if let Some(timer) = effect_component.behaviors.iter_mut().find_map(|behavior| {
-            if let EffectBehavior::FadeOutMs(timer) = behavior {
+            if let EffectBehavior::FadeOut(timer) = behavior {
                 Some(timer)
             } else {
                 None
