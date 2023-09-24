@@ -54,3 +54,33 @@ pub fn effect_execute_behavior_system(
         }
     }
 }
+
+/// Checks if each effect entity has a DespawnAfterAnimation behavior.
+/// Recursively despawns the effect entities with this behavior after
+/// its last animation frame is complete.
+pub fn despawn_after_animation_effect_behavior_system(
+    mut commands: Commands,
+    effect_query: Query<(
+        Entity,
+        &EffectComponent,
+        &TextureAtlasSprite,
+        &Handle<TextureAtlas>,
+    )>,
+    texture_atlases: Res<Assets<TextureAtlas>>,
+) {
+    // check if entity has  an `DespawnAfterAnimation` behavior
+    for (entity, effect_component, sprite, texture_atlas_handle) in effect_query.iter() {
+        if effect_component
+            .behaviors
+            .iter()
+            .any(|behavior| matches!(behavior, EffectBehavior::DespawnAfterAnimation))
+        {
+            // despawn effect entity after animation is complete
+            if let Some(texture_atlas) = texture_atlases.get(texture_atlas_handle) {
+                if sprite.index == texture_atlas.textures.len() - 1 {
+                    commands.entity(entity).despawn_recursive();
+                }
+            }
+        }
+    }
+}
