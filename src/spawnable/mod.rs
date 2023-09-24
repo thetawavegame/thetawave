@@ -1,5 +1,5 @@
 use crate::player::PlayerComponent;
-use crate::spawnable::effect::EffectBehaviorPlugin;
+use crate::spawnable::effect::{EffectBehaviorPlugin, EffectSpawnPlugin};
 use crate::{states, GameUpdateSet};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::Velocity;
@@ -35,7 +35,7 @@ pub use self::behavior_sequence::{
     BehaviorSequenceResource, MobBehaviorUpdateEvent,
 };
 
-pub use self::effect::{spawn_effect_system, EffectData, EffectsResource, SpawnEffectEvent};
+pub use self::effect::{EffectData, EffectsResource, SpawnEffectEvent};
 
 pub use self::consumable::{
     consumable_execute_behavior_system, spawn_consumable_system, ConsumableComponent,
@@ -97,7 +97,8 @@ impl Plugin for SpawnablePlugin {
             .add_event::<MobSegmentDestroyedEvent>()
             .add_event::<BossesDestroyedEvent>();
 
-        app.add_plugins(EffectBehaviorPlugin);
+        // Plugins for effects
+        app.add_plugins((EffectBehaviorPlugin, EffectSpawnPlugin));
 
         app.add_systems(
             Update,
@@ -113,7 +114,6 @@ impl Plugin for SpawnablePlugin {
                 mob_segment_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
                 projectile_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
                 consumable_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
-                spawn_effect_system, // event generated in projectile execute behavior, consumable execute behavior
                 spawn_projectile_system,
                 spawn_consumable_system, // event generated in mob execute behavior
                 spawn_mob_system,        // event generated in mob execute behavior
