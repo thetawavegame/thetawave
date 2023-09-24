@@ -55,7 +55,7 @@ pub fn effect_execute_behavior_system(
     }
 }
 
-/// Checks if each effect entity has a DespawnAfterAnimation behavior.
+/// Checks if each effect entity has a `DespawnAfterAnimation` behavior.
 /// Recursively despawns the effect entities with this behavior after
 /// its last animation frame is complete.
 pub fn despawn_after_animation_effect_behavior_system(
@@ -68,17 +68,52 @@ pub fn despawn_after_animation_effect_behavior_system(
     )>,
     texture_atlases: Res<Assets<TextureAtlas>>,
 ) {
-    // check if entity has  an `DespawnAfterAnimation` behavior
+    // Check if entity has  an `DespawnAfterAnimation` behavior
     for (entity, effect_component, sprite, texture_atlas_handle) in effect_query.iter() {
         if effect_component
             .behaviors
             .iter()
             .any(|behavior| matches!(behavior, EffectBehavior::DespawnAfterAnimation))
         {
-            // despawn effect entity after animation is complete
+            // Despawn effect entity after animation is complete
             if let Some(texture_atlas) = texture_atlases.get(texture_atlas_handle) {
                 if sprite.index == texture_atlas.textures.len() - 1 {
                     commands.entity(entity).despawn_recursive();
+                }
+            }
+        }
+    }
+}
+
+/// Checks if each effect entity with a text component has a `FadeOutMs` behavior.
+/// Recursively despawns the effect entities with this behavior after
+/// the timer is complete, while also fading out linearly based on the percent of time left in the timer.
+pub fn fade_out_text_effect_behavior_system(
+    mut commands: Commands,
+    mut effect_query: Query<(Entity, &mut EffectComponent, &mut Text)>,
+    time: Res<Time>,
+) {
+    for (entity, mut effect_component, mut text) in effect_query.iter_mut() {
+        if let Some(timer) = effect_component.behaviors.iter_mut().find_map(|behavior| {
+            if let EffectBehavior::FadeOutMs(timer) = behavior {
+                Some(timer)
+            } else {
+                None
+            }
+        }) {
+            timer.tick(time.delta());
+
+            // if the timer just completed, recursively despawn the effect entity, otherwise change the alpha
+            if timer.just_finished() {
+                commands.entity(entity).despawn_recursive();
+            } else {
+                // Set alpha in all sections in the text component
+                for color in text
+                    .sections
+                    .iter_mut()
+                    .map(|section| &mut section.style.color)
+                {
+                    color.set_a(timer.percent_left());
                 }
             }
         }
