@@ -37,10 +37,15 @@ pub fn effect_execute_behavior_system(
                 }
                 EffectBehavior::FadeOutMs(timer) => {
                     timer.tick(time.delta());
-                    if let Some(text) = text.as_mut().unwrap().sections.get_mut(0) {
-                        // set alpha color channel to the percent left in the timer
-                        text.style.color.set_a(timer.percent_left());
+
+                    // if the effect has a text field set the alpha to the percent left in the timer
+                    if let Some(text) = text.as_mut() {
+                        if let Some(section) = text.sections.get_mut(0) {
+                            section.style.color.set_a(timer.percent_left());
+                        }
                     }
+
+                    // despawn the effect entity when the timer is finished
                     if timer.just_finished() {
                         commands.entity(entity).despawn_recursive();
                     }
