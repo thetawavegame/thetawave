@@ -69,7 +69,7 @@ fn despawn_after_animation_effect_behavior_system(
     }
 }
 
-/// Checks if each effect entity with a `Text` component has a `FadeOutMs` behavior.
+/// Checks if each effect entity with a `Text` component has a `FadeOut` behavior.
 /// Recursively despawns the effect entities with this behavior after
 /// the timer is complete, while also fading out linearly based on the percent of time left in the timer.
 fn fade_out_text_effect_behavior_system(
