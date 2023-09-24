@@ -13,7 +13,11 @@ use thetawave_interface::spawnable::{EffectType, TextEffectType};
 use super::InitialMotion;
 
 mod behavior;
-pub use self::behavior::effect_execute_behavior_system;
+
+pub use behavior::{
+    despawn_after_animation_effect_behavior_system, fade_out_sprite_effect_behavior_system,
+    fade_out_text_effect_behavior_system,
+};
 
 /// Core component of effect
 #[derive(Component)]

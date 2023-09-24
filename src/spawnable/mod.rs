@@ -1,6 +1,10 @@
 use std::collections::HashMap;
 
 use crate::player::PlayerComponent;
+use crate::spawnable::effect::{
+    despawn_after_animation_effect_behavior_system, fade_out_sprite_effect_behavior_system,
+    fade_out_text_effect_behavior_system,
+};
 use crate::{states, GameUpdateSet};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::Velocity;
@@ -35,10 +39,7 @@ pub use self::behavior_sequence::{
     BehaviorSequenceResource, MobBehaviorUpdateEvent,
 };
 
-pub use self::effect::{
-    effect_execute_behavior_system, spawn_effect_system, EffectData, EffectsResource,
-    SpawnEffectEvent,
-};
+pub use self::effect::{spawn_effect_system, EffectData, EffectsResource, SpawnEffectEvent};
 
 pub use self::consumable::{
     consumable_execute_behavior_system, spawn_consumable_system, ConsumableComponent,
@@ -113,7 +114,10 @@ impl Plugin for SpawnablePlugin {
                     .in_set(GameUpdateSet::ApplyDisconnectedBehaviors),
                 mob_segment_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
                 projectile_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
-                effect_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
+                despawn_after_animation_effect_behavior_system
+                    .in_set(GameUpdateSet::ExecuteBehavior),
+                fade_out_text_effect_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
+                fade_out_sprite_effect_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
                 consumable_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
                 spawn_effect_system, // event generated in projectile execute behavior, consumable execute behavior
                 spawn_projectile_system,
