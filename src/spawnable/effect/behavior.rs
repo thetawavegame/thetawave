@@ -85,7 +85,7 @@ pub fn despawn_after_animation_effect_behavior_system(
     }
 }
 
-/// Checks if each effect entity with a text component has a `FadeOutMs` behavior.
+/// Checks if each effect entity with a `Text` component has a `FadeOutMs` behavior.
 /// Recursively despawns the effect entities with this behavior after
 /// the timer is complete, while also fading out linearly based on the percent of time left in the timer.
 pub fn fade_out_text_effect_behavior_system(
@@ -115,6 +115,34 @@ pub fn fade_out_text_effect_behavior_system(
                 {
                     color.set_a(timer.percent_left());
                 }
+            }
+        }
+    }
+}
+
+/// Checks if each effect entity with a `TextureAtlasSprite` component has a `FadeOutMs` behavior.
+/// Recursively despawns the effect entities with this behavior after
+/// the timer is complete, while also fading out linearly based on the percent of time left in the timer.
+pub fn fade_out_sprite_effect_behavior_system(
+    mut commands: Commands,
+    mut effect_query: Query<(Entity, &mut EffectComponent, &mut TextureAtlasSprite)>,
+    time: Res<Time>,
+) {
+    for (entity, mut effect_component, mut sprite) in effect_query.iter_mut() {
+        if let Some(timer) = effect_component.behaviors.iter_mut().find_map(|behavior| {
+            if let EffectBehavior::FadeOut(timer) = behavior {
+                Some(timer)
+            } else {
+                None
+            }
+        }) {
+            timer.tick(time.delta());
+
+            // if the timer just completed, recursively despawn the effect entity, otherwise change the alpha
+            if timer.just_finished() {
+                commands.entity(entity).despawn_recursive();
+            } else {
+                sprite.color.set_a(timer.percent_left());
             }
         }
     }
