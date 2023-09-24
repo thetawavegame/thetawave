@@ -15,8 +15,9 @@ use super::InitialMotion;
 mod behavior;
 
 pub use behavior::{
-    despawn_after_animation_effect_behavior_system, fade_out_sprite_effect_behavior_system,
-    fade_out_text_effect_behavior_system,
+    despawn_after_animation_effect_behavior_system,
+    fade_out_despawn_after_animation_effect_behavior_system,
+    fade_out_sprite_effect_behavior_system, fade_out_text_effect_behavior_system,
 };
 
 /// Core component of effect

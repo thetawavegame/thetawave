@@ -1,7 +1,15 @@
 {
 	AllyBlastExplosion: (
 		effect_type: AllyBlastExplosion,
-		effect_behaviors: [DespawnAfterAnimation],
+		effect_behaviors: [
+			FadeOutAndDespawnAfterAnimation((
+				elapsed: (
+					secs: 0,
+					nanos: 0,
+				),
+				paused: false,
+			))
+		],
 		z_level: 10.0,
 		animation: (
 			direction: Forward,
@@ -10,7 +18,15 @@
 	),
 	EnemyBlastExplosion: (
 		effect_type: EnemyBlastExplosion,
-		effect_behaviors: [DespawnAfterAnimation],
+		effect_behaviors: [
+			FadeOutAndDespawnAfterAnimation((
+				elapsed: (
+					secs: 0,
+					nanos: 0,
+				),
+				paused: false,
+			))
+		],
 		z_level: 10.5,
 		animation: (
 			direction: Forward,
@@ -19,7 +35,15 @@
 	),
 	AllyBlastDespawn: (
 		effect_type: AllyBlastDespawn,
-		effect_behaviors: [DespawnAfterAnimation],
+		effect_behaviors: [
+			FadeOutAndDespawnAfterAnimation((
+				elapsed: (
+					secs: 0,
+					nanos: 0,
+				),
+				paused: false,
+			)),
+		],
 		z_level: 9.0,
 		animation: (
 			direction: Forward,
@@ -28,7 +52,15 @@
 	),
 	EnemyBlastDespawn: (
 		effect_type: EnemyBlastDespawn,
-		effect_behaviors: [DespawnAfterAnimation],
+		effect_behaviors: [
+			FadeOutAndDespawnAfterAnimation((
+				elapsed: (
+					secs: 0,
+					nanos: 0,
+				),
+				paused: false,
+			))
+		],
 		z_level: 9.0,
 		animation: (
 			direction: Forward,
@@ -37,7 +69,15 @@
 	),
 	MobExplosion: (
 		effect_type: MobExplosion,
-		effect_behaviors: [DespawnAfterAnimation],
+		effect_behaviors: [
+			FadeOutAndDespawnAfterAnimation((
+				elapsed: (
+					secs: 0,
+					nanos: 0,
+				),
+				paused: false,
+			))
+		],
 		z_level: -5.0,
 		animation: (
 			direction: Forward,
@@ -46,7 +86,15 @@
 	),
 	ConsumableDespawn: (
 		effect_type: ConsumableDespawn,
-		effect_behaviors: [DespawnAfterAnimation],
+		effect_behaviors: [
+			FadeOutAndDespawnAfterAnimation((
+				elapsed: (
+					secs: 0,
+					nanos: 0,
+				),
+				paused: false,
+			))
+		],
 		z_level: 9.0,
 		animation: (
 			direction: Forward,
@@ -64,7 +112,15 @@
 	),
 	AllyBulletDespawn: (
 		effect_type: AllyBulletDespawn,
-		effect_behaviors: [DespawnAfterAnimation],
+		effect_behaviors: [
+			FadeOutAndDespawnAfterAnimation((
+				elapsed: (
+					secs: 0,
+					nanos: 0,
+				),
+				paused: false,
+			))
+		],
 		z_level: 9.0,
 		animation: (
 			direction: Forward,
@@ -73,7 +129,15 @@
 	),
 	EnemyBulletDespawn: (
 		effect_type: EnemyBulletDespawn,
-		effect_behaviors: [DespawnAfterAnimation],
+		effect_behaviors: [
+			FadeOutAndDespawnAfterAnimation((
+				elapsed: (
+					secs: 0,
+					nanos: 0,
+				),
+				paused: false,
+			))
+		],
 		z_level: 9.0,
 		animation: (
 			direction: Forward,
@@ -82,7 +146,15 @@
 	),
 	AllyBulletExplosion: (
 		effect_type: AllyBulletExplosion,
-		effect_behaviors: [DespawnAfterAnimation],
+		effect_behaviors: [
+			FadeOutAndDespawnAfterAnimation((
+				elapsed: (
+					secs: 0,
+					nanos: 0,
+				),
+				paused: false,
+			))
+		],
 		z_level: 9.0,
 		animation: (
 			direction: Forward,
@@ -91,7 +163,15 @@
 	),
 	EnemyBulletExplosion: (
 		effect_type: EnemyBulletExplosion,
-		effect_behaviors: [DespawnAfterAnimation],
+		effect_behaviors: [
+			FadeOutAndDespawnAfterAnimation((
+				elapsed: (
+					secs: 0,
+					nanos: 0,
+				),
+				paused: false,
+			))
+		],
 		z_level: 9.0,
 		animation: (
 			direction: Forward,
