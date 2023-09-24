@@ -1,17 +1,12 @@
-use std::collections::HashMap;
-
 use crate::player::PlayerComponent;
-use crate::spawnable::effect::{
-    despawn_after_animation_effect_behavior_system,
-    fade_out_despawn_after_animation_effect_behavior_system,
-    fade_out_sprite_effect_behavior_system, fade_out_text_effect_behavior_system,
-};
+use crate::spawnable::effect::EffectBehaviorPlugin;
 use crate::{states, GameUpdateSet};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::Velocity;
 use rand::{thread_rng, Rng};
 use ron::de::from_bytes;
 use serde::Deserialize;
+use std::collections::HashMap;
 use thetawave_interface::spawnable::TextEffectType;
 pub use thetawave_interface::spawnable::{
     ConsumableType, EffectType, MobType, ProjectileType, SpawnableType,
@@ -102,6 +97,8 @@ impl Plugin for SpawnablePlugin {
             .add_event::<MobSegmentDestroyedEvent>()
             .add_event::<BossesDestroyedEvent>();
 
+        app.add_plugins(EffectBehaviorPlugin);
+
         app.add_systems(
             Update,
             (
@@ -115,12 +112,6 @@ impl Plugin for SpawnablePlugin {
                     .in_set(GameUpdateSet::ApplyDisconnectedBehaviors),
                 mob_segment_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
                 projectile_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
-                despawn_after_animation_effect_behavior_system
-                    .in_set(GameUpdateSet::ExecuteBehavior),
-                fade_out_text_effect_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
-                fade_out_sprite_effect_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
-                fade_out_despawn_after_animation_effect_behavior_system
-                    .in_set(GameUpdateSet::ExecuteBehavior),
                 consumable_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
                 spawn_effect_system, // event generated in projectile execute behavior, consumable execute behavior
                 spawn_projectile_system,

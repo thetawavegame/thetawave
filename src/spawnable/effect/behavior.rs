@@ -1,9 +1,32 @@
 use crate::animation::AnimationComponent;
+use crate::GameUpdateSet;
 use bevy::prelude::*;
 use bevy::time::Stopwatch;
 use serde::Deserialize;
+use thetawave_interface::states;
 
 use super::EffectComponent;
+
+/// Plugin for handling Effect Behaviors
+pub struct EffectBehaviorPlugin;
+
+impl Plugin for EffectBehaviorPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(
+            Update,
+            (
+                despawn_after_animation_effect_behavior_system
+                    .in_set(GameUpdateSet::ExecuteBehavior),
+                fade_out_text_effect_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
+                fade_out_sprite_effect_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
+                fade_out_despawn_after_animation_effect_behavior_system
+                    .in_set(GameUpdateSet::ExecuteBehavior),
+            )
+                .run_if(in_state(states::AppStates::Game))
+                .run_if(in_state(states::GameStates::Playing)),
+        );
+    }
+}
 
 /// Types of behaviors that can be performed by effects
 #[derive(Deserialize, Clone)]
@@ -16,7 +39,7 @@ pub enum EffectBehavior {
 /// Checks if each effect entity has a `DespawnAfterAnimation` behavior.
 /// Recursively despawns the effect entities with this behavior after
 /// its last animation frame is complete.
-pub fn despawn_after_animation_effect_behavior_system(
+fn despawn_after_animation_effect_behavior_system(
     mut commands: Commands,
     effect_query: Query<(
         Entity,
@@ -49,7 +72,7 @@ pub fn despawn_after_animation_effect_behavior_system(
 /// Checks if each effect entity with a `Text` component has a `FadeOutMs` behavior.
 /// Recursively despawns the effect entities with this behavior after
 /// the timer is complete, while also fading out linearly based on the percent of time left in the timer.
-pub fn fade_out_text_effect_behavior_system(
+fn fade_out_text_effect_behavior_system(
     mut commands: Commands,
     mut effect_query: Query<(Entity, &mut EffectComponent, &mut Text)>,
     time: Res<Time>,
@@ -84,7 +107,7 @@ pub fn fade_out_text_effect_behavior_system(
 /// Checks if each effect entity with a `TextureAtlasSprite` component has a `FadeOutMs` behavior.
 /// Recursively despawns the effect entities with this behavior after
 /// the timer is complete, while also fading out linearly based on the percent of time left in the timer.
-pub fn fade_out_sprite_effect_behavior_system(
+fn fade_out_sprite_effect_behavior_system(
     mut commands: Commands,
     mut effect_query: Query<(Entity, &mut EffectComponent, &mut TextureAtlasSprite)>,
     time: Res<Time>,
@@ -112,7 +135,7 @@ pub fn fade_out_sprite_effect_behavior_system(
 /// Checks if each effect entity has a `FadeOutAndDespawnAfterAnimation` behavior.
 /// Recursively despawns the effect entities with this behavior after
 /// the animation is complete, while also fading out along an exponential decay curve.
-pub fn fade_out_despawn_after_animation_effect_behavior_system(
+fn fade_out_despawn_after_animation_effect_behavior_system(
     mut commands: Commands,
     mut effect_query: Query<(
         Entity,

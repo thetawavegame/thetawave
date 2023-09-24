@@ -1,3 +1,4 @@
+use super::InitialMotion;
 use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::EffectAssets,
@@ -10,15 +11,9 @@ use serde::Deserialize;
 use std::{collections::HashMap, ops::Range};
 use thetawave_interface::spawnable::{EffectType, TextEffectType};
 
-use super::InitialMotion;
-
 mod behavior;
 
-pub use behavior::{
-    despawn_after_animation_effect_behavior_system,
-    fade_out_despawn_after_animation_effect_behavior_system,
-    fade_out_sprite_effect_behavior_system, fade_out_text_effect_behavior_system,
-};
+pub use self::behavior::EffectBehaviorPlugin;
 
 /// Core component of effect
 #[derive(Component)]
