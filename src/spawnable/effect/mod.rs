@@ -1,6 +1,9 @@
 use super::InitialMotion;
 use crate::animation::AnimationData;
+use crate::spawnable::effect::behavior::EffectBehaviorPlugin;
+use crate::spawnable::effect::spawn::EffectSpawnPlugin;
 use bevy::prelude::*;
+use ron::de::from_bytes;
 use serde::Deserialize;
 use std::{collections::HashMap, ops::Range};
 use thetawave_interface::spawnable::{EffectType, TextEffectType};
@@ -8,8 +11,26 @@ use thetawave_interface::spawnable::{EffectType, TextEffectType};
 mod behavior;
 mod spawn;
 
-pub use self::behavior::EffectBehaviorPlugin;
-pub use self::spawn::EffectSpawnPlugin;
+pub struct EffectPlugin;
+
+impl Plugin for EffectPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_plugins((EffectBehaviorPlugin, EffectSpawnPlugin))
+            .add_event::<SpawnEffectEvent>()
+            .insert_resource(EffectsResource {
+                effects: from_bytes::<HashMap<EffectType, EffectData>>(include_bytes!(
+                    "../../../assets/data/effects.ron"
+                ))
+                .expect("Failed to parse EffectsResource from 'effects.ron'"),
+            })
+            .insert_resource(TextEffectsResource {
+                text_effects: from_bytes::<HashMap<TextEffectType, TextEffectData>>(
+                    include_bytes!("../../../assets/data/text_effects.ron"),
+                )
+                .expect("Failed to parse TextEffectsResource from 'text_effects.ron'"),
+            });
+    }
+}
 
 /// Core component of effect
 #[derive(Component)]

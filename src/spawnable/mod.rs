@@ -1,5 +1,5 @@
 use crate::player::PlayerComponent;
-use crate::spawnable::effect::{EffectBehaviorPlugin, EffectSpawnPlugin};
+use crate::spawnable::effect::EffectPlugin;
 use crate::{states, GameUpdateSet};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::Velocity;
@@ -63,18 +63,6 @@ impl Plugin for SpawnablePlugin {
             from_bytes::<MobSegmentsResource>(include_bytes!("../../assets/data/mob_segments.ron"))
                 .expect("Failed to parse MobSegmentsResource from 'mob_segments.ron'"),
         )
-        .insert_resource(EffectsResource {
-            effects: from_bytes::<HashMap<EffectType, EffectData>>(include_bytes!(
-                "../../assets/data/effects.ron"
-            ))
-            .expect("Failed to parse EffectsResource from 'effects.ron'"),
-        })
-        .insert_resource(TextEffectsResource {
-            text_effects: from_bytes::<HashMap<TextEffectType, TextEffectData>>(include_bytes!(
-                "../../assets/data/text_effects.ron"
-            ))
-            .expect("Failed to parse TextEffectsResource from 'text_effects.ron'"),
-        })
         .insert_resource(ProjectileResource {
             projectiles: from_bytes::<HashMap<ProjectileType, ProjectileData>>(include_bytes!(
                 "../../assets/data/projectiles.ron"
@@ -88,8 +76,7 @@ impl Plugin for SpawnablePlugin {
             .expect("Failed to parse ConsumableResource from 'consumables.ron'"),
         });
 
-        app.add_event::<SpawnEffectEvent>()
-            .add_event::<SpawnConsumableEvent>()
+        app.add_event::<SpawnConsumableEvent>()
             .add_event::<SpawnProjectileEvent>()
             .add_event::<SpawnMobEvent>()
             .add_event::<MobBehaviorUpdateEvent>()
@@ -97,8 +84,7 @@ impl Plugin for SpawnablePlugin {
             .add_event::<MobSegmentDestroyedEvent>()
             .add_event::<BossesDestroyedEvent>();
 
-        // Plugins for effects
-        app.add_plugins((EffectBehaviorPlugin, EffectSpawnPlugin));
+        app.add_plugins(EffectPlugin);
 
         app.add_systems(
             Update,
