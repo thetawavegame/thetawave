@@ -7,7 +7,6 @@ use rand::{thread_rng, Rng};
 use ron::de::from_bytes;
 use serde::Deserialize;
 use std::collections::HashMap;
-use thetawave_interface::spawnable::TextEffectType;
 pub use thetawave_interface::spawnable::{
     ConsumableType, EffectType, MobType, ProjectileType, SpawnableType,
 };
@@ -19,7 +18,6 @@ mod effect;
 mod mob;
 mod projectile;
 
-use self::effect::{TextEffectData, TextEffectsResource};
 pub use self::mob::*;
 pub use self::projectile::{
     projectile_execute_behavior_system, spawn_projectile_system, ProjectileComponent,
