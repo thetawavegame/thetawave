@@ -25,7 +25,10 @@ impl Plugin for EffectSpawnPlugin {
     }
 }
 
-/// Handles spawning of effects from events
+/// `spawn_effect_system` handles the spawning of visual effects based on `SpawnEffectEvent` events.
+///
+/// This system iterates through each `SpawnEffectEvent`, and if the event specifies a non-text effect,
+/// it triggers the spawning of the corresponding effect.
 fn spawn_effect_system(
     mut commands: Commands,
     mut event_reader: EventReader<SpawnEffectEvent>,
@@ -46,7 +49,10 @@ fn spawn_effect_system(
     }
 }
 
-/// Handles spawning of effects from events
+/// `spawn_text_effect_system` handles the spawning of text effects based on `SpawnEffectEvent` events.
+///
+/// This system iterates through each `SpawnEffectEvent`, and if the event specifies a text effect,
+/// it triggers the spawning of the corresponding text effect.
 fn spawn_text_effect_system(
     mut commands: Commands,
     mut event_reader: EventReader<SpawnEffectEvent>,
@@ -69,7 +75,10 @@ fn spawn_text_effect_system(
     }
 }
 
-/// Spawn a text effect
+/// `spawn_text_effect` creates and spawns a text effect entity based on the provided parameters.
+///
+/// This function constructs a text effect entity with the specified text, effect type, and transform,
+/// and adds it to the ECS world.
 fn spawn_text_effect(
     effect_text: Option<String>,
     text_effect_type: &TextEffectType,
@@ -129,7 +138,10 @@ fn spawn_text_effect(
         .insert(GameCleanup);
 }
 
-/// Spawn a non-text effect from effect type
+/// `spawn_effect` creates and spawns a non-text effect entity based on the provided parameters.
+///
+/// This function constructs a non-text effect entity with the specified effect type, transform, and initial motion,
+/// and adds it to the ECS world.
 fn spawn_effect(
     effect_type: &EffectType,
     effects_resource: &EffectsResource,
