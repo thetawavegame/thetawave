@@ -18,7 +18,7 @@ impl Plugin for EffectSpawnPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            (spawn_effect_system)
+            (spawn_effect_system, spawn_text_effect_system)
                 .run_if(in_state(states::AppStates::Game))
                 .run_if(in_state(states::GameStates::Playing)),
         );
@@ -29,10 +29,30 @@ impl Plugin for EffectSpawnPlugin {
 fn spawn_effect_system(
     mut commands: Commands,
     mut event_reader: EventReader<SpawnEffectEvent>,
+    effects_resource: Res<EffectsResource>,
+    effect_assets: Res<EffectAssets>,
+) {
+    for event in event_reader.iter() {
+        if !matches!(event.effect_type, EffectType::Text(..)) {
+            spawn_effect(
+                &event.effect_type,
+                &effects_resource,
+                &effect_assets,
+                event.transform,
+                event.initial_motion.clone(),
+                &mut commands,
+            );
+        }
+    }
+}
+
+/// Handles spawning of effects from events
+fn spawn_text_effect_system(
+    mut commands: Commands,
+    mut event_reader: EventReader<SpawnEffectEvent>,
     asset_server: Res<AssetServer>,
     effects_resource: Res<EffectsResource>,
     text_effects_resource: Res<TextEffectsResource>,
-    effect_assets: Res<EffectAssets>,
 ) {
     for event in event_reader.iter() {
         if let EffectType::Text(text_effect_type) = &event.effect_type {
@@ -44,15 +64,6 @@ fn spawn_effect_system(
                 &asset_server,
                 &text_effects_resource,
                 &effects_resource,
-            );
-        } else {
-            spawn_effect(
-                &event.effect_type,
-                &effects_resource,
-                &effect_assets,
-                event.transform,
-                event.initial_motion.clone(),
-                &mut commands,
             );
         }
     }
