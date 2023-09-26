@@ -1,15 +1,7 @@
 {
 	AllyBlastExplosion: (
 		effect_type: AllyBlastExplosion,
-		effect_behaviors: [
-			FadeOutAndDespawnAfterAnimation((
-				elapsed: (
-					secs: 0,
-					nanos: 0,
-				),
-				paused: false,
-			))
-		],
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
 		z_level: 10.0,
 		animation: (
 			direction: Forward,
@@ -18,15 +10,7 @@
 	),
 	EnemyBlastExplosion: (
 		effect_type: EnemyBlastExplosion,
-		effect_behaviors: [
-			FadeOutAndDespawnAfterAnimation((
-				elapsed: (
-					secs: 0,
-					nanos: 0,
-				),
-				paused: false,
-			))
-		],
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
 		z_level: 10.5,
 		animation: (
 			direction: Forward,
@@ -35,15 +19,7 @@
 	),
 	AllyBlastDespawn: (
 		effect_type: AllyBlastDespawn,
-		effect_behaviors: [
-			FadeOutAndDespawnAfterAnimation((
-				elapsed: (
-					secs: 0,
-					nanos: 0,
-				),
-				paused: false,
-			)),
-		],
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
 		z_level: 9.0,
 		animation: (
 			direction: Forward,
@@ -52,15 +28,7 @@
 	),
 	EnemyBlastDespawn: (
 		effect_type: EnemyBlastDespawn,
-		effect_behaviors: [
-			FadeOutAndDespawnAfterAnimation((
-				elapsed: (
-					secs: 0,
-					nanos: 0,
-				),
-				paused: false,
-			))
-		],
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
 		z_level: 9.0,
 		animation: (
 			direction: Forward,
@@ -69,15 +37,7 @@
 	),
 	MobExplosion: (
 		effect_type: MobExplosion,
-		effect_behaviors: [
-			FadeOutAndDespawnAfterAnimation((
-				elapsed: (
-					secs: 0,
-					nanos: 0,
-				),
-				paused: false,
-			))
-		],
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
 		z_level: -5.0,
 		animation: (
 			direction: Forward,
@@ -86,15 +46,7 @@
 	),
 	ConsumableDespawn: (
 		effect_type: ConsumableDespawn,
-		effect_behaviors: [
-			FadeOutAndDespawnAfterAnimation((
-				elapsed: (
-					secs: 0,
-					nanos: 0,
-				),
-				paused: false,
-			))
-		],
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
 		z_level: 9.0,
 		animation: (
 			direction: Forward,
@@ -103,7 +55,7 @@
 	),
 	BarrierGlow: (
 		effect_type: BarrierGlow,
-		effect_behaviors: [],
+		effect_behaviors_data: [],
 		z_level: 25.0,
 		animation: (
 			direction: PingPong(Forward),
@@ -112,15 +64,7 @@
 	),
 	AllyBulletDespawn: (
 		effect_type: AllyBulletDespawn,
-		effect_behaviors: [
-			FadeOutAndDespawnAfterAnimation((
-				elapsed: (
-					secs: 0,
-					nanos: 0,
-				),
-				paused: false,
-			))
-		],
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
 		z_level: 9.0,
 		animation: (
 			direction: Forward,
@@ -129,15 +73,7 @@
 	),
 	EnemyBulletDespawn: (
 		effect_type: EnemyBulletDespawn,
-		effect_behaviors: [
-			FadeOutAndDespawnAfterAnimation((
-				elapsed: (
-					secs: 0,
-					nanos: 0,
-				),
-				paused: false,
-			))
-		],
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
 		z_level: 9.0,
 		animation: (
 			direction: Forward,
@@ -146,15 +82,7 @@
 	),
 	AllyBulletExplosion: (
 		effect_type: AllyBulletExplosion,
-		effect_behaviors: [
-			FadeOutAndDespawnAfterAnimation((
-				elapsed: (
-					secs: 0,
-					nanos: 0,
-				),
-				paused: false,
-			))
-		],
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
 		z_level: 9.0,
 		animation: (
 			direction: Forward,
@@ -163,15 +91,7 @@
 	),
 	EnemyBulletExplosion: (
 		effect_type: EnemyBulletExplosion,
-		effect_behaviors: [
-			FadeOutAndDespawnAfterAnimation((
-				elapsed: (
-					secs: 0,
-					nanos: 0,
-				),
-				paused: false,
-			))
-		],
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
 		z_level: 9.0,
 		animation: (
 			direction: Forward,
@@ -180,22 +100,7 @@
 	),
 	Text(DamageDealt): (
 		effect_type: Text(DamageDealt),
-		effect_behaviors: [FadeOut((
-			mode: Once,
-			duration: (
-				secs: 0,
-				nanos: 550000000,
-			),
-			stopwatch: (
-				elapsed: (
-					secs: 0,
-					nanos: 0,
-				),
-				paused: false, 
-			),
-			finished: false,
-			times_finished_this_tick: 0,
-		))],
+		effect_behaviors_data: [FadeOut(0.55)],
 		z_level: 10.0,
 		animation: (
 			direction: None,
@@ -204,22 +109,7 @@
 	),
 	Text(ConsumableCollected(Money1)): (
 		effect_type: Text(ConsumableCollected(Money1)),
-		effect_behaviors: [FadeOut((
-			mode: Once,
-			duration: (
-				secs: 0,
-				nanos: 550000000,
-			),
-			stopwatch: (
-				elapsed: (
-					secs: 0,
-					nanos: 0,
-				),
-				paused: false, 
-			),
-			finished: false,
-			times_finished_this_tick: 0,
-		))],
+		effect_behaviors_data: [FadeOut(0.55)],
 		z_level: 10.0,
 		animation: (
 			direction: None,
@@ -228,22 +118,7 @@
 	),
 	Text(ConsumableCollected(Money3)): (
 		effect_type: Text(ConsumableCollected(Money3)),
-		effect_behaviors: [FadeOut((
-			mode: Once,
-			duration: (
-				secs: 0,
-				nanos: 550000000,
-			),
-			stopwatch: (
-				elapsed: (
-					secs: 0,
-					nanos: 0,
-				),
-				paused: false, 
-			),
-			finished: false,
-			times_finished_this_tick: 0,
-		))],
+		effect_behaviors_data: [FadeOut(0.55)],
 		z_level: 10.0,
 		animation: (
 			direction: None,
@@ -252,22 +127,7 @@
 	),
 	Text(ConsumableCollected(HealthWrench)): (
 		effect_type: Text(ConsumableCollected(HealthWrench)),
-		effect_behaviors: [FadeOut((
-			mode: Once,
-			duration: (
-				secs: 0,
-				nanos: 550000000,
-			),
-			stopwatch: (
-				elapsed: (
-					secs: 0,
-					nanos: 0,
-				),
-				paused: false, 
-			),
-			finished: false,
-			times_finished_this_tick: 0,
-		))],
+		effect_behaviors_data: [FadeOut(0.55)],
 		z_level: 10.0,
 		animation: (
 			direction: None,
@@ -276,22 +136,7 @@
 	),
 	Text(ConsumableCollected(Armor)): (
 		effect_type: Text(ConsumableCollected(Armor)),
-		effect_behaviors: [FadeOut((
-			mode: Once,
-			duration: (
-				secs: 0,
-				nanos: 550000000,
-			),
-			stopwatch: (
-				elapsed: (
-					secs: 0,
-					nanos: 0,
-				),
-				paused: false, 
-			),
-			finished: false,
-			times_finished_this_tick: 0,
-		))],
+		effect_behaviors_data: [FadeOut(0.55)],
 		z_level: 10.0,
 		animation: (
 			direction: None,

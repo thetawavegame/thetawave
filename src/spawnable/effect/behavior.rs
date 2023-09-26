@@ -32,12 +32,36 @@ impl Plugin for EffectBehaviorPlugin {
     }
 }
 
-/// Enumerates the types of behaviors that can be performed by effects.
+/// Enumerates the types of behaviors that can be performed by effects,
+/// uses data types for tracking and updating the behavior.
 #[derive(Deserialize, Clone)]
 pub enum EffectBehavior {
     DespawnAfterAnimation,
     FadeOut(Timer),
     FadeOutAndDespawnAfterAnimation(Stopwatch),
+}
+
+/// Enumerates the types of behaviors that can be performed by effects using
+/// primitive data types for initializing `EffectBehavior` counterparts.
+#[derive(Deserialize, Clone)]
+pub enum EffectBehaviorData {
+    DespawnAfterAnimation,
+    FadeOut(f32),
+    FadeOutAndDespawnAfterAnimation,
+}
+
+impl From<EffectBehaviorData> for EffectBehavior {
+    fn from(value: EffectBehaviorData) -> Self {
+        match value {
+            EffectBehaviorData::DespawnAfterAnimation => EffectBehavior::DespawnAfterAnimation,
+            EffectBehaviorData::FadeOut(seconds) => {
+                EffectBehavior::FadeOut(Timer::from_seconds(seconds, TimerMode::Once))
+            }
+            EffectBehaviorData::FadeOutAndDespawnAfterAnimation => {
+                EffectBehavior::FadeOutAndDespawnAfterAnimation(Stopwatch::new())
+            }
+        }
+    }
 }
 
 /// Checks if each effect entity has a `DespawnAfterAnimation` behavior.

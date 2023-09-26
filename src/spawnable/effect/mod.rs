@@ -1,3 +1,5 @@
+use self::behavior::EffectBehaviorData;
+
 use super::InitialMotion;
 use crate::animation::AnimationData;
 use crate::spawnable::effect::behavior::EffectBehaviorPlugin;
@@ -54,9 +56,23 @@ pub struct EffectData {
     /// Sprite texture
     pub animation: AnimationData,
     /// Behaviors specific to effects
-    pub effect_behaviors: Vec<behavior::EffectBehavior>,
+    pub effect_behaviors_data: Vec<EffectBehaviorData>,
     /// Z level of transform
     pub z_level: f32,
+}
+
+impl From<&EffectData> for EffectComponent {
+    fn from(value: &EffectData) -> Self {
+        EffectComponent {
+            effect_type: value.effect_type.clone(),
+            behaviors: value
+                .effect_behaviors_data
+                .clone()
+                .into_iter()
+                .map(|data| data.into())
+                .collect(),
+        }
+    }
 }
 
 #[derive(Deserialize, Debug)]

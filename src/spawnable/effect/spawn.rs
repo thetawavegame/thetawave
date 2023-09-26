@@ -131,10 +131,7 @@ fn spawn_text_effect(
             spawnable_type: SpawnableType::Effect(EffectType::Text(text_effect_type.clone())),
             ..default()
         })
-        .insert(EffectComponent {
-            effect_type: EffectType::Text(text_effect_type.clone()),
-            behaviors: effect_data.effect_behaviors.clone(),
-        })
+        .insert(EffectComponent::from(effect_data))
         .insert(GameCleanup);
 }
 
@@ -172,10 +169,7 @@ fn spawn_effect(
             timer: Timer::from_seconds(effect_data.animation.frame_duration, TimerMode::Repeating),
             direction: effect_data.animation.direction.clone(),
         })
-        .insert(EffectComponent {
-            effect_type: effect_data.effect_type.clone(),
-            behaviors: effect_data.effect_behaviors.clone(),
-        })
+        .insert(EffectComponent::from(effect_data))
         .insert(SpawnableComponent {
             spawnable_type: SpawnableType::Effect(effect_data.effect_type.clone()),
             ..default()
