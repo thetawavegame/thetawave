@@ -11,6 +11,11 @@ use thetawave_interface::spawnable::{EffectType, TextEffectType};
 mod behavior;
 mod spawn;
 
+/// `EffectPlugin` is responsible for managing and spawning in-game effects.
+///
+/// This plugin encapsulates all functionalities related to effect spawnables within the game.
+/// It loads effect data from external RON files, registers necessary events and resources,
+/// and initializes other plugins for managing effects.
 pub struct EffectPlugin;
 
 impl Plugin for EffectPlugin {

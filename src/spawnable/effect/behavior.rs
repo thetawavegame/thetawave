@@ -7,7 +7,11 @@ use thetawave_interface::states;
 
 use super::EffectComponent;
 
-/// Plugin for handling Effect Behaviors
+/// `EffectBehaviorPlugin` manages the behaviors of in-game effects.
+///
+/// This plugin is responsible for updating and managing the behaviors of effects during the game.
+/// It adds systems to the app which handle the behavior of effects based on their type and state,
+/// such as despawning effects after their animation completes, or fading out text and sprite effects.
 pub struct EffectBehaviorPlugin;
 
 impl Plugin for EffectBehaviorPlugin {

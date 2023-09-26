@@ -9,6 +9,9 @@ use rand::Rng;
 use thetawave_interface::spawnable::{EffectType, SpawnableType, TextEffectType};
 use thetawave_interface::states;
 
+/// `EffectSpawnPlugin` manages the spawning of in-game effects.
+///
+/// This plugin is responsible for adding the system that handles the spawning of effects during the game.
 pub struct EffectSpawnPlugin;
 
 impl Plugin for EffectSpawnPlugin {
