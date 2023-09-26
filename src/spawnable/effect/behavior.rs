@@ -32,7 +32,7 @@ impl Plugin for EffectBehaviorPlugin {
     }
 }
 
-/// Types of behaviors that can be performed by effects
+/// Enumerates the types of behaviors that can be performed by effects.
 #[derive(Deserialize, Clone)]
 pub enum EffectBehavior {
     DespawnAfterAnimation,
