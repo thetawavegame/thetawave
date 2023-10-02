@@ -132,6 +132,39 @@ impl From<&Character> for PlayerComponent {
         }
     }
 }
+impl PlayerComponent {
+    pub fn from_character_with_params(
+        character: &Character,
+        spawn_params: &InputRestrictionsAtSpawn,
+    ) -> Self {
+        let mut res = Self::from(character);
+        if spawn_params.forbid_main_attack_reason.is_some() {
+            res.disable_main_attacks();
+        }
+        if spawn_params.forbid_special_attack_reason.is_some() {
+            res.disable_special_attacks();
+        }
+        res
+    }
+    pub fn disable_main_attacks(&mut self) {
+        self.fire_timer.pause();
+    }
+    pub fn disable_special_attacks(&mut self) {
+        self.ability_cooldown_timer.pause();
+    }
+    pub fn enable_main_attacks(&mut self) {
+        self.fire_timer.unpause();
+    }
+    pub fn main_attack_is_enabled(&self) -> bool {
+        !self.fire_timer.paused()
+    }
+    pub fn ability_is_enabled(&self) -> bool {
+        !self.ability_cooldown_timer.paused()
+    }
+    pub fn enable_special_attacks(&mut self) {
+        self.ability_cooldown_timer.unpause();
+    }
+}
 
 #[derive(Deserialize, Clone, Debug)]
 pub enum AbilityType {
