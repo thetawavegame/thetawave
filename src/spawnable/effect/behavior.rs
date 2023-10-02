@@ -46,6 +46,7 @@ pub enum EffectBehavior {
 #[derive(Deserialize, Clone)]
 pub enum EffectBehaviorData {
     DespawnAfterAnimation,
+    // Takes a f32 time in seconds to take fading out before despawning
     FadeOut(f32),
     FadeOutAndDespawnAfterAnimation,
 }
