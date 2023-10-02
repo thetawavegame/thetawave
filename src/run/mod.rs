@@ -4,6 +4,7 @@ use leafwing_input_manager::prelude::ActionState;
 use ron::de::from_bytes;
 use serde::Deserialize;
 use std::collections::{HashMap, VecDeque};
+use thetawave_interface::player::InputRestrictionsAtSpawn;
 use thetawave_interface::{
     audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent, SoundEffectType},
     objective::{DefenseInteraction, MobReachedBottomGateEvent, Objective},
@@ -18,6 +19,8 @@ use crate::{spawnable::BossesDestroyedEvent, GameUpdateSet};
 
 mod formation;
 mod level;
+pub(crate) mod level_phase;
+pub(crate) mod tutorial;
 
 use self::level::Level;
 pub use self::{
@@ -165,7 +168,7 @@ impl CurrentRunProgressResource {
     pub fn tick(
         &mut self,
         time: &Time,
-        player_query: &mut Query<&ActionState<PlayerAction>, With<PlayerComponent>>,
+        player_query: &Query<&ActionState<PlayerAction>, With<PlayerComponent>>,
         spawn_formation_event_writer: &mut EventWriter<SpawnFormationEvent>,
         formations_res: &FormationPoolsResource,
         spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
@@ -177,6 +180,8 @@ impl CurrentRunProgressResource {
         mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
         mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
         play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
+        player_component_query: &mut Query<&mut PlayerComponent>,
+        player_spawn_params: ResMut<InputRestrictionsAtSpawn>,
     ) {
         if let Some(current_level) = &mut self.current_level {
             // cycle level when done with all phases
@@ -193,6 +198,8 @@ impl CurrentRunProgressResource {
                 mob_reached_bottom_event,
                 mob_segment_destroyed_event,
                 play_sound_effect_event_writer,
+                player_component_query,
+                player_spawn_params,
             ) {
                 self.cycle_level();
                 self.init_current_level(change_bg_music_event_writer, cycle_phase_event_writer);
@@ -237,7 +244,7 @@ fn init_run_system(
 fn tick_run_system(
     mut run_res: ResMut<CurrentRunProgressResource>,
     time: Res<Time>,
-    mut player_query: Query<&ActionState<PlayerAction>, With<PlayerComponent>>,
+    player_query: Query<&ActionState<PlayerAction>, With<PlayerComponent>>,
     mut spawn_formation_event_writer: EventWriter<SpawnFormationEvent>,
     formations_res: Res<FormationPoolsResource>,
     mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
@@ -249,10 +256,12 @@ fn tick_run_system(
     mut mob_reached_bottom_event_reader: EventReader<MobReachedBottomGateEvent>,
     mut mob_segment_destroyed_event_reader: EventReader<MobSegmentDestroyedEvent>,
     mut play_sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
+    mut player_component_query: Query<&mut PlayerComponent>,
+    player_spawn_params: ResMut<InputRestrictionsAtSpawn>,
 ) {
     run_res.tick(
         &time,
-        &mut player_query,
+        &player_query,
         &mut spawn_formation_event_writer,
         &formations_res,
         &mut spawn_mob_event_writer,
@@ -264,6 +273,8 @@ fn tick_run_system(
         &mut mob_reached_bottom_event_reader,
         &mut mob_segment_destroyed_event_reader,
         &mut play_sound_effect_event_writer,
+        &mut player_component_query,
+        player_spawn_params,
     );
 }
 
@@ -347,6 +358,7 @@ mod test {
     use rstest::rstest;
     use thetawave_interface::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent};
     use thetawave_interface::objective::{DefenseInteraction, MobReachedBottomGateEvent};
+    use thetawave_interface::player::InputRestrictionsAtSpawn;
     use thetawave_interface::spawnable::{
         MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent,
     };
@@ -372,6 +384,7 @@ mod test {
             .add_event::<SpawnMobEvent>()
             .add_event::<MobDestroyedEvent>()
             .add_event::<MobSegmentDestroyedEvent>()
+            .insert_resource(InputRestrictionsAtSpawn::default())
             .add_plugins(RunPlugin);
         app.world
             .get_resource_mut::<CurrentRunProgressResource>()

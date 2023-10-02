@@ -1,3 +1,5 @@
+use crate::run::level_phase::LevelPhaseType;
+use crate::run::tutorial::modify_player_spawn_params_for_lesson_phase;
 use bevy::{prelude::*, time::Stopwatch};
 use leafwing_input_manager::prelude::ActionState;
 use serde::Deserialize;
@@ -5,12 +7,13 @@ use std::{
     collections::{HashMap, VecDeque},
     time::Duration,
 };
+use thetawave_interface::player::InputRestrictionsAtSpawn;
 use thetawave_interface::{
     audio::{BGMusicType, ChangeBackgroundMusicEvent, PlaySoundEffectEvent},
     objective::{MobReachedBottomGateEvent, Objective},
     options::input::PlayerAction,
     player::PlayerComponent,
-    run::{CyclePhaseEvent, LevelPhaseType},
+    run::CyclePhaseEvent,
     spawnable::{MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent},
 };
 
@@ -113,7 +116,7 @@ impl Level {
         &mut self,
         cycle_phase_event_writer: &mut EventWriter<CyclePhaseEvent>,
     ) -> bool {
-        // clone the current phase (if it exists) into the back of the completed phases queue
+        // "clean up" the just completed phase & push it to the back of the queue to be replayed
         if let Some(current_phase) = &self.current_phase {
             self.completed_phases.push_back(current_phase.clone());
             self.current_phase = None;
@@ -147,7 +150,7 @@ impl Level {
     pub fn tick(
         &mut self,
         time: &Time,
-        player_query: &mut Query<&ActionState<PlayerAction>, With<PlayerComponent>>,
+        player_query: &Query<&ActionState<PlayerAction>, With<PlayerComponent>>,
         spawn_formation_event_writer: &mut EventWriter<SpawnFormationEvent>,
         formations_res: &FormationPoolsResource,
         spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
@@ -158,6 +161,8 @@ impl Level {
         mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
         mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
         play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
+        player_component_query: &mut Query<&mut PlayerComponent>,
+        mut player_spawn_params: ResMut<InputRestrictionsAtSpawn>,
     ) -> bool {
         self.level_time.tick(time.delta());
 
@@ -206,15 +211,26 @@ impl Level {
                 }
                 LevelPhaseType::Tutorial {
                     tutorial_lesson, ..
-                } => tutorial_lesson.update(
-                    player_query,
-                    mob_destroyed_event,
-                    time,
-                    spawn_mob_event_writer,
-                    mob_reached_bottom_event,
-                    mob_segment_destroyed_event,
-                    play_sound_effect_event_writer,
-                ),
+                } => {
+                    modify_player_spawn_params_for_lesson_phase(
+                        &mut (*player_spawn_params),
+                        tutorial_lesson,
+                    );
+                    let finished_tutorial_section = tutorial_lesson.update(
+                        player_query,
+                        mob_destroyed_event,
+                        time,
+                        spawn_mob_event_writer,
+                        mob_reached_bottom_event,
+                        mob_segment_destroyed_event,
+                        play_sound_effect_event_writer,
+                        player_component_query,
+                    );
+                    if finished_tutorial_section {
+                        *player_spawn_params = InputRestrictionsAtSpawn::default();
+                    }
+                    finished_tutorial_section
+                }
             };
 
             self.current_phase = Some(modified_current_phase);

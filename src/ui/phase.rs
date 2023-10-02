@@ -1,9 +1,8 @@
 use bevy::prelude::*;
-use thetawave_interface::{
-    health::HealthComponent,
-    run::{LevelPhaseType, TutorialLesson},
-};
+use thetawave_interface::health::HealthComponent;
 
+use crate::run::level_phase::LevelPhaseType;
+use crate::run::tutorial::TutorialLesson;
 use crate::{run::CurrentRunProgressResource, spawnable::BossComponent};
 
 /// Used for querying UI for displaying name
