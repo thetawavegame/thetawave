@@ -14,7 +14,6 @@ members = [
 serde = "1.0.159"
 strum = "0.25.0"
 strum_macros = "0.25.1"
-bevy = { version = "0.11.2", features = ["serialize"] }
 thiserror = "1.0"
 derive_more = "0.99.17"
 bevy_ecs_macros = "0.11.2"
@@ -25,6 +24,36 @@ bevy_kira_audio = { version = "0.16.0", features = ["mp3", "wav"] }
 argh = "0.1.12"
 console_error_panic_hook = "0.1.7"
 
+[workspace.dependencies.bevy]
+version = "0.11.2"
+default-features = false
+features = [
+  # Non-default/'extra' features features
+  "serialize",
+  # Part of bevy's default features
+  "animation",
+  "bevy_asset",
+  "bevy_audio",
+  "bevy_gilrs",
+  "bevy_scene",
+  "bevy_winit",
+  "bevy_core_pipeline",
+  "bevy_pbr",
+  "bevy_gltf",
+  "bevy_render",
+  "bevy_sprite",
+  "bevy_text",
+  "bevy_ui",
+  "hdr",
+  "ktx2",
+  "tonemapping_luts",
+  "multi-threaded",
+  "png",
+  "x11",
+  "bevy_gizmos",
+  "webgl2",
+  "zstd",
+]
 
 [dev-dependencies]
 rstest = "0.18.2"
