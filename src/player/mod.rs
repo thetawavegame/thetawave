@@ -2,6 +2,7 @@
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::InputManagerPlugin;
 use ron::de::from_bytes;
+use thetawave_interface::player::InputRestrictionsAtSpawn;
 use thetawave_interface::{
     options::input::PlayerAction,
     player::PlayersResource,
@@ -34,7 +35,8 @@ impl Plugin for PlayerPlugin {
                 .unwrap(),
         );
 
-        app.insert_resource(PlayersResource::default());
+        app.insert_resource(PlayersResource::default())
+            .insert_resource(InputRestrictionsAtSpawn::default());
 
         app.add_systems(
             OnEnter(AppStates::Game),

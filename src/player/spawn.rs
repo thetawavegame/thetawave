@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
+use thetawave_interface::player::InputRestrictionsAtSpawn;
 use thetawave_interface::{
     health::HealthComponent,
     options::input::{InputsResource, PlayerAction},
@@ -22,6 +23,7 @@ pub fn spawn_players_system(
     player_assets: Res<assets::PlayerAssets>,
     players_resource: Res<PlayersResource>,
     inputs_res: Res<InputsResource>,
+    spawn_params: Res<InputRestrictionsAtSpawn>,
 ) {
     // check if more than one player is playing
     let is_multiplayer = players_resource.player_data[1].is_some();
@@ -38,7 +40,8 @@ pub fn spawn_players_system(
                 character.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
 
             // create player component from character
-            let mut player_component = PlayerComponent::from(character);
+            let mut player_component =
+                PlayerComponent::from_character_with_params(character, &spawn_params);
             player_component.player_index = player_index;
 
             // spawn the player
