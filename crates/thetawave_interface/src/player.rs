@@ -6,8 +6,19 @@ use bevy_ecs::prelude::Component;
 use bevy_ecs::system::Resource;
 use bevy_math::Vec2;
 use bevy_time::{Timer, TimerMode};
+use derive_more::{Deref, DerefMut};
 use serde::Deserialize;
 
+/// Parameters for how to spawn new players. By default, the player can do anything.
+#[derive(Resource, Debug, Default, Deref, DerefMut)]
+pub struct InputRestrictionsAtSpawn(InputRestrictions);
+
+/// Things the player is not allowed to do.
+#[derive(Resource, Debug, Default)]
+pub struct InputRestrictions {
+    pub forbid_main_attack_reason: Option<String>,
+    pub forbid_special_attack_reason: Option<String>,
+}
 #[derive(Resource, Debug)]
 pub struct PlayersResource {
     pub player_data: Vec<Option<PlayerData>>,

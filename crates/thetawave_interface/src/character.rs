@@ -3,6 +3,7 @@ use serde::Deserialize;
 
 use crate::{health::HealthComponent, player::AbilityType, spawnable::ProjectileType};
 
+/// The playable character types. To a player, these will have different appearances and abilities.
 #[derive(Deserialize, Clone, Debug, Hash, PartialEq, Eq)]
 pub enum CharacterType {
     Captain,
