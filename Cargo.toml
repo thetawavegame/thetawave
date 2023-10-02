@@ -65,7 +65,6 @@ bevy_rapier2d = { version = "0.22.0", features = [
     "simd-stable",
     "debug-render-2d",
 ] }
-bevy_egui = "0.21.0"
 bevy_asset_loader = { version = "0.17.0", features = [
     "2d",
     "3d",
