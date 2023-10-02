@@ -7,13 +7,9 @@ use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     options::input::PlayerAction,
     player::PlayerComponent,
-    run::{LevelPhaseType, TutorialLesson},
 };
 
-use crate::{
-    run::CurrentRunProgressResource,
-    spawnable::{InitialMotion, SpawnProjectileEvent},
-};
+use crate::spawnable::{InitialMotion, SpawnProjectileEvent};
 
 /// Increase fire rate of player based on the amount of money collected
 // TODO: Remove hardcoded values
@@ -35,71 +31,56 @@ pub fn player_fire_weapon_system(
     time: Res<Time>,
     mut spawn_projectile: EventWriter<SpawnProjectileEvent>,
     mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
-    run_resource: Res<CurrentRunProgressResource>,
 ) {
-    // first make sure that the players can shoot based on the level
-    let can_fire_weapon = run_resource.current_level.clone().is_some_and(|level| {
-        level.current_phase.is_some_and(|phase| {
-            if let LevelPhaseType::Tutorial {
-                tutorial_lesson, ..
-            } = phase.phase_type
-            {
-                matches!(tutorial_lesson, TutorialLesson::Attack { .. })
-            } else {
-                true
-            }
-        })
-    });
+    for (mut player_component, rb_vels, transform, action_state, entity) in player_query.iter_mut()
+    {
+        let fire_input = action_state.pressed(PlayerAction::BasicAttack);
 
-    if can_fire_weapon {
-        for (mut player_component, rb_vels, transform, action_state, entity) in
-            player_query.iter_mut()
+        // tick fire timer
+        player_component.fire_timer.tick(time.delta());
+
+        // fire blast if timer finished and input pressed
+        if player_component.fire_timer.finished()
+            && fire_input
+            && player_component.main_attack_is_enabled()
         {
-            let fire_input = action_state.pressed(PlayerAction::BasicAttack);
+            let projectile_transform = Transform {
+                translation: Vec3::new(
+                    transform.translation.x + player_component.projectile_offset_position.x,
+                    transform.translation.y + player_component.projectile_offset_position.y,
+                    1.0,
+                ),
+                ..Default::default()
+            };
 
-            // tick fire timer
-            player_component.fire_timer.tick(time.delta());
+            // pass player velocity into the spawned blast
+            let initial_motion = InitialMotion {
+                linvel: Some(Vec2::new(
+                    (player_component.projectile_velocity.x) + rb_vels.linvel.x,
+                    (player_component.projectile_velocity.y) + rb_vels.linvel.y,
+                )),
+                ..Default::default()
+            };
 
-            // fire blast if timer finished and input pressed
-            if player_component.fire_timer.finished() && fire_input {
-                let projectile_transform = Transform {
-                    translation: Vec3::new(
-                        transform.translation.x + player_component.projectile_offset_position.x,
-                        transform.translation.y + player_component.projectile_offset_position.y,
-                        1.0,
-                    ),
-                    ..Default::default()
-                };
+            // spawn the projectile
+            spawn_projectile.send(SpawnProjectileEvent {
+                projectile_type: player_component.projectile_type.clone(),
+                transform: projectile_transform,
+                damage: player_component.attack_damage,
+                despawn_time: player_component.projectile_despawn_time,
+                initial_motion,
+                source: entity,
+            });
 
-                // pass player velocity into the spawned blast
-                let initial_motion = InitialMotion {
-                    linvel: Some(Vec2::new(
-                        (player_component.projectile_velocity.x) + rb_vels.linvel.x,
-                        (player_component.projectile_velocity.y) + rb_vels.linvel.y,
-                    )),
-                    ..Default::default()
-                };
+            // play firing blast sound effect
+            sound_effect_event_writer.send(PlaySoundEffectEvent {
+                sound_effect_type: SoundEffectType::PlayerFireBlast,
+            });
 
-                // spawn the projectile
-                spawn_projectile.send(SpawnProjectileEvent {
-                    projectile_type: player_component.projectile_type.clone(),
-                    transform: projectile_transform,
-                    damage: player_component.attack_damage,
-                    despawn_time: player_component.projectile_despawn_time,
-                    initial_motion,
-                    source: entity,
-                });
-
-                // play firing blast sound effect
-                sound_effect_event_writer.send(PlaySoundEffectEvent {
-                    sound_effect_type: SoundEffectType::PlayerFireBlast,
-                });
-
-                // reset the timer to the player's fire period stat
-                let new_period = Duration::from_secs_f32(player_component.fire_period);
-                player_component.fire_timer.reset();
-                player_component.fire_timer.set_duration(new_period);
-            }
+            // reset the timer to the player's fire period stat
+            let new_period = Duration::from_secs_f32(player_component.fire_period);
+            player_component.fire_timer.reset();
+            player_component.fire_timer.set_duration(new_period);
         }
     }
 }
