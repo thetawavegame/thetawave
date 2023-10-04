@@ -4,10 +4,8 @@ use bevy_kira_audio::prelude::*;
 
 use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
-use thetawave_interface::{
-    options::generate_config_files,
-    states::{AppStates, GameStates},
-};
+use options::generate_config_files;
+use thetawave_interface::states::{AppStates, GameStates};
 
 pub const PHYSICS_SCALE: f32 = 10.0;
 pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_1;

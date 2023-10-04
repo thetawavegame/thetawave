@@ -1,10 +1,10 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
+use thetawave_interface::input::{InputsResource, PlayerAction};
 use thetawave_interface::player::InputRestrictionsAtSpawn;
 use thetawave_interface::{
     health::HealthComponent,
-    options::input::{InputsResource, PlayerAction},
     player::{PlayerComponent, PlayerInput},
     states::GameCleanup,
 };

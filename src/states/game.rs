@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::ActionState;
+use thetawave_interface::input::{MenuAction, MenuExplorer};
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
-    options::input::{MenuAction, MenuExplorer},
     player::PlayersResource,
     states::AppStates,
 };

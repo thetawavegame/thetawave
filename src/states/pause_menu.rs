@@ -2,10 +2,8 @@ use bevy::prelude::*;
 use bevy_kira_audio::prelude::*;
 use bevy_rapier2d::prelude::*;
 use leafwing_input_manager::prelude::ActionState;
-use thetawave_interface::{
-    options::input::{MenuAction, MenuExplorer},
-    states::GameStates,
-};
+use thetawave_interface::input::{MenuAction, MenuExplorer};
+use thetawave_interface::states::GameStates;
 
 use crate::audio;
 

@@ -3,9 +3,9 @@ use std::time::Duration;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use leafwing_input_manager::prelude::ActionState;
+use thetawave_interface::input::PlayerAction;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
-    options::input::PlayerAction,
     player::PlayerComponent,
 };
 

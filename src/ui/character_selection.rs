@@ -4,11 +4,11 @@ use super::BouncingPromptComponent;
 
 use bevy::{input::gamepad::GamepadButtonChangedEvent, prelude::*};
 use leafwing_input_manager::prelude::ActionState;
+use thetawave_interface::input::{MenuAction, MenuExplorer};
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     character::CharacterType,
     character_selection::PlayerJoinEvent,
-    options::input::{MenuAction, MenuExplorer},
     player::{PlayerData, PlayerInput, PlayersResource},
     states::CharacterSelectionCleanup,
 };

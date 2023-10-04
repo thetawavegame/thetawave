@@ -2,9 +2,9 @@
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::InputManagerPlugin;
 use ron::de::from_bytes;
+use thetawave_interface::input::PlayerAction;
 use thetawave_interface::player::InputRestrictionsAtSpawn;
 use thetawave_interface::{
-    options::input::PlayerAction,
     player::PlayersResource,
     states::{AppStates, GameStates},
 };

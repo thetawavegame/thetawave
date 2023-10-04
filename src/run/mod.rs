@@ -4,11 +4,11 @@ use leafwing_input_manager::prelude::ActionState;
 use ron::de::from_bytes;
 use serde::Deserialize;
 use std::collections::{HashMap, VecDeque};
+use thetawave_interface::input::PlayerAction;
 use thetawave_interface::player::InputRestrictionsAtSpawn;
 use thetawave_interface::{
     audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent, SoundEffectType},
     objective::{DefenseInteraction, MobReachedBottomGateEvent, Objective},
-    options::input::PlayerAction,
     player::PlayerComponent,
     run::{CyclePhaseEvent, RunDefeatType, RunEndEvent, RunOutcomeType},
     spawnable::{MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent},
