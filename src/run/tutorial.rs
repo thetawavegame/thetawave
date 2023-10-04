@@ -5,8 +5,8 @@ use rand::{thread_rng, Rng};
 use serde::Deserialize;
 use std::ops::Range;
 use thetawave_interface::audio::{PlaySoundEffectEvent, SoundEffectType};
+use thetawave_interface::input::PlayerAction;
 use thetawave_interface::objective::MobReachedBottomGateEvent;
-use thetawave_interface::options::input::PlayerAction;
 use thetawave_interface::player::{InputRestrictionsAtSpawn, PlayerComponent};
 use thetawave_interface::spawnable::{
     AllyMobType, MobDestroyedEvent, MobSegmentDestroyedEvent, MobSegmentType, MobType,

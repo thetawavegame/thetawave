@@ -7,11 +7,11 @@ use std::{
     collections::{HashMap, VecDeque},
     time::Duration,
 };
+use thetawave_interface::input::PlayerAction;
 use thetawave_interface::player::InputRestrictionsAtSpawn;
 use thetawave_interface::{
     audio::{BGMusicType, ChangeBackgroundMusicEvent, PlaySoundEffectEvent},
     objective::{MobReachedBottomGateEvent, Objective},
-    options::input::PlayerAction,
     player::PlayerComponent,
     run::CyclePhaseEvent,
     spawnable::{MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent},

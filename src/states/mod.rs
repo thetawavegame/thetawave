@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use leafwing_input_manager::prelude::ActionState;
-use thetawave_interface::options::input::MenuAction;
-use thetawave_interface::options::input::MenuExplorer;
+use thetawave_interface::input::MenuAction;
+use thetawave_interface::input::MenuExplorer;
 use thetawave_interface::states::CharacterSelectionCleanup;
 use thetawave_interface::states::GameCleanup;
 use thetawave_interface::states::GameOverCleanup;
