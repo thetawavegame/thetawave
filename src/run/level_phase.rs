@@ -1,18 +1,10 @@
 use crate::run::tutorial::TutorialLesson;
 use bevy::ecs::system::SystemParam;
 use bevy::math::Vec2;
-use bevy::prelude::{ParamSet, Timer};
+use bevy::prelude::Timer;
 use serde::Deserialize;
 use thetawave_interface::spawnable::MobType;
-use thetawave_interface::states::AppStates;
 
-pub trait PlayableLevelWithObjective {
-    type LevelState;
-    type WorldDependencies: SystemParam;
-    const START_STATE: AppStates;
-
-    fn tick(state: &mut Self::LevelState, params: ParamSet<Self::WorldDependencies>) -> bool;
-}
 /// Describes a distinct portion of the level
 #[derive(Deserialize, Clone, Debug)]
 pub enum LevelPhaseType {
