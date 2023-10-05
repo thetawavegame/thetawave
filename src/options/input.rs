@@ -38,7 +38,7 @@ impl From<InputBindings> for InputsResource {
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-pub fn get_input_bindings() -> InputBindings {
+pub(super) fn get_input_bindings() -> InputBindings {
     use ron::from_str;
     use std::{env::current_dir, fs::read_to_string};
 
@@ -48,7 +48,7 @@ pub fn get_input_bindings() -> InputBindings {
 }
 
 #[cfg(target_arch = "wasm32")]
-fn get_input_bindings() -> InputBindings {
+pub(super) fn get_input_bindings() -> InputBindings {
     use ron::de::from_bytes;
 
     from_bytes::<InputBindings>(include_bytes!("input.ron")).unwrap()
