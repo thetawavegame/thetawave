@@ -14,3 +14,6 @@ pub enum RunDefeatType {
 pub struct RunEndEvent {
     pub outcome: RunOutcomeType,
 }
+
+#[derive(Event)]
+pub struct CyclePhaseEvent;

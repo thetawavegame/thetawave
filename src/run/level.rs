@@ -1,17 +1,25 @@
+use crate::run::level_phase::LevelPhaseType;
+use crate::run::tutorial::modify_player_spawn_params_for_lesson_phase;
 use bevy::{prelude::*, time::Stopwatch};
+use leafwing_input_manager::prelude::ActionState;
 use serde::Deserialize;
 use std::{
     collections::{HashMap, VecDeque},
     time::Duration,
 };
+use thetawave_interface::input::PlayerAction;
+use thetawave_interface::player::InputRestrictionsAtSpawn;
 use thetawave_interface::{
-    audio::{BGMusicType, ChangeBackgroundMusicEvent},
-    spawnable::MobType,
+    audio::{BGMusicType, ChangeBackgroundMusicEvent, PlaySoundEffectEvent},
+    objective::{MobReachedBottomGateEvent, Objective},
+    player::PlayerComponent,
+    run::CyclePhaseEvent,
+    spawnable::{MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent},
 };
 
-use crate::spawnable::{BossesDestroyedEvent, SpawnMobEvent};
+use crate::spawnable::BossesDestroyedEvent;
 
-use super::{objective::Objective, FormationPoolsResource, SpawnFormationEvent};
+use super::{FormationPoolsResource, SpawnFormationEvent};
 
 #[derive(Resource, Deserialize)]
 pub struct PremadeLevelsResource {
@@ -27,6 +35,7 @@ pub struct LevelPhase {
     pub bg_music_transition: Option<BGMusicTransition>,
     #[serde(default)]
     pub phase_time: Stopwatch,
+    pub intro_text: Option<String>,
 }
 
 /// Background music transition
@@ -43,32 +52,10 @@ impl From<&BGMusicTransition> for ChangeBackgroundMusicEvent {
         ChangeBackgroundMusicEvent {
             bg_music_type: value.bg_music_type.clone(),
             loop_from: value.loop_from,
-            fade_in: value
-                .fade_in
-                .map(|fade_in| Duration::from_secs_f32(fade_in)),
-            fade_out: value
-                .fade_out
-                .map(|fade_out| Duration::from_secs_f32(fade_out)),
+            fade_in: value.fade_in.map(Duration::from_secs_f32),
+            fade_out: value.fade_out.map(Duration::from_secs_f32),
         }
     }
-}
-
-/// Describes a distinct portion of the level
-#[derive(Deserialize, Clone, Debug)]
-pub enum LevelPhaseType {
-    FormationSpawn {
-        phase_timer: Timer,
-        spawn_timer: Timer,
-        formation_pool: String,
-    },
-    Break {
-        phase_timer: Timer,
-    },
-    Boss {
-        mob_type: MobType,
-        position: Vec2,
-        spawn_timer: Timer,
-    },
 }
 
 /// Data used to initialize levels
@@ -77,12 +64,10 @@ pub struct LevelData {
     /// timeline of the phases of the level
     pub phases: Vec<LevelPhase>,
     /// objective of the level (besides surviving)
-    pub objective: Objective,
+    pub objective: Option<Objective>,
+    /// descriptive name of the level
+    pub name: String,
 }
-
-/// Event to alert when level has been completed
-#[derive(Event)]
-pub struct LevelCompletedEvent;
 
 pub type LevelPhases = VecDeque<LevelPhase>;
 
@@ -95,10 +80,22 @@ pub struct Level {
     pub current_phase: Option<LevelPhase>,
     /// Phases that have yet to be played in the level
     pub queued_phases: LevelPhases,
-    /// Objective is an additional failure condition for a level
-    pub objective: Objective,
+    /// Optional objective is an additional failure condition for a level
+    pub objective: Option<Objective>,
     /// Tracks how long the player has been in the level
     pub level_time: Stopwatch,
+    /// Name of the level
+    pub name: String,
+}
+
+impl Level {
+    pub fn get_name(&self) -> String {
+        if let Some(objective) = &self.objective {
+            format!("{}: {}", self.name, objective.clone().get_name())
+        } else {
+            self.name.clone()
+        }
+    }
 }
 
 impl From<&LevelData> for Level {
@@ -109,13 +106,17 @@ impl From<&LevelData> for Level {
             queued_phases: data.phases.clone().into(),
             objective: data.objective.clone(),
             level_time: Stopwatch::new(),
+            name: data.name.clone(),
         }
     }
 }
 
 impl Level {
-    pub fn cycle_phase(&mut self) -> bool {
-        // clone the current phase (if it exists) into the back of the completed phases queue
+    pub fn cycle_phase(
+        &mut self,
+        cycle_phase_event_writer: &mut EventWriter<CyclePhaseEvent>,
+    ) -> bool {
+        // "clean up" the just completed phase & push it to the back of the queue to be replayed
         if let Some(current_phase) = &self.current_phase {
             self.completed_phases.push_back(current_phase.clone());
             self.current_phase = None;
@@ -125,6 +126,8 @@ impl Level {
         self.current_phase = self.queued_phases.pop_front();
 
         info!("Phase cycled");
+
+        cycle_phase_event_writer.send(CyclePhaseEvent);
 
         // return true if no phase was available to cycle to the current phase
         self.current_phase.is_none()
@@ -147,11 +150,19 @@ impl Level {
     pub fn tick(
         &mut self,
         time: &Time,
+        player_query: &Query<&ActionState<PlayerAction>, With<PlayerComponent>>,
         spawn_formation_event_writer: &mut EventWriter<SpawnFormationEvent>,
         formations_res: &FormationPoolsResource,
         spawn_mob_event_writer: &mut EventWriter<SpawnMobEvent>,
         bosses_destroyed_event_reader: &mut EventReader<BossesDestroyedEvent>,
         change_bg_music_event_writer: &mut EventWriter<ChangeBackgroundMusicEvent>,
+        cycle_phase_event_writer: &mut EventWriter<CyclePhaseEvent>,
+        mob_destroyed_event: &mut EventReader<MobDestroyedEvent>,
+        mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
+        mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
+        play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
+        player_component_query: &mut Query<&mut PlayerComponent>,
+        mut player_spawn_params: ResMut<InputRestrictionsAtSpawn>,
     ) -> bool {
         self.level_time.tick(time.delta());
 
@@ -161,6 +172,7 @@ impl Level {
                     phase_timer,
                     spawn_timer,
                     formation_pool,
+                    ..
                 } => {
                     Self::tick_spawn_timer(
                         spawn_timer,
@@ -172,11 +184,14 @@ impl Level {
 
                     Self::tick_phase_timer(phase_timer, time)
                 }
-                LevelPhaseType::Break { phase_timer } => Self::tick_phase_timer(phase_timer, time),
+                LevelPhaseType::Break { phase_timer, .. } => {
+                    Self::tick_phase_timer(phase_timer, time)
+                }
                 LevelPhaseType::Boss {
                     mob_type,
                     position,
                     spawn_timer,
+                    ..
                 } => {
                     if spawn_timer.finished() {
                         // check if no entities with a BossComponent tag exist
@@ -194,12 +209,34 @@ impl Level {
                         false
                     }
                 }
+                LevelPhaseType::Tutorial {
+                    tutorial_lesson, ..
+                } => {
+                    modify_player_spawn_params_for_lesson_phase(
+                        &mut (*player_spawn_params),
+                        tutorial_lesson,
+                    );
+                    let finished_tutorial_section = tutorial_lesson.update(
+                        player_query,
+                        mob_destroyed_event,
+                        time,
+                        spawn_mob_event_writer,
+                        mob_reached_bottom_event,
+                        mob_segment_destroyed_event,
+                        play_sound_effect_event_writer,
+                        player_component_query,
+                    );
+                    if finished_tutorial_section {
+                        *player_spawn_params = InputRestrictionsAtSpawn::default();
+                    }
+                    finished_tutorial_section
+                }
             };
 
             self.current_phase = Some(modified_current_phase);
 
             // this will short circuit and not call cycle_phase if !phase_completed
-            if phase_completed && !self.cycle_phase() {
+            if phase_completed && !self.cycle_phase(cycle_phase_event_writer) {
                 self.init_phase(change_bg_music_event_writer);
             }
 

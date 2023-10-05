@@ -1,15 +1,16 @@
 use std::collections::HashMap;
 
-use crate::player::PlayerComponent;
 use crate::{states, GameUpdateSet};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::Velocity;
 use rand::{thread_rng, Rng};
 use ron::de::from_bytes;
 use serde::Deserialize;
-use thetawave_interface::spawnable::TextEffectType;
 pub use thetawave_interface::spawnable::{
     ConsumableType, EffectType, MobType, ProjectileType, SpawnableType,
+};
+use thetawave_interface::spawnable::{
+    MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent, TextEffectType,
 };
 
 mod behavior;

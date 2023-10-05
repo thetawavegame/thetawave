@@ -1,10 +1,12 @@
-use crate::{
-    player::PlayerComponent,
-    spawnable::{ConsumableComponent, MobComponent, MobSegmentComponent, ProjectileComponent},
+use crate::spawnable::{
+    ConsumableComponent, MobComponent, MobSegmentComponent, ProjectileComponent,
 };
 use bevy::prelude::*;
 use bevy_rapier2d::{prelude::*, rapier::prelude::CollisionEventFlags};
-use thetawave_interface::spawnable::{Faction, MobSegmentType, MobType, ProjectileType};
+use thetawave_interface::{
+    player::PlayerComponent,
+    spawnable::{Faction, MobSegmentType, MobType, ProjectileType},
+};
 
 use super::{CollidingEntityPair, SortedCollisionEvent};
 

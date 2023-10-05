@@ -1,20 +1,23 @@
 //! `thetawave` player module
 use bevy::prelude::*;
-use std::{
-    env::current_dir,
-    fs::{DirBuilder, File},
-    io::prelude::*,
-};
+use leafwing_input_manager::prelude::InputManagerPlugin;
+use thetawave_interface::input::{InputsResource, MenuAction};
 
 mod display;
+mod input;
 
 use crate::states;
+use input::get_input_bindings;
 use std::default::Default;
+use std::env::current_dir;
+use std::fs::{DirBuilder, File};
+use std::io::Write;
 use std::path::PathBuf;
 
 pub use self::display::{
     set_window_icon, toggle_fullscreen_system, toggle_zoom_system, DisplayConfig,
 };
+use self::input::spawn_menu_explorer_system;
 
 #[cfg_attr(
     all(not(target_arch = "wasm32"), feature = "cli"),
@@ -43,8 +46,12 @@ pub struct OptionsPlugin;
 
 impl Plugin for OptionsPlugin {
     fn build(&self, app: &mut App) {
+        app.add_plugins(InputManagerPlugin::<MenuAction>::default());
+
+        app.insert_resource(InputsResource::from(get_input_bindings()));
+
         #[cfg(not(target_arch = "wasm32"))]
-        app.add_systems(Startup, set_window_icon);
+        app.add_systems(Startup, (set_window_icon, spawn_menu_explorer_system));
 
         app.add_systems(Update, toggle_fullscreen_system);
 
@@ -83,7 +90,9 @@ macro_rules! confgen {
 /// Generates the display config file
 pub fn generate_config_files() {
     confgen!("display.ron");
+    confgen!("input.ron");
 }
+
 #[cfg(all(test, not(target_arch = "wasm32"), feature = "cli"))]
 mod cli_tests {
     use argh::FromArgs;

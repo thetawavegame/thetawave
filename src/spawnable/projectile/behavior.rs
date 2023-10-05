@@ -1,12 +1,13 @@
 use crate::{
     collision::SortedCollisionEvent,
-    spawnable::{MobComponent, MobSegmentComponent, PlayerComponent, SpawnEffectEvent},
+    spawnable::{MobComponent, MobSegmentComponent, SpawnEffectEvent},
 };
 use bevy::prelude::*;
 use serde::Deserialize;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     health::DamageDealtEvent,
+    player::PlayerComponent,
     spawnable::{EffectType, Faction, ProjectileType},
 };
 

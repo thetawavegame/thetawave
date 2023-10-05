@@ -59,4 +59,7 @@
     "sounds.megablast_ability": File (
         path: "sounds/megablast_ability.wav",
     ),
+    "sounds.objective_completed": File (
+        path: "sounds/objective_completed.wav",
+    ),
 })

@@ -27,6 +27,13 @@
         columns: 1,
         rows: 1,
     ),
+    "tutorial_drone": TextureAtlas (
+        path: "texture/tutorial_drone_spritesheet.png",
+        tile_size_x: 20.,
+        tile_size_y: 21.,
+        columns: 3,
+        rows: 1,
+    ),
     "drone": TextureAtlas (
         path: "texture/drone_spritesheet.png",
         tile_size_x: 20.,

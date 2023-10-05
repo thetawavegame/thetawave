@@ -45,6 +45,8 @@ pub struct GameAudioAssets {
     pub bullet_bounce: Handle<AudioSource>,
     #[asset(key = "sounds.megablast_ability")]
     pub megablast_ability: Handle<AudioSource>,
+    #[asset(key = "sounds.objective_completed")]
+    pub objective_completed: Handle<AudioSource>,
 }
 
 impl GameAudioAssets {
@@ -77,6 +79,7 @@ impl GameAudioAssets {
             SoundEffectType::BulletDing => self.bullet_ding.clone(),
             SoundEffectType::BulletBounce => self.bullet_bounce.clone(),
             SoundEffectType::MegablastAbility => self.megablast_ability.clone(),
+            SoundEffectType::ObjectiveCompleted => self.objective_completed.clone(),
         }
     }
 }

@@ -5,8 +5,7 @@ use thetawave_interface::audio::{BGMusicType, ChangeBackgroundMusicEvent};
 use thetawave_interface::game::historical_metrics::{
     MobKillsByPlayerForCompletedGames, UserStatsByPlayerForCompletedGamesCache, DEFAULT_USER_ID,
 };
-
-use crate::states::MainMenuCleanup;
+use thetawave_interface::states::MainMenuCleanup;
 
 #[derive(Component)]
 pub struct MainMenuUI;

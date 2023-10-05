@@ -1,9 +1,10 @@
 use bevy::prelude::*;
 use serde::Deserialize;
 use std::collections::HashMap;
+use thetawave_interface::spawnable::SpawnMobEvent;
 
 use crate::{
-    spawnable::{self, SpawnConsumableEvent, SpawnMobEvent},
+    spawnable::{self, SpawnConsumableEvent},
     tools::weighted_rng,
 };
 
