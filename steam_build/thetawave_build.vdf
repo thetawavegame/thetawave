@@ -1,0 +1,39 @@
+"AppBuild"
+{
+	"AppID" "2427510" // your AppID
+	"Desc" "Initial release of thetawave game" // internal description for this build
+
+	"ContentRoot" "../content/" // root content folder, relative to location of this file
+	"BuildOutput" "steam_out/" // build output folder for build logs and build cache files
+
+	"Depots"  // Uses depotIds from the SteamWorks website
+	{
+		"2427511" //  audio + image asset depot
+		{
+			"FileMapping"
+			{
+				"LocalPath" "assets/*" // all files from contentroot folder
+				"DepotPath" "assets/" // mapped into assets/ dir of the depot
+				"recursive" "1" // include all subfolders
+			}
+		}
+		"2427512" // Windows-specific artifact depot
+		{
+			"FileMapping"
+			{
+				"LocalPath" "windows/thetawave.exe" // Just 1 executable
+				"DepotPath" "." // mapped into the root of the depot. Important to discover assets
+				"recursive" "1" // include all subfolders
+			}
+		}
+		"2427513" // Linux-specific artifact depot
+		{
+			"FileMapping"
+			{
+				"LocalPath" "linux/thetawave" // just 1 executable
+				"DepotPath" "." // mapped into the root of the depot. Important to discover assets
+				"recursive" "1" // include all subfolders
+			}
+		}
+	}
+}
