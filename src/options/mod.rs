@@ -50,8 +50,10 @@ impl Plugin for OptionsPlugin {
 
         app.insert_resource(InputsResource::from(get_input_bindings()));
 
+        app.add_systems(Startup, spawn_menu_explorer_system);
+
         #[cfg(not(target_arch = "wasm32"))]
-        app.add_systems(Startup, (set_window_icon, spawn_menu_explorer_system));
+        app.add_systems(Startup, set_window_icon);
 
         app.add_systems(Update, toggle_fullscreen_system);
 
