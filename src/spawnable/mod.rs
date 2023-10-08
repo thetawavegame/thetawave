@@ -1,3 +1,4 @@
+use crate::spawnable::effect::EffectPlugin;
 use std::collections::HashMap;
 
 use crate::{states, GameUpdateSet};
@@ -6,11 +7,9 @@ use bevy_rapier2d::prelude::Velocity;
 use rand::{thread_rng, Rng};
 use ron::de::from_bytes;
 use serde::Deserialize;
-pub use thetawave_interface::spawnable::{
-    ConsumableType, EffectType, MobType, ProjectileType, SpawnableType,
-};
+use thetawave_interface::spawnable::{ConsumableType, MobType, ProjectileType};
 use thetawave_interface::spawnable::{
-    MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent, TextEffectType,
+    MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent, SpawnableType,
 };
 
 mod behavior;
@@ -20,7 +19,6 @@ mod effect;
 mod mob;
 mod projectile;
 
-use self::effect::{TextEffectData, TextEffectsResource};
 pub use self::mob::*;
 pub use self::projectile::{
     projectile_execute_behavior_system, spawn_projectile_system, ProjectileComponent,
@@ -36,10 +34,7 @@ pub use self::behavior_sequence::{
     BehaviorSequenceResource, MobBehaviorUpdateEvent,
 };
 
-pub use self::effect::{
-    effect_execute_behavior_system, spawn_effect_system, EffectData, EffectsResource,
-    SpawnEffectEvent,
-};
+pub use self::effect::{EffectData, EffectsResource, SpawnEffectEvent};
 
 pub use self::consumable::{
     consumable_execute_behavior_system, spawn_consumable_system, ConsumableComponent,
@@ -67,18 +62,6 @@ impl Plugin for SpawnablePlugin {
             from_bytes::<MobSegmentsResource>(include_bytes!("../../assets/data/mob_segments.ron"))
                 .expect("Failed to parse MobSegmentsResource from 'mob_segments.ron'"),
         )
-        .insert_resource(EffectsResource {
-            effects: from_bytes::<HashMap<EffectType, EffectData>>(include_bytes!(
-                "../../assets/data/effects.ron"
-            ))
-            .expect("Failed to parse EffectsResource from 'effects.ron'"),
-        })
-        .insert_resource(TextEffectsResource {
-            text_effects: from_bytes::<HashMap<TextEffectType, TextEffectData>>(include_bytes!(
-                "../../assets/data/text_effects.ron"
-            ))
-            .expect("Failed to parse TextEffectsResource from 'text_effects.ron'"),
-        })
         .insert_resource(ProjectileResource {
             projectiles: from_bytes::<HashMap<ProjectileType, ProjectileData>>(include_bytes!(
                 "../../assets/data/projectiles.ron"
@@ -92,14 +75,15 @@ impl Plugin for SpawnablePlugin {
             .expect("Failed to parse ConsumableResource from 'consumables.ron'"),
         });
 
-        app.add_event::<SpawnEffectEvent>()
-            .add_event::<SpawnConsumableEvent>()
+        app.add_event::<SpawnConsumableEvent>()
             .add_event::<SpawnProjectileEvent>()
             .add_event::<SpawnMobEvent>()
             .add_event::<MobBehaviorUpdateEvent>()
             .add_event::<MobDestroyedEvent>()
             .add_event::<MobSegmentDestroyedEvent>()
             .add_event::<BossesDestroyedEvent>();
+
+        app.add_plugins(EffectPlugin);
 
         app.add_systems(
             Update,
@@ -114,9 +98,7 @@ impl Plugin for SpawnablePlugin {
                     .in_set(GameUpdateSet::ApplyDisconnectedBehaviors),
                 mob_segment_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
                 projectile_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
-                effect_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
                 consumable_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
-                spawn_effect_system, // event generated in projectile execute behavior, consumable execute behavior
                 spawn_projectile_system,
                 spawn_consumable_system, // event generated in mob execute behavior
                 spawn_mob_system,        // event generated in mob execute behavior
