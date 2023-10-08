@@ -14,17 +14,53 @@ members = [
 serde = "1.0.159"
 strum = "0.25.0"
 strum_macros = "0.25.1"
-bevy = { version = "0.11.2", features = ["serialize"] }
 thiserror = "1.0"
 derive_more = "0.99.17"
-bevy_ecs_macros = "0.11.2"
-bevy_ecs = "0.11.2"
+bevy_ecs_macros = "0.11.3"
+bevy_ecs = "0.11.3"
+bevy_reflect = "0.11.3"
+bevy_input = "0.11.3"
 bevy_kira_audio = { version = "0.16.0", features = ["mp3", "wav"] }
+leafwing-input-manager = "0.10.0"
+ron = "0.8.0"
+bevy_time = "0.11.3"
+bevy_math = "0.11.3"
 # We value minimizing the binary sizes and keeping the CLI maximally simple over a more feature complete CLI library
 # like clap.
 argh = "0.1.12"
+rand = "0.8.5"
 console_error_panic_hook = "0.1.7"
 
+[workspace.dependencies.bevy]
+version = "0.11.3"
+default-features = false
+features = [
+  # Non-default/'extra' features features
+  "serialize",
+  # Part of bevy's default features
+  "animation",
+  "bevy_asset",
+  "bevy_audio",
+  "bevy_gilrs",
+  "bevy_scene",
+  "bevy_winit",
+  "bevy_core_pipeline",
+  "bevy_pbr",
+  "bevy_gltf",
+  "bevy_render",
+  "bevy_sprite",
+  "bevy_text",
+  "bevy_ui",
+  "hdr",
+  "ktx2",
+  "tonemapping_luts",
+  "multi-threaded",
+  "png",
+  "x11",
+  "bevy_gizmos",
+  "webgl2",
+  "zstd",
+]
 
 [dev-dependencies]
 rstest = "0.18.2"
@@ -36,7 +72,6 @@ bevy_rapier2d = { version = "0.22.0", features = [
     "simd-stable",
     "debug-render-2d",
 ] }
-bevy_egui = "0.21.0"
 bevy_asset_loader = { version = "0.17.0", features = [
     "2d",
     "3d",
@@ -45,12 +80,13 @@ bevy_asset_loader = { version = "0.17.0", features = [
 serde = { workspace = true }
 strum = { workspace = true }
 strum_macros = { workspace = true }
-ron = "0.8.0"
-rand = "0.8.5"
+ron = { workspace = true }
+rand = { workspace = true }
 bevy_kira_audio = { workspace = true }
 winit = "0.28.4"
 image = "0.24.6"
 thiserror = { workspace = true }
+leafwing-input-manager = { workspace = true }
 
 thetawave_interface = { path = "crates/thetawave_interface" }
 
@@ -59,7 +95,7 @@ thetawave_interface = { path = "crates/thetawave_interface" }
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 thetawave_storage = { path = "crates/thetawave_storage", optional = true }
 thetawave_arcade = { path = "crates/thetawave_arcade", optional = true }
-argh = { workspace = true, optional = true}
+argh = { workspace = true, optional = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = { workspace = true }

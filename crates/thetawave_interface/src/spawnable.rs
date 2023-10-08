@@ -1,5 +1,7 @@
 use std::default::Default;
 
+use bevy_ecs::{entity::Entity, event::Event};
+use bevy_math::{Quat, Vec2};
 use serde::Deserialize;
 use strum_macros::{Display, EnumString};
 
@@ -59,6 +61,33 @@ pub enum MobType {
     Neutral(NeutralMobType),
 }
 
+impl MobType {
+    pub fn get_name(&self) -> String {
+        match self {
+            MobType::Enemy(enemy_type) => match enemy_type {
+                EnemyMobType::Pawn => "Pawn",
+                EnemyMobType::Drone => "Drone",
+                EnemyMobType::StraferRight | EnemyMobType::StraferLeft => "Strafer",
+                EnemyMobType::MissileLauncher => "Missile Launcher",
+                EnemyMobType::Missile => "Missile",
+                EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => "Crustling",
+                EnemyMobType::Repeater => "Repeater",
+                EnemyMobType::Shelly => "Shelly",
+            },
+            MobType::Ally(ally_type) => match ally_type {
+                AllyMobType::Hauler2 => "Hauler",
+                AllyMobType::Hauler3 => "Hauler",
+                AllyMobType::TutorialHauler2 => "Hauler",
+            },
+            MobType::Neutral(neutral_type) => match neutral_type {
+                NeutralMobType::MoneyAsteroid => "Money Asteroid",
+                NeutralMobType::TutorialDrone => "Tutorial Drone",
+            },
+        }
+        .to_string()
+    }
+}
+
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum MobSegmentType {
     Neutral(NeutralMobSegmentType),
@@ -70,6 +99,7 @@ pub enum MobSegmentType {
 pub enum AllyMobType {
     Hauler2,
     Hauler3,
+    TutorialHauler2,
 }
 
 /// Type that encompasses all spawnable ally mob segments
@@ -77,6 +107,7 @@ pub enum AllyMobType {
 pub enum NeutralMobSegmentType {
     HaulerBack,
     HaulerMiddle,
+    TutorialHaulerBack,
 }
 
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
@@ -97,6 +128,7 @@ pub enum EnemyMobSegmentType {
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum NeutralMobType {
     MoneyAsteroid,
+    TutorialDrone,
 }
 
 /// Type that encompasses all spawnable consumables
@@ -151,4 +183,29 @@ pub enum EffectType {
 pub enum TextEffectType {
     DamageDealt,
     ConsumableCollected(ConsumableType),
+}
+
+#[derive(Event)]
+pub struct MobDestroyedEvent {
+    pub mob_type: MobType,
+    pub entity: Entity,
+}
+
+#[derive(Event)]
+pub struct MobSegmentDestroyedEvent {
+    pub mob_segment_type: MobSegmentType,
+    pub entity: Entity,
+}
+
+/// Event for spawning mobs
+#[derive(Event)]
+pub struct SpawnMobEvent {
+    /// Type of mob to spawn
+    pub mob_type: MobType,
+    /// Position to spawn mob
+    pub position: Vec2,
+
+    pub rotation: Quat,
+
+    pub boss: bool,
 }

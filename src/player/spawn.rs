@@ -1,12 +1,18 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
+use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
+use thetawave_interface::input::{InputsResource, PlayerAction};
+use thetawave_interface::player::InputRestrictionsAtSpawn;
+use thetawave_interface::{
+    health::HealthComponent,
+    player::{PlayerComponent, PlayerInput},
+    states::GameCleanup,
+};
 
 use crate::{
     assets,
     game::GameParametersResource,
-    misc::HealthComponent,
-    player::{CharactersResource, PlayerComponent, PlayersResource},
-    states::GameCleanup,
+    player::{CharactersResource, PlayersResource},
 };
 
 /// Spawns player into the game
@@ -16,15 +22,16 @@ pub fn spawn_players_system(
     game_parameters: Res<GameParametersResource>,
     player_assets: Res<assets::PlayerAssets>,
     players_resource: Res<PlayersResource>,
+    inputs_res: Res<InputsResource>,
+    spawn_params: Res<InputRestrictionsAtSpawn>,
 ) {
     // check if more than one player is playing
-    let is_multiplayer = players_resource.player_characters[0].is_some()
-        && players_resource.player_characters[1].is_some();
+    let is_multiplayer = players_resource.player_data[1].is_some();
 
-    for (player_index, player_character) in players_resource.player_characters.iter().enumerate() {
-        if let Some(character_type) = player_character {
+    for (player_index, maybe_player_data) in players_resource.player_data.iter().enumerate() {
+        if let Some(player_data) = maybe_player_data {
             // choose a character
-            let character = &characters.characters[character_type];
+            let character = &characters.characters[&player_data.character];
 
             // scale collider to align with the sprite
             let collider_size_hx =
@@ -33,7 +40,8 @@ pub fn spawn_players_system(
                 character.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
 
             // create player component from character
-            let mut player_component = PlayerComponent::from(character);
+            let mut player_component =
+                PlayerComponent::from_character_with_params(character, &spawn_params);
             player_component.player_index = player_index;
 
             // spawn the player
@@ -65,6 +73,17 @@ pub fn spawn_players_system(
                         1.0,
                     ),
                     ..Default::default()
+                })
+                .insert(InputManagerBundle::<PlayerAction> {
+                    action_state: ActionState::default(),
+                    input_map: match player_data.input {
+                        PlayerInput::Keyboard => inputs_res.player_keyboard.clone(),
+                        PlayerInput::Gamepad(id) => inputs_res
+                            .player_gamepad
+                            .clone()
+                            .set_gamepad(Gamepad { id })
+                            .build(),
+                    },
                 })
                 .insert(Collider::cuboid(collider_size_hx, collider_size_hy))
                 .insert(Velocity::default())

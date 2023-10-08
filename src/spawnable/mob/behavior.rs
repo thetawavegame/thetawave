@@ -4,22 +4,19 @@ use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
-    health::DamageDealtEvent,
-    spawnable::{EffectType, MobType, ProjectileType},
+    health::{DamageDealtEvent, HealthComponent},
+    player::PlayerComponent,
+    spawnable::{EffectType, MobDestroyedEvent, MobType, ProjectileType, SpawnMobEvent},
 };
 
 use crate::{
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     loot::LootDropsResource,
-    misc::HealthComponent,
-    spawnable::{
-        InitialMotion, PlayerComponent, SpawnConsumableEvent, SpawnEffectEvent,
-        SpawnProjectileEvent,
-    },
+    spawnable::{InitialMotion, SpawnConsumableEvent, SpawnEffectEvent, SpawnProjectileEvent},
 };
 
-use super::{MobComponent, SpawnMobEvent, SpawnPosition};
+use super::{MobComponent, SpawnPosition};
 
 /// Types of behaviors that can be performed by mobs
 #[derive(Deserialize, Clone)]
@@ -254,12 +251,6 @@ pub fn mob_execute_behavior_system(
             }
         }
     }
-}
-
-#[derive(Event)]
-pub struct MobDestroyedEvent {
-    pub mob_type: MobType,
-    pub entity: Entity,
 }
 
 /// Take damage from colliding entity on impact

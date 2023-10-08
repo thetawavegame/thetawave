@@ -3,10 +3,12 @@
 mod ability;
 mod attacks;
 mod movement;
-use crate::{game::GameParametersResource, misc::HealthComponent, spawnable::SpawnEffectEvent};
+use crate::{game::GameParametersResource, spawnable::SpawnEffectEvent};
 
 use bevy::prelude::*;
 use thetawave_interface::audio::{PlaySoundEffectEvent, SoundEffectType};
+use thetawave_interface::health::HealthComponent;
+use thetawave_interface::player::PlayerComponent;
 use thetawave_interface::run::{RunDefeatType, RunEndEvent, RunOutcomeType};
 use thetawave_interface::spawnable::EffectType;
 
@@ -14,7 +16,7 @@ pub use self::ability::*;
 pub use self::attacks::{player_fire_weapon_system, player_scale_fire_rate_system};
 pub use self::movement::player_movement_system;
 
-use super::{PlayerComponent, PlayersResource};
+use super::PlayersResource;
 
 /// Handle player reaching zero health
 pub fn player_death_system(

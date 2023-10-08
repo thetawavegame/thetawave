@@ -3,8 +3,6 @@ use thetawave_interface::health::DamageDealtEvent;
 
 mod health;
 
-pub use self::health::HealthComponent;
-
 pub struct HealthPlugin;
 
 impl Plugin for HealthPlugin {

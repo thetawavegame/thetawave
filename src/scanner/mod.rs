@@ -1,6 +1,7 @@
 use bevy::{math::Vec3Swizzles, prelude::*, window::PrimaryWindow};
+use thetawave_interface::health::HealthComponent;
 
-use crate::{game::GameParametersResource, misc::HealthComponent, spawnable::MobComponent, states};
+use crate::{game::GameParametersResource, spawnable::MobComponent, states};
 
 pub struct ScannerPlugin;
 

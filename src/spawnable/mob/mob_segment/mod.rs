@@ -4,8 +4,10 @@ use serde::Deserialize;
 use std::collections::{hash_map::Entry, HashMap};
 use thetawave_interface::{
     audio::CollisionSoundType,
+    health::HealthComponent,
     objective::DefenseInteraction,
     spawnable::{MobSegmentType, SpawnableType},
+    states::GameCleanup,
 };
 
 use crate::{
@@ -13,9 +15,7 @@ use crate::{
     assets::MobAssets,
     game::GameParametersResource,
     loot::ConsumableDropListType,
-    misc::HealthComponent,
     spawnable::SpawnableComponent,
-    states::GameCleanup,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 

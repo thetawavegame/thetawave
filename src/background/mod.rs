@@ -8,11 +8,14 @@ use rand::{seq::IteratorRandom, Rng};
 use ron::de::from_bytes;
 use serde::Deserialize;
 use std::ops::Range;
-use thetawave_interface::run::{RunDefeatType, RunEndEvent, RunOutcomeType};
+use thetawave_interface::{
+    run::{RunDefeatType, RunEndEvent, RunOutcomeType},
+    states::GameCleanup,
+};
 use thiserror::Error;
 
 use crate::{
-    states::{self, GameCleanup},
+    states::{self},
     GameEnterSet,
 };
 

@@ -30,6 +30,7 @@ pub enum SoundEffectType {
     BulletDing,
     BulletBounce,
     MegablastAbility,
+    ObjectiveCompleted,
 }
 
 /// Subtype of sound effect for collisions

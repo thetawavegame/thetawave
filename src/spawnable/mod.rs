@@ -1,14 +1,15 @@
-use crate::player::PlayerComponent;
 use crate::spawnable::effect::EffectPlugin;
+use std::collections::HashMap;
+
 use crate::{states, GameUpdateSet};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::Velocity;
 use rand::{thread_rng, Rng};
 use ron::de::from_bytes;
 use serde::Deserialize;
-use std::collections::HashMap;
-pub use thetawave_interface::spawnable::{
-    ConsumableType, EffectType, MobType, ProjectileType, SpawnableType,
+use thetawave_interface::spawnable::{ConsumableType, MobType, ProjectileType};
+use thetawave_interface::spawnable::{
+    MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent, SpawnableType,
 };
 
 mod behavior;

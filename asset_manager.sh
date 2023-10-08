@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -euxo pipefail
+
 if [ "$1" = "get-free" ]; then
-    aws s3 cp s3://thetawave-assets/free_assets/planets/ ./assets/models/planets/ --recursive --no-sign-request
-    aws s3 cp s3://thetawave-assets/free_assets/backgrounds/ ./assets/texture/backgrounds/ --recursive --no-sign-request
+    aws s3 cp --profile thetawavedev-p --recursive s3://assets-thetawave/free_assets/models/planets/ ./assets/models/planets/
+    aws s3 cp --profile thetawavedev-p --recursive s3://assets-thetawave/free_assets/texture/backgrounds/ ./assets/texture/backgrounds/
+    aws s3 cp --profile thetawavedev-p --recursive s3://assets-thetawave/free_assets/sounds ./assets/sounds/
 elif [ "$1" = "get-premium" ]; then
-    aws s3 cp s3://thetawave-assets/premium_assets/planets/ ./assets/models/planets/ --recursive
-    aws s3 cp s3://thetawave-assets/premium_assets/backgrounds/ ./assets/texture/backgrounds/ --recursive
+    aws s3 cp --profile thetawavedev-p --recursive s3://assets-thetawave/premium_assets/ ./assets/
 elif [ "$1" = "remove" ]; then
     rm -rf ./assets/models/planets
     rm -rf ./assets/texture/backgrounds
+    rm -rf ./assets/sounds/
 fi

@@ -1,10 +1,7 @@
-use crate::{
-    spawnable::{MobComponent, MobSegmentComponent, SpawnableComponent},
-    states::GameCleanup,
-};
+use crate::spawnable::{MobComponent, MobSegmentComponent, SpawnableComponent};
 use bevy::prelude::*;
 use bevy_rapier2d::{prelude::*, rapier::prelude::CollisionEventFlags};
-use thetawave_interface::objective::MobReachedBottomGateEvent;
+use thetawave_interface::{objective::MobReachedBottomGateEvent, states::GameCleanup};
 
 /// Despawn gate tag
 #[derive(Component)]
@@ -74,8 +71,11 @@ pub fn despawn_gates_system(
                             if let Some(defense_interaction) =
                                 mob_component.defense_interaction.clone()
                             {
-                                enemy_bottom_event
-                                    .send(MobReachedBottomGateEvent(defense_interaction));
+                                enemy_bottom_event.send(MobReachedBottomGateEvent {
+                                    mob_type: Some(mob_component.mob_type.clone()),
+                                    mob_segment_type: None,
+                                    defense_interaction,
+                                });
                             }
                         }
                     }
@@ -87,8 +87,13 @@ pub fn despawn_gates_system(
                             if let Some(defense_interaction) =
                                 mob_segment_component.defense_interaction.clone()
                             {
-                                enemy_bottom_event
-                                    .send(MobReachedBottomGateEvent(defense_interaction));
+                                enemy_bottom_event.send(MobReachedBottomGateEvent {
+                                    mob_type: None,
+                                    mob_segment_type: Some(
+                                        mob_segment_component.mob_segment_type.clone(),
+                                    ),
+                                    defense_interaction,
+                                });
                             }
                         }
                     }

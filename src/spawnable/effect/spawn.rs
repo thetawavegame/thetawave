@@ -2,12 +2,12 @@ use crate::animation::AnimationComponent;
 use crate::assets::EffectAssets;
 use crate::spawnable::effect::{EffectComponent, TextEffectData, TextEffectsResource};
 use crate::spawnable::{EffectsResource, InitialMotion, SpawnEffectEvent, SpawnableComponent};
-use crate::states::GameCleanup;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use rand::Rng;
 use thetawave_interface::spawnable::{EffectType, SpawnableType, TextEffectType};
 use thetawave_interface::states;
+use thetawave_interface::states::GameCleanup;
 
 /// `EffectSpawnPlugin` manages the spawning of in-game effects.
 ///

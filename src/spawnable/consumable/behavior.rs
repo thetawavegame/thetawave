@@ -1,8 +1,5 @@
 use crate::{
-    collision::SortedCollisionEvent,
-    game::GameParametersResource,
-    misc::HealthComponent,
-    spawnable::{PlayerComponent, SpawnEffectEvent},
+    collision::SortedCollisionEvent, game::GameParametersResource, spawnable::SpawnEffectEvent,
 };
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
@@ -10,6 +7,8 @@ use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
+    health::HealthComponent,
+    player::PlayerComponent,
     spawnable::{ConsumableType, EffectType, TextEffectType},
 };
 

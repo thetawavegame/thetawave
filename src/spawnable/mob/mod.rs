@@ -12,9 +12,7 @@ use crate::{
     assets::MobAssets,
     game::GameParametersResource,
     loot::ConsumableDropListType,
-    misc::HealthComponent,
     spawnable::{InitialMotion, SpawnableBehavior, SpawnableComponent},
-    states::GameCleanup,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 
@@ -25,8 +23,10 @@ pub use self::{behavior::*, mob_segment::*};
 use super::behavior_sequence::MobBehaviorSequenceType;
 use thetawave_interface::{
     audio::CollisionSoundType,
+    health::HealthComponent,
     objective::DefenseInteraction,
-    spawnable::{MobSegmentType, MobType, ProjectileType},
+    spawnable::{MobDestroyedEvent, MobSegmentType, MobType, ProjectileType, SpawnMobEvent},
+    states::GameCleanup,
 };
 
 /// Core component for mobs
@@ -291,19 +291,6 @@ pub struct MobSegmentAnchorPointData {
 #[derive(Deserialize, Clone)]
 pub enum JointType {
     Revolute,
-}
-
-/// Event for spawning mobs
-#[derive(Event)]
-pub struct SpawnMobEvent {
-    /// Type of mob to spawn
-    pub mob_type: MobType,
-    /// Position to spawn mob
-    pub position: Vec2,
-
-    pub rotation: Quat,
-
-    pub boss: bool,
 }
 
 /// Spawns mobs from events

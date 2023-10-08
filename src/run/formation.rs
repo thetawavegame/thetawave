@@ -1,11 +1,9 @@
 use bevy::prelude::*;
 use serde::Deserialize;
 use std::collections::HashMap;
+use thetawave_interface::spawnable::{SpawnMobEvent, SpawnableType};
 
-use crate::{
-    spawnable::{self, SpawnConsumableEvent, SpawnMobEvent},
-    tools::weighted_rng,
-};
+use crate::{spawnable::SpawnConsumableEvent, tools::weighted_rng};
 
 /// Resource for storing collections of formations of spawnables
 #[derive(Resource, Deserialize)]
@@ -38,7 +36,7 @@ pub type FormationPool = Vec<Formation>;
 #[derive(Deserialize, Clone)]
 pub struct FormationSpawnable {
     /// Type of spawnable in formation
-    pub spawnable_type: spawnable::SpawnableType,
+    pub spawnable_type: SpawnableType,
     /// Position of the spawnable
     pub position: Vec2,
 }
@@ -75,7 +73,7 @@ impl Formation {
                     })
                 }
 
-                spawnable::SpawnableType::Consumable(consumable_type) => {
+                SpawnableType::Consumable(consumable_type) => {
                     spawn_consumable.send(SpawnConsumableEvent {
                         consumable_type: consumable_type.clone(),
                         position: formation_spawnable.position,

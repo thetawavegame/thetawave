@@ -1,5 +1,15 @@
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
+use leafwing_input_manager::prelude::ActionState;
+use thetawave_interface::input::MenuAction;
+use thetawave_interface::input::MenuExplorer;
+use thetawave_interface::states::CharacterSelectionCleanup;
+use thetawave_interface::states::GameCleanup;
+use thetawave_interface::states::GameOverCleanup;
+use thetawave_interface::states::InstructionsCleanup;
+use thetawave_interface::states::MainMenuCleanup;
+use thetawave_interface::states::PauseCleanup;
+use thetawave_interface::states::VictoryCleanup;
 pub use thetawave_interface::states::{AppStates, GameStates};
 
 mod game;
@@ -161,27 +171,6 @@ impl Plugin for StatesPlugin {
     }
 }
 
-#[derive(Component)]
-pub struct MainMenuCleanup;
-
-#[derive(Component)]
-pub struct GameCleanup;
-
-#[derive(Component)]
-pub struct GameOverCleanup;
-
-#[derive(Component)]
-pub struct VictoryCleanup;
-
-#[derive(Component)]
-pub struct PauseCleanup;
-
-#[derive(Component)]
-pub struct InstructionsCleanup;
-
-#[derive(Component)]
-pub struct CharacterSelectionCleanup;
-
 // remove entities tagged for the current app state
 pub fn clear_state_system<T: Component>(
     mut commands: Commands,
@@ -193,35 +182,17 @@ pub fn clear_state_system<T: Component>(
 }
 
 fn start_mainmenu_system(
-    gamepads: Res<Gamepads>,
-    mut gamepad_input: ResMut<Input<GamepadButton>>,
-    mut keyboard_input: ResMut<Input<KeyCode>>,
+    menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
     mut next_app_state: ResMut<NextState<AppStates>>,
     mut next_game_state: ResMut<NextState<GameStates>>,
 ) {
-    // get input
-    let mut reset = keyboard_input.just_released(KeyCode::R);
-
-    for gamepad in gamepads.iter() {
-        reset |= gamepad_input.just_released(GamepadButton {
-            gamepad,
-            button_type: GamepadButtonType::East,
-        });
-    }
+    // read menu input action
+    let action_state = menu_input_query.single();
 
     // if reset input provided reset th run
-    if reset {
+    if action_state.just_released(MenuAction::Reset) {
         // go to the main menu state
         next_app_state.set(AppStates::MainMenu);
         next_game_state.set(GameStates::Playing);
-
-        // reset the input
-        keyboard_input.reset(KeyCode::R);
-        for gamepad in gamepads.iter() {
-            gamepad_input.reset(GamepadButton {
-                gamepad,
-                button_type: GamepadButtonType::East,
-            });
-        }
     }
 }
