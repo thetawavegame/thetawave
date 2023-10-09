@@ -4,6 +4,7 @@ use thetawave_interface::spawnable::ItemType;
 use self::behavior::ItemBehavior;
 
 mod behavior;
+mod spawn;
 
 pub struct ItemPlugin;
 
