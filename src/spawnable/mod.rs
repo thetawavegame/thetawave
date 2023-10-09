@@ -16,6 +16,7 @@ mod behavior;
 mod behavior_sequence;
 mod consumable;
 mod effect;
+mod item;
 mod mob;
 mod projectile;
 
