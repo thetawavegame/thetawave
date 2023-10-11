@@ -65,9 +65,10 @@ upload assets.
    source_profile = thetawavedev
    role_session_name = <A_NAME_FOR_YOUR_SESSION>
    ```
-   Then run `./asset-manager.sh get-free` or `./asset-manger.sh get-premium` to invoke the AWS CLI. Or look at that
-script to figure out how to invoke the AWS CLI yourself. AWS has more docs about [configuring
-credentials](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
+   Then run `./asset_manager.py download free_assets` or `./asset_manger.py --profile <YOUR_AWS_PROFILE_NAME> download
+   premium_assets` to invoke the AWS CLI. Or look at that script to figure out how to invoke the AWS CLI yourself. AWS
+   has more docs about [configuring
+   credentials]((https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)
 0. If you are using another open source tool for interacting with S3, such as
    [`rclone`](https://github.com/rclone/rclone), you may need to use `--s3-profile` or do something like the following.
 ```bash
