@@ -1,0 +1,9 @@
+({
+    "item_placeholder": TextureAtlas (
+        path: "texture/item_placeholder.png",
+        tile_size_x: 15.,
+        tile_size_y: 15.,
+        columns: 1,
+        rows: 1,  
+    ),
+})

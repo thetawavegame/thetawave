@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use thetawave_interface::spawnable::ItemType;
 
-use crate::game::GameParametersResource;
+use crate::{assets::ItemAssets, game::GameParametersResource};
 
 #[derive(Event)]
 pub struct SpawnItemEvent {

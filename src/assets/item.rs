@@ -12,21 +12,21 @@ pub struct ItemAssets {
 impl ItemAssets {
     pub fn get_asset(&self, item_type: &ItemType) -> Handle<TextureAtlas> {
         match item_type {
-            ItemType::SteelBarrel => todo!(),
-            ItemType::PlasmaBlasts => todo!(),
-            ItemType::HazardousReactor => todo!(),
-            ItemType::WarpThruster => todo!(),
-            ItemType::Tentaclover => todo!(),
-            ItemType::DefenseSatellite => todo!(),
-            ItemType::DoubleBarrel => todo!(),
-            ItemType::YithianPlague => todo!(),
-            ItemType::Spice => todo!(),
-            ItemType::EnhancedPlating => todo!(),
-            ItemType::StructureReinforcement => todo!(),
-            ItemType::BlasterSizeEnhancer => todo!(),
-            ItemType::FrequencyAugmentor => todo!(),
-            ItemType::TractorBeam => todo!(),
-            ItemType::BlastRepeller => todo!(),
+            ItemType::SteelBarrel => self.item_placeholder.clone(),
+            ItemType::PlasmaBlasts => self.item_placeholder.clone(),
+            ItemType::HazardousReactor => self.item_placeholder.clone(),
+            ItemType::WarpThruster => self.item_placeholder.clone(),
+            ItemType::Tentaclover => self.item_placeholder.clone(),
+            ItemType::DefenseSatellite => self.item_placeholder.clone(),
+            ItemType::DoubleBarrel => self.item_placeholder.clone(),
+            ItemType::YithianPlague => self.item_placeholder.clone(),
+            ItemType::Spice => self.item_placeholder.clone(),
+            ItemType::EnhancedPlating => self.item_placeholder.clone(),
+            ItemType::StructureReinforcement => self.item_placeholder.clone(),
+            ItemType::BlasterSizeEnhancer => self.item_placeholder.clone(),
+            ItemType::FrequencyAugmentor => self.item_placeholder.clone(),
+            ItemType::TractorBeam => self.item_placeholder.clone(),
+            ItemType::BlastRepeller => self.item_placeholder.clone(),
         }
     }
 }
