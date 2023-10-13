@@ -3,7 +3,7 @@ use self::behavior::EffectBehaviorData;
 use super::InitialMotion;
 use crate::spawnable::effect::behavior::EffectBehaviorPlugin;
 use crate::spawnable::effect::spawn::EffectSpawnPlugin;
-pub use crate::{
+use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::EffectAssets,
 };
@@ -11,7 +11,7 @@ use bevy::prelude::*;
 use ron::de::from_bytes;
 use serde::Deserialize;
 use std::{collections::HashMap, ops::Range};
-pub use thetawave_interface::{
+use thetawave_interface::{
     spawnable::{EffectType, SpawnableType, TextEffectType},
     states::GameCleanup,
 };

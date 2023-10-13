@@ -3,6 +3,8 @@ use thetawave_interface::spawnable::ItemType;
 
 use crate::{assets::ItemAssets, game::GameParametersResource};
 
+use super::ItemResource;
+
 #[derive(Event)]
 pub struct SpawnItemEvent {
     pub item_type: ItemType,
