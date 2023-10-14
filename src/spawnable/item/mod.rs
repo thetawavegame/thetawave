@@ -2,13 +2,13 @@ use std::collections::HashMap;
 
 use bevy::prelude::*;
 use serde::Deserialize;
-use thetawave_interface::spawnable::ItemType;
+use thetawave_interface::spawnable::{ItemType, SpawnableType};
 
 use crate::animation::AnimationData;
 
 use self::behavior::ItemBehavior;
 
-use super::{InitialMotion, SpawnableBehavior};
+use super::{InitialMotion, SpawnableBehavior, SpawnableComponent};
 
 mod behavior;
 mod spawn;
@@ -19,13 +19,14 @@ impl Plugin for ItemPlugin {
     fn build(&self, app: &mut App) {}
 }
 
+#[derive(Component)]
 pub struct ItemComponent {
     pub item_type: ItemType,
     pub item_effects: Vec<ItemEffect>,
     pub behaviors: Vec<ItemBehavior>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub enum ItemEffect {
     GainDamage(usize),
     GainHealth(usize),
@@ -63,4 +64,29 @@ pub struct ItemData {
     pub deceleration: Vec2,
     /// z value of the transform
     pub z_level: f32,
+}
+
+impl From<&ItemData> for ItemComponent {
+    fn from(item_data: &ItemData) -> Self {
+        ItemComponent {
+            item_type: item_data.item_type.clone(),
+            item_effects: item_data.item_effects.clone(),
+            behaviors: item_data.item_behaviors.clone(),
+        }
+    }
+}
+
+impl From<&ItemData> for SpawnableComponent {
+    fn from(item_data: &ItemData) -> Self {
+        SpawnableComponent {
+            spawnable_type: SpawnableType::Item(item_data.item_type.clone()),
+            acceleration: item_data.acceleration,
+            deceleration: item_data.deceleration,
+            speed: item_data.speed,
+            angular_acceleration: 0.0,
+            angular_deceleration: 0.0,
+            angular_speed: 0.0,
+            behaviors: item_data.spawnable_behaviors.clone(),
+        }
+    }
 }
