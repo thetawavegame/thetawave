@@ -1,0 +1,21 @@
+{
+    EnhancedPlating: (
+        item_type: EnhancedPlating,
+        collider_dimensions: (5.0, 5.0),
+        spawnable_behaviors: [BrakeHorizontal, MoveDown],
+        item_effects: [GainHealth(20), FullHeal],
+        item_behaviors: [ApplyEffectsOnImpact, AttractToPlayer],
+        acceleration: (0.0, 2.0),
+        deceleration: (0.5, 1.0),
+        speed: (0.0, 110.0),
+        z_level: 15.0,
+        initial_motion: (
+            random_linvel: Some(((-100, 50),(100, 100))),
+            random_angvel: Some((-3.0, 3.0)),
+        ),
+        animation: (
+            frame_duration: 1.0,
+			direction: None,
+        ),
+    ),
+}

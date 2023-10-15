@@ -12,6 +12,8 @@ pub struct ItemAssets {
 impl ItemAssets {
     pub fn get_asset(&self, item_type: &ItemType) -> Handle<TextureAtlas> {
         match item_type {
+            ItemType::EnhancedPlating => self.item_placeholder.clone(),
+            /*
             ItemType::SteelBarrel => self.item_placeholder.clone(),
             ItemType::PlasmaBlasts => self.item_placeholder.clone(),
             ItemType::HazardousReactor => self.item_placeholder.clone(),
@@ -21,12 +23,12 @@ impl ItemAssets {
             ItemType::DoubleBarrel => self.item_placeholder.clone(),
             ItemType::YithianPlague => self.item_placeholder.clone(),
             ItemType::Spice => self.item_placeholder.clone(),
-            ItemType::EnhancedPlating => self.item_placeholder.clone(),
             ItemType::StructureReinforcement => self.item_placeholder.clone(),
             ItemType::BlasterSizeEnhancer => self.item_placeholder.clone(),
             ItemType::FrequencyAugmentor => self.item_placeholder.clone(),
             ItemType::TractorBeam => self.item_placeholder.clone(),
             ItemType::BlastRepeller => self.item_placeholder.clone(),
+            */
         }
     }
 }

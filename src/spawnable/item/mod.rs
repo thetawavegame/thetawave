@@ -43,6 +43,7 @@ pub struct ItemComponent {
 pub enum ItemEffect {
     GainDamage(usize),
     GainHealth(usize),
+    FullHeal,
     GainFireRate(f32),
 }
 

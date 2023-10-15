@@ -143,6 +143,8 @@ pub enum ConsumableType {
 /// Type that encompasses all spawnable items
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum ItemType {
+    EnhancedPlating,
+    /*
     SteelBarrel,
     PlasmaBlasts,
     HazardousReactor,
@@ -152,12 +154,12 @@ pub enum ItemType {
     DoubleBarrel,
     YithianPlague,
     Spice,
-    EnhancedPlating,
     StructureReinforcement,
     BlasterSizeEnhancer,
     FrequencyAugmentor,
     TractorBeam,
     BlastRepeller,
+    */
 }
 
 /// Type that encompasses all spawnable effects
