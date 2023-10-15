@@ -1,12 +1,16 @@
 use std::collections::HashMap;
 
 use bevy::prelude::*;
+use ron::de::from_bytes;
 use serde::Deserialize;
 use thetawave_interface::spawnable::{ItemType, SpawnableType};
 
 use crate::animation::AnimationData;
 
-use self::behavior::ItemBehavior;
+use self::{
+    behavior::ItemBehavior,
+    spawn::{ItemSpawnPlugin, SpawnItemEvent},
+};
 
 use super::{InitialMotion, SpawnableBehavior, SpawnableComponent};
 
@@ -16,7 +20,16 @@ mod spawn;
 pub struct ItemPlugin;
 
 impl Plugin for ItemPlugin {
-    fn build(&self, app: &mut App) {}
+    fn build(&self, app: &mut App) {
+        app.add_plugins(ItemSpawnPlugin)
+            .add_event::<SpawnItemEvent>()
+            .insert_resource(ItemResource {
+                items: from_bytes::<HashMap<ItemType, ItemData>>(include_bytes!(
+                    "../../../assets/data/items.ron"
+                ))
+                .expect("Failed to parse ItemsResource from 'items.ron'"),
+            });
+    }
 }
 
 #[derive(Component)]

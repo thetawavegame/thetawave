@@ -1,6 +1,9 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
-use thetawave_interface::{spawnable::ItemType, states::GameCleanup};
+use thetawave_interface::{
+    spawnable::ItemType,
+    states::{self, GameCleanup},
+};
 
 use crate::{
     animation::AnimationComponent, assets::ItemAssets, game::GameParametersResource,
@@ -8,6 +11,19 @@ use crate::{
 };
 
 use super::{ItemComponent, ItemResource};
+
+pub struct ItemSpawnPlugin;
+
+impl Plugin for ItemSpawnPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(
+            Update,
+            spawn_item_system
+                .run_if(in_state(states::AppStates::Game))
+                .run_if(in_state(states::GameStates::Playing)),
+        );
+    }
+}
 
 #[derive(Event)]
 pub struct SpawnItemEvent {

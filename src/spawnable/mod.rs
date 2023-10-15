@@ -20,6 +20,7 @@ mod item;
 mod mob;
 mod projectile;
 
+use self::item::ItemPlugin;
 pub use self::mob::*;
 pub use self::projectile::{
     projectile_execute_behavior_system, spawn_projectile_system, ProjectileComponent,
@@ -84,7 +85,7 @@ impl Plugin for SpawnablePlugin {
             .add_event::<MobSegmentDestroyedEvent>()
             .add_event::<BossesDestroyedEvent>();
 
-        app.add_plugins(EffectPlugin);
+        app.add_plugins((EffectPlugin, ItemPlugin));
 
         app.add_systems(
             Update,
