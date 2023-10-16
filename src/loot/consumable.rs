@@ -8,7 +8,7 @@ use crate::spawnable::SpawnConsumableEvent;
 
 /// Types of consumable drop lists
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display, Default)]
-pub enum ConsumableDropListType {
+pub enum DropListType {
     #[default]
     Nothing,
     Standard,

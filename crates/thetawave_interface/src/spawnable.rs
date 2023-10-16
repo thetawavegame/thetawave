@@ -1,6 +1,7 @@
 use std::default::Default;
 
 use bevy_ecs::{entity::Entity, event::Event};
+use bevy_ecs_macros::Component;
 use bevy_math::{Quat, Vec2};
 use serde::Deserialize;
 use strum_macros::{Display, EnumString};
@@ -210,4 +211,15 @@ pub struct SpawnMobEvent {
     pub rotation: Quat,
 
     pub boss: bool,
+}
+
+#[derive(Component)]
+pub struct ItemComponent {
+    pub item_type: ItemType,
+}
+
+#[derive(Event)]
+pub struct SpawnItemEvent {
+    pub item_type: ItemType,
+    pub position: Vec2,
 }

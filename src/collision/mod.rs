@@ -39,6 +39,10 @@ pub enum SortedCollisionEvent {
         player_entity: Entity,
         consumable_entity: Entity,
     },
+    PlayerToItemIntersection {
+        player_entity: Entity,
+        item_entity: Entity,
+    },
     PlayerToMobContact {
         player_entity: Entity,
         mob_entity: Entity,

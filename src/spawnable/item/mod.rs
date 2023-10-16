@@ -1,15 +1,16 @@
+//! Items are like consumables but have a permanent effect. These will also be purchasable.
 use std::collections::HashMap;
 
 use bevy::prelude::*;
 use ron::de::from_bytes;
 use serde::Deserialize;
-use thetawave_interface::spawnable::{ItemType, SpawnableType};
+use thetawave_interface::spawnable::{ItemComponent, ItemType, SpawnItemEvent, SpawnableType};
 
 use crate::animation::AnimationData;
 
 use self::{
-    behavior::ItemBehavior,
-    spawn::{ItemSpawnPlugin, SpawnItemEvent},
+    behavior::{ItemBehavior, ItemBehaviorPlugin},
+    spawn::ItemSpawnPlugin,
 };
 
 use super::{InitialMotion, SpawnableBehavior, SpawnableComponent};
@@ -32,21 +33,6 @@ impl Plugin for ItemPlugin {
     }
 }
 
-#[derive(Component)]
-pub struct ItemComponent {
-    pub item_type: ItemType,
-    pub item_effects: Vec<ItemEffect>,
-    pub behaviors: Vec<ItemBehavior>,
-}
-
-#[derive(Deserialize, Clone)]
-pub enum ItemEffect {
-    GainDamage(usize),
-    GainHealth(usize),
-    FullHeal,
-    GainFireRate(f32),
-}
-
 #[derive(Resource)]
 pub struct ItemResource {
     /// Maps consumable types to data
@@ -66,8 +52,6 @@ pub struct ItemData {
     pub animation: AnimationData,
     /// Initial motion of the item
     pub initial_motion: InitialMotion,
-    /// Effects of picking up the item
-    pub item_effects: Vec<ItemEffect>,
     /// Item specific behaviors
     pub item_behaviors: Vec<ItemBehavior>,
     /// Maximum speed
@@ -84,8 +68,6 @@ impl From<&ItemData> for ItemComponent {
     fn from(item_data: &ItemData) -> Self {
         ItemComponent {
             item_type: item_data.item_type.clone(),
-            item_effects: item_data.item_effects.clone(),
-            behaviors: item_data.item_behaviors.clone(),
         }
     }
 }

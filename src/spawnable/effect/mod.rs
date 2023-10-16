@@ -1,20 +1,14 @@
 use self::behavior::EffectBehaviorData;
 
 use super::InitialMotion;
+use crate::animation::AnimationData;
 use crate::spawnable::effect::behavior::EffectBehaviorPlugin;
 use crate::spawnable::effect::spawn::EffectSpawnPlugin;
-use crate::{
-    animation::{AnimationComponent, AnimationData},
-    assets::EffectAssets,
-};
 use bevy::prelude::*;
 use ron::de::from_bytes;
 use serde::Deserialize;
 use std::{collections::HashMap, ops::Range};
-use thetawave_interface::{
-    spawnable::{EffectType, SpawnableType, TextEffectType},
-    states::GameCleanup,
-};
+use thetawave_interface::spawnable::{EffectType, TextEffectType};
 
 mod behavior;
 mod spawn;

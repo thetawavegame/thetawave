@@ -11,7 +11,7 @@ use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::MobAssets,
     game::GameParametersResource,
-    loot::ConsumableDropListType,
+    loot::DropListType,
     spawnable::{InitialMotion, SpawnableBehavior, SpawnableComponent},
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
@@ -58,7 +58,7 @@ pub struct MobComponent {
     /// Damage dealt to defense objective, after reaching bottom of arena
     pub defense_interaction: Option<DefenseInteraction>,
     /// List of consumable drops
-    pub consumable_drops: ConsumableDropListType,
+    pub loot_drops: DropListType,
 }
 
 impl From<&MobData> for MobComponent {
@@ -106,7 +106,7 @@ impl From<&MobData> for MobComponent {
             collision_damage: mob_data.collision_damage,
             collision_sound: mob_data.collision_sound.clone(),
             defense_interaction: mob_data.defense_interaction.clone(),
-            consumable_drops: mob_data.consumable_drops.clone(),
+            loot_drops: mob_data.consumable_drops.clone(),
         }
     }
 }
@@ -241,7 +241,7 @@ pub struct MobData {
     pub health: usize,
     /// List of consumable drops
     #[serde(default)]
-    pub consumable_drops: ConsumableDropListType,
+    pub consumable_drops: DropListType,
     /// Z level of the mobs transform
     pub z_level: f32,
     /// anchor points for other mob segments

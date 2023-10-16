@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
+use thetawave_interface::spawnable::{ItemComponent, SpawnItemEvent};
 use thetawave_interface::{
     spawnable::ItemType,
     states::{self, GameCleanup},
@@ -10,7 +11,10 @@ use crate::{
     spawnable::SpawnableComponent,
 };
 
-use super::{ItemComponent, ItemResource};
+use super::{
+    behavior::{AttractToPlayer, ItemBehavior, OnCollectFullHeal, OnCollectIncreaseMaxHealth},
+    ItemResource,
+};
 
 pub struct ItemSpawnPlugin;
 
@@ -23,12 +27,6 @@ impl Plugin for ItemSpawnPlugin {
                 .run_if(in_state(states::GameStates::Playing)),
         );
     }
-}
-
-#[derive(Event)]
-pub struct SpawnItemEvent {
-    pub item_type: ItemType,
-    pub position: Vec2,
 }
 
 pub fn spawn_item_system(

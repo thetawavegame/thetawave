@@ -14,7 +14,7 @@ use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::MobAssets,
     game::GameParametersResource,
-    loot::ConsumableDropListType,
+    loot::DropListType,
     spawnable::SpawnableComponent,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
@@ -40,7 +40,7 @@ pub struct MobSegmentComponent {
     pub collision_damage: usize,
     pub collision_sound: CollisionSoundType,
     pub defense_interaction: Option<DefenseInteraction>,
-    pub consumable_drops: ConsumableDropListType,
+    pub consumable_drops: DropListType,
     pub behaviors: Vec<behavior::MobSegmentBehavior>,
     pub mob_spawners: HashMap<String, Vec<MobSpawner>>,
 }
@@ -87,7 +87,7 @@ pub struct MobSegmentData {
     #[serde(default)]
     pub defense_interaction: Option<DefenseInteraction>,
     pub health: usize,
-    pub consumable_drops: ConsumableDropListType,
+    pub consumable_drops: DropListType,
     pub z_level: f32,
     pub anchor_point: Vec2,
     pub mob_segment_anchor_points: Option<Vec<MobSegmentAnchorPointData>>,

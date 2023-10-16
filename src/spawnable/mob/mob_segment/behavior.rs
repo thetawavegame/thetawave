@@ -7,7 +7,7 @@ use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     health::{DamageDealtEvent, HealthComponent},
     player::PlayerComponent,
-    spawnable::{EffectType, MobDestroyedEvent, MobSegmentDestroyedEvent},
+    spawnable::{EffectType, MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnItemEvent},
 };
 
 use crate::{
@@ -72,6 +72,7 @@ pub fn mob_segment_execute_behavior_system(
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
     loot_drops_resource: Res<LootDropsResource>,
     mut spawn_consumable_event_writer: EventWriter<SpawnConsumableEvent>,
+    mut spawn_item_event_writer: EventWriter<SpawnItemEvent>,
     mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
     time: Res<Time>,
     mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
@@ -128,9 +129,10 @@ pub fn mob_segment_execute_behavior_system(
                         });
 
                         // drop loot
-                        loot_drops_resource.roll_and_spawn_consumables(
+                        loot_drops_resource.spawn_loot_drops(
                             &mob_segment_component.consumable_drops,
                             &mut spawn_consumable_event_writer,
+                            &mut spawn_item_event_writer,
                             mob_segment_transform.translation.xy(),
                         );
 
