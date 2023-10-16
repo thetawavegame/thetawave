@@ -104,4 +104,26 @@ pub fn spawn_item(
     item.insert(GameCleanup);
 
     item.insert(Name::new(item_data.item_type.to_string()));
+
+    // https://github.com/bevyengine/bevy/issues/3227
+    add_item_behavior_components(item_data, item);
+}
+
+fn add_item_behavior_components(
+    item_data: &super::ItemData,
+    mut item: bevy::ecs::system::EntityCommands<'_, '_, '_>,
+) {
+    for behavior in item_data.item_behaviors.iter() {
+        match behavior {
+            ItemBehavior::OnCollectIncreaseMaxHealth(v) => {
+                item.insert(OnCollectIncreaseMaxHealth(*v));
+            }
+            ItemBehavior::OnCollectFullHeal => {
+                item.insert(OnCollectFullHeal);
+            }
+            ItemBehavior::AttractToPlayer => {
+                item.insert(AttractToPlayer);
+            }
+        };
+    }
 }
