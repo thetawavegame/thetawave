@@ -10,7 +10,7 @@ use thetawave_interface::states::InstructionsCleanup;
 use thetawave_interface::states::MainMenuCleanup;
 use thetawave_interface::states::PauseCleanup;
 use thetawave_interface::states::VictoryCleanup;
-pub use thetawave_interface::states::{AppStates, GameStates};
+use thetawave_interface::states::{AppStates, GameStates};
 
 mod game;
 mod pause_menu;
