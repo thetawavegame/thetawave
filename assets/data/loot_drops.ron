@@ -17,8 +17,9 @@
                 probability: 0.1,
                 consumable: Money1,
             )),
-            Item(EnhancedPlating),
+            
         ],
+        Boss: [Item(EnhancedPlating)],
         MoneyAsteroid: [
             Consumable((
                 rolls: 1,

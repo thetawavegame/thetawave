@@ -176,7 +176,7 @@
 			)
 		],
 		z_level: 5.0,
-		consumable_drops: Standard,
+		consumable_drops: Boss,
 		health: 1500,
 		animation: (
 			direction: PingPong(Forward),

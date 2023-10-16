@@ -13,6 +13,8 @@ pub enum DropListType {
     Nothing,
     Standard,
     MoneyAsteroid,
+    /// Some of the better drops that the play should need to work for.
+    Boss,
 }
 
 /// Probability profile for a single consumable drop
