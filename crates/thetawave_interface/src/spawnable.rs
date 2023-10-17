@@ -223,3 +223,7 @@ pub struct SpawnItemEvent {
     pub item_type: ItemType,
     pub position: Vec2,
 }
+
+/// Tag for applying an in-game thing to the closest player based on the player's "gravity" params.
+#[derive(Component)]
+pub struct AttractToClosestPlayerComponent;

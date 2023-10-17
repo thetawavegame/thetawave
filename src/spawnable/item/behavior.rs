@@ -40,9 +40,6 @@ pub struct OnCollectIncreaseMaxHealth(pub usize);
 #[derive(Component)]
 pub struct OnCollectFullHeal;
 
-#[derive(Component)]
-pub struct AttractToPlayer;
-
 pub fn on_collect_increase_max_health_system(
     mut commands: Commands,
     mut collision_events: EventReader<SortedCollisionEvent>,

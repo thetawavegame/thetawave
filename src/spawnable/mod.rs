@@ -21,6 +21,7 @@ mod item;
 mod mob;
 mod projectile;
 
+use self::behavior::attract_to_player_system;
 use self::item::ItemPlugin;
 pub use self::mob::*;
 pub use self::projectile::{
@@ -106,6 +107,7 @@ impl Plugin for SpawnablePlugin {
                 spawn_consumable_system, // event generated in mob execute behavior
                 spawn_mob_system,        // event generated in mob execute behavior
                 check_boss_mobs_system,
+                attract_to_player_system,
             )
                 .run_if(in_state(states::AppStates::Game))
                 .run_if(in_state(states::GameStates::Playing)),

@@ -10,9 +10,10 @@ use crate::{
     animation::AnimationComponent, assets::ItemAssets, game::GameParametersResource,
     spawnable::SpawnableComponent,
 };
+use thetawave_interface::spawnable::AttractToClosestPlayerComponent;
 
 use super::{
-    behavior::{AttractToPlayer, ItemBehavior, OnCollectFullHeal, OnCollectIncreaseMaxHealth},
+    behavior::{ItemBehavior, OnCollectFullHeal, OnCollectIncreaseMaxHealth},
     ItemResource,
 };
 
@@ -122,7 +123,7 @@ fn add_item_behavior_components(
                 item.insert(OnCollectFullHeal);
             }
             ItemBehavior::AttractToPlayer => {
-                item.insert(AttractToPlayer);
+                item.insert(AttractToClosestPlayerComponent);
             }
         };
     }
