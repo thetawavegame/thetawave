@@ -1,6 +1,7 @@
 use std::default::Default;
 
 use bevy_ecs::{entity::Entity, event::Event};
+use bevy_ecs_macros::Component;
 use bevy_math::{Quat, Vec2};
 use serde::Deserialize;
 use strum_macros::{Display, EnumString};
@@ -143,6 +144,8 @@ pub enum ConsumableType {
 /// Type that encompasses all spawnable items
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum ItemType {
+    EnhancedPlating,
+    /*
     SteelBarrel,
     PlasmaBlasts,
     HazardousReactor,
@@ -152,12 +155,12 @@ pub enum ItemType {
     DoubleBarrel,
     YithianPlague,
     Spice,
-    EnhancedPlating,
     StructureReinforcement,
     BlasterSizeEnhancer,
     FrequencyAugmentor,
     TractorBeam,
     BlastRepeller,
+    */
 }
 
 /// Type that encompasses all spawnable effects
@@ -209,3 +212,18 @@ pub struct SpawnMobEvent {
 
     pub boss: bool,
 }
+
+#[derive(Component)]
+pub struct ItemComponent {
+    pub item_type: ItemType,
+}
+
+#[derive(Event)]
+pub struct SpawnItemEvent {
+    pub item_type: ItemType,
+    pub position: Vec2,
+}
+
+/// Tag for applying an in-game thing to the closest player based on the player's "gravity" params.
+#[derive(Component)]
+pub struct AttractToClosestPlayerComponent;

@@ -1,11 +1,11 @@
 //! `thetawave` arena module
 
 use bevy::prelude::*;
-use thetawave_interface::objective::MobReachedBottomGateEvent;
+use thetawave_interface::{objective::MobReachedBottomGateEvent, states};
 mod barrier;
 mod gate;
 
-use crate::{states, GameEnterSet};
+use crate::GameEnterSet;
 
 pub use self::{barrier::*, gate::*};
 

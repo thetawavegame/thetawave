@@ -123,4 +123,11 @@ impl HealthComponent {
             0.0
         }
     }
+
+    pub fn increase_max_health(&mut self, value: usize) {
+        self.max_health += value;
+    }
+    pub fn full_heal(&mut self) {
+        self.health = self.max_health;
+    }
 }

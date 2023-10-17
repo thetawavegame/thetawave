@@ -18,6 +18,8 @@ mod behavior;
 
 pub use self::behavior::{consumable_execute_behavior_system, ConsumableBehavior};
 
+use thetawave_interface::spawnable::AttractToClosestPlayerComponent;
+
 /// All the different consumable effects
 #[derive(Deserialize, Clone)]
 pub enum ConsumableEffect {
@@ -111,7 +113,6 @@ pub fn spawn_consumable(
 ) {
     //Get data from the consumable resource
     let consumable_data = &consumable_resource.consumables[consumable_type];
-
     // Scale collider to align with the sprite
     let collider_size_hx =
         consumable_data.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
@@ -120,6 +121,12 @@ pub fn spawn_consumable(
 
     // Create consumable entity
     let mut consumable = commands.spawn_empty();
+    if consumable_data
+        .spawnable_behaviors
+        .contains(&SpawnableBehavior::AttractToPlayer)
+    {
+        consumable.insert(AttractToClosestPlayerComponent);
+    }
 
     // spawn the consumable
     consumable

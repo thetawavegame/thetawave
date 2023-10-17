@@ -5,13 +5,14 @@ use crate::{
 use bevy::{math::Vec3Swizzles, prelude::*};
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
+use thetawave_interface::spawnable::AttractToClosestPlayerComponent;
 use thetawave_interface::{
     player::PlayerComponent,
     spawnable::{EnemyMobType, MobType, SpawnableType},
 };
 
 /// Types of behaviors that can be performed by spawnables
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, PartialEq)]
 pub enum SpawnableBehavior {
     RotateToTarget(Option<Vec2>),
     MoveForward,
@@ -21,6 +22,7 @@ pub enum SpawnableBehavior {
     BrakeHorizontal,
     ChangeHorizontalDirectionOnImpact,
     MoveToPosition(Vec2),
+    AttractToPlayer,
 }
 
 /// Manages excuting behaviors of spawnables
@@ -76,6 +78,7 @@ pub fn spawnable_execute_behavior_system(
                         &mut spawnable_component,
                     );
                 }
+                _ => {}
             }
         }
     }
@@ -300,5 +303,56 @@ fn brake_horizontal(
         rb_vel.linvel.x += spawnable_component.deceleration.x;
     } else {
         rb_vel.linvel.x = 0.0;
+    }
+}
+/// Nudge each "attractive" item toward the closest player based on that player's "gravity constant"
+pub(super) fn attract_to_player_system(
+    mut spawnable_query: Query<
+        (&mut Velocity, &Transform),
+        (
+            With<AttractToClosestPlayerComponent>,
+            With<SpawnableComponent>,
+        ),
+    >,
+    player_query: Query<(&PlayerComponent, &Transform)>,
+) {
+    let player_positions_and_accels_and_cutoff_distances: Vec<(Vec2, f32, f32)> = player_query
+        .iter()
+        .map(|(player, transform)| {
+            (
+                transform.translation.xy(),
+                player.attraction_acceleration,
+                player.attraction_distance,
+            )
+        })
+        .collect();
+
+    for (mut spawnable_velocity, spawnable_transform) in spawnable_query.iter_mut() {
+        let item_position = spawnable_transform.translation.xy();
+        if let Some((
+            distance_to_player,
+            closest_player_position,
+            attraction_accel,
+            cutoff_distance,
+        )) = player_positions_and_accels_and_cutoff_distances
+            .iter()
+            .map(|(player_position, accel, cutoff)| {
+                (
+                    player_position.distance(item_position),
+                    player_position,
+                    accel,
+                    cutoff,
+                )
+            })
+            // Approximation of distance since floats are not totally ordered b/c of NANs. Maybe use
+            // https://crates.io/crates/ordered-float if the approximation is not good enough
+            .min_by_key(|(distance, _, _, _)| (distance * 100.0) as i32)
+        {
+            if distance_to_player <= *cutoff_distance {
+                let direction =
+                    (*closest_player_position - spawnable_transform.translation.xy()).normalize();
+                spawnable_velocity.linvel += *attraction_accel * direction;
+            }
+        }
     }
 }

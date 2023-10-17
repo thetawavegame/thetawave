@@ -1,6 +1,7 @@
-use crate::{states, GameUpdateSet};
+use crate::GameUpdateSet;
 use bevy::prelude::*;
 use thetawave_interface::spawnable::Faction;
+use thetawave_interface::states;
 
 mod contact;
 mod instersection;
@@ -38,6 +39,10 @@ pub enum SortedCollisionEvent {
     PlayerToConsumableIntersection {
         player_entity: Entity,
         consumable_entity: Entity,
+    },
+    PlayerToItemIntersection {
+        player_entity: Entity,
+        item_entity: Entity,
     },
     PlayerToMobContact {
         player_entity: Entity,

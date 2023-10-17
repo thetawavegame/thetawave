@@ -10,14 +10,11 @@ use serde::Deserialize;
 use std::ops::Range;
 use thetawave_interface::{
     run::{RunDefeatType, RunEndEvent, RunOutcomeType},
-    states::GameCleanup,
+    states::{self, GameCleanup},
 };
 use thiserror::Error;
 
-use crate::{
-    states::{self},
-    GameEnterSet,
-};
+use crate::GameEnterSet;
 
 pub struct BackgroundPlugin;
 

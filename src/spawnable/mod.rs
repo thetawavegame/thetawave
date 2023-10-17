@@ -1,7 +1,7 @@
 use crate::spawnable::effect::EffectPlugin;
 use std::collections::HashMap;
 
-use crate::{states, GameUpdateSet};
+use crate::GameUpdateSet;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::Velocity;
 use rand::{thread_rng, Rng};
@@ -11,14 +11,18 @@ use thetawave_interface::spawnable::{ConsumableType, MobType, ProjectileType};
 use thetawave_interface::spawnable::{
     MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent, SpawnableType,
 };
+use thetawave_interface::states;
 
 mod behavior;
 mod behavior_sequence;
 mod consumable;
 mod effect;
+mod item;
 mod mob;
 mod projectile;
 
+use self::behavior::attract_to_player_system;
+use self::item::ItemPlugin;
 pub use self::mob::*;
 pub use self::projectile::{
     projectile_execute_behavior_system, spawn_projectile_system, ProjectileComponent,
@@ -83,7 +87,7 @@ impl Plugin for SpawnablePlugin {
             .add_event::<MobSegmentDestroyedEvent>()
             .add_event::<BossesDestroyedEvent>();
 
-        app.add_plugins(EffectPlugin);
+        app.add_plugins((EffectPlugin, ItemPlugin));
 
         app.add_systems(
             Update,
@@ -103,6 +107,7 @@ impl Plugin for SpawnablePlugin {
                 spawn_consumable_system, // event generated in mob execute behavior
                 spawn_mob_system,        // event generated in mob execute behavior
                 check_boss_mobs_system,
+                attract_to_player_system,
             )
                 .run_if(in_state(states::AppStates::Game))
                 .run_if(in_state(states::GameStates::Playing)),

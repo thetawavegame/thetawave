@@ -1,12 +1,14 @@
 //! `thetawave` player module
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::InputManagerPlugin;
-use thetawave_interface::input::{InputsResource, MenuAction};
+use thetawave_interface::{
+    input::{InputsResource, MenuAction},
+    states,
+};
 
 mod display;
 mod input;
 
-use crate::states;
 use input::get_input_bindings;
 use std::default::Default;
 use std::env::current_dir;

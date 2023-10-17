@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use ron::de::from_bytes;
 use serde::Deserialize;
 use std::collections::HashMap;
+use thetawave_interface::spawnable::{ItemType, SpawnItemEvent};
 
 mod consumable;
 
@@ -23,26 +24,39 @@ impl Plugin for LootPlugin {
 /// Describes probability profiles for dropping consumables and items
 #[derive(Resource, Deserialize)]
 pub struct LootDropsResource {
-    // Lists of consumable drops maped to types
-    pub consumable_drops: HashMap<ConsumableDropListType, Vec<ConsumableLootDrop>>,
-    // TODO: add items as loot drops once added into the game
-    //pub item_drops: HashMap<ItemDropType, Vec<ItemLootDrop>>,
+    // Lists of consumable drops mapped to types
+    pub drops: HashMap<DropListType, Vec<LootDrop>>,
+}
+
+#[derive(Deserialize)]
+pub enum LootDrop {
+    Consumable(ConsumableLootDrop),
+    Item(ItemType),
 }
 
 impl LootDropsResource {
     /// Roll for consumables from drop list
-    pub fn roll_and_spawn_consumables(
+    pub fn spawn_loot_drops(
         &self,
-        drop_list_type: &ConsumableDropListType,
+        drop_list_type: &DropListType,
         consumable_event_writer: &mut EventWriter<SpawnConsumableEvent>,
+        item_event_writer: &mut EventWriter<SpawnItemEvent>,
         position: Vec2,
     ) {
         // get drops list from resource
-        let drop_list = &self.consumable_drops[drop_list_type];
+        let drop_list = &self.drops[drop_list_type];
 
         // roll for each piece of loot in the drop list
         for loot_drop in drop_list.iter() {
-            loot_drop.roll_and_spawn(consumable_event_writer, position);
+            match loot_drop {
+                LootDrop::Consumable(consumable_loot_drop) => {
+                    consumable_loot_drop.roll_and_spawn(consumable_event_writer, position);
+                }
+                LootDrop::Item(item_type) => item_event_writer.send(SpawnItemEvent {
+                    item_type: item_type.clone(),
+                    position,
+                }),
+            }
         }
     }
 }

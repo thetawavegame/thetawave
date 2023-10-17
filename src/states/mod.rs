@@ -10,7 +10,7 @@ use thetawave_interface::states::InstructionsCleanup;
 use thetawave_interface::states::MainMenuCleanup;
 use thetawave_interface::states::PauseCleanup;
 use thetawave_interface::states::VictoryCleanup;
-pub use thetawave_interface::states::{AppStates, GameStates};
+use thetawave_interface::states::{AppStates, GameStates};
 
 mod game;
 mod pause_menu;
@@ -47,6 +47,10 @@ impl Plugin for StatesPlugin {
         )
         .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
             AppStates::LoadingAssets,
+            "item_assets.assets.ron",
+        )
+        .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
+            AppStates::LoadingAssets,
             "effect_assets.assets.ron",
         )
         .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
@@ -56,6 +60,7 @@ impl Plugin for StatesPlugin {
         .add_collection_to_loading_state::<_, assets::PlayerAssets>(AppStates::LoadingAssets)
         .add_collection_to_loading_state::<_, assets::ProjectileAssets>(AppStates::LoadingAssets)
         .add_collection_to_loading_state::<_, assets::MobAssets>(AppStates::LoadingAssets)
+        .add_collection_to_loading_state::<_, assets::ItemAssets>(AppStates::LoadingAssets)
         .add_collection_to_loading_state::<_, assets::ConsumableAssets>(AppStates::LoadingAssets)
         .add_collection_to_loading_state::<_, assets::EffectAssets>(AppStates::LoadingAssets)
         .add_collection_to_loading_state::<_, assets::GameAudioAssets>(AppStates::LoadingAssets);

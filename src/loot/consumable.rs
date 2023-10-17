@@ -8,11 +8,13 @@ use crate::spawnable::SpawnConsumableEvent;
 
 /// Types of consumable drop lists
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display, Default)]
-pub enum ConsumableDropListType {
+pub enum DropListType {
     #[default]
     Nothing,
     Standard,
     MoneyAsteroid,
+    /// Some of the better drops that the play should need to work for.
+    Boss,
 }
 
 /// Probability profile for a single consumable drop

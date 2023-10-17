@@ -1,39 +1,41 @@
 (
-    consumable_drops: {
+    drops: {
         Nothing: [],
         Standard: [
-            (
+            Consumable((
                 rolls: 1,
                 probability: 0.03,
                 consumable: Armor,
-            ),
-            (
+            )),
+            Consumable((
                 rolls: 1,
                 probability: 0.06,
                 consumable: HealthWrench,
-            ),
-            (
+            )),
+            Consumable((
                 rolls: 2,
                 probability: 0.1,
                 consumable: Money1,
-            ),
+            )),
+            
         ],
+        Boss: [Item(EnhancedPlating)],
         MoneyAsteroid: [
-            (
+            Consumable((
                 rolls: 1,
                 probability: 1.0,
                 consumable: Money1,
-            ),
-            (
+            )),
+            Consumable((
                 rolls: 5,
                 probability: 0.2,
                 consumable: Money1,
-            ),
-            (
+            )),
+            Consumable((
                 rolls: 1,
                 probability: 0.1,
                 consumable: Money3,
-            ),
+            )),
         ],
     }
 )
