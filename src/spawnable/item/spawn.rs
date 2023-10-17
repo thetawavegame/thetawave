@@ -6,6 +6,7 @@ use thetawave_interface::{
     states::{self, GameCleanup},
 };
 
+use crate::spawnable::SpawnableBehavior;
 use crate::{
     animation::AnimationComponent, assets::ItemAssets, game::GameParametersResource,
     spawnable::SpawnableComponent,
@@ -67,6 +68,13 @@ pub fn spawn_item(
     // Create item entity
     let mut item = commands.spawn_empty();
 
+    if item_data
+        .spawnable_behaviors
+        .contains(&SpawnableBehavior::AttractToPlayer)
+    {
+        item.insert(AttractToClosestPlayerComponent);
+    }
+
     // Sprite components
     item.insert(SpriteSheetBundle {
         texture_atlas: item_assets.get_asset(item_type),
@@ -121,9 +129,6 @@ fn add_item_behavior_components(
             }
             ItemBehavior::OnCollectFullHeal => {
                 item.insert(OnCollectFullHeal);
-            }
-            ItemBehavior::AttractToPlayer => {
-                item.insert(AttractToClosestPlayerComponent);
             }
         };
     }

@@ -13,10 +13,9 @@ use thetawave_interface::{
 use super::ConsumableEffect;
 
 /// Behaviors specific to consumables
-#[derive(Deserialize, Clone, PartialEq, Eq)]
+#[derive(Deserialize, Clone)]
 pub enum ConsumableBehavior {
     ApplyEffectsOnImpact,
-    AttractToPlayer,
 }
 
 /// Execute consumable behaviors on all consumable entities
@@ -59,9 +58,6 @@ pub fn consumable_execute_behavior_system(
                         consumable_component.consumable_type.clone(),
                         &mut sound_effect_event_writer,
                     );
-                }
-                ConsumableBehavior::AttractToPlayer => {
-                    // attract_to_player(&mut velocity, consumable_transform, &mut player_query);
                 }
             }
         }

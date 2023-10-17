@@ -12,7 +12,7 @@ use thetawave_interface::{
 };
 
 /// Types of behaviors that can be performed by spawnables
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, PartialEq)]
 pub enum SpawnableBehavior {
     RotateToTarget(Option<Vec2>),
     MoveForward,
@@ -22,6 +22,7 @@ pub enum SpawnableBehavior {
     BrakeHorizontal,
     ChangeHorizontalDirectionOnImpact,
     MoveToPosition(Vec2),
+    AttractToPlayer,
 }
 
 /// Manages excuting behaviors of spawnables
@@ -77,6 +78,7 @@ pub fn spawnable_execute_behavior_system(
                         &mut spawnable_component,
                     );
                 }
+                _ => {}
             }
         }
     }

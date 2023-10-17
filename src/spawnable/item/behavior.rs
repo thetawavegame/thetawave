@@ -31,7 +31,6 @@ impl Plugin for ItemBehaviorPlugin {
 pub enum ItemBehavior {
     OnCollectIncreaseMaxHealth(usize),
     OnCollectFullHeal,
-    AttractToPlayer,
 }
 
 #[derive(Component)]

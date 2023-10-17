@@ -2,8 +2,8 @@
     EnhancedPlating: (
         item_type: EnhancedPlating,
         collider_dimensions: (5.0, 5.0),
-        spawnable_behaviors: [BrakeHorizontal, MoveDown],
-        item_behaviors: [OnCollectIncreaseMaxHealth(100), OnCollectFullHeal, AttractToPlayer],
+        spawnable_behaviors: [BrakeHorizontal, MoveDown, AttractToPlayer],
+        item_behaviors: [OnCollectIncreaseMaxHealth(100), OnCollectFullHeal],
         acceleration: (0.0, 2.0),
         deceleration: (0.5, 1.0),
         speed: (0.0, 110.0),

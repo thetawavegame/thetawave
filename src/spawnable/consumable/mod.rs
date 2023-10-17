@@ -122,8 +122,8 @@ pub fn spawn_consumable(
     // Create consumable entity
     let mut consumable = commands.spawn_empty();
     if consumable_data
-        .consumable_behaviors
-        .contains(&ConsumableBehavior::AttractToPlayer)
+        .spawnable_behaviors
+        .contains(&SpawnableBehavior::AttractToPlayer)
     {
         consumable.insert(AttractToClosestPlayerComponent);
     }
