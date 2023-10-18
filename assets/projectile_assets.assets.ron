@@ -34,4 +34,18 @@
         columns: 1,
         rows: 1,
     ),
+    "ally_beam": TextureAtlas (
+        path: "texture/ally_beam.png",
+        tile_size_x: 5.,
+        tile_size_y: 1.,
+        columns: 1,
+        rows: 1,
+    ),
+    "enemy_beam": TextureAtlas(
+        path: "texture/enemy_beam.png",
+        tile_size_x: 5.,
+        tile_size_y: 1.,
+        columns: 1,
+        rows: 1,
+    ),
 })

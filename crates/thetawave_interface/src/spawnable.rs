@@ -44,6 +44,18 @@ impl Default for SpawnableType {
 pub enum ProjectileType {
     Blast(Faction),
     Bullet(Faction),
+    Beam(Faction),
+}
+
+impl ProjectileType {
+    pub fn get_faction(&self) -> Faction {
+        match self {
+            ProjectileType::Blast(faction) => faction,
+            ProjectileType::Bullet(faction) => faction,
+            ProjectileType::Beam(faction) => faction,
+        }
+        .clone()
+    }
 }
 
 /// Factions

@@ -137,6 +137,7 @@ pub fn projectile_execute_behavior_system(
                                 }
                                 _ => {}
                             },
+                            ProjectileType::Beam(_) => todo!(),
                         }
 
                         commands.entity(entity).despawn_recursive();

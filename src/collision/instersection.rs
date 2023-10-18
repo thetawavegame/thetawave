@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use bevy_rapier2d::{prelude::*, rapier::prelude::CollisionEventFlags};
 use thetawave_interface::{
     player::PlayerComponent,
-    spawnable::{Faction, ItemComponent, MobSegmentType, MobType, ProjectileType},
+    spawnable::{Faction, ItemComponent, MobSegmentType, MobType},
 };
 
 use super::{CollidingEntityPair, SortedCollisionEvent};
@@ -59,10 +59,7 @@ pub fn intersection_collision_system(
                         SortedCollisionEvent::PlayerToProjectileIntersection {
                             player_entity: colliding_entities.primary,
                             projectile_entity: colliding_entities.secondary,
-                            projectile_faction: match projectile_component.projectile_type.clone() {
-                                ProjectileType::Blast(faction) => faction,
-                                ProjectileType::Bullet(faction) => faction,
-                            },
+                            projectile_faction: projectile_component.projectile_type.get_faction(),
                             projectile_damage: projectile_component.damage,
                         },
                     );
@@ -105,10 +102,7 @@ pub fn intersection_collision_system(
                                 MobType::Ally(_) => Faction::Ally,
                                 MobType::Neutral(_) => Faction::Neutral,
                             },
-                            projectile_faction: match projectile_component.projectile_type.clone() {
-                                ProjectileType::Blast(faction) => faction,
-                                ProjectileType::Bullet(faction) => faction,
-                            },
+                            projectile_faction: projectile_component.projectile_type.get_faction(),
                             projectile_damage: projectile_component.damage,
                         },
                     );
@@ -131,10 +125,7 @@ pub fn intersection_collision_system(
                                 MobSegmentType::Neutral(_) => Faction::Neutral,
                                 MobSegmentType::Enemy(_) => Faction::Enemy,
                             },
-                            projectile_faction: match projectile_component.projectile_type.clone() {
-                                ProjectileType::Blast(faction) => faction,
-                                ProjectileType::Bullet(faction) => faction,
-                            },
+                            projectile_faction: projectile_component.projectile_type.get_faction(),
                             projectile_damage: projectile_component.damage,
                         },
                     );
