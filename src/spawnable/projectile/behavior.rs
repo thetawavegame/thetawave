@@ -1,5 +1,5 @@
 use crate::{
-    collision::{self, SortedCollisionEvent},
+    collision::SortedCollisionEvent,
     spawnable::{MobComponent, MobSegmentComponent, SpawnEffectEvent},
 };
 use bevy::prelude::*;
@@ -311,11 +311,11 @@ fn explode_on_intersection_system(
             }
             SortedCollisionEvent::MobToProjectileIntersection {
                 projectile_source: _,
-                mob_entity,
+                mob_entity: _,
                 projectile_entity,
                 projectile_faction,
                 mob_faction,
-                projectile_damage,
+                projectile_damage: _,
             } => {
                 // checks to make sure that the projectile should deal damage
                 if let Ok((_, projectile_transform)) = projectile_query.get(*projectile_entity) {
@@ -658,7 +658,7 @@ fn timed_despawn_system(
                     }
                     _ => {}
                 },
-                ProjectileType::Beam(faction) => todo!(),
+                ProjectileType::Beam(_) => todo!(),
             }
         }
     }
