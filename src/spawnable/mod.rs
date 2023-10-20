@@ -24,9 +24,10 @@ mod projectile;
 use self::behavior::attract_to_player_system;
 use self::item::ItemPlugin;
 pub use self::mob::*;
+use self::projectile::ProjectilePlugin;
 pub use self::projectile::{
-    projectile_execute_behavior_system, spawn_projectile_system, ProjectileComponent,
-    ProjectileData, ProjectileResource, SpawnProjectileEvent,
+    spawn_projectile_system, ProjectileComponent, ProjectileData, ProjectileResource,
+    SpawnProjectileEvent,
 };
 
 pub use self::behavior::{
@@ -87,7 +88,7 @@ impl Plugin for SpawnablePlugin {
             .add_event::<MobSegmentDestroyedEvent>()
             .add_event::<BossesDestroyedEvent>();
 
-        app.add_plugins((EffectPlugin, ItemPlugin));
+        app.add_plugins((EffectPlugin, ItemPlugin, ProjectilePlugin));
 
         app.add_systems(
             Update,
@@ -101,7 +102,6 @@ impl Plugin for SpawnablePlugin {
                 mob_segment_apply_disconnected_behaviors_system
                     .in_set(GameUpdateSet::ApplyDisconnectedBehaviors),
                 mob_segment_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
-                projectile_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
                 consumable_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
                 spawn_projectile_system,
                 spawn_consumable_system, // event generated in mob execute behavior

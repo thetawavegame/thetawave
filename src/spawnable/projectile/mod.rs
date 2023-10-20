@@ -18,7 +18,11 @@ use crate::{
 
 mod behavior;
 
-pub use self::behavior::{projectile_execute_behavior_system, ProjectileBehavior};
+pub use self::behavior::ProjectileBehavior;
+use self::behavior::{
+    DealDamageOnContact, DealDamageOnIntersection, ExplodeOnContact, ExplodeOnIntersection,
+    TimedDespawn,
+};
 
 use super::ColliderData;
 
@@ -43,8 +47,6 @@ pub struct SpawnProjectileEvent {
 pub struct ProjectileComponent {
     /// Type of projectile
     pub projectile_type: ProjectileType,
-    /// Projectile specific behaviors
-    pub behaviors: Vec<ProjectileBehavior>,
     /// Damage dealt to target
     pub damage: usize,
     /// Time the projectile has existed
@@ -70,6 +72,14 @@ pub struct ProjectileData {
     pub collider: ColliderData,
     /// If it has a contact collider
     pub is_solid: bool,
+}
+
+pub struct ProjectilePlugin;
+
+impl Plugin for ProjectilePlugin {
+    fn build(&self, app: &mut App) {
+        app.add_plugins(behavior::ProjectileBehaviorPlugin);
+    }
 }
 
 /// Stores data about mob entities
@@ -158,7 +168,6 @@ pub fn spawn_projectile(
         ))
         .insert(ProjectileComponent {
             projectile_type: projectile_data.projectile_type.clone(),
-            behaviors: projectile_behaviors,
             damage,
             time_alive: 0.0,
             source,
@@ -183,5 +192,26 @@ pub fn spawn_projectile(
 
     if !projectile_data.is_solid {
         projectile.insert(Sensor);
+    }
+
+    add_projectile_behavior_components(projectile_behaviors, projectile);
+}
+
+fn add_projectile_behavior_components(
+    projectile_behaviors: Vec<ProjectileBehavior>,
+    mut projectile: bevy::ecs::system::EntityCommands<'_, '_, '_>,
+) {
+    for behavior in projectile_behaviors.iter() {
+        match behavior {
+            ProjectileBehavior::ExplodeOnContact => projectile.insert(ExplodeOnContact),
+            ProjectileBehavior::DealDamageOnIntersection => {
+                projectile.insert(DealDamageOnIntersection)
+            }
+            ProjectileBehavior::DealDamageOnContact => projectile.insert(DealDamageOnContact),
+            ProjectileBehavior::TimedDespawn { despawn_time } => projectile.insert(TimedDespawn(
+                Timer::from_seconds(*despawn_time, TimerMode::Once),
+            )),
+            ProjectileBehavior::ExplodeOnIntersection => projectile.insert(ExplodeOnIntersection),
+        };
     }
 }
