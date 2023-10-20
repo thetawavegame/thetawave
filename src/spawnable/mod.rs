@@ -26,8 +26,7 @@ use self::item::ItemPlugin;
 pub use self::mob::*;
 use self::projectile::ProjectilePlugin;
 pub use self::projectile::{
-    spawn_projectile_system, ProjectileComponent, ProjectileData, ProjectileResource,
-    SpawnProjectileEvent,
+    ProjectileComponent, ProjectileData, ProjectileResource, SpawnProjectileEvent,
 };
 
 pub use self::behavior::{
@@ -103,7 +102,6 @@ impl Plugin for SpawnablePlugin {
                     .in_set(GameUpdateSet::ApplyDisconnectedBehaviors),
                 mob_segment_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
                 consumable_execute_behavior_system.in_set(GameUpdateSet::ExecuteBehavior),
-                spawn_projectile_system,
                 spawn_consumable_system, // event generated in mob execute behavior
                 spawn_mob_system,        // event generated in mob execute behavior
                 check_boss_mobs_system,
