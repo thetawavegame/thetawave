@@ -123,7 +123,6 @@ pub fn spawn_projectile(
         .insert(ProjectileComponent {
             projectile_type: projectile_data.projectile_type.clone(),
             damage,
-            time_alive: 0.0,
             source,
         })
         .insert(SpawnableComponent {

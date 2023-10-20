@@ -35,8 +35,6 @@ pub struct ProjectileComponent {
     pub projectile_type: ProjectileType,
     /// Damage dealt to target
     pub damage: usize,
-    /// Time the projectile has existed
-    pub time_alive: f32,
     /// Entity that fired the projectile
     pub source: Entity,
 }
