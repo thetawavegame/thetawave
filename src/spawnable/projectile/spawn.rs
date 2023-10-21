@@ -1,7 +1,8 @@
 use bevy::{
+    math::Vec3Swizzles,
     prelude::{
-        in_state, Commands, Entity, EventReader, IntoSystemConfigs, Name, Plugin, Res, Transform,
-        Update, Vec2,
+        in_state, BuildChildren, Commands, Entity, EventReader, IntoSystemConfigs, Name, Plugin,
+        Res, Transform, Update, Vec2,
     },
     sprite::{SpriteSheetBundle, TextureAtlasSprite},
     time::{Timer, TimerMode},
@@ -25,7 +26,7 @@ use crate::{
 use super::{
     behavior::{
         DealDamageOnContact, DealDamageOnIntersection, ExplodeOnContact, ExplodeOnIntersection,
-        TimedDespawn,
+        FollowSource, TimedDespawn,
     },
     ProjectileBehavior, ProjectileComponent, ProjectileResource, SpawnProjectileEvent,
 };
@@ -156,13 +157,6 @@ pub fn spawn_projectile(
         projectile.insert(Sensor);
     }
 
-    add_projectile_behavior_components(projectile_behaviors, projectile);
-}
-
-fn add_projectile_behavior_components(
-    projectile_behaviors: Vec<ProjectileBehavior>,
-    mut projectile: bevy::ecs::system::EntityCommands<'_, '_, '_>,
-) {
     for behavior in projectile_behaviors.iter() {
         match behavior {
             ProjectileBehavior::ExplodeOnContact => projectile.insert(ExplodeOnContact),
@@ -174,6 +168,10 @@ fn add_projectile_behavior_components(
                 Timer::from_seconds(*despawn_time, TimerMode::Once),
             )),
             ProjectileBehavior::ExplodeOnIntersection => projectile.insert(ExplodeOnIntersection),
+            ProjectileBehavior::FollowSource => projectile.insert(FollowSource {
+                source,
+                pos_vec: projectile_transform.translation.xy() - transform.translation.xy(),
+            }),
         };
     }
 }

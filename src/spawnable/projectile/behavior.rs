@@ -2,7 +2,7 @@ use crate::{
     collision::SortedCollisionEvent,
     spawnable::{MobComponent, MobSegmentComponent, SpawnEffectEvent},
 };
-use bevy::prelude::*;
+use bevy::{math::Vec3Swizzles, prelude::*};
 use serde::Deserialize;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
@@ -39,7 +39,7 @@ impl Plugin for ProjectileBehaviorPlugin {
 
         app.add_systems(
             Update,
-            timed_despawn_system
+            (timed_despawn_system, follow_source_system)
                 .run_if(in_state(states::AppStates::Game))
                 .run_if(in_state(states::GameStates::Playing)),
         );
@@ -54,6 +54,7 @@ pub enum ProjectileBehavior {
     DealDamageOnIntersection,
     DealDamageOnContact,
     TimedDespawn { despawn_time: f32 },
+    FollowSource,
 }
 
 #[derive(Component)]
@@ -70,6 +71,12 @@ pub struct DealDamageOnContact;
 
 #[derive(Component)]
 pub struct TimedDespawn(pub Timer);
+
+#[derive(Component)]
+pub struct FollowSource {
+    pub source: Entity,
+    pub pos_vec: Vec2,
+}
 
 fn deal_damage_on_contact_system(
     mut collision_events: EventReader<SortedCollisionEvent>,
@@ -660,6 +667,27 @@ fn timed_despawn_system(
                 },
                 ProjectileType::Beam(faction) => {}
             }
+        }
+    }
+}
+
+fn follow_source_system(
+    mut projectile_query: Query<(&FollowSource, &mut Transform), With<ProjectileComponent>>,
+    player_query: Query<(&Transform, &PlayerComponent), Without<ProjectileComponent>>,
+) {
+    for (follow_source, mut projectile_transform) in projectile_query.iter_mut() {
+        if let Ok((player_transform, player_component)) = player_query.get(follow_source.source) {
+            // get the base spawn point for a projectile
+            let player_offset_pos =
+                player_transform.translation.xy() + player_component.projectile_offset_position;
+
+            // current difference between the projectile position and the base spawn position for projectile
+            let current_pos_diff = projectile_transform.translation.xy() - player_offset_pos;
+
+            // update the projectile transform by adding the difference between the follow position and the current difference in position
+            //so that the projectile consistently follows the source
+            projectile_transform.translation +=
+                (follow_source.pos_vec - current_pos_diff).extend(0.0);
         }
     }
 }
