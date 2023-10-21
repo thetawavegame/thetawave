@@ -1,8 +1,8 @@
 use bevy::{
     math::Vec3Swizzles,
     prelude::{
-        in_state, BuildChildren, Commands, Entity, EventReader, IntoSystemConfigs, Name, Plugin,
-        Res, Transform, Update, Vec2,
+        in_state, Commands, Entity, EventReader, IntoSystemConfigs, Name, Plugin, Res, Transform,
+        Update, Vec2,
     },
     sprite::{SpriteSheetBundle, TextureAtlasSprite},
     time::{Timer, TimerMode},
@@ -26,7 +26,7 @@ use crate::{
 use super::{
     behavior::{
         DealDamageOnContact, DealDamageOnIntersection, ExplodeOnContact, ExplodeOnIntersection,
-        FollowSource, TimedDespawn,
+        FollowSource, OscillateCollider, TimedDespawn,
     },
     ProjectileBehavior, ProjectileComponent, ProjectileResource, SpawnProjectileEvent,
 };
@@ -172,6 +172,12 @@ pub fn spawn_projectile(
                 source,
                 pos_vec: projectile_transform.translation.xy() - transform.translation.xy(),
             }),
+            ProjectileBehavior::OscillateCollider(duration) => {
+                projectile.insert(OscillateCollider {
+                    timer: Timer::from_seconds(*duration, TimerMode::Repeating),
+                    scale: projectile_transform.scale.xy(),
+                })
+            }
         };
     }
 }

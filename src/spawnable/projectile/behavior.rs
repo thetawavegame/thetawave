@@ -3,6 +3,7 @@ use crate::{
     spawnable::{MobComponent, MobSegmentComponent, SpawnEffectEvent},
 };
 use bevy::{math::Vec3Swizzles, prelude::*};
+use bevy_rapier2d::prelude::ColliderDisabled;
 use serde::Deserialize;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
@@ -39,7 +40,11 @@ impl Plugin for ProjectileBehaviorPlugin {
 
         app.add_systems(
             Update,
-            (timed_despawn_system, follow_source_system)
+            (
+                timed_despawn_system,
+                follow_source_system,
+                oscillate_collider_system,
+            )
                 .run_if(in_state(states::AppStates::Game))
                 .run_if(in_state(states::GameStates::Playing)),
         );
@@ -55,6 +60,7 @@ pub enum ProjectileBehavior {
     DealDamageOnContact,
     TimedDespawn { despawn_time: f32 },
     FollowSource,
+    OscillateCollider(f32),
 }
 
 #[derive(Component)]
@@ -76,6 +82,12 @@ pub struct TimedDespawn(pub Timer);
 pub struct FollowSource {
     pub source: Entity,
     pub pos_vec: Vec2,
+}
+
+#[derive(Component)]
+pub struct OscillateCollider {
+    pub scale: Vec2,
+    pub timer: Timer,
 }
 
 fn deal_damage_on_contact_system(
@@ -688,6 +700,37 @@ fn follow_source_system(
             //so that the projectile consistently follows the source
             projectile_transform.translation +=
                 (follow_source.pos_vec - current_pos_diff).extend(0.0);
+        }
+    }
+}
+
+fn oscillate_collider_system(
+    mut commands: Commands,
+    mut collider_disabled_projectile_query: Query<
+        (Entity, &mut OscillateCollider),
+        (With<ColliderDisabled>, With<ProjectileComponent>),
+    >,
+    mut collider_enabled_projectile_query: Query<
+        (Entity, &mut OscillateCollider),
+        (With<ProjectileComponent>, Without<ColliderDisabled>),
+    >,
+    time: Res<Time>,
+) {
+    // if the projectile has a ColliderDisabled component, remove it when the timer is completed
+    for (entity, mut oscillate_collider) in collider_disabled_projectile_query.iter_mut() {
+        oscillate_collider.timer.tick(time.delta());
+
+        if oscillate_collider.timer.just_finished() {
+            commands.entity(entity).remove::<ColliderDisabled>();
+        }
+    }
+
+    // if the projectile does not have a ColliderDisabled component, add it when the timer is completed
+    for (entity, mut oscillate_collider) in collider_enabled_projectile_query.iter_mut() {
+        oscillate_collider.timer.tick(time.delta());
+
+        if oscillate_collider.timer.just_finished() {
+            commands.entity(entity).insert(ColliderDisabled);
         }
     }
 }

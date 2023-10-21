@@ -98,7 +98,7 @@
 	Beam(Ally): (
 		projectile_type: Beam(Ally),
 		spawnable_behaviors: [],
-		projectile_behaviors: [DealDamageOnIntersection, FollowSource],
+		projectile_behaviors: [DealDamageOnIntersection, FollowSource, OscillateCollider(0.2)],
 		z_level: 19.0,
 		animation: (
 			direction: None,
