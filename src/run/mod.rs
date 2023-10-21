@@ -9,7 +9,7 @@ use thetawave_interface::player::InputRestrictionsAtSpawn;
 use thetawave_interface::{
     audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent, SoundEffectType},
     objective::{DefenseInteraction, MobReachedBottomGateEvent, Objective},
-    player::PlayerComponent,
+    player::{PlayerComponent, PlayersResource},
     run::{CyclePhaseEvent, RunDefeatType, RunEndEvent, RunOutcomeType},
     spawnable::{MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent},
     states::{AppStates, GameStates},
@@ -214,12 +214,19 @@ impl CurrentRunProgressResource {
 
 fn init_run_system(
     mut run_res: ResMut<CurrentRunProgressResource>,
+    players: Res<PlayersResource>,
     premade_runs_res: Res<PremadeRunsResource>,
     premade_levels_res: Res<PremadeLevelsResource>,
     mut next_app_state: ResMut<NextState<AppStates>>,
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     mut cycle_phase_event_writer: EventWriter<CyclePhaseEvent>,
 ) {
+    // Enable tutorials if and only if:
+    // - It was specifically toggled on when the user was setting up the run
+    // - We have exactly 1 player. TODO: Maybe enhance the tutorial to also work for many players.
+    run_res.tutorials_on = run_res.tutorials_on
+        && ((players.player_data.len() <= 1) || players.player_data[1].is_none());
+    info!("Tutorials are on: {}", run_res.tutorials_on);
     // generate the run
     run_res.generate_premade(
         "test_run".to_string(),
@@ -343,8 +350,13 @@ fn run_end_system(
     }
 }
 
-fn run_reset_system(mut run_resource: ResMut<CurrentRunProgressResource>) {
+/// clear/reset various globals to the defaults to prepare for playing another run/game
+fn run_reset_system(
+    mut run_resource: ResMut<CurrentRunProgressResource>,
+    mut spawn_restrictions: ResMut<InputRestrictionsAtSpawn>,
+) {
     *run_resource = CurrentRunProgressResource::default();
+    *spawn_restrictions = InputRestrictionsAtSpawn::default();
 }
 
 #[cfg(test)]
@@ -358,7 +370,7 @@ mod test {
     use rstest::rstest;
     use thetawave_interface::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent};
     use thetawave_interface::objective::{DefenseInteraction, MobReachedBottomGateEvent};
-    use thetawave_interface::player::InputRestrictionsAtSpawn;
+    use thetawave_interface::player::{InputRestrictionsAtSpawn, PlayersResource};
     use thetawave_interface::spawnable::{
         MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent,
     };
@@ -384,6 +396,7 @@ mod test {
             .add_event::<SpawnMobEvent>()
             .add_event::<MobDestroyedEvent>()
             .add_event::<MobSegmentDestroyedEvent>()
+            .insert_resource(PlayersResource::default())
             .insert_resource(InputRestrictionsAtSpawn::default())
             .add_plugins(RunPlugin);
         app.world

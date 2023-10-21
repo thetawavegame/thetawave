@@ -548,7 +548,6 @@ pub fn player_join_system(
         Query<&mut Visibility, With<ToggleTutorialUI>>,
     )>,
     mut player_join_event: EventWriter<PlayerJoinEvent>,
-    mut run_resource: ResMut<CurrentRunProgressResource>,
 ) {
     // get all of the already used inputs
     let used_inputs = players_resource.get_used_inputs();
@@ -623,13 +622,11 @@ pub fn player_join_system(
         *ui_queries.p4().single_mut() = Visibility::Hidden;
     }
 
-    // turn tutorials off if there is more than one player
+    // Hide the player join ui element if they already joined
     if players_resource.player_data[1].is_some() {
         if let Ok(mut vis) = ui_queries.p5().get_single_mut() {
             *vis = Visibility::Hidden;
         }
-
-        run_resource.tutorials_on = false;
     }
 }
 
