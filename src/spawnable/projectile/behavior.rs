@@ -658,7 +658,7 @@ fn timed_despawn_system(
                     }
                     _ => {}
                 },
-                ProjectileType::Beam(_) => todo!(),
+                ProjectileType::Beam(faction) => {}
             }
         }
     }

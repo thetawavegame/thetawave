@@ -96,6 +96,11 @@ pub fn spawn_projectile(
     projectile_transform.scale.y *= game_parameters.sprite_scale;
     projectile_transform.scale.z = 1.0;
 
+    if matches!(projectile_type, ProjectileType::Beam(..)) {
+        projectile_transform.scale.y *= 200.0;
+        projectile_transform.translation.y += projectile_transform.scale.y / (2.0);
+    }
+
     projectile
         .insert(LockedAxes::ROTATION_LOCKED)
         .insert(SpriteSheetBundle {
@@ -114,11 +119,15 @@ pub fn spawn_projectile(
             direction: projectile_data.animation.direction.clone(),
         })
         .insert(RigidBody::Dynamic)
-        .insert(Velocity::from(initial_motion))
+        .insert(if matches!(projectile_type, ProjectileType::Beam(..)) {
+            Velocity::default()
+        } else {
+            Velocity::from(initial_motion)
+        })
         .insert(projectile_transform)
         .insert(Collider::cuboid(
-            projectile_data.collider.dimensions.x,
-            projectile_data.collider.dimensions.y,
+            projectile_data.collider.dimensions.x / 2.0,
+            projectile_data.collider.dimensions.y / 2.0,
         ))
         .insert(ProjectileComponent {
             projectile_type: projectile_data.projectile_type.clone(),
