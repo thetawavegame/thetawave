@@ -39,8 +39,7 @@ jobs:
       - name: 🦀 Setup Rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
-          override: true
+          toolchain: nightly
           profile: minimal
           target: ${{ matrix.config.target }}
 
@@ -48,7 +47,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --release --target ${{ matrix.config.target }}
+          args: --release --target ${{ matrix.config.target }} --features storage --features cli --features arcade
 
       - name: ⚙️ Prepare artifacts [Windows]
         shell: bash
