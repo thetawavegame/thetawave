@@ -49,6 +49,17 @@ jobs:
           command: build
           args: --release --target ${{ matrix.config.target }} --features storage --features cli --features arcade
 
+      - name: Assume AWS IAM role
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::656454124102:role/ThetwaveGithubCiRole
+          aws-region: us-east-2
+
+      - name: Download Game image and audio assets from S3
+        shell: bash
+        run: |
+          ./asset_manager.py --no-dryrun download
+
       - name: ⚙️ Prepare artifacts [Windows]
         shell: bash
         if: matrix.config.os == 'windows-latest'
