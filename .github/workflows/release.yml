@@ -30,13 +30,11 @@ jobs:
       - name: ⬇️ Checkout
         uses: actions/checkout@v3
 
-      - name: 🧰 Install dependencies [Ubuntu]
+      - name: 🧰 Install Bevy dependencies [Ubuntu]
         if: matrix.config.os == 'ubuntu-latest'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y -q \
-              libasound2-dev \
-              libudev-dev
+          set -euxo pipefail
+          sudo apt update && sudo apt upgrade && sudo apt install -y lld g++ pkg-config libx11-dev libasound2-dev libudev-dev
 
       - name: 🦀 Setup Rust
         uses: actions-rs/toolchain@v1
