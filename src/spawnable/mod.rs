@@ -38,7 +38,7 @@ pub use self::behavior_sequence::{
     BehaviorSequenceResource, MobBehaviorUpdateEvent,
 };
 
-pub use self::effect::{EffectData, EffectsResource, SpawnEffectEvent};
+pub use self::effect::{EffectsResource, SpawnEffectEvent};
 
 pub use self::consumable::{
     consumable_execute_behavior_system, spawn_consumable_system, ConsumableComponent,
