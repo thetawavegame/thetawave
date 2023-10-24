@@ -68,9 +68,7 @@ jobs:
           artifact_path="thetawave-${{ env.RELEASE_VERSION }}-${{ matrix.config.target }}.zip"
           echo "ARTIFACT_PATH=$artifact_path" >> $GITHUB_ENV
           mkdir $release_dir
-          cp target/${{ matrix.config.target }}/release/thetawave.exe $release_dir/
-          cp -R assets/ $release_dir/
-          cp LICENSE $release_dir/
+          cp -R assets LICENSE target/${{ matrix.config.target }}/release/thetawave.exe $release_dir/
           7z a -tzip $artifact_path $release_dir/
 
       - name: ⚙️ Prepare artifacts [Unix]
@@ -81,9 +79,7 @@ jobs:
           artifact_path="thetawave-${{ env.RELEASE_VERSION }}-${{ matrix.config.target }}.tar.gz"
           echo "ARTIFACT_PATH=$artifact_path" >> $GITHUB_ENV
           mkdir $release_dir
-          cp target/${{ matrix.config.target }}/release/thetawave $release_dir/
-          cp -R assets $release_dir
-          cp LICENSE $release_dir
+          cp -R LICENSE assets target/${{ matrix.config.target }}/release/thetawave $release_dir/
           tar -czvf $artifact_path $release_dir/
 
       - name: ⏫️ Upload artifacts
