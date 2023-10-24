@@ -76,3 +76,37 @@ export AWS_SESSION_TOKEN=$(aws sts assume-role --profile thetawavedev --output t
     --role-arn arn:aws:iam::656454124102:role/ThetawaveDeveloperRole \
     --role-session-name vpsession --query="Credentials.SessionToken" )
 ```
+
+### Accessing Assets in CI
+
+As of 2023, the recommended way for automated tools like Github to access AWS S3 (for our game assets) is to use
+[OIDC](https://en.wikipedia.org/wiki/OpenID) by allowing Github actions to assume an AWS IAM role with permissions to
+read the bucket. [AWS](https://aws.amazon.com/blogs/security/use-iam-roles-to-connect-github-actions-to-actions-in-aws/)
+and
+[Github](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services)
+both maintain documentation describing how to do this.
+
+One of the repo maintainers owns an AWS IAM role with the "Trust relationships" defined as follows.
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Federated": "arn:aws:iam::012345678910:oidc-provider/token.actions.githubusercontent.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+                "StringEquals": {
+                    "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+                },
+                "StringLike": {
+                    "token.actions.githubusercontent.com:sub": "repo:thetawave/thetawave:*"
+                }
+            }
+        }
+    ]
+}
+```
