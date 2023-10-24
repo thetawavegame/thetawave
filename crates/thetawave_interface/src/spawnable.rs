@@ -191,6 +191,7 @@ pub enum EffectType {
     EnemyBulletDespawn,
     AllyBulletExplosion,
     Text(TextEffectType),
+    AllyBeamDespawn,
 }
 
 /// Subtype of effect for text effects

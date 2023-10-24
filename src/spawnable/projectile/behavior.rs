@@ -677,7 +677,21 @@ fn timed_despawn_system(
                     }
                     _ => {}
                 },
-                ProjectileType::Beam(faction) => {}
+                ProjectileType::Beam(faction) => match faction {
+                    Faction::Ally => {
+                        spawn_effect_event_writer.send(SpawnEffectEvent {
+                            effect_type: EffectType::AllyBeamDespawn,
+                            transform: Transform {
+                                translation: projectile_transform.translation,
+                                scale: projectile_transform.scale,
+                                ..Default::default()
+                            },
+                            ..default()
+                        });
+                    }
+                    Faction::Enemy => todo!(),
+                    Faction::Neutral => todo!(),
+                },
             }
         }
     }
