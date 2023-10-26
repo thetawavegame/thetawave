@@ -11,11 +11,18 @@ use thetawave_interface::{
 
 use crate::spawnable::{InitialMotion, SpawnProjectileEvent};
 
-/// Increase fire rate of player based on the amount of money collected
-// TODO: Remove hardcoded values
-pub fn player_scale_fire_rate_system(mut player_query: Query<&mut PlayerComponent>) {
-    for mut player in player_query.iter_mut() {
-        player.fire_period = 1.0 / (1.5 * ((0.8 * player.money as f32) + 4.0).ln());
+/// A fire rate that depends entirely on player properties.
+trait PlayerDerivedFireRateExt {
+    fn min_time_between_shots(&self) -> Duration;
+}
+// This simple trait is fine when only this system interacts with the fire rate. If other systems
+// want to do stuff with it, maybe move the trait defn or the method definition? If the fire rate
+// no longer depends only on properties of the player, we can put the modified fire rate as an
+// attribute and raw dog mutable access to it.
+impl PlayerDerivedFireRateExt for PlayerComponent {
+    fn min_time_between_shots(&self) -> Duration {
+        // TODO: Remove hardcoded values
+        Duration::from_secs_f32(1.0 / (1.5 * ((0.8 * self.money as f32) + 4.0).ln()))
     }
 }
 
@@ -78,9 +85,9 @@ pub fn player_fire_weapon_system(
             });
 
             // reset the timer to the player's fire period stat
-            let new_period = Duration::from_secs_f32(player_component.fire_period);
+            let timer_duration = player_component.min_time_between_shots();
             player_component.fire_timer.reset();
-            player_component.fire_timer.set_duration(new_period);
+            player_component.fire_timer.set_duration(timer_duration);
         }
     }
 }

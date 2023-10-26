@@ -76,10 +76,12 @@ pub struct PlayerComponent {
     pub projectile_velocity: Vec2,
     /// Position of projectile spawn relative to player
     pub projectile_offset_position: Vec2,
-    /// Tracks time between firing blasts
+    /// Tracks time between firing blasts. Systems in the game must (re)set this as needed.
     pub fire_timer: Timer,
-    /// Time between firing projectiles
-    pub fire_period: f32,
+    /// The 'default' or initial time (in seconds) between shooting the main gun that all
+    /// characters have. 'recharge period/duration.' Use traits to compute/derive a fire rate
+    /// suitable for the game. This is generally immutable.
+    pub base_attack_cooldown_seconds: f32,
     /// Amount of damage dealt per attack
     pub attack_damage: usize,
     /// Amount of damage dealt on contact
@@ -117,7 +119,7 @@ impl From<&Character> for PlayerComponent {
             projectile_velocity: character.projectile_velocity,
             projectile_offset_position: character.projectile_offset_position,
             fire_timer: Timer::from_seconds(character.fire_period, TimerMode::Once),
-            fire_period: character.fire_period,
+            base_attack_cooldown_seconds: character.fire_period,
             attack_damage: character.attack_damage,
             collision_damage: character.collision_damage,
             attraction_distance: character.attraction_distance,
