@@ -1,12 +1,16 @@
 use bevy::prelude::*;
 use thetawave_interface::states::PauseCleanup;
 
-use crate::ui::BouncingPromptComponent;
+use crate::{options::PlayingOnArcadeResource, ui::BouncingPromptComponent};
 
 #[derive(Component)]
 pub struct PauseUI;
 
-pub fn setup_pause_system(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn setup_pause_system(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    playing_on_arcade: Res<PlayingOnArcadeResource>,
+) {
     commands
         .spawn(NodeBundle {
             style: Style {
@@ -24,7 +28,7 @@ pub fn setup_pause_system(mut commands: Commands, asset_server: Res<AssetServer>
             parent
                 .spawn(ImageBundle {
                     image: asset_server
-                        .load(if cfg!(feature = "arcade") {
+                        .load(if **playing_on_arcade {
                             "texture/restart_game_prompt_arcade.png"
                         } else {
                             "texture/restart_game_prompt_keyboard.png"

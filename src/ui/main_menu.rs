@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use crate::options::PlayingOnArcadeResource;
 use bevy::prelude::*;
 use thetawave_interface::audio::{BGMusicType, ChangeBackgroundMusicEvent};
 use thetawave_interface::game::historical_metrics::{
@@ -22,6 +23,7 @@ pub fn setup_main_menu_system(
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     historical_games_shot_counts: Res<UserStatsByPlayerForCompletedGamesCache>,
     historical_games_enemy_mob_kill_counts: Res<MobKillsByPlayerForCompletedGames>,
+    playing_on_arcade: Res<PlayingOnArcadeResource>,
 ) {
     let maybe_user_stats = (**historical_games_shot_counts).get(&DEFAULT_USER_ID);
 
@@ -122,7 +124,7 @@ pub fn setup_main_menu_system(
                     parent
                         .spawn(ImageBundle {
                             image: asset_server
-                                .load(if cfg!(feature = "arcade") {
+                                .load(if **playing_on_arcade {
                                     "texture/start_game_prompt_arcade.png"
                                 } else {
                                     "texture/start_game_prompt_keyboard.png"
