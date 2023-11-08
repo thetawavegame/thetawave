@@ -10,7 +10,7 @@ use thetawave_interface::{
     states::GameOverCleanup,
 };
 
-use crate::ui::BouncingPromptComponent;
+use crate::{options::PlayingOnArcadeResource, ui::BouncingPromptComponent};
 
 #[derive(Component)]
 pub struct GameOverUI;
@@ -21,6 +21,7 @@ pub fn setup_game_over_system(
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     current_game_shot_counts: Res<UserStatsByPlayerForCurrentGameCache>,
     current_game_enemy_mob_kill_counts: Res<MobKillsByPlayerForCurrentGame>,
+    playing_on_arcade: Res<PlayingOnArcadeResource>,
 ) {
     let maybe_current_game_stats = (**current_game_shot_counts).get(&DEFAULT_USER_ID);
     let (accuracy_rate, total_shots_fired): (f32, usize) = match maybe_current_game_stats {
@@ -120,7 +121,7 @@ pub fn setup_game_over_system(
                     parent
                         .spawn(ImageBundle {
                             image: asset_server
-                                .load(if cfg!(feature = "arcade") {
+                                .load(if **playing_on_arcade {
                                     "texture/restart_game_prompt_arcade.png"
                                 } else {
                                     "texture/restart_game_prompt_keyboard.png"
