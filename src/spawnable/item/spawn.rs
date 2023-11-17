@@ -38,7 +38,7 @@ pub fn spawn_item_system(
     item_assets: Res<ItemAssets>,
     game_parameters: Res<GameParametersResource>,
 ) {
-    for event in event_reader.iter() {
+    for event in event_reader.read() {
         spawn_item(
             &mut commands,
             &item_resource,

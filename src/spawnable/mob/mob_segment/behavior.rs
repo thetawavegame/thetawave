@@ -81,7 +81,7 @@ pub fn mob_segment_execute_behavior_system(
     mut damage_dealt_event_writer: EventWriter<DamageDealtEvent>,
 ) {
     let mut collision_events_vec = vec![];
-    for collision_event in collision_events.iter() {
+    for collision_event in collision_events.read() {
         collision_events_vec.push(collision_event);
     }
 
@@ -218,12 +218,12 @@ pub fn mob_segment_apply_disconnected_behaviors_system(
     mob_segments_resource: Res<MobSegmentsResource>,
 ) {
     let mut entities: Vec<Entity> = mob_destroyed_event_reader
-        .iter()
+        .read()
         .map(|event| event.entity)
         .collect();
 
     let mut mob_segment_entities: Vec<Entity> = mob_segment_destroyed_event_reader
-        .iter()
+        .read()
         .map(|event| event.entity)
         .collect();
 

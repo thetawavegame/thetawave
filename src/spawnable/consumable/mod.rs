@@ -56,7 +56,7 @@ pub fn spawn_consumable_system(
     consumable_assets: Res<ConsumableAssets>,
     game_parameters: Res<GameParametersResource>,
 ) {
-    for event in event_reader.iter() {
+    for event in event_reader.read() {
         spawn_consumable(
             &event.consumable_type,
             &consumables_resource,

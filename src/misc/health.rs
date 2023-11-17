@@ -19,7 +19,7 @@ pub fn damage_system(
     mut health_query: Query<(Entity, &Transform, &mut HealthComponent)>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
 ) {
-    for event in damage_dealt_events.iter() {
+    for event in damage_dealt_events.read() {
         if let Ok((_entity, transform, mut health_component)) = health_query.get_mut(event.target) {
             // take damage from health
             health_component.take_damage(event.damage);

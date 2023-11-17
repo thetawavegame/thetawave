@@ -32,7 +32,7 @@ pub fn spawnable_execute_behavior_system(
     mut collision_events: EventReader<SortedCollisionEvent>,
 ) {
     let mut collision_events_vec = vec![];
-    for collision_event in collision_events.iter() {
+    for collision_event in collision_events.read() {
         collision_events_vec.push(collision_event);
     }
 

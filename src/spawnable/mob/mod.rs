@@ -302,7 +302,7 @@ pub fn spawn_mob_system(
     mob_assets: Res<MobAssets>,
     game_parameters: Res<GameParametersResource>,
 ) {
-    for event in event_reader.iter() {
+    for event in event_reader.read() {
         spawn_mob(
             &event.mob_type,
             &mob_resource,

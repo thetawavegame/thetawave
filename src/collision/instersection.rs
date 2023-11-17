@@ -22,7 +22,7 @@ pub fn intersection_collision_system(
     projectile_query: Query<(Entity, &ProjectileComponent)>,
 ) {
     // loop through all collision events
-    'collision_events: for collision_event in collision_events.iter() {
+    'collision_events: for collision_event in collision_events.read() {
         debug!("{collision_event:?}");
         if let CollisionEvent::Started(
             collider1_entity,

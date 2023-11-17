@@ -58,7 +58,7 @@ pub fn update_center_text_ui_system(
     >,
 ) {
     // if phase has been cycled update the text
-    if cycle_phase_event_reader.iter().next().is_some() {
+    if cycle_phase_event_reader.read().next().is_some() {
         if let Some(level) = &run_resource.current_level {
             if let Some(phase) = &level.current_phase {
                 if let Ok((mut text, mut bg_color, mut fade_out)) =

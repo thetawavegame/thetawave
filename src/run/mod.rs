@@ -295,7 +295,7 @@ fn handle_objective_system(
         if let Some(objective) = &mut current_level.objective {
             match objective {
                 Objective::Defense(defense_data) => {
-                    for event in bottom_gate_event.iter() {
+                    for event in bottom_gate_event.read() {
                         match event.defense_interaction {
                             DefenseInteraction::Heal(value) => {
                                 // heal defense objective
@@ -333,7 +333,7 @@ fn run_end_system(
     mut run_end_event_reader: EventReader<RunEndEvent>,
     mut next_app_state: ResMut<NextState<AppStates>>,
 ) {
-    for event in run_end_event_reader.iter() {
+    for event in run_end_event_reader.read() {
         match &event.outcome {
             RunOutcomeType::Victory => {
                 next_app_state.set(AppStates::Victory);
