@@ -114,7 +114,7 @@ pub fn mob_behavior_sequence_update_system(
     mut mob_query: Query<(Entity, &mut MobComponent, &mut SpawnableComponent)>,
     mut mob_segment_query: Query<(Entity, &mut MobSegmentComponent, &ImpulseJoint)>,
 ) {
-    for event in behavior_update_event_reader.iter() {
+    for event in behavior_update_event_reader.read() {
         for (entity, mut mob_component, mut spawnable_component) in mob_query.iter_mut() {
             if entity == event.entity {
                 mob_component.behaviors = event.mob_behaviors.clone();

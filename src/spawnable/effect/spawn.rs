@@ -35,7 +35,7 @@ fn spawn_effect_system(
     effects_resource: Res<EffectsResource>,
     effect_assets: Res<EffectAssets>,
 ) {
-    for event in event_reader.iter() {
+    for event in event_reader.read() {
         if !matches!(event.effect_type, EffectType::Text(..)) {
             spawn_effect(
                 &event.effect_type,
@@ -60,7 +60,7 @@ fn spawn_text_effect_system(
     effects_resource: Res<EffectsResource>,
     text_effects_resource: Res<TextEffectsResource>,
 ) {
-    for event in event_reader.iter() {
+    for event in event_reader.read() {
         if let EffectType::Text(text_effect_type) = &event.effect_type {
             spawn_text_effect(
                 event.text.clone(),

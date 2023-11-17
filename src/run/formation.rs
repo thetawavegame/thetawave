@@ -98,7 +98,7 @@ pub fn spawn_formation_system(
     mut spawn_consumable: EventWriter<SpawnConsumableEvent>,
     mut spawn_mob: EventWriter<SpawnMobEvent>,
 ) {
-    for event in spawn_formation.iter() {
+    for event in spawn_formation.read() {
         event
             .formation
             .spawn_formation(&mut spawn_consumable, &mut spawn_mob);

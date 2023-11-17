@@ -589,7 +589,7 @@ pub fn player_join_system(
 
     // join with gamepad
     if action_state.just_released(MenuAction::JoinGamepad) {
-        let gamepad_event = gamepad_events.iter().next().unwrap();
+        let gamepad_event = gamepad_events.read().next().unwrap();
 
         // set the first available player input the gamepad
         for (i, player_data) in players_resource.player_data.iter_mut().enumerate() {
@@ -696,7 +696,7 @@ pub fn select_character_system(
 
     let gamepad_event_id = if gamepad_input {
         gamepad_events
-            .iter()
+            .read()
             .next()
             .map(|gamepad_event| gamepad_event.gamepad.id)
     } else {

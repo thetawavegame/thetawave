@@ -352,7 +352,7 @@ impl TutorialLesson {
             }
 
             // check if mob was destroyed
-            for event in mob_destroyed_event.iter() {
+            for event in mob_destroyed_event.read() {
                 if matches!(
                     event.mob_type,
                     MobType::Neutral(NeutralMobType::TutorialDrone)
@@ -385,7 +385,7 @@ impl TutorialLesson {
                 }
             }
 
-            for event in mob_segment_destroyed_event.iter() {
+            for event in mob_segment_destroyed_event.read() {
                 if matches!(
                     event.mob_segment_type,
                     MobSegmentType::Neutral(NeutralMobSegmentType::TutorialHaulerBack)
@@ -401,7 +401,7 @@ impl TutorialLesson {
             }
 
             // check if mob reached the bottom of the arena
-            for event in mob_reached_bottom_event.iter() {
+            for event in mob_reached_bottom_event.read() {
                 if let Some(mob_segment_type) = &event.mob_segment_type {
                     if matches!(
                         mob_segment_type,
@@ -471,7 +471,7 @@ impl TutorialLesson {
             }
 
             // check if mob was destroyed
-            for event in mob_destroyed_event.iter() {
+            for event in mob_destroyed_event.read() {
                 if matches!(
                     event.mob_type,
                     MobType::Neutral(NeutralMobType::TutorialDrone)
@@ -497,7 +497,7 @@ impl TutorialLesson {
             }
 
             // check if mob reached the bottom of the arena
-            for event in mob_reached_bottom_event.iter() {
+            for event in mob_reached_bottom_event.read() {
                 if let Some(mob_type) = &event.mob_type {
                     if matches!(mob_type, MobType::Neutral(NeutralMobType::TutorialDrone)) {
                         spawn_mob_event_writer.send(SpawnMobEvent {

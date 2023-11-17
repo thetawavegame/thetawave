@@ -92,7 +92,7 @@ fn our_default_plugins(
 
     match &opts.assets_dir {
         Some(path_) => res.set(AssetPlugin {
-            asset_folder: path_.to_string_lossy().to_string(),
+            file_path: path_.to_string_lossy().to_string(),
             ..Default::default()
         }),
         None => res,

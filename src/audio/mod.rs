@@ -52,7 +52,7 @@ fn play_sound_effect_system(
     audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
 ) {
-    for event in play_sound_event_reader.iter() {
+    for event in play_sound_event_reader.read() {
         audio_channel.play(audio_assets.get_sound_effect(&event.sound_effect_type));
     }
 }
@@ -62,7 +62,7 @@ fn change_bg_music_system(
     audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
     audio_assets: Res<GameAudioAssets>,
 ) {
-    for event in change_bg_music_event_reader.iter() {
+    for event in change_bg_music_event_reader.read() {
         // stop audio if playing sound
         if audio_channel.is_playing_sound() {
             let mut stop_command = audio_channel.stop();
