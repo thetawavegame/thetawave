@@ -44,12 +44,8 @@ jobs:
         with:
           components: rustfmt
 
-      - name: cargo fmt -- --check
-        run: cargo fmt -- --check
-
-      - name: temporary workaround - fmt all files under src
-        # Workaround for rust-lang/cargo#7732
-        run: cargo fmt -- --check $(find . -name '*.rs' -print)
+      - name: Check code formatting/style  # Do this first to fail fast. Doesn't require compiling the project
+        run: cargo fmt --all -- --check
 
       - name: Check that the game compiles and is minimally sensible rust (no warnings)
         run: cargo rustc --all-features -- -D warnings
