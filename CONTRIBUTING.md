@@ -44,10 +44,10 @@ To contribute to the assets, do the following.
 0. Send a repo maintainer your IAM User ARN. It will look something like
    `arn:aws:iam::121767489999:user/mythetawavedev`. The maintainer will allow you to use an AWS IAM Role that gives
 short term access to the assets 
-0. For web browser/console/interactive access [see the ThetawaveDeveloperRole IAM role login](
-   https://signin.aws.amazon.com/switchrole?roleName=ThetawaveDeveloperRole&account=6564541241021).  For example, in the
-[`assets-thetawave` bucket console](https://s3.console.aws.amazon.com/s3/buckets/assets-thetawave?) one can manually
-upload assets.
+0. For web browser/console/interactive access, log in and  [see the ThetawaveDeveloperRole IAM role login](
+   https://signin.aws.amazon.com/switchrole?roleName=ThetawaveDeveloperRole&account=656454124102).  For example, in the
+   [`assets-thetawave` bucket console](https://s3.console.aws.amazon.com/s3/buckets/assets-thetawave?) one can manually
+   upload assets.
 0. To download all of the assets from a local development environment using the
    [aws-cli](https://github.com/aws/aws-cli), I recommend creating an `~/.aws/credentials` file like the following.
    ```ini
