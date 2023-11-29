@@ -1,106 +1,20 @@
-use std::collections::HashMap;
-
-use crate::{
-    game::GameParametersResource,
-    player::{PlayerComponent, PlayerInput, PlayersResource},
-};
+use crate::game::GameParametersResource;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
+use leafwing_input_manager::prelude::ActionState;
+use thetawave_interface::input::PlayerAction;
+use thetawave_interface::player::PlayerComponent;
 
 /// Move player by modifying velocity with input
 pub fn player_movement_system(
-    gamepads: Res<Gamepads>,
-    gamepad_input: Res<Input<GamepadButton>>,
-    keyboard_input: Res<Input<KeyCode>>,
-    players_resource: Res<PlayersResource>,
     game_parameters: Res<GameParametersResource>,
-    mut player_info: Query<(&PlayerComponent, &mut Velocity)>,
+    mut player_info: Query<(&PlayerComponent, &mut Velocity, &ActionState<PlayerAction>)>,
 ) {
-    let up_keyboard_input =
-        keyboard_input.pressed(KeyCode::W) || keyboard_input.pressed(KeyCode::Up);
-    let down_keyboard_input =
-        keyboard_input.pressed(KeyCode::S) || keyboard_input.pressed(KeyCode::Down);
-    let left_keyboard_input =
-        keyboard_input.pressed(KeyCode::A) || keyboard_input.pressed(KeyCode::Left);
-    let right_keyboard_input =
-        keyboard_input.pressed(KeyCode::D) || keyboard_input.pressed(KeyCode::Right);
-
-    let up_gamepad_inputs: HashMap<usize, bool> = gamepads
-        .iter()
-        .map(|gamepad| {
-            (
-                gamepad.id,
-                gamepad_input.pressed(GamepadButton {
-                    gamepad,
-                    button_type: GamepadButtonType::DPadUp,
-                }),
-            )
-        })
-        .collect();
-
-    let down_gamepad_inputs: HashMap<usize, bool> = gamepads
-        .iter()
-        .map(|gamepad| {
-            (
-                gamepad.id,
-                gamepad_input.pressed(GamepadButton {
-                    gamepad,
-                    button_type: GamepadButtonType::DPadDown,
-                }),
-            )
-        })
-        .collect();
-
-    let left_gamepad_inputs: HashMap<usize, bool> = gamepads
-        .iter()
-        .map(|gamepad| {
-            (
-                gamepad.id,
-                gamepad_input.pressed(GamepadButton {
-                    gamepad,
-                    button_type: GamepadButtonType::DPadLeft,
-                }),
-            )
-        })
-        .collect();
-
-    let right_gamepad_inputs: HashMap<usize, bool> = gamepads
-        .iter()
-        .map(|gamepad| {
-            (
-                gamepad.id,
-                gamepad_input.pressed(GamepadButton {
-                    gamepad,
-                    button_type: GamepadButtonType::DPadRight,
-                }),
-            )
-        })
-        .collect();
-
-    for (player, mut vel) in player_info.iter_mut() {
-        let player_input = players_resource.player_inputs[player.player_index]
-            .clone()
-            .unwrap();
-
-        let up = match player_input {
-            PlayerInput::Keyboard => up_keyboard_input,
-            PlayerInput::Gamepad(gamepad) => up_gamepad_inputs[&gamepad],
-        };
-
-        let down = match player_input {
-            PlayerInput::Keyboard => down_keyboard_input,
-            PlayerInput::Gamepad(gamepad) => down_gamepad_inputs[&gamepad],
-        };
-
-        let left = match player_input {
-            PlayerInput::Keyboard => left_keyboard_input,
-            PlayerInput::Gamepad(gamepad) => left_gamepad_inputs[&gamepad],
-        };
-
-        let right = match player_input {
-            PlayerInput::Keyboard => right_keyboard_input,
-            PlayerInput::Gamepad(gamepad) => right_gamepad_inputs[&gamepad],
-        };
+    for (player, mut vel, action_state) in player_info.iter_mut() {
+        let up = action_state.pressed(PlayerAction::MoveUp);
+        let down = action_state.pressed(PlayerAction::MoveDown);
+        let left = action_state.pressed(PlayerAction::MoveLeft);
+        let right = action_state.pressed(PlayerAction::MoveRight);
 
         if player.movement_enabled {
             // convert to axis multipliers

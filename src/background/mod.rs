@@ -8,13 +8,13 @@ use rand::{seq::IteratorRandom, Rng};
 use ron::de::from_bytes;
 use serde::Deserialize;
 use std::ops::Range;
-use thetawave_interface::run::{RunDefeatType, RunEndEvent, RunOutcomeType};
+use thetawave_interface::{
+    run::{RunDefeatType, RunEndEvent, RunOutcomeType},
+    states::{self, GameCleanup},
+};
 use thiserror::Error;
 
-use crate::{
-    states::{self, GameCleanup},
-    GameEnterSet,
-};
+use crate::GameEnterSet;
 
 pub struct BackgroundPlugin;
 
@@ -109,7 +109,7 @@ pub fn on_defeat_star_explode_system(
     backgrounds_res: Res<BackgroundsResource>,
 ) {
     // Check for loss condition from defense objective
-    for event in run_end_event_reader.iter() {
+    for event in run_end_event_reader.read() {
         if let RunOutcomeType::Defeat(RunDefeatType::DefenseDestroyed) = event.outcome {
             star_explode_res.started = true;
         }
@@ -183,7 +183,7 @@ pub fn create_background_system(
             })
             .insert(GameCleanup)
             .insert(Visibility::default())
-            .insert(ComputedVisibility::default())
+            .insert(InheritedVisibility::default())
             .insert(Name::new("Planet"));
 
         match get_random_asset_file("./assets/models/planets".to_string()) {
@@ -237,7 +237,7 @@ pub fn create_background_system(
     background_commands
         .insert(GameCleanup)
         .insert(Visibility::default())
-        .insert(ComputedVisibility::default())
+        .insert(InheritedVisibility::default())
         .insert(Name::new("Space Background"))
         .insert(
             match get_random_asset_file("./assets/texture/backgrounds".to_string()) {
@@ -311,7 +311,7 @@ pub fn create_background_system(
         },))
         .insert(GameCleanup)
         .insert(Visibility::default())
-        .insert(ComputedVisibility::default())
+        .insert(InheritedVisibility::default())
         .insert(Name::new("Star"))
         .with_children(|parent| {
             parent

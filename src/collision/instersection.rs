@@ -1,10 +1,12 @@
-use crate::{
-    player::PlayerComponent,
-    spawnable::{ConsumableComponent, MobComponent, MobSegmentComponent, ProjectileComponent},
+use crate::spawnable::{
+    ConsumableComponent, MobComponent, MobSegmentComponent, ProjectileComponent,
 };
 use bevy::prelude::*;
 use bevy_rapier2d::{prelude::*, rapier::prelude::CollisionEventFlags};
-use thetawave_interface::spawnable::{Faction, MobSegmentType, MobType, ProjectileType};
+use thetawave_interface::{
+    player::PlayerComponent,
+    spawnable::{Faction, ItemComponent, MobSegmentType, MobType, ProjectileType},
+};
 
 use super::{CollidingEntityPair, SortedCollisionEvent};
 
@@ -14,12 +16,13 @@ pub fn intersection_collision_system(
     mut collision_events: EventReader<CollisionEvent>,
     player_query: Query<Entity, With<PlayerComponent>>,
     consumable_query: Query<Entity, With<ConsumableComponent>>,
+    item_query: Query<Entity, With<ItemComponent>>,
     mob_query: Query<(Entity, &MobComponent)>,
     mob_segment_query: Query<(Entity, &MobSegmentComponent)>,
     projectile_query: Query<(Entity, &ProjectileComponent)>,
 ) {
     // loop through all collision events
-    'collision_events: for collision_event in collision_events.iter() {
+    'collision_events: for collision_event in collision_events.read() {
         debug!("{collision_event:?}");
         if let CollisionEvent::Started(
             collider1_entity,
@@ -37,7 +40,8 @@ pub fn intersection_collision_system(
                         player_query.get(*e).is_ok(), // Most important. Check first
                         mob_query.get(*e).is_ok(),
                         mob_segment_query.get(*e).is_ok(),
-                        projectile_query.get(*e).is_ok(), // least important thing to check.
+                        projectile_query.get(*e).is_ok(),
+                        item_query.get(*e).is_ok(), // least important thing to check.
                     )
                 });
                 CollidingEntityPair {
@@ -72,6 +76,14 @@ pub fn intersection_collision_system(
                             consumable_entity: colliding_entities.secondary,
                         },
                     );
+                    continue 'collision_events;
+                }
+                // check for player-item intersection
+                else if item_query.get(colliding_entities.secondary).is_ok() {
+                    collision_event_writer.send(SortedCollisionEvent::PlayerToItemIntersection {
+                        player_entity: colliding_entities.primary,
+                        item_entity: colliding_entities.secondary,
+                    });
                     continue 'collision_events;
                 }
             }

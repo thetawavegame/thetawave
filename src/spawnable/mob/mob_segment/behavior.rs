@@ -5,19 +5,18 @@ use rand::{thread_rng, Rng};
 use serde::Deserialize;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
-    health::DamageDealtEvent,
-    spawnable::EffectType,
+    health::{DamageDealtEvent, HealthComponent},
+    player::PlayerComponent,
+    spawnable::{EffectType, MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnItemEvent},
 };
 
 use crate::{
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     loot::LootDropsResource,
-    misc::HealthComponent,
-    player::PlayerComponent,
     spawnable::{
-        behavior_sequence::EntityPair, MobDestroyedEvent, SpawnConsumableEvent, SpawnEffectEvent,
-        SpawnMobEvent, SpawnPosition,
+        behavior_sequence::EntityPair, SpawnConsumableEvent, SpawnEffectEvent, SpawnMobEvent,
+        SpawnPosition,
     },
 };
 
@@ -73,6 +72,7 @@ pub fn mob_segment_execute_behavior_system(
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
     loot_drops_resource: Res<LootDropsResource>,
     mut spawn_consumable_event_writer: EventWriter<SpawnConsumableEvent>,
+    mut spawn_item_event_writer: EventWriter<SpawnItemEvent>,
     mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
     time: Res<Time>,
     mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
@@ -81,7 +81,7 @@ pub fn mob_segment_execute_behavior_system(
     mut damage_dealt_event_writer: EventWriter<DamageDealtEvent>,
 ) {
     let mut collision_events_vec = vec![];
-    for collision_event in collision_events.iter() {
+    for collision_event in collision_events.read() {
         collision_events_vec.push(collision_event);
     }
 
@@ -129,17 +129,20 @@ pub fn mob_segment_execute_behavior_system(
                         });
 
                         // drop loot
-                        loot_drops_resource.roll_and_spawn_consumables(
+                        loot_drops_resource.spawn_loot_drops(
                             &mob_segment_component.consumable_drops,
                             &mut spawn_consumable_event_writer,
+                            &mut spawn_item_event_writer,
                             mob_segment_transform.translation.xy(),
                         );
 
                         // despawn mob
                         commands.entity(entity).despawn_recursive();
 
-                        mob_segment_destroyed_event_writer
-                            .send(MobSegmentDestroyedEvent { entity });
+                        mob_segment_destroyed_event_writer.send(MobSegmentDestroyedEvent {
+                            mob_segment_type: mob_segment_component.mob_segment_type.clone(),
+                            entity,
+                        });
                     }
                 }
                 MobSegmentBehavior::RandomRotation(data) => {
@@ -207,12 +210,6 @@ pub fn mob_segment_execute_behavior_system(
     }
 }
 
-/// Event to be sent when a mob segment is destroyed
-#[derive(Event)]
-pub struct MobSegmentDestroyedEvent {
-    pub entity: Entity,
-}
-
 /// Applies disconnected behaviors to other parts of the mob when a mob segment is destroyed
 pub fn mob_segment_apply_disconnected_behaviors_system(
     mut mob_destroyed_event_reader: EventReader<MobDestroyedEvent>,
@@ -221,12 +218,12 @@ pub fn mob_segment_apply_disconnected_behaviors_system(
     mob_segments_resource: Res<MobSegmentsResource>,
 ) {
     let mut entities: Vec<Entity> = mob_destroyed_event_reader
-        .iter()
+        .read()
         .map(|event| event.entity)
         .collect();
 
     let mut mob_segment_entities: Vec<Entity> = mob_segment_destroyed_event_reader
-        .iter()
+        .read()
         .map(|event| event.entity)
         .collect();
 

@@ -1,13 +1,17 @@
-use bevy::prelude::*;
-
-use crate::states;
+use crate::options::PlayingOnArcadeResource;
 
 use super::BouncingPromptComponent;
+use bevy::prelude::*;
+use thetawave_interface::states::InstructionsCleanup;
 
 #[derive(Component)]
 pub struct InstructionsUI;
 
-pub fn setup_instructions_system(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn setup_instructions_system(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    playing_on_arcade: Res<PlayingOnArcadeResource>,
+) {
     commands
         .spawn(NodeBundle {
             style: Style {
@@ -17,13 +21,13 @@ pub fn setup_instructions_system(mut commands: Commands, asset_server: Res<Asset
             },
             ..Default::default()
         })
-        .insert(states::InstructionsCleanup)
+        .insert(InstructionsCleanup)
         .insert(InstructionsUI)
         .with_children(|parent| {
             parent
                 .spawn(ImageBundle {
                     image: asset_server
-                        .load(if cfg!(feature = "arcade") {
+                        .load(if **playing_on_arcade {
                             "texture/instructions_54_arcade.png"
                         } else {
                             "texture/instructions_54.png"
@@ -41,7 +45,7 @@ pub fn setup_instructions_system(mut commands: Commands, asset_server: Res<Asset
                     parent
                         .spawn(ImageBundle {
                             image: asset_server
-                                .load(if cfg!(feature = "arcade") {
+                                .load(if **playing_on_arcade {
                                     "texture/start_game_prompt_arcade.png"
                                 } else {
                                     "texture/start_game_prompt_keyboard.png"

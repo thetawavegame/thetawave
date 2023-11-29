@@ -4,22 +4,21 @@ use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
-    health::DamageDealtEvent,
-    spawnable::{EffectType, MobType, ProjectileType},
+    health::{DamageDealtEvent, HealthComponent},
+    player::PlayerComponent,
+    spawnable::{
+        EffectType, MobDestroyedEvent, MobType, ProjectileType, SpawnItemEvent, SpawnMobEvent,
+    },
 };
 
 use crate::{
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     loot::LootDropsResource,
-    misc::HealthComponent,
-    spawnable::{
-        InitialMotion, PlayerComponent, SpawnConsumableEvent, SpawnEffectEvent,
-        SpawnProjectileEvent,
-    },
+    spawnable::{InitialMotion, SpawnConsumableEvent, SpawnEffectEvent, SpawnProjectileEvent},
 };
 
-use super::{MobComponent, SpawnMobEvent, SpawnPosition};
+use super::{MobComponent, SpawnPosition};
 
 /// Types of behaviors that can be performed by mobs
 #[derive(Deserialize, Clone)]
@@ -80,6 +79,7 @@ pub fn mob_execute_behavior_system(
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     mut spawn_consumable_event_writer: EventWriter<SpawnConsumableEvent>,
+    mut spawn_item_event_writer: EventWriter<SpawnItemEvent>,
     mut spawn_projectile_event_writer: EventWriter<SpawnProjectileEvent>,
     mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
     mut mob_destroyed_event_writer: EventWriter<MobDestroyedEvent>,
@@ -90,7 +90,7 @@ pub fn mob_execute_behavior_system(
 ) {
     // Get all contact events first (can't be read more than once within a system)
     let mut collision_events_vec = vec![];
-    for collision_event in collision_events.iter() {
+    for collision_event in collision_events.read() {
         collision_events_vec.push(collision_event);
     }
 
@@ -235,9 +235,10 @@ pub fn mob_execute_behavior_system(
                         });
 
                         // drop loot
-                        loot_drops_resource.roll_and_spawn_consumables(
-                            &mob_component.consumable_drops,
+                        loot_drops_resource.spawn_loot_drops(
+                            &mob_component.loot_drops,
                             &mut spawn_consumable_event_writer,
+                            &mut spawn_item_event_writer,
                             mob_transform.translation.xy(),
                         );
 
@@ -254,12 +255,6 @@ pub fn mob_execute_behavior_system(
             }
         }
     }
-}
-
-#[derive(Event)]
-pub struct MobDestroyedEvent {
-    pub mob_type: MobType,
-    pub entity: Entity,
 }
 
 /// Take damage from colliding entity on impact

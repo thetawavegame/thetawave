@@ -1,12 +1,13 @@
 use crate::{
     collision::SortedCollisionEvent,
-    spawnable::{MobComponent, MobSegmentComponent, PlayerComponent, SpawnEffectEvent},
+    spawnable::{MobComponent, MobSegmentComponent, SpawnEffectEvent},
 };
 use bevy::prelude::*;
 use serde::Deserialize;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     health::DamageDealtEvent,
+    player::PlayerComponent,
     spawnable::{EffectType, Faction, ProjectileType},
 };
 
@@ -38,7 +39,7 @@ pub fn projectile_execute_behavior_system(
 ) {
     // Put all collision events in a vec so they can be read more than once
     let mut collision_events_vec = vec![];
-    for collision_event in collision_events.iter() {
+    for collision_event in collision_events.read() {
         collision_events_vec.push(collision_event);
     }
 

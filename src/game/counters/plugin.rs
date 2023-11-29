@@ -1,18 +1,18 @@
 /// Expose all of the mutations for the within-game metric counters via a bevy plugin.
-use crate::{
-    collision::SortedCollisionEvent,
-    player::PlayerComponent,
-    spawnable::{MobDestroyedEvent, SpawnProjectileEvent},
-};
+use crate::{collision::SortedCollisionEvent, spawnable::SpawnProjectileEvent};
 use bevy::prelude::{debug, App, Entity, EventReader, OnEnter, Plugin, Query, ResMut, Update};
 
 use std::collections::HashMap;
-use thetawave_interface::game::historical_metrics::{
-    MobKillsByPlayerForCompletedGames, MobKillsByPlayerForCurrentGame, UserStat,
-    UserStatsByPlayerForCompletedGamesCache, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
-};
-use thetawave_interface::spawnable::MobType;
+use thetawave_interface::spawnable::{MobDestroyedEvent, MobType};
 use thetawave_interface::states::AppStates;
+use thetawave_interface::{
+    game::historical_metrics::{
+        MobKillsByPlayerForCompletedGames, MobKillsByPlayerForCurrentGame, UserStat,
+        UserStatsByPlayerForCompletedGamesCache, UserStatsByPlayerForCurrentGameCache,
+        DEFAULT_USER_ID,
+    },
+    player::PlayerComponent,
+};
 
 /// Maintains/mutates singleton resources that keep track of metrics for the current game. Mostly
 /// incrementing a reseting counters.
@@ -69,7 +69,7 @@ fn inc_in_memory_mob_destroyed_for_current_game_cache(
     let player_1_mob_counters = (**mobs_destroyed_counters_by_player)
         .entry(DEFAULT_USER_ID)
         .or_insert_with(Default::default);
-    for event in mob_destroyed_event_reader.iter() {
+    for event in mob_destroyed_event_reader.read() {
         if let MobType::Enemy(enemy_type) = &event.mob_type {
             inc_usize_map(player_1_mob_counters, *enemy_type);
         }
@@ -107,7 +107,7 @@ fn inc_in_memory_projectile_hits_counter_system(
 ) {
     if let Some(player_1_entity_id) = find_player_1(&player_query) {
         let n_player_1_hit_shots = collision_event_reader
-            .iter()
+            .read()
             .filter(|c| mob_projectile_collision_originates_from_entity(c, &player_1_entity_id))
             .count();
         if let Some(ref mut player_1_user_stats) =
@@ -129,7 +129,7 @@ fn count_shots_fired_by_player_1_system(
         .map(|(x, _)| x);
     let n_p1_shots_fired = match maybe_player_1_entity_id {
         Some(player_1) => shots_fired_event_reader
-            .iter()
+            .read()
             .filter(|x| x.source == player_1)
             .count(),
         None => 0,
@@ -189,15 +189,19 @@ fn roll_current_game_counters_into_completed_game_metrics(
 mod test {
     use crate::collision::SortedCollisionEvent;
     use crate::game::counters::plugin::CountingMetricsPlugin;
-    use crate::player::{
-        Character, CharacterType, CharactersResource, PlayerComponent, PlayerPlugin,
-    };
-    use crate::spawnable::{MobDestroyedEvent, SpawnProjectileEvent};
+    use crate::player::{CharactersResource, PlayerPlugin};
+    use crate::spawnable::SpawnProjectileEvent;
+    use bevy::input::InputPlugin;
     use bevy::prelude::{App, Component, Events};
+    use bevy::MinimalPlugins;
+    use thetawave_interface::character::{Character, CharacterType};
     use thetawave_interface::game::historical_metrics::{
         MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
     };
-    use thetawave_interface::spawnable::{EnemyMobType, Faction, MobType, ProjectileType};
+    use thetawave_interface::player::PlayerComponent;
+    use thetawave_interface::spawnable::{
+        EnemyMobType, Faction, MobDestroyedEvent, MobType, ProjectileType,
+    };
     use thetawave_interface::states::{AppStates, GameStates};
 
     fn base_app_required_for_counting_metrics() -> App {
@@ -208,7 +212,12 @@ mod test {
             .add_event::<MobDestroyedEvent>()
             .add_event::<SpawnProjectileEvent>()
             .insert_resource(UserStatsByPlayerForCurrentGameCache::default())
-            .add_plugins((PlayerPlugin, CountingMetricsPlugin));
+            .add_plugins((
+                InputPlugin,
+                PlayerPlugin,
+                CountingMetricsPlugin,
+                MinimalPlugins,
+            ));
         app
     }
     #[derive(Component, Default, Copy, Clone)]

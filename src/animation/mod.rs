@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 use serde::Deserialize;
-
-use crate::states;
+use thetawave_interface::states;
 
 pub struct AnimationPlugin;
 

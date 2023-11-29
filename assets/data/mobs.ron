@@ -176,7 +176,7 @@
 			)
 		],
 		z_level: 5.0,
-		consumable_drops: RepeaterBoss,
+		consumable_drops: Boss,
 		health: 1500,
 		animation: (
 			direction: PingPong(Forward),
@@ -545,6 +545,45 @@
 			),
 		)),
 	),
+	Ally(TutorialHauler2): (
+		mob_type: Ally(TutorialHauler2),
+		spawnable_behaviors: [MoveDown, BrakeHorizontal],
+		mob_behaviors: [ReceiveDamageOnImpact, DieAtZeroHealth],
+		acceleration: (0.0, 3.0),
+		deceleration: (2.0, 1.0),
+		speed: (0.0, 100.0),
+		collision_damage: 0,
+		colliders: [
+			(
+				dimensions: (5.25, 3.75),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
+		z_level: 6.0,
+		health: 80,
+		animation: (
+			direction: None,
+			frame_duration: 1.0,
+		),
+		mob_segment_anchor_points: [
+			(
+				mob_segment_type: Neutral(TutorialHaulerBack),
+				position: (0.0, 28.0),
+				joint: Revolute,
+				target_pos: 0.0,
+				stiffness: 10.0,
+				damping: 10.0,
+			)
+		],
+		thruster: Some((
+			y_offset: 7.0,
+			animation: (
+				direction: PingPong(Forward),
+				frame_duration: 0.15,
+			),
+		)),
+	),
 	Enemy(MissileLauncher): (
 		mob_type: Enemy(MissileLauncher),
 		spawnable_behaviors: [MoveDown, BrakeHorizontal],
@@ -744,6 +783,30 @@
 			)
 		],
 		health: 50,
+		animation: (
+			direction: PingPong(Forward),
+			frame_duration: 0.25,
+		),
+	),
+	Neutral(TutorialDrone): (
+		mob_type: Neutral(TutorialDrone),
+		spawnable_behaviors: [MoveDown, BrakeHorizontal],
+		mob_behaviors: [ReceiveDamageOnImpact, DieAtZeroHealth],
+		acceleration: (0.0, 2.0),
+		deceleration: (2.0, 1.0),
+		speed: (0.0, 70.0),
+		collision_damage: 0,
+		defense_interaction: Some(Damage(0)),
+		colliders: [
+			(
+				dimensions: (5.5, 6.5),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
+		z_level: 5.0,
+		consumable_drops: Nothing,
+		health: 15,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,

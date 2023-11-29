@@ -2,19 +2,23 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 use std::collections::HashMap;
-use thetawave_interface::spawnable::{ConsumableType, SpawnableType};
+use thetawave_interface::{
+    spawnable::{ConsumableType, SpawnableType},
+    states::GameCleanup,
+};
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::ConsumableAssets,
     game::GameParametersResource,
     spawnable::{InitialMotion, SpawnableBehavior, SpawnableComponent},
-    states::GameCleanup,
 };
 
 mod behavior;
 
 pub use self::behavior::{consumable_execute_behavior_system, ConsumableBehavior};
+
+use thetawave_interface::spawnable::AttractToClosestPlayerComponent;
 
 /// All the different consumable effects
 #[derive(Deserialize, Clone)]
@@ -53,7 +57,7 @@ pub fn spawn_consumable_system(
     consumable_assets: Res<ConsumableAssets>,
     game_parameters: Res<GameParametersResource>,
 ) {
-    for event in event_reader.iter() {
+    for event in event_reader.read() {
         spawn_consumable(
             &event.consumable_type,
             &consumables_resource,
@@ -110,7 +114,6 @@ pub fn spawn_consumable(
 ) {
     //Get data from the consumable resource
     let consumable_data = &consumable_resource.consumables[consumable_type];
-
     // Scale collider to align with the sprite
     let collider_size_hx =
         consumable_data.collider_dimensions.x * game_parameters.sprite_scale / 2.0;
@@ -119,6 +122,12 @@ pub fn spawn_consumable(
 
     // Create consumable entity
     let mut consumable = commands.spawn_empty();
+    if consumable_data
+        .spawnable_behaviors
+        .contains(&SpawnableBehavior::AttractToPlayer)
+    {
+        consumable.insert(AttractToClosestPlayerComponent);
+    }
 
     // spawn the consumable
     consumable

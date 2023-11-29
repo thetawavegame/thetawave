@@ -11,10 +11,8 @@ use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::MobAssets,
     game::GameParametersResource,
-    loot::ConsumableDropListType,
-    misc::HealthComponent,
+    loot::DropListType,
     spawnable::{InitialMotion, SpawnableBehavior, SpawnableComponent},
-    states::GameCleanup,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 
@@ -25,8 +23,10 @@ pub use self::{behavior::*, mob_segment::*};
 use super::behavior_sequence::MobBehaviorSequenceType;
 use thetawave_interface::{
     audio::CollisionSoundType,
+    health::HealthComponent,
     objective::DefenseInteraction,
-    spawnable::{MobSegmentType, MobType, ProjectileType},
+    spawnable::{MobDestroyedEvent, MobSegmentType, MobType, ProjectileType, SpawnMobEvent},
+    states::GameCleanup,
 };
 
 /// Core component for mobs
@@ -58,7 +58,7 @@ pub struct MobComponent {
     /// Damage dealt to defense objective, after reaching bottom of arena
     pub defense_interaction: Option<DefenseInteraction>,
     /// List of consumable drops
-    pub consumable_drops: ConsumableDropListType,
+    pub loot_drops: DropListType,
 }
 
 impl From<&MobData> for MobComponent {
@@ -106,7 +106,7 @@ impl From<&MobData> for MobComponent {
             collision_damage: mob_data.collision_damage,
             collision_sound: mob_data.collision_sound.clone(),
             defense_interaction: mob_data.defense_interaction.clone(),
-            consumable_drops: mob_data.consumable_drops.clone(),
+            loot_drops: mob_data.consumable_drops.clone(),
         }
     }
 }
@@ -241,7 +241,7 @@ pub struct MobData {
     pub health: usize,
     /// List of consumable drops
     #[serde(default)]
-    pub consumable_drops: ConsumableDropListType,
+    pub consumable_drops: DropListType,
     /// Z level of the mobs transform
     pub z_level: f32,
     /// anchor points for other mob segments
@@ -293,19 +293,6 @@ pub enum JointType {
     Revolute,
 }
 
-/// Event for spawning mobs
-#[derive(Event)]
-pub struct SpawnMobEvent {
-    /// Type of mob to spawn
-    pub mob_type: MobType,
-    /// Position to spawn mob
-    pub position: Vec2,
-
-    pub rotation: Quat,
-
-    pub boss: bool,
-}
-
 /// Spawns mobs from events
 pub fn spawn_mob_system(
     mut commands: Commands,
@@ -315,7 +302,7 @@ pub fn spawn_mob_system(
     mob_assets: Res<MobAssets>,
     game_parameters: Res<GameParametersResource>,
 ) {
-    for event in event_reader.iter() {
+    for event in event_reader.read() {
         spawn_mob(
             &event.mob_type,
             &mob_resource,

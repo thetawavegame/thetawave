@@ -27,7 +27,7 @@ jobs:
       - name: Install bevy deps
         run: |
           set -euxo pipefail
-          sudo apt install -y lld g++ pkg-config libx11-dev libasound2-dev libudev-dev
+          sudo apt update && sudo apt upgrade && sudo apt install -y lld g++ pkg-config libx11-dev libasound2-dev libudev-dev
       - name: Cache deps
         uses: actions/cache@v3
         with:
@@ -44,12 +44,8 @@ jobs:
         with:
           components: rustfmt
 
-      - name: cargo fmt -- --check
-        run: cargo fmt -- --check
-
-      - name: temporary workaround - fmt all files under src
-        # Workaround for rust-lang/cargo#7732
-        run: cargo fmt -- --check $(find . -name '*.rs' -print)
+      - name: Check code formatting/style  # Do this first to fail fast. Doesn't require compiling the project
+        run: cargo fmt --all -- --check
 
       - name: Check that the game compiles and is minimally sensible rust (no warnings)
         run: cargo rustc --all-features -- -D warnings
@@ -85,7 +81,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           set -euxo pipefail
-          sudo apt install -y lld g++ pkg-config libx11-dev libasound2-dev libudev-dev
+          sudo apt update && sudo apt upgrade && sudo apt install -y lld g++ pkg-config libx11-dev libasound2-dev libudev-dev
         shell: bash
       - name: Cache deps
         uses: actions/cache@v3

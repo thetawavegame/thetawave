@@ -1,12 +1,12 @@
 use crate::{
     arena::ArenaBarrierComponent,
-    player::PlayerComponent,
     spawnable::{MobComponent, MobSegmentComponent, ProjectileComponent},
 };
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use thetawave_interface::{
     audio::{CollisionSoundType, PlaySoundEffectEvent, SoundEffectType},
+    player::PlayerComponent,
     spawnable::{Faction, MobSegmentType, MobType, ProjectileType},
 };
 
@@ -24,7 +24,7 @@ pub fn contact_collision_system(
     projectile_query: Query<(Entity, &ProjectileComponent)>,
     mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
 ) {
-    'collision_events: for contact_event in collision_events.iter() {
+    'collision_events: for contact_event in collision_events.read() {
         if let CollisionEvent::Stopped(collider1_entity, collider2_entity, _) = contact_event {
             // Prioritize by the importance of components to eliminate cases to check due to
             // `x collided with y` and `y collided with x` symmetry

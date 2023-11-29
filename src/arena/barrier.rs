@@ -1,11 +1,11 @@
 use crate::{
-    game::GameParametersResource, spawnable::SpawnEffectEvent, states::GameCleanup,
+    game::GameParametersResource, spawnable::SpawnEffectEvent,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use std::f32::consts::FRAC_PI_2;
-use thetawave_interface::spawnable::EffectType;
+use thetawave_interface::{spawnable::EffectType, states::GameCleanup};
 
 /// Tag component for arena barriers
 #[derive(Component)]

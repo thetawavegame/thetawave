@@ -8,6 +8,7 @@
 			collider_density: 1.0,
 			character_type: Captain,
 			projectile_type: Blast(Ally),
+			projectile_count: 1,
 			projectile_despawn_time: 1.00,
 			projectile_velocity: (0.0, 500.0),
 			projectile_offset_position: (0.0, 40.0),
@@ -22,7 +23,6 @@
 			money: 0,
 			ability_period: 5.0,
 			ability_type: MegaBlast(5.0),
-			projectile_count: 1,
 		),
 		Juggernaut: (
 			acceleration: (25.0, 25.0),
@@ -32,6 +32,7 @@
 			collider_density: 1.5,
 			character_type: Juggernaut,
 			projectile_type: Bullet(Ally),
+			projectile_count: 1,
 			projectile_despawn_time: 0.7,
 			projectile_velocity: (0.0, 400.0),
 			projectile_offset_position: (0.0, 45.0),
@@ -46,7 +47,6 @@
 			money: 0,
 			ability_period: 2.0,
 			ability_type: Charge(0.5),
-			projectile_count: 1,
 		),
 	}
 )

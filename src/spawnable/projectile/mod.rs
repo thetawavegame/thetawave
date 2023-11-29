@@ -2,7 +2,10 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 use std::{collections::HashMap, string::ToString};
-use thetawave_interface::spawnable::{ProjectileType, SpawnableType};
+use thetawave_interface::{
+    spawnable::{ProjectileType, SpawnableType},
+    states::GameCleanup,
+};
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
@@ -10,7 +13,6 @@ use crate::{
     game::GameParametersResource,
     spawnable::InitialMotion,
     spawnable::{SpawnableBehavior, SpawnableComponent},
-    states::GameCleanup,
     HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
 };
 
@@ -85,7 +87,7 @@ pub fn spawn_projectile_system(
     projectile_assets: Res<ProjectileAssets>,
     game_parameters: Res<GameParametersResource>,
 ) {
-    for event in event_reader.iter() {
+    for event in event_reader.read() {
         spawn_projectile(
             &event.projectile_type,
             &projectile_resource,

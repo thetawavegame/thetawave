@@ -1,9 +1,14 @@
 //! `thetawave` player module
 use bevy::prelude::*;
+use leafwing_input_manager::prelude::InputManagerPlugin;
 use ron::de::from_bytes;
-use thetawave_interface::states::{AppStates, GameStates};
+use thetawave_interface::input::PlayerAction;
+use thetawave_interface::player::InputRestrictionsAtSpawn;
+use thetawave_interface::{
+    player::PlayersResource,
+    states::{AppStates, GameStates},
+};
 
-mod components;
 mod resources;
 mod spawn;
 mod systems;
@@ -11,8 +16,7 @@ mod systems;
 use crate::{GameEnterSet, GameUpdateSet};
 
 pub use self::{
-    components::PlayerComponent,
-    resources::{Character, CharacterType, CharactersResource, PlayerInput, PlayersResource},
+    resources::CharactersResource,
     spawn::spawn_players_system,
     systems::{
         player_ability_system, player_death_system, player_fire_weapon_system,
@@ -24,12 +28,15 @@ pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
+        app.add_plugins(InputManagerPlugin::<PlayerAction>::default());
+
         app.insert_resource(
             from_bytes::<CharactersResource>(include_bytes!("../../assets/data/characters.ron"))
                 .unwrap(),
         );
 
-        app.insert_resource(PlayersResource::default());
+        app.insert_resource(PlayersResource::default())
+            .insert_resource(InputRestrictionsAtSpawn::default());
 
         app.add_systems(
             OnEnter(AppStates::Game),
