@@ -12,9 +12,9 @@ use crate::game::GameParametersResource;
 /// Move player by modifying velocity with input
 pub fn player_movement_system(
     game_parameters: Res<GameParametersResource>,
-    mut player_info: Query<(&PlayerComponent, &mut Velocity, &ActionState<PlayerAction>, &mut Transform)>,
+    mut player_info: Query<(&PlayerComponent, &mut Velocity, &ActionState<PlayerAction>)>,
 ) {
-    for (player, mut vel, action_state, mut player_trans) in player_info.iter_mut() {
+    for (player, mut vel, action_state) in player_info.iter_mut() {
         let up = action_state.pressed(PlayerAction::MoveUp);
         let down = action_state.pressed(PlayerAction::MoveDown);
         let left = action_state.pressed(PlayerAction::MoveLeft);
@@ -54,7 +54,12 @@ pub fn player_movement_system(
         } else {
             vel.linvel.y = 0.0;
         }
+    }
+}
 
+/// Tilt facing direction of player based on its velocity
+pub fn player_tilt_system(mut player_info: Query<(&Velocity, &mut Transform)>) {
+    for (vel, mut player_trans) in player_info.iter_mut() {
         let rotation_amount = -vel.linvel.x.atan2(vel.linvel.y.abs()) / PI;
 
         player_trans.rotation.z += rotation_amount * 0.05;
