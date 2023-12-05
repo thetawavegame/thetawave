@@ -58,7 +58,9 @@ pub fn player_movement_system(
 }
 
 /// Tilt facing direction of player based on its velocity
-pub fn player_tilt_system(mut player_info: Query<(&Velocity, &mut Transform)>) {
+pub fn player_tilt_system(
+    mut player_info: Query<(&Velocity, &mut Transform), With<PlayerComponent>>,
+) {
     for (vel, mut player_trans) in player_info.iter_mut() {
         let rotation_amount = -vel.linvel.x.atan2(vel.linvel.y.abs()) / PI;
 
