@@ -42,15 +42,14 @@ pub fn player_fire_weapon_system(
         player_component.fire_timer.tick(time.delta());
 
         // fire blast if timer finished and input pressed
-        if !player_component.fire_timer.finished() || !fire_input || !player_component.main_attack_is_enabled() {
+        if !player_component.fire_timer.finished()
+            || !fire_input
+            || !player_component.main_attack_is_enabled()
+        {
             continue;
         }
 
-        let spread_angle = clamp(
-            300.0 / player_component.projectile_count as f32,
-            0.0,
-            300.0,
-        );
+        let spread_angle = clamp(300.0 / player_component.projectile_count as f32, 0.0, 300.0);
         let center_projectile_index = (player_component.projectile_count - 1) as f32 / 2.0;
 
         for i in 0..player_component.projectile_count {
@@ -67,8 +66,11 @@ pub fn player_fire_weapon_system(
             // pass player velocity into the spawned blast
             let initial_motion = InitialMotion {
                 linvel: Some(Vec2::new(
-                    (player_component.projectile_velocity.x) + rb_vels.linvel.x + center_adjusted_index * spread_angle,
-                    (player_component.projectile_velocity.y) + rb_vels.linvel.y - f32::abs(center_adjusted_index * spread_angle),
+                    player_component.projectile_velocity.x
+                        + rb_vels.linvel.x
+                        + center_adjusted_index * spread_angle,
+                    player_component.projectile_velocity.y + rb_vels.linvel.y
+                        - f32::abs(center_adjusted_index * spread_angle),
                 )),
                 ..Default::default()
             };
