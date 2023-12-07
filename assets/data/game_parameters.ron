@@ -1,9 +1,10 @@
 (
-	sprite_scale: 3.0,
-	stop_threshold: 0.1,
-	max_speed: 10000,
 	camera_z: 50,
 	camera_zoom_out_scale: 3.0,
-	scan_range: 100.0,
+	max_player_projectiles: 10,
+	max_speed: 10000,
 	player_spawn_distance: 200.0,
+	scan_range: 100.0,
+	sprite_scale: 3.0,
+	stop_threshold: 0.1,
 )

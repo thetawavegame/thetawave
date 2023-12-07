@@ -1,10 +1,11 @@
+use std::f32::consts::PI;
 use std::time::Duration;
 
 use bevy::prelude::*;
-use bevy_rapier2d::na::clamp;
 use bevy_rapier2d::prelude::*;
 use leafwing_input_manager::prelude::ActionState;
 
+use crate::game::GameParametersResource;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     input::PlayerAction,
@@ -33,6 +34,7 @@ pub fn player_fire_weapon_system(
     time: Res<Time>,
     mut spawn_projectile: EventWriter<SpawnProjectileEvent>,
     mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
+    game_parameters: Res<GameParametersResource>,
 ) {
     for (mut player_component, rb_vels, transform, action_state, entity) in player_query.iter_mut()
     {
@@ -49,11 +51,19 @@ pub fn player_fire_weapon_system(
             continue;
         }
 
-        let spread_angle = clamp(300.0 / player_component.projectile_count as f32, 0.0, 300.0);
-        let center_projectile_index = (player_component.projectile_count - 1) as f32 / 2.0;
+        let max_spread = PI / 2.;
+        let spread_amount = (player_component.projectile_count as f32 - 1.)
+            / (game_parameters.max_player_projectiles - 1.);
+        let spread = spread_amount * max_spread;
+        let spread_angle_segment = spread / (player_component.projectile_count as f32 - 1.).max(1.);
 
-        for i in 0..player_component.projectile_count {
-            let center_adjusted_index = i as f32 - center_projectile_index;
+        for p in 0..player_component.projectile_count {
+            let angle_start = (PI + spread) / 2.;
+            let angle = angle_start - (p as f32 * spread_angle_segment);
+
+            let x_spread_distance = angle.cos() * 200.;
+            let y_spread_distance = angle.sin() * 400.;
+
             let projectile_transform = Transform {
                 translation: Vec3::new(
                     transform.translation.x + player_component.projectile_offset_position.x,
@@ -66,11 +76,8 @@ pub fn player_fire_weapon_system(
             // pass player velocity into the spawned blast
             let initial_motion = InitialMotion {
                 linvel: Some(Vec2::new(
-                    player_component.projectile_velocity.x
-                        + rb_vels.linvel.x
-                        + center_adjusted_index * spread_angle,
-                    player_component.projectile_velocity.y + rb_vels.linvel.y
-                        - f32::abs(center_adjusted_index * spread_angle),
+                    player_component.projectile_velocity.x + rb_vels.linvel.x + x_spread_distance,
+                    player_component.projectile_velocity.y + rb_vels.linvel.y + y_spread_distance,
                 )),
                 ..Default::default()
             };

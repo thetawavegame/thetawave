@@ -10,7 +10,7 @@
 			projectile_type: Blast(Ally),
 			projectile_count: 1,
 			projectile_despawn_time: 1.00,
-			projectile_velocity: (0.0, 500.0),
+			projectile_velocity: (0.0, 300.0),
 			projectile_offset_position: (0.0, 40.0),
 			fire_period: 0.4,
 			health: 80,
@@ -34,7 +34,7 @@
 			projectile_type: Bullet(Ally),
 			projectile_count: 1,
 			projectile_despawn_time: 0.7,
-			projectile_velocity: (0.0, 400.0),
+			projectile_velocity: (0.0, 200.0),
 			projectile_offset_position: (0.0, 45.0),
 			fire_period: 0.7, // currently gets overwritten by the fire rate increase from collecting the rocks
 			health: 150,
