@@ -14,7 +14,12 @@ pub struct GameParametersResource {
     pub max_player_projectiles: f32,
     /// Maximum possible speed of an entity
     pub max_speed: f32,
+    /// Maximum angle between the first and last projectile
+    pub max_spread_arc: f32,
+    /// Distance between the center of the screen and the player spawn point
     pub player_spawn_distance: f32,
+    /// Gap between each player projectile
+    pub projectile_gap: f32,
     /// Sprite image size multiplier
     pub sprite_scale: f32,
     /// Threshold to set velocity to zero

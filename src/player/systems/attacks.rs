@@ -51,17 +51,14 @@ pub fn player_fire_weapon_system(
             continue;
         }
 
-        // indicates the maximum angle between the first and last projectile
-        let max_spread_arc = PI / 2.;
-        // used to calculate the gap between each projectile
-        let projectile_gap = PI;
-
         // the percentage of the total number of projectiles that the player has acquired
         let total_projectiles_percent = (player_component.projectile_count as f32 - 1.)
             / (game_parameters.max_player_projectiles - 1.);
 
         // indicates the angle between the first and last projectile
-        let spread_arc = max_spread_arc.min(total_projectiles_percent * projectile_gap);
+        let spread_arc = game_parameters
+            .max_spread_arc
+            .min(total_projectiles_percent * game_parameters.projectile_gap);
         // indicates the angle between each projectile
         let spread_angle_segment =
             spread_arc / (player_component.projectile_count as f32 - 1.).max(1.);
