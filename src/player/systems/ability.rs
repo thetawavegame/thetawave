@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::{ExternalImpulse, Velocity};
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::input::PlayerAction;
+use thetawave_interface::player;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     player::{AbilityType, PlayerComponent},
@@ -97,6 +98,7 @@ pub fn player_ability_system(
                     spawn_projectile.send(SpawnProjectileEvent {
                         projectile_type: player_component.projectile_type.clone(),
                         transform: projectile_transform,
+                        range: player_component.projectile_range,
                         damage: (player_component.attack_damage as f32 * multiplier).round()
                             as usize,
                         despawn_time: player_component.projectile_despawn_time,

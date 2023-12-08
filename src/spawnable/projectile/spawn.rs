@@ -58,6 +58,7 @@ pub fn spawn_projectile_system(
             &projectile_resource,
             &projectile_assets,
             event.transform,
+            event.range,
             event.damage,
             event.despawn_time,
             event.initial_motion.clone(),
@@ -75,6 +76,7 @@ pub fn spawn_projectile(
     projectile_resource: &ProjectileResource,
     projectile_assets: &ProjectileAssets,
     transform: Transform,
+    range: f32,
     damage: usize,
     despawn_time: f32, // time before despawning
     initial_motion: InitialMotion,
@@ -98,7 +100,7 @@ pub fn spawn_projectile(
     projectile_transform.scale.z = 1.0;
 
     if matches!(projectile_type, ProjectileType::Beam(..)) {
-        projectile_transform.scale.y *= 200.0;
+        projectile_transform.scale.y *= range;
         projectile_transform.translation.y += projectile_transform.scale.y / (2.0);
     }
 

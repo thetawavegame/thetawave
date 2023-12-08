@@ -19,6 +19,8 @@ pub struct SpawnProjectileEvent {
     pub projectile_type: ProjectileType,
     /// Position to spawn
     pub transform: Transform,
+    /// Used for some projectiles like the beam to determine length
+    pub range: f32,
     /// Damage of projectile
     pub damage: usize,
     /// Time until projectile despawns

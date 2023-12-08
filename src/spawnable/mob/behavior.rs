@@ -143,6 +143,7 @@ pub fn mob_execute_behavior_system(
                             spawn_projectile_event_writer.send(SpawnProjectileEvent {
                                 projectile_type: projectile_spawner.projectile_type.clone(),
                                 transform: projectile_transform,
+                                range: 100.0, // TODO: repace with valuie from mobs projectile spawner
                                 damage: attack_damage,
                                 despawn_time: projectile_spawner.despawn_time,
                                 initial_motion: modified_initial_motion,
