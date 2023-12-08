@@ -99,7 +99,7 @@ fn deal_damage_on_contact_system(
     mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
     mut damage_dealt_event_writer: EventWriter<DamageDealtEvent>,
 ) {
-    for collision_event in collision_events.iter() {
+    for collision_event in collision_events.read() {
         match collision_event {
             SortedCollisionEvent::PlayerToProjectileContact {
                 player_entity,
@@ -205,7 +205,7 @@ fn deal_damage_on_intersection_system(
     mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
     mut damage_dealt_event_writer: EventWriter<DamageDealtEvent>,
 ) {
-    for collision_event in collision_events.iter() {
+    for collision_event in collision_events.read() {
         match collision_event {
             SortedCollisionEvent::PlayerToProjectileIntersection {
                 player_entity,
@@ -299,7 +299,7 @@ fn explode_on_intersection_system(
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
 ) {
-    for collision_event in collision_events.iter() {
+    for collision_event in collision_events.read() {
         match collision_event {
             SortedCollisionEvent::PlayerToProjectileIntersection {
                 player_entity: _,
@@ -444,7 +444,7 @@ fn explode_on_contact_system(
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
 ) {
-    for collision_event in collision_events.iter() {
+    for collision_event in collision_events.read() {
         match collision_event {
             SortedCollisionEvent::PlayerToProjectileContact {
                 player_entity: _,

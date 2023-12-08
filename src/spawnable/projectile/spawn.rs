@@ -52,7 +52,7 @@ pub fn spawn_projectile_system(
     projectile_assets: Res<ProjectileAssets>,
     game_parameters: Res<GameParametersResource>,
 ) {
-    for event in event_reader.iter() {
+    for event in event_reader.read() {
         spawn_projectile(
             &event.projectile_type,
             &projectile_resource,

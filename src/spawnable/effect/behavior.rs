@@ -178,7 +178,7 @@ fn fade_out_despawn_after_animation_effect_behavior_system(
     mut animation_complete_event_reader: EventReader<AnimationCompleteEvent>,
 ) {
     let mut animation_completed_events = vec![];
-    for event in animation_complete_event_reader.iter() {
+    for event in animation_complete_event_reader.read() {
         animation_completed_events.push(event);
     }
 

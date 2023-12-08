@@ -2,7 +2,6 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::{ExternalImpulse, Velocity};
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::input::PlayerAction;
-use thetawave_interface::player;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     player::{AbilityType, PlayerComponent},
