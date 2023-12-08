@@ -33,6 +33,13 @@ pub struct GameInitCLIOptions {
     /// the directory that is used for `bevy::asset::AssetPlugin`. This is generally
     /// 'EXECUTABLE_DIR/assets/' or 'CARGO_MANIFEST_DIR/assets'.
     pub assets_dir: Option<PathBuf>,
+    #[cfg_attr(
+        all(not(target_arch = "wasm32"), feature = "arcade"),
+        argh(switch, short = 'a')
+    )]
+    /// whether to use instructions, serial port IO, etc. specific to deploying on an arcade
+    /// machine. This should almost never be enabled.
+    pub arcade: bool,
 }
 impl GameInitCLIOptions {
     pub fn from_environ_on_supported_platforms_with_default_fallback() -> Self {
@@ -44,13 +51,23 @@ impl GameInitCLIOptions {
         Default::default()
     }
 }
-pub struct OptionsPlugin;
+/// Whether we are playing on an arcade machine. This affects some different UI elements.
+/// Generally this will be set at app startup (either inferred or explicitly provided as a game
+/// startup parameter, and should probably not be mutated during the game.
+#[derive(Resource, Debug, Clone, Copy, PartialEq, Eq, Deref)]
+pub struct PlayingOnArcadeResource(bool);
+
+#[derive(Default)]
+pub struct OptionsPlugin {
+    pub arcade: bool,
+}
 
 impl Plugin for OptionsPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(InputManagerPlugin::<MenuAction>::default());
 
         app.insert_resource(InputsResource::from(get_input_bindings()));
+        app.insert_resource(PlayingOnArcadeResource(self.arcade));
 
         app.add_systems(Startup, spawn_menu_explorer_system);
 

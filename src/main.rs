@@ -4,7 +4,7 @@ use bevy_kira_audio::prelude::*;
 
 use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
-use options::generate_config_files;
+use options::{generate_config_files, GameInitCLIOptions};
 use thetawave_interface::states::{AppStates, GameStates};
 
 pub const PHYSICS_SCALE: f32 = 10.0;
@@ -81,7 +81,7 @@ fn get_display_config() -> options::DisplayConfig {
 
 fn our_default_plugins(
     display_config: options::DisplayConfig,
-    opts: options::GameInitCLIOptions,
+    opts: &options::GameInitCLIOptions,
 ) -> PluginGroupBuilder {
     let res = DefaultPlugins
         .set(WindowPlugin {
@@ -90,13 +90,29 @@ fn our_default_plugins(
         })
         .set(ImagePlugin::default_nearest());
 
-    match opts.assets_dir {
+    match &opts.assets_dir {
         Some(path_) => res.set(AssetPlugin {
-            asset_folder: path_.to_string_lossy().to_string(),
+            file_path: path_.to_string_lossy().to_string(),
             ..Default::default()
         }),
         None => res,
     }
+}
+
+#[allow(unused_variables, unused_mut)] // The options are only used on some platforms/with some installs
+fn our_game_plugins(opts: &GameInitCLIOptions) -> PluginGroupBuilder {
+    let mut res = ThetawaveGamePlugins.build();
+    #[cfg(feature = "arcade")]
+    {
+        if opts.arcade {
+            res = res.add(thetawave_arcade::arduino::ArcadeArduinoPlugin).add(
+                options::OptionsPlugin {
+                    arcade: opts.arcade,
+                },
+            );
+        }
+    }
+    res
 }
 fn main() {
     // pushes rust errors to the browser console
@@ -108,13 +124,11 @@ fn main() {
 
     let display_config = get_display_config();
 
+    let opts =
+        options::GameInitCLIOptions::from_environ_on_supported_platforms_with_default_fallback();
     let mut app = build_app(
-        our_default_plugins(
-            display_config,
-            options::GameInitCLIOptions::from_environ_on_supported_platforms_with_default_fallback(
-            ),
-        ),
-        ThetawaveGamePlugins,
+        our_default_plugins(display_config, &opts),
+        our_game_plugins(&opts),
     );
 
     app.run();
@@ -179,7 +193,7 @@ impl PluginGroup for ThetawaveGamePlugins {
                 PHYSICS_SCALE,
             ))
             .add(ui::UiPlugin)
-            .add(options::OptionsPlugin)
+            .add(options::OptionsPlugin::default())
             .add(audio::ThetawaveAudioPlugin);
         #[cfg(feature = "arcade")]
         {

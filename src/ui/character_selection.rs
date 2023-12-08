@@ -1,4 +1,4 @@
-use crate::run::CurrentRunProgressResource;
+use crate::{options::PlayingOnArcadeResource, run::CurrentRunProgressResource};
 
 use super::BouncingPromptComponent;
 
@@ -52,7 +52,11 @@ pub struct StartGamePrompt;
 pub struct ToggleTutorialUI;
 
 /// Setup the character selection UI
-pub fn setup_character_selection_system(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn setup_character_selection_system(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    playing_on_arcade: Res<PlayingOnArcadeResource>,
+) {
     let font = asset_server.load("fonts/wibletown-regular.otf");
 
     commands
@@ -113,7 +117,7 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                     parent
                                         .spawn(ImageBundle {
                                             image: asset_server
-                                                .load(if cfg!(feature = "arcade") {
+                                                .load(if **playing_on_arcade {
                                                     "texture/join_prompt_arcade.png"
                                                 } else {
                                                     "texture/join_prompt_keyboard.png"
@@ -224,7 +228,7 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                                     parent
                                         .spawn(ImageBundle {
                                             image: asset_server
-                                                .load(if cfg!(feature = "arcade") {
+                                                .load(if **playing_on_arcade {
                                                     "texture/join_prompt_arcade.png"
                                                 } else {
                                                     "texture/join_prompt_keyboard.png"
@@ -484,7 +488,7 @@ pub fn setup_character_selection_system(mut commands: Commands, asset_server: Re
                             parent
                                 .spawn(ImageBundle {
                                     image: asset_server
-                                        .load(if cfg!(feature = "arcade") {
+                                        .load(if **playing_on_arcade {
                                             "texture/start_game_prompt_arcade.png"
                                         } else {
                                             "texture/start_game_prompt_keyboard.png"
@@ -585,7 +589,7 @@ pub fn player_join_system(
 
     // join with gamepad
     if action_state.just_released(MenuAction::JoinGamepad) {
-        let gamepad_event = gamepad_events.iter().next().unwrap();
+        let gamepad_event = gamepad_events.read().next().unwrap();
 
         // set the first available player input the gamepad
         for (i, player_data) in players_resource.player_data.iter_mut().enumerate() {
@@ -692,7 +696,7 @@ pub fn select_character_system(
 
     let gamepad_event_id = if gamepad_input {
         gamepad_events
-            .iter()
+            .read()
             .next()
             .map(|gamepad_event| gamepad_event.gamepad.id)
     } else {

@@ -256,7 +256,7 @@ fn character_selection_button_leds_system(
     arduino_port: Res<ArduinoSerialPort>,
     mut player_join_event: EventReader<PlayerJoinEvent>,
 ) {
-    for event in player_join_event.iter() {
+    for event in player_join_event.read() {
         if event.0 == 0 {
             serial_resource.send_message(&(*arduino_port), ButtonLEDByte::player_one_joined());
         } else if event.0 == 1 {

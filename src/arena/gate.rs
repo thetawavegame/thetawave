@@ -38,7 +38,7 @@ pub fn despawn_gates_system(
     mut enemy_bottom_event: EventWriter<MobReachedBottomGateEvent>,
 ) {
     // loop through all collision events
-    'event_loop: for collision_event in collision_events.iter() {
+    'event_loop: for collision_event in collision_events.read() {
         for despawn_gate_entity in despawn_gate_query.iter() {
             if let CollisionEvent::Started(
                 collider1_entity,

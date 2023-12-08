@@ -2,6 +2,7 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 
+use crate::options::PlayingOnArcadeResource;
 use crate::ui::BouncingPromptComponent;
 use thetawave_interface::{
     audio::ChangeBackgroundMusicEvent,
@@ -20,6 +21,7 @@ pub fn setup_victory_system(
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     current_game_shot_counts: Res<UserStatsByPlayerForCurrentGameCache>,
     current_game_enemy_mob_kill_counts: Res<MobKillsByPlayerForCurrentGame>,
+    playing_on_arcade: Res<PlayingOnArcadeResource>,
 ) {
     // fade music out
     change_bg_music_event_writer.send(ChangeBackgroundMusicEvent {
@@ -119,7 +121,7 @@ pub fn setup_victory_system(
                     parent
                         .spawn(ImageBundle {
                             image: asset_server
-                                .load(if cfg!(feature = "arcade") {
+                                .load(if **playing_on_arcade {
                                     "texture/restart_game_prompt_arcade.png"
                                 } else {
                                     "texture/restart_game_prompt_keyboard.png"
