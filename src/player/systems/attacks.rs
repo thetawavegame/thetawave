@@ -5,13 +5,13 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use leafwing_input_manager::prelude::ActionState;
 
-use crate::game::GameParametersResource;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     input::PlayerAction,
     player::PlayerComponent,
 };
 
+use crate::game::GameParametersResource;
 use crate::spawnable::{InitialMotion, SpawnProjectileEvent};
 
 /// Increase fire rate of player based on the amount of money collected
@@ -51,18 +51,29 @@ pub fn player_fire_weapon_system(
             continue;
         }
 
-        let max_spread = PI / 2.;
-        let spread_amount = (player_component.projectile_count as f32 - 1.)
+        // indicates the maximum angle between the first and last projectile
+        let max_spread_arc = PI / 2.;
+        // used to calculate the gap between each projectile
+        let projectile_gap = PI;
+
+        // the percentage of the total number of projectiles that the player has acquired
+        let total_projectiles_percent = (player_component.projectile_count as f32 - 1.)
             / (game_parameters.max_player_projectiles - 1.);
-        let spread = spread_amount * max_spread;
-        let spread_angle_segment = spread / (player_component.projectile_count as f32 - 1.).max(1.);
+
+        // indicates the angle between the first and last projectile
+        let spread_arc = max_spread_arc.min(total_projectiles_percent * projectile_gap);
+        // indicates the angle between each projectile
+        let spread_angle_segment =
+            spread_arc / (player_component.projectile_count as f32 - 1.).max(1.);
 
         for p in 0..player_component.projectile_count {
-            let angle_start = (PI + spread) / 2.;
-            let angle = angle_start - (p as f32 * spread_angle_segment);
+            // the start angle is half of {spread_arc} of radians to the left of the center, so that the arc is centered on the player
+            let spread_angle_start = (PI + spread_arc) / 2.;
+            // the angle of the current projectile
+            let spread_angle = spread_angle_start - (p as f32 * spread_angle_segment);
 
-            let x_spread_distance = angle.cos() * 200.;
-            let y_spread_distance = angle.sin() * 400.;
+            // convert the angle to a distance vector
+            let spread_distance = Vec2::new(spread_angle.cos() * 200., spread_angle.sin() * 400.);
 
             let projectile_transform = Transform {
                 translation: Vec3::new(
@@ -76,8 +87,8 @@ pub fn player_fire_weapon_system(
             // pass player velocity into the spawned blast
             let initial_motion = InitialMotion {
                 linvel: Some(Vec2::new(
-                    player_component.projectile_velocity.x + rb_vels.linvel.x + x_spread_distance,
-                    player_component.projectile_velocity.y + rb_vels.linvel.y + y_spread_distance,
+                    player_component.projectile_velocity.x + rb_vels.linvel.x + spread_distance.x,
+                    player_component.projectile_velocity.y + rb_vels.linvel.y + spread_distance.y,
                 )),
                 ..Default::default()
             };

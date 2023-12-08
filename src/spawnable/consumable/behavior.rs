@@ -93,7 +93,7 @@ fn apply_effects_on_impact(
                 // despawn consumable
                 commands.entity(entity).despawn_recursive();
 
-                // spawn the consumable despawn effeect
+                // spawn the consumable despawn effect
                 spawn_effect_event_writer.send(SpawnEffectEvent {
                     effect_type: EffectType::ConsumableDespawn,
                     transform: Transform {
