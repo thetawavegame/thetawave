@@ -9,16 +9,17 @@ use strum_macros::{Display, EnumString};
 /// Type that encompasses all spawnable enemy mobs
 #[derive(Deserialize, EnumString, Display, Debug, Hash, PartialEq, Eq, Clone, Copy)]
 pub enum EnemyMobType {
-    Pawn,
-    Drone,
-    StraferRight,
-    StraferLeft,
-    MissileLauncher,
-    Missile,
     CrustlingRight,
     CrustlingLeft,
+    Drone,
+    EnemyCargoShip,
+    MissileLauncher,
+    Missile,
+    Pawn,
     Repeater,
     Shelly,
+    StraferRight,
+    StraferLeft,
 }
 
 /// Type that encompasses all spawnable entities
@@ -74,6 +75,7 @@ impl MobType {
                 EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => "Crustling",
                 EnemyMobType::Repeater => "Repeater",
                 EnemyMobType::Shelly => "Shelly",
+                EnemyMobType::EnemyCargoShip => "Enemy Cargo Ship"
             },
             MobType::Ally(ally_type) => match ally_type {
                 AllyMobType::Hauler2 => "Hauler",

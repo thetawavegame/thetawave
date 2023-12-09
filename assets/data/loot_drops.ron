@@ -37,5 +37,32 @@
                 consumable: Money3,
             )),
         ],
+        EnemyCargoShip: [
+            Consumable((
+                rolls: 4,
+                probability: 1.0,
+                consumable: Money1,
+            )),
+            Consumable((
+                rolls: 10,
+                probability: 0.3,
+                consumable: Money1,
+            )),
+            Consumable((
+                rolls: 2,
+                probability: 0.3,
+                consumable: Money3,
+            )),
+            Consumable((
+                rolls: 2,
+                probability: 0.4,
+                consumable: Armor,
+            )),
+            Consumable((
+                rolls: 2,
+                probability: 0.6,
+                consumable: HealthWrench,
+            )),
+        ],
     }
 )

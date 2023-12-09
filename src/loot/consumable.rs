@@ -13,6 +13,7 @@ pub enum DropListType {
     Nothing,
     Standard,
     MoneyAsteroid,
+    EnemyCargoShip,
     /// Some of the better drops that the play should need to work for.
     Boss,
 }

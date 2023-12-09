@@ -15,6 +15,10 @@ pub struct MobAssets {
     pub drone: Handle<TextureAtlas>,
     #[asset(key = "drone.thruster")]
     pub drone_thruster: Handle<TextureAtlas>,
+    #[asset(key = "enemy_cargo_ship")]
+    pub enemy_cargo_ship: Handle<TextureAtlas>,
+    #[asset(key = "enemy_cargo_ship.thruster")]
+    pub enemy_cargo_ship_thruster: Handle<TextureAtlas>,
     #[asset(key = "pawn")]
     pub pawn: Handle<TextureAtlas>,
     #[asset(key = "pawn.thruster")]
@@ -70,22 +74,23 @@ pub struct MobAssets {
 impl MobAssets {
     pub fn get_mob_asset(&self, mob_type: &MobType) -> Handle<TextureAtlas> {
         match mob_type {
+            MobType::Ally(ally_type) => match ally_type {
+                AllyMobType::Hauler2 => self.hauler_front.clone(),
+                AllyMobType::Hauler3 => self.hauler_front.clone(),
+                AllyMobType::TutorialHauler2 => self.hauler_front.clone(),
+            },
             MobType::Enemy(enemy_type) => match enemy_type {
-                EnemyMobType::Pawn => self.pawn.clone(),
-                EnemyMobType::Drone => self.drone.clone(),
-                EnemyMobType::StraferRight | EnemyMobType::StraferLeft => self.strafer.clone(),
-                EnemyMobType::MissileLauncher => self.missile_launcher.clone(),
-                EnemyMobType::Missile => self.missile.clone(),
                 EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => {
                     self.crustling_head.clone()
                 }
+                EnemyMobType::Drone => self.drone.clone(),
+                EnemyMobType::EnemyCargoShip => self.enemy_cargo_ship.clone(),
+                EnemyMobType::MissileLauncher => self.missile_launcher.clone(),
+                EnemyMobType::Missile => self.missile.clone(),
+                EnemyMobType::Pawn => self.pawn.clone(),
                 EnemyMobType::Repeater => self.repeater_head.clone(),
                 EnemyMobType::Shelly => self.shelly.clone(),
-            },
-            MobType::Ally(ally_type) => match ally_type {
-                AllyMobType::TutorialHauler2 => self.hauler_front.clone(),
-                AllyMobType::Hauler2 => self.hauler_front.clone(),
-                AllyMobType::Hauler3 => self.hauler_front.clone(),
+                EnemyMobType::StraferRight | EnemyMobType::StraferLeft => self.strafer.clone(),
             },
             MobType::Neutral(neutral_type) => match neutral_type {
                 NeutralMobType::MoneyAsteroid => self.money_asteroid.clone(),
@@ -118,22 +123,23 @@ impl MobAssets {
 
     pub fn get_thruster_asset(&self, mob_type: &MobType) -> Option<Handle<TextureAtlas>> {
         match mob_type {
-            MobType::Enemy(enemy_type) => match enemy_type {
-                EnemyMobType::Pawn => Some(self.pawn_thruster.clone()),
-                EnemyMobType::Drone => Some(self.drone_thruster.clone()),
-                EnemyMobType::StraferRight | EnemyMobType::StraferLeft => {
-                    Some(self.strafer_thruster.clone())
-                }
-                EnemyMobType::MissileLauncher => Some(self.missile_launcher_thruster.clone()),
-                EnemyMobType::Missile => Some(self.missile_thruster.clone()),
-                EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => None,
-                EnemyMobType::Repeater => None,
-                EnemyMobType::Shelly => None,
-            },
             MobType::Ally(ally_type) => match ally_type {
                 AllyMobType::TutorialHauler2 => Some(self.hauler_thruster.clone()),
                 AllyMobType::Hauler2 => Some(self.hauler_thruster.clone()),
                 AllyMobType::Hauler3 => Some(self.hauler_thruster.clone()),
+            },
+            MobType::Enemy(enemy_type) => match enemy_type {
+                EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => None,
+                EnemyMobType::Drone => Some(self.drone_thruster.clone()),
+                EnemyMobType::EnemyCargoShip => Some(self.enemy_cargo_ship_thruster.clone()),
+                EnemyMobType::MissileLauncher => Some(self.missile_launcher_thruster.clone()),
+                EnemyMobType::Missile => Some(self.missile_thruster.clone()),
+                EnemyMobType::Repeater => None,
+                EnemyMobType::Pawn => Some(self.pawn_thruster.clone()),
+                EnemyMobType::Shelly => None,
+                EnemyMobType::StraferRight | EnemyMobType::StraferLeft => {
+                    Some(self.strafer_thruster.clone())
+                }
             },
             MobType::Neutral(neutral_type) => match neutral_type {
                 NeutralMobType::MoneyAsteroid => None,
