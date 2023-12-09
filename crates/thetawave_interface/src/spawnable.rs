@@ -75,7 +75,7 @@ impl MobType {
                 EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => "Crustling",
                 EnemyMobType::Repeater => "Repeater",
                 EnemyMobType::Shelly => "Shelly",
-                EnemyMobType::EnemyCargoShip => "Enemy Cargo Ship"
+                EnemyMobType::EnemyCargoShip => "Enemy Cargo Ship",
             },
             MobType::Ally(ally_type) => match ally_type {
                 AllyMobType::Hauler2 => "Hauler",
