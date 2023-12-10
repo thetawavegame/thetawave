@@ -189,9 +189,10 @@ impl PluginGroup for ThetawaveGamePlugins {
             .add(states::StatesPlugin)
             .add(game::counters::plugin::CountingMetricsPlugin)
             .add(misc::HealthPlugin)
-            .add(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
-                PHYSICS_SCALE,
-            ))
+            .add(
+                RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(PHYSICS_SCALE)
+                    .in_fixed_schedule(),
+            )
             .add(ui::UiPlugin)
             .add(options::OptionsPlugin::default())
             .add(audio::ThetawaveAudioPlugin);
