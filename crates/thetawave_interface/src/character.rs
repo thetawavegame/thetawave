@@ -36,7 +36,7 @@ pub struct Character {
     /// Time until fired projectile despawns
     pub projectile_despawn_time: f32,
     /// Velocity of fired projectile
-    pub projectile_velocity: Vec2,
+    pub projectile_velocity: f32,
     /// Position of projectile spawn relative to player
     pub projectile_offset_position: Vec2,
     /// Period of time between firing blasts

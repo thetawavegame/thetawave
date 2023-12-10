@@ -61,10 +61,11 @@ pub fn player_fire_weapon_system(
 
         // pass player velocity into the spawned blast
         let initial_motion = InitialMotion {
-            linvel: Some(Vec2::new(
-                player_component.projectile_velocity.x + rb_vels.linvel.x,
-                player_component.projectile_velocity.y + rb_vels.linvel.y,
-            )),
+            linvel: Some(
+                (Vec2::from_angle(player_component.projectile_direction)
+                    * player_component.projectile_velocity)
+                    + rb_vels.linvel,
+            ),
             ..Default::default()
         };
 

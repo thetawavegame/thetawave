@@ -11,7 +11,7 @@
 			projectile_count: 1,
 			projectile_direction: 1.57080,
 			projectile_despawn_time: 1.00,
-			projectile_velocity: (0.0, 300.0),
+			projectile_velocity: 300.0,
 			projectile_offset_position: (0.0, 40.0),
 			fire_period: 0.4,
 			health: 80,
@@ -36,7 +36,7 @@
 			projectile_count: 1,
 			projectile_direction: 1.57080,
 			projectile_despawn_time: 0.7,
-			projectile_velocity: (0.0, 200.0),
+			projectile_velocity: 200.0,
 			projectile_offset_position: (0.0, 45.0),
 			fire_period: 0.7, // currently gets overwritten by the fire rate increase from collecting the rocks
 			health: 150,
