@@ -10,7 +10,6 @@ use thetawave_interface::{
 use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::ProjectileAssets,
-    collision,
     game::GameParametersResource,
     spawnable::InitialMotion,
     spawnable::{SpawnableBehavior, SpawnableComponent},
