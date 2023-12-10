@@ -147,6 +147,8 @@ pub fn mob_execute_behavior_system(
                                 despawn_time: projectile_spawner.despawn_time,
                                 initial_motion: modified_initial_motion,
                                 source: entity,
+                                projectile_direction: 4.71239,
+                                projectile_count: 1, // TODO: get stat from mobs
                             });
                         }
                     }

@@ -32,6 +32,7 @@ pub struct Character {
     pub projectile_type: ProjectileType,
     /// Number of projectiles fired per shot
     pub projectile_count: usize,
+    pub projectile_direction: f32,
     /// Time until fired projectile despawns
     pub projectile_despawn_time: f32,
     /// Velocity of fired projectile

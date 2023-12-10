@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
-use std::{collections::HashMap, string::ToString};
+use std::{collections::HashMap, f32::consts::PI, string::ToString};
 use thetawave_interface::{
     spawnable::{Faction, ProjectileType, SpawnableType},
     states::GameCleanup,
@@ -28,6 +28,8 @@ use super::ColliderData;
 pub struct SpawnProjectileEvent {
     /// Type of projectile to spawn
     pub projectile_type: ProjectileType,
+    pub projectile_count: usize,
+    pub projectile_direction: f32,
     /// Position to spawn
     pub transform: Transform,
     /// Damage of projectile
@@ -94,7 +96,9 @@ pub fn spawn_projectile_system(
             &projectile_resource,
             &projectile_assets,
             event.transform,
+            event.projectile_count,
             event.damage,
+            event.projectile_direction,
             event.despawn_time,
             event.initial_motion.clone(),
             &mut commands,
@@ -111,7 +115,9 @@ pub fn spawn_projectile(
     projectile_resource: &ProjectileResource,
     projectile_assets: &ProjectileAssets,
     transform: Transform,
+    projectile_count: usize,
     damage: usize,
+    direction: f32,
     despawn_time: f32, // time before despawning
     initial_motion: InitialMotion,
     commands: &mut Commands,
@@ -120,9 +126,6 @@ pub fn spawn_projectile(
 ) {
     // Get data from projectile resource
     let projectile_data = &projectile_resource.projectiles[projectile_type];
-
-    // create projectile entity
-    let mut projectile = commands.spawn_empty();
 
     let mut projectile_behaviors = projectile_data.projectile_behaviors.clone();
     projectile_behaviors.push(ProjectileBehavior::TimedDespawn { despawn_time });
@@ -133,61 +136,96 @@ pub fn spawn_projectile(
     projectile_transform.scale.y *= game_parameters.sprite_scale;
     projectile_transform.scale.z = 1.0;
 
-    projectile
-        .insert(LockedAxes::ROTATION_LOCKED)
-        .insert(SpriteSheetBundle {
-            texture_atlas: projectile_assets.get_asset(projectile_type),
-            sprite: TextureAtlasSprite {
-                color: projectile_assets.get_color(projectile_type),
-                ..Default::default()
-            },
-            ..Default::default()
-        })
-        .insert(AnimationComponent {
-            timer: Timer::from_seconds(
-                projectile_data.animation.frame_duration,
-                TimerMode::Repeating,
-            ),
-            direction: projectile_data.animation.direction.clone(),
-        })
-        .insert(RigidBody::Dynamic)
-        .insert(Velocity::from(initial_motion))
-        .insert(projectile_transform)
-        .insert(Collider::cuboid(
-            projectile_data.collider.dimensions.x,
-            projectile_data.collider.dimensions.y,
-        ))
-        .insert(ProjectileComponent {
-            projectile_type: projectile_data.projectile_type.clone(),
-            behaviors: projectile_behaviors,
-            damage,
-            time_alive: 0.0,
-            source,
-        })
-        .insert(SpawnableComponent {
-            spawnable_type: SpawnableType::Projectile(projectile_data.projectile_type.clone()),
-            acceleration: Vec2::ZERO,
-            deceleration: Vec2::ZERO,
-            speed: [game_parameters.max_speed, game_parameters.max_speed].into(), // highest possible speed
-            angular_acceleration: 0.0,
-            angular_deceleration: 0.0,
-            angular_speed: game_parameters.max_speed,
-            behaviors: projectile_data.spawnable_behaviors.clone(),
-        })
-        .insert(ActiveEvents::COLLISION_EVENTS)
-        .insert(CollisionGroups {
-            memberships: SPAWNABLE_COLLIDER_GROUP
-                | get_projectile_collider_group(projectile_type.get_faction()),
-            filters: Group::ALL
-                ^ (HORIZONTAL_BARRIER_COLLIDER_GROUP
-                    | SPAWNABLE_COLLIDER_GROUP
-                    | get_projectile_collider_group(projectile_type.get_faction())),
-        })
-        .insert(GameCleanup)
-        .insert(Name::new(projectile_data.projectile_type.to_string()));
+    // the percentage of the total number of projectiles that the player has acquired
+    let total_projectiles_percent =
+        (projectile_count as f32 - 1.) / (game_parameters.max_player_projectiles - 1.);
+    // indicates the angle between the first and last projectile
+    let spread_arc = game_parameters
+        .max_spread_arc
+        .min(total_projectiles_percent * game_parameters.projectile_gap);
+    // indicates the angle between each projectile
+    let spread_angle_segment = spread_arc / (projectile_count as f32 - 1.).max(1.);
 
-    if !projectile_data.is_solid {
-        projectile.insert(Sensor);
+    for p in 0..projectile_count {
+        let new_initial_motion = if let Some(mut initial_motion_linvel) =
+            initial_motion.clone().linvel
+        {
+            // the start angle is half of {spread_arc} of radians to the left of the center, so that the arc is centered on the player
+            let spread_angle_start = (PI + spread_arc) / 2.;
+            // the angle of the current projectile
+            let spread_angle = spread_angle_start - (p as f32 * spread_angle_segment);
+            // convert the angle to a distance vector
+            let spread_distance = Vec2::new(spread_angle.cos() * 200., spread_angle.sin() * 400.);
+            initial_motion_linvel.x += spread_distance.x;
+            initial_motion_linvel.y += spread_distance.y * direction.sin();
+
+            InitialMotion {
+                linvel: Some(initial_motion_linvel),
+                ..initial_motion.clone()
+            }
+        } else {
+            initial_motion.clone()
+        };
+
+        // create projectile entity
+        let mut projectile = commands.spawn_empty();
+
+        projectile
+            .insert(LockedAxes::ROTATION_LOCKED)
+            .insert(SpriteSheetBundle {
+                texture_atlas: projectile_assets.get_asset(projectile_type),
+                sprite: TextureAtlasSprite {
+                    color: projectile_assets.get_color(projectile_type),
+                    ..Default::default()
+                },
+                ..Default::default()
+            })
+            .insert(AnimationComponent {
+                timer: Timer::from_seconds(
+                    projectile_data.animation.frame_duration,
+                    TimerMode::Repeating,
+                ),
+                direction: projectile_data.animation.direction.clone(),
+            })
+            .insert(RigidBody::Dynamic)
+            .insert(Velocity::from(new_initial_motion))
+            .insert(projectile_transform)
+            .insert(Collider::cuboid(
+                projectile_data.collider.dimensions.x,
+                projectile_data.collider.dimensions.y,
+            ))
+            .insert(ProjectileComponent {
+                projectile_type: projectile_data.projectile_type.clone(),
+                behaviors: projectile_behaviors.clone(),
+                damage,
+                time_alive: 0.0,
+                source,
+            })
+            .insert(SpawnableComponent {
+                spawnable_type: SpawnableType::Projectile(projectile_data.projectile_type.clone()),
+                acceleration: Vec2::ZERO,
+                deceleration: Vec2::ZERO,
+                speed: [game_parameters.max_speed, game_parameters.max_speed].into(), // highest possible speed
+                angular_acceleration: 0.0,
+                angular_deceleration: 0.0,
+                angular_speed: game_parameters.max_speed,
+                behaviors: projectile_data.spawnable_behaviors.clone(),
+            })
+            .insert(ActiveEvents::COLLISION_EVENTS)
+            .insert(CollisionGroups {
+                memberships: SPAWNABLE_COLLIDER_GROUP
+                    | get_projectile_collider_group(projectile_type.get_faction()),
+                filters: Group::ALL
+                    ^ (HORIZONTAL_BARRIER_COLLIDER_GROUP
+                        | SPAWNABLE_COLLIDER_GROUP
+                        | get_projectile_collider_group(projectile_type.get_faction())),
+            })
+            .insert(GameCleanup)
+            .insert(Name::new(projectile_data.projectile_type.to_string()));
+
+        if !projectile_data.is_solid {
+            projectile.insert(Sensor);
+        }
     }
 }
 

@@ -102,6 +102,8 @@ pub fn player_ability_system(
                         despawn_time: player_component.projectile_despawn_time,
                         initial_motion,
                         source: entity,
+                        projectile_count: player_component.projectile_count,
+                        projectile_direction: player_component.projectile_direction,
                     });
                 }
             }

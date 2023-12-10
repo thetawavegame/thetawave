@@ -34,7 +34,6 @@ pub fn player_fire_weapon_system(
     time: Res<Time>,
     mut spawn_projectile: EventWriter<SpawnProjectileEvent>,
     mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
-    game_parameters: Res<GameParametersResource>,
 ) {
     for (mut player_component, rb_vels, transform, action_state, entity) in player_query.iter_mut()
     {
@@ -51,55 +50,35 @@ pub fn player_fire_weapon_system(
             continue;
         }
 
-        // the percentage of the total number of projectiles that the player has acquired
-        let total_projectiles_percent = (player_component.projectile_count as f32 - 1.)
-            / (game_parameters.max_player_projectiles - 1.);
+        let projectile_transform = Transform {
+            translation: Vec3::new(
+                transform.translation.x + player_component.projectile_offset_position.x,
+                transform.translation.y + player_component.projectile_offset_position.y,
+                1.0,
+            ),
+            ..Default::default()
+        };
 
-        // indicates the angle between the first and last projectile
-        let spread_arc = game_parameters
-            .max_spread_arc
-            .min(total_projectiles_percent * game_parameters.projectile_gap);
-        // indicates the angle between each projectile
-        let spread_angle_segment =
-            spread_arc / (player_component.projectile_count as f32 - 1.).max(1.);
+        // pass player velocity into the spawned blast
+        let initial_motion = InitialMotion {
+            linvel: Some(Vec2::new(
+                player_component.projectile_velocity.x + rb_vels.linvel.x,
+                player_component.projectile_velocity.y + rb_vels.linvel.y,
+            )),
+            ..Default::default()
+        };
 
-        for p in 0..player_component.projectile_count {
-            // the start angle is half of {spread_arc} of radians to the left of the center, so that the arc is centered on the player
-            let spread_angle_start = (PI + spread_arc) / 2.;
-            // the angle of the current projectile
-            let spread_angle = spread_angle_start - (p as f32 * spread_angle_segment);
-
-            // convert the angle to a distance vector
-            let spread_distance = Vec2::new(spread_angle.cos() * 200., spread_angle.sin() * 400.);
-
-            let projectile_transform = Transform {
-                translation: Vec3::new(
-                    transform.translation.x + player_component.projectile_offset_position.x,
-                    transform.translation.y + player_component.projectile_offset_position.y,
-                    1.0,
-                ),
-                ..Default::default()
-            };
-
-            // pass player velocity into the spawned blast
-            let initial_motion = InitialMotion {
-                linvel: Some(Vec2::new(
-                    player_component.projectile_velocity.x + rb_vels.linvel.x + spread_distance.x,
-                    player_component.projectile_velocity.y + rb_vels.linvel.y + spread_distance.y,
-                )),
-                ..Default::default()
-            };
-
-            // spawn the projectile
-            spawn_projectile.send(SpawnProjectileEvent {
-                projectile_type: player_component.projectile_type.clone(),
-                transform: projectile_transform,
-                damage: player_component.attack_damage,
-                despawn_time: player_component.projectile_despawn_time,
-                initial_motion,
-                source: entity,
-            });
-        }
+        // spawn the projectile
+        spawn_projectile.send(SpawnProjectileEvent {
+            projectile_type: player_component.projectile_type.clone(),
+            projectile_count: player_component.projectile_count,
+            transform: projectile_transform,
+            damage: player_component.attack_damage,
+            projectile_direction: player_component.projectile_direction,
+            despawn_time: player_component.projectile_despawn_time,
+            initial_motion,
+            source: entity,
+        });
 
         // play firing blast sound effect
         sound_effect_event_writer.send(PlaySoundEffectEvent {

@@ -167,7 +167,7 @@ impl SpawnableComponent {
 }
 
 /// Initial motion that entity is spawned in with
-#[derive(Deserialize, Clone, Default)]
+#[derive(Deserialize, Clone, Default, Debug)]
 pub struct InitialMotion {
     /// Optional angular velocity
     pub angvel: Option<f32>,

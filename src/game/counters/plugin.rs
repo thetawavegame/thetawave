@@ -187,6 +187,8 @@ fn roll_current_game_counters_into_completed_game_metrics(
 
 #[cfg(test)]
 mod test {
+    use std::f32::consts::FRAC_PI_2;
+
     use crate::collision::SortedCollisionEvent;
     use crate::game::counters::plugin::CountingMetricsPlugin;
     use crate::player::{CharactersResource, PlayerPlugin};
@@ -266,6 +268,8 @@ mod test {
             source: player_1_entity.id(),
             transform: Default::default(),
             initial_motion: Default::default(),
+            projectile_count: 1,
+            projectile_direction: FRAC_PI_2,
         };
         app.world.send_event(player_1_projectile_event.clone());
         app.update();

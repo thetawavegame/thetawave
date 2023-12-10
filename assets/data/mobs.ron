@@ -405,7 +405,7 @@
 					despawn_time: 2.5,
 					initial_motion: (
 						random_angvel: None,
-						linvel: Some((0.0, -400.0)),
+						linvel: Some((0.0, -200.0)),
 					),
 				)
 			],
@@ -417,7 +417,7 @@
 					despawn_time: 2.5,
 					initial_motion: (
 						random_angvel: None,
-						linvel: Some((0.0, -400.0)),
+						linvel: Some((0.0, -200.0)),
 					),
 				)
 			]
@@ -461,7 +461,7 @@
 					despawn_time: 2.5,
 					initial_motion: (
 						random_angvel: None,
-						linvel: Some((0.0, -400.0)),
+						linvel: Some((0.0, -200.0)),
 					),
 				)
 			],
@@ -705,7 +705,7 @@
 					despawn_time: 2.5,
 					initial_motion: (
 						random_angvel: None,
-						linvel: Some((0.0, -400.0)),
+						linvel: Some((0.0, -200.0)),
 					),
 				)
 			]
@@ -756,7 +756,7 @@
 					despawn_time: 2.5,
 					initial_motion: (
 						random_angvel: None,
-						linvel: Some((0.0, -400.0)),
+						linvel: Some((0.0, -200.0)),
 					),
 				)
 			]
