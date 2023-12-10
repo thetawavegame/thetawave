@@ -1,4 +1,3 @@
-use std::f32::consts::PI;
 use std::time::Duration;
 
 use bevy::prelude::*;
@@ -11,7 +10,6 @@ use thetawave_interface::{
     player::PlayerComponent,
 };
 
-use crate::game::GameParametersResource;
 use crate::spawnable::{InitialMotion, SpawnProjectileEvent};
 
 /// Increase fire rate of player based on the amount of money collected
