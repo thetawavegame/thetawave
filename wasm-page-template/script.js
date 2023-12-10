@@ -1,4 +1,4 @@
-import init from "../out/thetawave.js";
+import init from "./thetawave.js";
 
 // prevent right click
 document.addEventListener("contextmenu", (event) =>
