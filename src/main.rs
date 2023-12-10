@@ -8,9 +8,15 @@ use options::{generate_config_files, GameInitCLIOptions};
 use thetawave_interface::states::{AppStates, GameStates};
 
 pub const PHYSICS_SCALE: f32 = 10.0;
-pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_1;
-pub const HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_2;
-pub const VERTICAL_BARRIER_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_3;
+
+// Collider groups used for rapier physics
+pub const SPAWNABLE_COLLIDER_GROUP: Group = Group::GROUP_1;
+pub const HORIZONTAL_BARRIER_COLLIDER_GROUP: Group = Group::GROUP_2;
+pub const VERTICAL_BARRIER_COLLIDER_GROUP: Group = Group::GROUP_3;
+pub const ALLY_PROJECTILE_COLLIDER_GROUP: Group = Group::GROUP_4;
+pub const ENEMY_PROJECTILE_COLLIDER_GROUP: Group = Group::GROUP_5;
+pub const NEUTRAL_PROJECTILE_COLLIDER_GROUP: Group = Group::GROUP_6;
+pub const MOB_COLLIDER_GROUP: Group = Group::GROUP_7;
 
 mod animation;
 mod arena;

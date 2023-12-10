@@ -16,7 +16,7 @@ use crate::{
     game::GameParametersResource,
     loot::DropListType,
     spawnable::SpawnableComponent,
-    HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
+    HORIZONTAL_BARRIER_COLLIDER_GROUP, MOB_COLLIDER_GROUP, SPAWNABLE_COLLIDER_GROUP,
 };
 
 mod behavior;
@@ -159,8 +159,8 @@ pub fn spawn_mob_segment(
             combine_rule: CoefficientCombineRule::Max,
         })
         .insert(CollisionGroups {
-            memberships: SPAWNABLE_COL_GROUP_MEMBERSHIP,
-            filters: Group::ALL ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
+            memberships: SPAWNABLE_COLLIDER_GROUP | MOB_COLLIDER_GROUP,
+            filters: Group::ALL ^ HORIZONTAL_BARRIER_COLLIDER_GROUP,
         })
         .insert(MobSegmentComponent::from(mob_segment_data))
         .insert(HealthComponent::from(mob_segment_data))

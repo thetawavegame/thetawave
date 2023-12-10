@@ -1,6 +1,6 @@
 use crate::{
-    game::GameParametersResource, spawnable::SpawnEffectEvent,
-    HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
+    game::GameParametersResource, spawnable::SpawnEffectEvent, HORIZONTAL_BARRIER_COLLIDER_GROUP,
+    SPAWNABLE_COLLIDER_GROUP,
 };
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
@@ -94,8 +94,8 @@ fn spawn_spawnables_pass_barrier(commands: &mut Commands, position: Vec2, width:
         .insert(Restitution::new(1.0))
         .insert(Friction::new(0.0))
         .insert(CollisionGroups {
-            memberships: HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
-            filters: Group::ALL ^ SPAWNABLE_COL_GROUP_MEMBERSHIP,
+            memberships: HORIZONTAL_BARRIER_COLLIDER_GROUP,
+            filters: Group::ALL ^ SPAWNABLE_COLLIDER_GROUP,
         })
         .insert(GameCleanup)
         .insert(ArenaBarrierComponent)

@@ -3,17 +3,19 @@ use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 use std::{collections::HashMap, string::ToString};
 use thetawave_interface::{
-    spawnable::{ProjectileType, SpawnableType},
+    spawnable::{Faction, ProjectileType, SpawnableType},
     states::GameCleanup,
 };
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::ProjectileAssets,
+    collision,
     game::GameParametersResource,
     spawnable::InitialMotion,
     spawnable::{SpawnableBehavior, SpawnableComponent},
-    HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP, SPAWNABLE_COL_GROUP_MEMBERSHIP,
+    ALLY_PROJECTILE_COLLIDER_GROUP, ENEMY_PROJECTILE_COLLIDER_GROUP,
+    HORIZONTAL_BARRIER_COLLIDER_GROUP, NEUTRAL_PROJECTILE_COLLIDER_GROUP, SPAWNABLE_COLLIDER_GROUP,
 };
 
 mod behavior;
@@ -175,13 +177,25 @@ pub fn spawn_projectile(
         })
         .insert(ActiveEvents::COLLISION_EVENTS)
         .insert(CollisionGroups {
-            memberships: SPAWNABLE_COL_GROUP_MEMBERSHIP,
-            filters: Group::ALL ^ HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP,
+            memberships: SPAWNABLE_COLLIDER_GROUP
+                | get_projectile_collider_group(projectile_type.get_faction()),
+            filters: Group::ALL
+                ^ (HORIZONTAL_BARRIER_COLLIDER_GROUP
+                    | SPAWNABLE_COLLIDER_GROUP
+                    | get_projectile_collider_group(projectile_type.get_faction())),
         })
         .insert(GameCleanup)
         .insert(Name::new(projectile_data.projectile_type.to_string()));
 
     if !projectile_data.is_solid {
         projectile.insert(Sensor);
+    }
+}
+
+fn get_projectile_collider_group(faction: Faction) -> Group {
+    match faction {
+        Faction::Ally => ALLY_PROJECTILE_COLLIDER_GROUP,
+        Faction::Enemy => ENEMY_PROJECTILE_COLLIDER_GROUP,
+        Faction::Neutral => NEUTRAL_PROJECTILE_COLLIDER_GROUP,
     }
 }
