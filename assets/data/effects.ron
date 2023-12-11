@@ -143,4 +143,13 @@
 			frame_duration: 0.1,
 		),
 	),
+	Text(ConsumableCollected(GainProjectiles)): (
+		effect_type: Text(ConsumableCollected(GainProjectiles)),
+		effect_behaviors_data: [FadeOut(0.55)],
+		z_level: 10.0,
+		animation: (
+			direction: None,
+			frame_duration: 0.1,
+		),
+	),
 }

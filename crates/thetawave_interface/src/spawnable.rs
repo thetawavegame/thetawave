@@ -46,6 +46,15 @@ pub enum ProjectileType {
     Bullet(Faction),
 }
 
+impl ProjectileType {
+    pub fn get_faction(&self) -> Faction {
+        match self {
+            ProjectileType::Blast(faction) => faction.clone(),
+            ProjectileType::Bullet(faction) => faction.clone(),
+        }
+    }
+}
+
 /// Factions
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
 pub enum Faction {
@@ -139,6 +148,7 @@ pub enum ConsumableType {
     Money3,
     HealthWrench,
     Armor,
+    GainProjectiles,
 }
 
 /// Type that encompasses all spawnable items

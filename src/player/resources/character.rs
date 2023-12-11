@@ -1,6 +1,8 @@
+use std::collections::HashMap;
+
 use bevy::prelude::*;
 use serde::Deserialize;
-use std::collections::HashMap;
+
 use thetawave_interface::character::{Character, CharacterType};
 
 /// Manages all characters

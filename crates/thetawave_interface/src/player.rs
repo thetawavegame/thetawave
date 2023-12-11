@@ -70,10 +70,13 @@ pub struct PlayerComponent {
     pub collider_density: f32,
     /// Type of projectile fired
     pub projectile_type: ProjectileType,
+    /// Number of projectiles fired per shot
+    pub projectile_count: usize,
+    pub projectile_direction: f32,
     /// Time until fired projectile despawns
     pub projectile_despawn_time: f32,
-    /// Velocity of fired projectile
-    pub projectile_velocity: Vec2,
+    /// Base speed of fired projectiles
+    pub projectile_speed: f32,
     /// Position of projectile spawn relative to player
     pub projectile_offset_position: Vec2,
     /// Tracks time between firing blasts
@@ -86,7 +89,7 @@ pub struct PlayerComponent {
     pub collision_damage: usize,
     /// Distance to attract items and consumables
     pub attraction_distance: f32,
-    /// Acceleration applied to items and conumables in attraction distance
+    /// Acceleration applied to items and consumables in attraction distance
     pub attraction_acceleration: f32,
     /// Amount of money character has collected
     pub money: usize,
@@ -114,8 +117,9 @@ impl From<&Character> for PlayerComponent {
             collider_density: character.collider_density,
             projectile_type: character.projectile_type.clone(),
             projectile_despawn_time: character.projectile_despawn_time,
-            projectile_velocity: character.projectile_velocity,
+            projectile_speed: character.projectile_speed,
             projectile_offset_position: character.projectile_offset_position,
+            projectile_direction: character.projectile_direction,
             fire_timer: Timer::from_seconds(character.fire_period, TimerMode::Once),
             fire_period: character.fire_period,
             attack_damage: character.attack_damage,
@@ -129,6 +133,7 @@ impl From<&Character> for PlayerComponent {
             movement_enabled: true,
             incoming_damage_multiplier: 1.0,
             player_index: 0,
+            projectile_count: character.projectile_count,
         }
     }
 }

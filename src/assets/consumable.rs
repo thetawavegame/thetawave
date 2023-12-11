@@ -13,6 +13,8 @@ pub struct ConsumableAssets {
     pub money1: Handle<TextureAtlas>,
     #[asset(key = "armor")]
     pub armor: Handle<TextureAtlas>,
+    #[asset(key = "gain_projectiles")]
+    pub gain_projectiles: Handle<TextureAtlas>,
 }
 
 impl ConsumableAssets {
@@ -22,15 +24,12 @@ impl ConsumableAssets {
             ConsumableType::Money3 => self.money3.clone(),
             ConsumableType::HealthWrench => self.health_wrench.clone(),
             ConsumableType::Armor => self.armor.clone(),
+            ConsumableType::GainProjectiles => self.gain_projectiles.clone(),
         }
     }
 
+    #[allow(unused)] // Placeholder for if we put this in the item config files
     pub fn get_color(&self, consumable_type: &ConsumableType) -> Color {
-        match consumable_type {
-            ConsumableType::Money1 => Color::rgb(1.6, 1.6, 1.6),
-            ConsumableType::Money3 => Color::rgb(1.6, 1.6, 1.6),
-            ConsumableType::HealthWrench => Color::rgb(1.6, 1.6, 1.6),
-            ConsumableType::Armor => Color::rgb(1.6, 1.6, 1.6),
-        }
+        Color::rgb(1.6, 1.6, 1.6)
     }
 }

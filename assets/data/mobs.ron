@@ -403,10 +403,9 @@
 					period: 3.0,
 					position: Local((0.0, -40.0)),
 					despawn_time: 2.5,
-					initial_motion: (
-						random_angvel: None,
-						linvel: Some((0.0, -400.0)),
-					),
+					velocity: 200.0,
+					direction: 4.71239,
+					count: 1,
 				)
 			],
 			"blast": [
@@ -415,10 +414,9 @@
 					period: 3.0,
 					position: Local((0.0, -40.0)),
 					despawn_time: 2.5,
-					initial_motion: (
-						random_angvel: None,
-						linvel: Some((0.0, -400.0)),
-					),
+					velocity: 200.0,
+					direction: 4.71239,
+					count: 2,
 				)
 			]
 		}
@@ -459,10 +457,9 @@
 					period: 3.0,
 					position: Local((0.0, -40.0)),
 					despawn_time: 2.5,
-					initial_motion: (
-						random_angvel: None,
-						linvel: Some((0.0, -400.0)),
-					),
+					velocity: 200.0,
+					direction: 4.71239,
+					count: 1,
 				)
 			],
 		}
@@ -703,10 +700,9 @@
 					period: 3.0,
 					position: Local((0.0, -40.0)),
 					despawn_time: 2.5,
-					initial_motion: (
-						random_angvel: None,
-						linvel: Some((0.0, -400.0)),
-					),
+					velocity: 200.0,
+					direction: 4.71239,
+					count: 1,
 				)
 			]
 		}
@@ -754,10 +750,9 @@
 					period: 3.0,
 					position: Local((0.0, -40.0)),
 					despawn_time: 2.5,
-					initial_motion: (
-						random_angvel: None,
-						linvel: Some((0.0, -400.0)),
-					),
+					velocity: 200.0,
+					count: 1,
+					direction: 4.71239,
 				)
 			]
 		}

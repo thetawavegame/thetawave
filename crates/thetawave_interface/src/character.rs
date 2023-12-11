@@ -30,10 +30,13 @@ pub struct Character {
     pub character_type: CharacterType,
     /// Projectile type
     pub projectile_type: ProjectileType,
+    /// Number of projectiles fired per shot
+    pub projectile_count: usize,
+    pub projectile_direction: f32,
     /// Time until fired projectile despawns
     pub projectile_despawn_time: f32,
-    /// Velocity of fired projectile
-    pub projectile_velocity: Vec2,
+    /// Base speed of fired projectile
+    pub projectile_speed: f32,
     /// Position of projectile spawn relative to player
     pub projectile_offset_position: Vec2,
     /// Period of time between firing blasts
@@ -50,7 +53,7 @@ pub struct Character {
     pub collision_damage: usize,
     /// Distance to attract items and consumables
     pub attraction_distance: f32,
-    /// Acceleration applied to items and conumables in attraction distance
+    /// Acceleration applied to items and consumables in attraction distance
     pub attraction_acceleration: f32,
     /// Amount of money character has collected
     pub money: usize,

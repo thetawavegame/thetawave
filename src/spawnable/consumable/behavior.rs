@@ -93,7 +93,7 @@ fn apply_effects_on_impact(
                 // despawn consumable
                 commands.entity(entity).despawn_recursive();
 
-                // spawn the consumable despawn effeect
+                // spawn the consumable despawn effect
                 spawn_effect_event_writer.send(SpawnEffectEvent {
                     effect_type: EffectType::ConsumableDespawn,
                     transform: Transform {
@@ -142,6 +142,12 @@ fn apply_effects_on_impact(
                                 }
                                 ConsumableEffect::GainMoney(money) => {
                                     player_component.money += *money;
+                                }
+                                ConsumableEffect::GainProjectiles(projectile) => {
+                                    player_component.projectile_count = (player_component
+                                        .projectile_count
+                                        + *projectile)
+                                        .min(game_parameters_res.max_player_projectiles as usize);
                                 }
                             }
                         }

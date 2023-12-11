@@ -2,15 +2,11 @@ use bevy::app::PluginGroupBuilder;
 use bevy::{asset::AssetPlugin, pbr::AmbientLight, prelude::*};
 use bevy_kira_audio::prelude::*;
 
-use bevy_rapier2d::geometry::Group;
 use bevy_rapier2d::prelude::*;
 use options::{generate_config_files, GameInitCLIOptions};
 use thetawave_interface::states::{AppStates, GameStates};
 
 pub const PHYSICS_SCALE: f32 = 10.0;
-pub const SPAWNABLE_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_1;
-pub const HORIZONTAL_BARRIER_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_2;
-pub const VERTICAL_BARRIER_COL_GROUP_MEMBERSHIP: Group = Group::GROUP_3;
 
 mod animation;
 mod arena;

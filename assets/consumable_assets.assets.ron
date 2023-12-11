@@ -27,4 +27,11 @@
         columns: 1,
         rows: 1,  
     ),
+    "gain_projectiles": TextureAtlas (
+        path: "texture/gain_projectiles_spritesheet.png",
+        tile_size_x: 8.,
+        tile_size_y: 7.,
+        columns: 1,
+        rows: 1,
+    ),
 })

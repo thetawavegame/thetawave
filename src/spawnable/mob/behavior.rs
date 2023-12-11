@@ -126,15 +126,14 @@ pub fn mob_execute_behavior_system(
                                 ..Default::default()
                             };
 
-                            // add mob velocity to initial blast velocity
-                            let mut modified_initial_motion =
-                                projectile_spawner.initial_motion.clone();
-
-                            if let Some(linvel) = &mut modified_initial_motion.linvel {
-                                linvel.x += mob_velocity.linvel.x;
-                                linvel.y += mob_velocity.linvel.y;
-                            }
-
+                            let initial_motion = InitialMotion {
+                                linvel: Some(
+                                    (Vec2::from_angle(projectile_spawner.direction)
+                                        * projectile_spawner.velocity)
+                                        + mob_velocity.linvel,
+                                ),
+                                ..Default::default()
+                            };
                             //spawn_blast
                             sound_effect_event_writer.send(PlaySoundEffectEvent {
                                 sound_effect_type: SoundEffectType::EnemyFireBlast,
@@ -145,8 +144,10 @@ pub fn mob_execute_behavior_system(
                                 transform: projectile_transform,
                                 damage: attack_damage,
                                 despawn_time: projectile_spawner.despawn_time,
-                                initial_motion: modified_initial_motion,
+                                initial_motion,
                                 source: entity,
+                                projectile_direction: projectile_spawner.direction,
+                                projectile_count: projectile_spawner.count,
                             });
                         }
                     }
