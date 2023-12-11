@@ -30,6 +30,8 @@ pub struct Character {
     pub character_type: CharacterType,
     /// Projectile type
     pub projectile_type: ProjectileType,
+    /// Used for some projectiles (like the beam) to determine length
+    pub projectile_range: f32,
     /// Time until fired projectile despawns
     pub projectile_despawn_time: f32,
     /// Velocity of fired projectile

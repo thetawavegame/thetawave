@@ -97,6 +97,7 @@ pub fn player_ability_system(
                     spawn_projectile.send(SpawnProjectileEvent {
                         projectile_type: player_component.projectile_type.clone(),
                         transform: projectile_transform,
+                        range: player_component.projectile_range,
                         damage: (player_component.attack_damage as f32 * multiplier).round()
                             as usize,
                         despawn_time: player_component.projectile_despawn_time,

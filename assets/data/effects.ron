@@ -35,6 +35,15 @@
 			frame_duration: 0.1,
 		),
 	),
+	AllyBeamDespawn: (
+		effect_type: AllyBeamDespawn,
+		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],
+		z_level: 9.0,
+		animation: (
+			direction: Forward,
+			frame_duration: 0.12,
+		),
+	),
 	MobExplosion: (
 		effect_type: MobExplosion,
 		effect_behaviors_data: [FadeOutAndDespawnAfterAnimation],

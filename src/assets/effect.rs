@@ -17,6 +17,8 @@ pub struct EffectAssets {
     pub ally_bullet_despawn: Handle<TextureAtlas>,
     #[asset(key = "enemy_bullet_despawn")]
     pub enemy_bullet_despawn: Handle<TextureAtlas>,
+    #[asset(key = "ally_beam_despawn")]
+    pub ally_beam_despawn: Handle<TextureAtlas>,
     #[asset(key = "ally_bullet_explosion")]
     pub ally_bullet_explosion: Handle<TextureAtlas>,
     #[asset(key = "enemy_bullet_explosion")]
@@ -44,6 +46,7 @@ impl EffectAssets {
             EffectType::AllyBulletExplosion => Some(self.ally_bullet_explosion.clone()),
             EffectType::EnemyBulletExplosion => Some(self.enemy_bullet_explosion.clone()),
             EffectType::Text(_) => None,
+            EffectType::AllyBeamDespawn => Some(self.ally_beam_despawn.clone()),
         }
     }
 
@@ -61,6 +64,7 @@ impl EffectAssets {
             EffectType::AllyBulletDespawn => Color::rgb(5.0, 5.0, 5.0),
             EffectType::EnemyBulletDespawn => Color::rgb(5.0, 5.0, 5.0),
             EffectType::Text(_) => Color::rgb(0.0, 0.0, 0.0),
+            EffectType::AllyBeamDespawn => Color::rgb(2.0, 2.0, 2.0),
         }
     }
 }

@@ -1,4 +1,4 @@
-use crate::animation::AnimationComponent;
+use crate::animation::{AnimationCompleteEvent, AnimationComponent};
 use crate::GameUpdateSet;
 use bevy::prelude::*;
 use bevy::time::Stopwatch;
@@ -175,7 +175,13 @@ fn fade_out_despawn_after_animation_effect_behavior_system(
     )>,
     time: Res<Time>,
     texture_atlases: Res<Assets<TextureAtlas>>,
+    mut animation_complete_event_reader: EventReader<AnimationCompleteEvent>,
 ) {
+    let mut animation_completed_events = vec![];
+    for event in animation_complete_event_reader.read() {
+        animation_completed_events.push(event);
+    }
+
     for (entity, mut effect_component, mut sprite, animation, texture_atlas_handle) in
         effect_query.iter_mut()
     {
@@ -190,7 +196,8 @@ fn fade_out_despawn_after_animation_effect_behavior_system(
             }),
         ) {
             // Despawn if the animation is completed, otherwise continue fading out
-            if sprite.index == texture_atlas.textures.len() - 1 && animation.timer.just_finished() {
+            //if sprite.index == texture_atlas.textures.len() - 1 && animation.timer.just_finished() {
+            if animation_completed_events.contains(&&AnimationCompleteEvent(entity)) {
                 commands.entity(entity).despawn_recursive();
             } else {
                 stopwatch.tick(time.delta());

@@ -12,6 +12,8 @@ impl Plugin for AnimationPlugin {
                 .run_if(in_state(states::AppStates::Game))
                 .run_if(in_state(states::GameStates::Playing)),
         );
+
+        app.add_event::<AnimationCompleteEvent>();
     }
 }
 
@@ -63,17 +65,22 @@ pub struct AnimationComponent {
     pub direction: AnimationDirection,
 }
 
+#[derive(Event, PartialEq)]
+pub struct AnimationCompleteEvent(pub Entity);
+
 /// Handles animation of sprites
 pub fn animate_sprite_system(
     time: Res<Time>,
     texture_atlases: Res<Assets<TextureAtlas>>,
     mut query: Query<(
+        Entity,
         &mut AnimationComponent,
         &mut TextureAtlasSprite,
         &Handle<TextureAtlas>,
     )>,
+    mut animation_complete_event_writer: EventWriter<AnimationCompleteEvent>,
 ) {
-    for (mut animation, mut sprite, texture_atlas_handle) in query.iter_mut() {
+    for (entity, mut animation, mut sprite, texture_atlas_handle) in query.iter_mut() {
         // tick the animation timer
         animation.timer.tick(time.delta());
 
@@ -86,7 +93,11 @@ pub fn animate_sprite_system(
             match &animation.direction {
                 AnimationDirection::None => {}
                 AnimationDirection::Forward => {
-                    sprite.index = (sprite.index + 1) % texture_atlas.textures.len()
+                    let new_idx = (sprite.index + 1) % texture_atlas.textures.len();
+                    if new_idx == 0 {
+                        animation_complete_event_writer.send(AnimationCompleteEvent(entity))
+                    }
+                    sprite.index = new_idx;
                 }
                 AnimationDirection::PingPong(direction) => match direction {
                     PingPongDirection::Forward => {

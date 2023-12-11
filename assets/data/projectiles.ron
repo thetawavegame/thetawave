@@ -9,7 +9,7 @@
 			frame_duration: 1.0
 		),
 		collider: (
-			dimensions: (2.0, 2.0),
+			dimensions: (4.0, 4.0),
 			position: (0.0, 0.0),
 			rotation: 0.0,
 		),
@@ -19,14 +19,13 @@
 		projectile_type: Blast(Neutral),
 		spawnable_behaviors: [],
 		projectile_behaviors: [ExplodeOnIntersection, DealDamageOnIntersection],
-		collider_dimensions: (1.5, 1.5),
 		z_level: 20.0,
 		animation: (
 			direction: None,
 			frame_duration: 1.0
 		),
 		collider: (
-			dimensions: (2.0, 2.0),
+			dimensions: (4.0, 4.0),
 			position: (0.0, 0.0),
 			rotation: 0.0,
 		),
@@ -36,14 +35,13 @@
 		projectile_type: Blast(Ally),
 		spawnable_behaviors: [],
 		projectile_behaviors: [ExplodeOnIntersection, DealDamageOnIntersection],
-		collider_dimensions: (1.5, 1.5),
 		z_level: 19.0,
 		animation: (
 			direction: None,
 			frame_duration: 1.0
 		),
 		collider: (
-			dimensions: (2.0, 2.0),
+			dimensions: (4.0, 4.0),
 			position: (0.0, 0.0),
 			rotation: 0.0,
 		),
@@ -53,14 +51,13 @@
 		projectile_type: Bullet(Enemy),
 		spawnable_behaviors: [],
 		projectile_behaviors: [DealDamageOnContact, ExplodeOnContact],
-		collider_dimensions: (1.5, 1.5),
 		z_level: 20.0,
 		animation: (
 			direction: None,
 			frame_duration: 1.0
 		),
 		collider: (
-			dimensions: (2.0, 2.0),
+			dimensions: (4.0, 4.0),
 			position: (0.0, 0.0),
 			rotation: 0.0,
 		),
@@ -70,14 +67,13 @@
 		projectile_type: Bullet(Neutral),
 		spawnable_behaviors: [],
 		projectile_behaviors: [DealDamageOnContact, ExplodeOnContact],
-		collider_dimensions: (1.5, 1.5),
 		z_level: 20.0,
 		animation: (
 			direction: None,
 			frame_duration: 1.0
 		),
 		collider: (
-			dimensions: (2.0, 2.0),
+			dimensions: (4.0, 4.0),
 			position: (0.0, 0.0),
 			rotation: 0.0,
 		),
@@ -87,17 +83,32 @@
 		projectile_type: Bullet(Ally),
 		spawnable_behaviors: [],
 		projectile_behaviors: [DealDamageOnContact, ExplodeOnContact],
-		collider_dimensions: (1.5, 1.5),
 		z_level: 19.0,
 		animation: (
 			direction: None,
 			frame_duration: 1.0
 		),
 		collider: (
-			dimensions: (2.0, 2.0),
+			dimensions: (4.0, 4.0),
 			position: (0.0, 0.0),
 			rotation: 0.0,
 		),
 		is_solid: true,
-	)
+	),
+	Beam(Ally): (
+		projectile_type: Beam(Ally),
+		spawnable_behaviors: [],
+		projectile_behaviors: [DealDamageOnIntersection, FollowSource, OscillateCollider(0.2)],
+		z_level: 19.0,
+		animation: (
+			direction: None,
+			frame_duration: 1.0
+		),
+		collider: (
+			dimensions: (6.0, 1.0),
+			position: (0.0, 0.0),
+			rotation: 0.0,
+		),
+		is_solid: false,
+	),
 }

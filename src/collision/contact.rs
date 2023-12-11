@@ -105,10 +105,7 @@ pub fn contact_collision_system(
                     collision_event_writer.send(SortedCollisionEvent::PlayerToProjectileContact {
                         player_entity: colliding_entities.primary,
                         projectile_entity: colliding_entities.secondary,
-                        projectile_faction: match projectile_component.projectile_type.clone() {
-                            ProjectileType::Blast(faction) => faction,
-                            ProjectileType::Bullet(faction) => faction,
-                        },
+                        projectile_faction: projectile_component.projectile_type.get_faction(),
                         player_damage: player_component.collision_damage,
                         projectile_damage: projectile_component.damage,
                     });
@@ -226,10 +223,7 @@ pub fn contact_collision_system(
                         projectile_source: projectile_component.source,
                         mob_entity: colliding_entities.primary,
                         projectile_entity: colliding_entities.secondary,
-                        projectile_faction: match &projectile_component.projectile_type {
-                            ProjectileType::Blast(faction) => faction.clone(),
-                            ProjectileType::Bullet(faction) => faction.clone(),
-                        },
+                        projectile_faction: projectile_component.projectile_type.get_faction(),
                         mob_faction: match mob_component_1.mob_type {
                             MobType::Enemy(_) => Faction::Enemy,
                             MobType::Ally(_) => Faction::Ally,
@@ -311,10 +305,7 @@ pub fn contact_collision_system(
                         SortedCollisionEvent::MobSegmentToProjectileContact {
                             mob_segment_entity: colliding_entities.primary,
                             projectile_entity: colliding_entities.secondary,
-                            projectile_faction: match &projectile_component.projectile_type {
-                                ProjectileType::Blast(faction) => faction.clone(),
-                                ProjectileType::Bullet(faction) => faction.clone(),
-                            },
+                            projectile_faction: projectile_component.projectile_type.get_faction(),
                             mob_segment_faction: match mob_segment_component_1.mob_segment_type {
                                 MobSegmentType::Enemy(_) => Faction::Enemy,
                                 MobSegmentType::Neutral(_) => Faction::Neutral,
@@ -350,33 +341,25 @@ pub fn contact_collision_system(
                         collision_event_writer.send(
                             SortedCollisionEvent::ProjectileToProjectileContact {
                                 projectile_entity_1,
-                                projectile_faction_1: match &projectile_component_1.projectile_type
-                                {
-                                    ProjectileType::Blast(faction) => faction.clone(),
-                                    ProjectileType::Bullet(faction) => faction.clone(),
-                                },
+                                projectile_faction_1: projectile_component_1
+                                    .projectile_type
+                                    .get_faction(),
                                 projectile_entity_2,
-                                projectile_faction_2: match &projectile_component_1.projectile_type
-                                {
-                                    ProjectileType::Blast(faction) => faction.clone(),
-                                    ProjectileType::Bullet(faction) => faction.clone(),
-                                },
+                                projectile_faction_2: projectile_component_1
+                                    .projectile_type
+                                    .get_faction(),
                             },
                         );
                         collision_event_writer.send(
                             SortedCollisionEvent::ProjectileToProjectileContact {
                                 projectile_entity_1: projectile_entity_2,
-                                projectile_faction_1: match &projectile_component_2.projectile_type
-                                {
-                                    ProjectileType::Blast(faction) => faction.clone(),
-                                    ProjectileType::Bullet(faction) => faction.clone(),
-                                },
+                                projectile_faction_1: projectile_component_2
+                                    .projectile_type
+                                    .get_faction(),
                                 projectile_entity_2: projectile_entity_1,
-                                projectile_faction_2: match &projectile_component_1.projectile_type
-                                {
-                                    ProjectileType::Blast(faction) => faction.clone(),
-                                    ProjectileType::Bullet(faction) => faction.clone(),
-                                },
+                                projectile_faction_2: projectile_component_1
+                                    .projectile_type
+                                    .get_faction(),
                             },
                         );
                         continue 'collision_events;

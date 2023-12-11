@@ -70,6 +70,8 @@ pub struct PlayerComponent {
     pub collider_density: f32,
     /// Type of projectile fired
     pub projectile_type: ProjectileType,
+    /// Used for some projectiles (like the beam) to determine length
+    pub projectile_range: f32,
     /// Time until fired projectile despawns
     pub projectile_despawn_time: f32,
     /// Velocity of fired projectile
@@ -113,6 +115,7 @@ impl From<&Character> for PlayerComponent {
             collider_dimensions: character.collider_dimensions,
             collider_density: character.collider_density,
             projectile_type: character.projectile_type.clone(),
+            projectile_range: character.projectile_range,
             projectile_despawn_time: character.projectile_despawn_time,
             projectile_velocity: character.projectile_velocity,
             projectile_offset_position: character.projectile_offset_position,

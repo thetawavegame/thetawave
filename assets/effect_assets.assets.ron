@@ -76,4 +76,11 @@
         columns: 6,
         rows: 1,  
     ),
+    "ally_beam_despawn": TextureAtlas (
+        path: "texture/ally_beam_despawn_spritesheet.png",
+        tile_size_x: 9.,
+        tile_size_y: 1.,
+        columns: 3,
+        rows: 1,  
+    ),
 })

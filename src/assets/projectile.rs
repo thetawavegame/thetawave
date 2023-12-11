@@ -14,6 +14,10 @@ pub struct ProjectileAssets {
     pub ally_bullet: Handle<TextureAtlas>,
     #[asset(key = "enemy_bullet")]
     pub enemy_bullet: Handle<TextureAtlas>,
+    #[asset(key = "ally_beam")]
+    pub ally_beam: Handle<TextureAtlas>,
+    #[asset(key = "enemy_beam")]
+    pub enemy_beam: Handle<TextureAtlas>,
 }
 
 impl ProjectileAssets {
@@ -29,12 +33,18 @@ impl ProjectileAssets {
                 Faction::Enemy => self.enemy_bullet.clone(),
                 Faction::Neutral => todo!(),
             },
+            ProjectileType::Beam(faction) => match faction {
+                Faction::Ally => self.ally_beam.clone(),
+                Faction::Enemy => self.enemy_beam.clone(),
+                Faction::Neutral => todo!(),
+            },
         }
     }
     pub fn get_color(&self, projectile_type: &ProjectileType) -> Color {
         match projectile_type {
             ProjectileType::Blast(_) => Color::rgb(3.0, 3.0, 3.0),
             ProjectileType::Bullet(_) => Color::rgb(2.0, 2.0, 2.0),
+            ProjectileType::Beam(_) => Color::rgb(3.0, 3.0, 3.0),
         }
     }
 }

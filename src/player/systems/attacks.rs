@@ -66,6 +66,7 @@ pub fn player_fire_weapon_system(
             spawn_projectile.send(SpawnProjectileEvent {
                 projectile_type: player_component.projectile_type.clone(),
                 transform: projectile_transform,
+                range: player_component.projectile_range,
                 damage: player_component.attack_damage,
                 despawn_time: player_component.projectile_despawn_time,
                 initial_motion,
