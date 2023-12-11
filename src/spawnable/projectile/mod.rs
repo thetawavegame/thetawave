@@ -7,14 +7,16 @@ use thetawave_interface::{
     states::GameCleanup,
 };
 
+use crate::collision::{
+    ALLY_PROJECTILE_COLLIDER_GROUP, ENEMY_PROJECTILE_COLLIDER_GROUP,
+    HORIZONTAL_BARRIER_COLLIDER_GROUP, NEUTRAL_PROJECTILE_COLLIDER_GROUP, SPAWNABLE_COLLIDER_GROUP,
+};
 use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::ProjectileAssets,
     game::GameParametersResource,
     spawnable::InitialMotion,
     spawnable::{SpawnableBehavior, SpawnableComponent},
-    ALLY_PROJECTILE_COLLIDER_GROUP, ENEMY_PROJECTILE_COLLIDER_GROUP,
-    HORIZONTAL_BARRIER_COLLIDER_GROUP, NEUTRAL_PROJECTILE_COLLIDER_GROUP, SPAWNABLE_COLLIDER_GROUP,
 };
 
 mod behavior;
@@ -169,6 +171,7 @@ pub fn spawn_projectile(
 
         // create projectile entity
         let mut projectile = commands.spawn_empty();
+        let projectile_colider_group = get_projectile_collider_group(projectile_type.get_faction());
 
         projectile
             .insert(LockedAxes::ROTATION_LOCKED)
@@ -213,12 +216,11 @@ pub fn spawn_projectile(
             })
             .insert(ActiveEvents::COLLISION_EVENTS)
             .insert(CollisionGroups {
-                memberships: SPAWNABLE_COLLIDER_GROUP
-                    | get_projectile_collider_group(projectile_type.get_faction()),
+                memberships: SPAWNABLE_COLLIDER_GROUP | projectile_colider_group,
                 filters: Group::ALL
                     ^ (HORIZONTAL_BARRIER_COLLIDER_GROUP
                         | SPAWNABLE_COLLIDER_GROUP
-                        | get_projectile_collider_group(projectile_type.get_faction())),
+                        | projectile_colider_group),
             })
             .insert(GameCleanup)
             .insert(Name::new(projectile_data.projectile_type.to_string()));

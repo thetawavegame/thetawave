@@ -75,8 +75,8 @@ pub struct PlayerComponent {
     pub projectile_direction: f32,
     /// Time until fired projectile despawns
     pub projectile_despawn_time: f32,
-    /// Velocity of fired projectile
-    pub projectile_velocity: f32,
+    /// Base speed of fired projectiles
+    pub projectile_speed: f32,
     /// Position of projectile spawn relative to player
     pub projectile_offset_position: Vec2,
     /// Tracks time between firing blasts
@@ -117,7 +117,7 @@ impl From<&Character> for PlayerComponent {
             collider_density: character.collider_density,
             projectile_type: character.projectile_type.clone(),
             projectile_despawn_time: character.projectile_despawn_time,
-            projectile_velocity: character.projectile_velocity,
+            projectile_speed: character.projectile_speed,
             projectile_offset_position: character.projectile_offset_position,
             projectile_direction: character.projectile_direction,
             fire_timer: Timer::from_seconds(character.fire_period, TimerMode::Once),

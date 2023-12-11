@@ -1,7 +1,5 @@
-use crate::{
-    game::GameParametersResource, spawnable::SpawnEffectEvent, HORIZONTAL_BARRIER_COLLIDER_GROUP,
-    SPAWNABLE_COLLIDER_GROUP,
-};
+use crate::collision::{HORIZONTAL_BARRIER_COLLIDER_GROUP, SPAWNABLE_COLLIDER_GROUP};
+use crate::{game::GameParametersResource, spawnable::SpawnEffectEvent};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use std::f32::consts::FRAC_PI_2;

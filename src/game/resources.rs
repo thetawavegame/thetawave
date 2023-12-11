@@ -10,7 +10,8 @@ pub struct GameParametersResource {
     pub camera_z: f32,
     /// Z coordinate of camera in zoomed out mode
     pub camera_zoom_out_scale: f32,
-    /// Maximum possible projectiles of the player
+    /// Maximum possible projectiles for 1 of the player/mobs shots. Mainly kept low for perf and as
+    /// a hard cap (along with fire rate) on how much of a "bullet hell" each mob/player creates.
     pub max_player_projectiles: f32,
     /// Maximum possible speed of an entity
     pub max_speed: f32,

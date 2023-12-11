@@ -61,7 +61,7 @@ pub fn player_fire_weapon_system(
         let initial_motion = InitialMotion {
             linvel: Some(
                 (Vec2::from_angle(player_component.projectile_direction)
-                    * player_component.projectile_velocity)
+                    * player_component.projectile_speed)
                     + rb_vels.linvel,
             ),
             ..Default::default()

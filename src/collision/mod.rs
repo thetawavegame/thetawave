@@ -1,12 +1,22 @@
 use crate::GameUpdateSet;
 use bevy::prelude::*;
+use bevy_rapier2d::geometry::Group;
 use thetawave_interface::spawnable::Faction;
 use thetawave_interface::states;
 
 mod contact;
-mod instersection;
+mod intersection;
 
-pub use self::{contact::*, instersection::*};
+pub use self::{contact::*, intersection::*};
+
+// Collider groups used for rapier physics
+pub const SPAWNABLE_COLLIDER_GROUP: Group = Group::GROUP_1;
+pub const HORIZONTAL_BARRIER_COLLIDER_GROUP: Group = Group::GROUP_2;
+// pub const VERTICAL_BARRIER_COLLIDER_GROUP: Group = Group::GROUP_3;
+pub const ALLY_PROJECTILE_COLLIDER_GROUP: Group = Group::GROUP_4;
+pub const ENEMY_PROJECTILE_COLLIDER_GROUP: Group = Group::GROUP_5;
+pub const NEUTRAL_PROJECTILE_COLLIDER_GROUP: Group = Group::GROUP_6;
+pub const MOB_COLLIDER_GROUP: Group = Group::GROUP_7;
 
 pub struct CollisionPlugin;
 

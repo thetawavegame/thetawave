@@ -13,7 +13,6 @@ use crate::{
     game::GameParametersResource,
     loot::DropListType,
     spawnable::{InitialMotion, SpawnableBehavior, SpawnableComponent},
-    HORIZONTAL_BARRIER_COLLIDER_GROUP, MOB_COLLIDER_GROUP, SPAWNABLE_COLLIDER_GROUP,
 };
 
 mod behavior;
@@ -21,6 +20,9 @@ mod mob_segment;
 pub use self::{behavior::*, mob_segment::*};
 
 use super::behavior_sequence::MobBehaviorSequenceType;
+use crate::collision::{
+    HORIZONTAL_BARRIER_COLLIDER_GROUP, MOB_COLLIDER_GROUP, SPAWNABLE_COLLIDER_GROUP,
+};
 use thetawave_interface::{
     audio::CollisionSoundType,
     health::HealthComponent,

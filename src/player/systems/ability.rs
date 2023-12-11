@@ -90,7 +90,7 @@ pub fn player_ability_system(
                     let initial_motion = InitialMotion {
                         linvel: Some(
                             (Vec2::from_angle(player_component.projectile_direction)
-                                * player_component.projectile_velocity)
+                                * player_component.projectile_speed)
                                 + player_vel.linvel,
                         ),
                         ..Default::default()

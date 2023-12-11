@@ -10,13 +10,15 @@ use thetawave_interface::{
     states::GameCleanup,
 };
 
+use crate::collision::{
+    HORIZONTAL_BARRIER_COLLIDER_GROUP, MOB_COLLIDER_GROUP, SPAWNABLE_COLLIDER_GROUP,
+};
 use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::MobAssets,
     game::GameParametersResource,
     loot::DropListType,
     spawnable::SpawnableComponent,
-    HORIZONTAL_BARRIER_COLLIDER_GROUP, MOB_COLLIDER_GROUP, SPAWNABLE_COLLIDER_GROUP,
 };
 
 mod behavior;
