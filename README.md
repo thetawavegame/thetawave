@@ -4,9 +4,13 @@
 [![Discord](https://img.shields.io/badge/chat-on%20discord-green.svg?logo=discord&logoColor=fff&labelColor=1e1c24&color=8d5b3f)](https://discord.gg/4smxjcheE5)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+## What is Thetawave?
+
+Thetawave is a physics-based space shooter with procedurally generated levels, diverse foes, and distinct characters. As an open-source project, it invites collaboration and creativity from the community, allowing enthusiasts and developers to contribute to its evolution. This aspect of open-source development adds a unique dimension to Thetawave, as it grows and diversifies with inputs from its user base. Engaging in both gameplay and development, players and developers alike can experience the thrill of space combat while shaping the game's future.
+
 - [Thetawave](#thetawave)
+  - [What is Thetawave?](#what-is-thetawave)
   - [Gameplay](#gameplay)
-  - [Description](#description)
   - [Controls](#controls)
     - [Keyboard](#keyboard)
     - [Xbox Controller](#xbox-controller)
@@ -26,16 +30,12 @@
 
 ![boss](assets/images/boss.gif)
 
-## Description
-
-Thetawave is an open-source space shooter game, designed to be easily expandable. It is programmed in the Rust Language using the Bevy Engine.
-
 ## Controls
 
 ### Keyboard
 
 - Movement: WASD or Arrow Keys
-- Fire weapon (can hold) : Spacebar or Left Click 
+- Fire weapon (can hold) : Left Click or Spacebar
 - Special ability (when ready): Right Click or Shift
 
 ### Xbox Controller
