@@ -1,4 +1,5 @@
-# Thetawave
+# ![Banner](https://assets.thetawave.metalmancy.tech/promo/thetawave_logo_animated_github_banner.gif)
+
 [![Demo](https://img.shields.io/badge/Demo-Play%20Now%21-blue)](https://thetawave.metalmancy.tech)
 [![Build](https://github.com/thetawavegame/thetawave/actions/workflows/ci.yml/badge.svg?)](https://github.com/thetawavegame/thetawave/actions/workflows/ci.yml)
 [![Discord](https://img.shields.io/badge/chat-on%20discord-green.svg?logo=discord&logoColor=fff&labelColor=1e1c24&color=8d5b3f)](https://discord.gg/4smxjcheE5)
