@@ -12,8 +12,6 @@ Thetawave is a physics-based space shooter with procedurally generated levels, d
   - [What is Thetawave?](#what-is-thetawave)
   - [Gameplay](#gameplay)
   - [Controls](#controls)
-    - [Keyboard](#keyboard)
-    - [Xbox Controller](#xbox-controller)
   - [Instructions](#instructions)
   - [Credits](#credits)
     - [Music by Joel Schuman](#music-by-joel-schuman)
@@ -32,18 +30,11 @@ Thetawave is a physics-based space shooter with procedurally generated levels, d
 
 ## Controls
 
-### Keyboard
-
-- Movement: WASD or Arrow Keys
-- Fire weapon (can hold) : Left Click or Spacebar
-- Special ability (when ready): Right Click or Shift
-
-### Xbox Controller
-
-- Movement: D-Pad
-- Fire weapon (can hold) : Right bumper
-- Special ability (when ready): Left bumper
-
+| Input           | Action     | Keyboard              | Controller        |
+| --------------- | ---------- | --------------------- | ----------------- |
+| Movement        | 🕹️ Navigate | 'WASD' / Arrow Keys   | D-Pad             |
+| Fire Weapon     | 🔫 Shoot    | Left Click / Spacebar | Right Bumper (RB) |
+| Special Ability | 💥 Activate | Right Click / Shift   | Left Bumper (LB)  |
 
 ## Instructions
 
