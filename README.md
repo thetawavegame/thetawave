@@ -18,14 +18,21 @@ Thetawave is a physics-based space shooter with procedurally generated levels, d
 
 ## Instructions
 
-Protect the Earth from invading enemies!
+**Objective:** Protect the planet from invading enemies!
 
-The game is lost when all players have their health bars depleted from taking damage or when the blue defense bar is depleted from letting enemies reach the bottom of the arena.
+**Game Over Conditions:**
+- When all players' health bars are depleted from damage.
+- When the blue defense bar is depleted (occurs when enemies reach the bottom of the arena).
 
-- Wrenches heal health
-- Gems increase fire rate
-- Armor negates damage
-- Allowing cargo hauler mobs to reach the bottom of the arena heals defense
+**Power-Ups:**
+- 🛠️ **Wrenches**: Restore health.
+- 💎 **Gems**: Increase fire rate.
+- 🛡️ **Armor**: Negates damage.
+- ...and more!
+
+**Special Mechanics:**
+- Letting cargo hauler mobs reach the bottom of the arena heals the defense bar.
+
 
 ## Team
 
