@@ -16,7 +16,7 @@ Thetawave is a physics-based space shooter with procedurally generated levels, d
 | 🔫 Fire Weapon     | Left Click / Spacebar | Right Bumper (RB) |
 | 💥 Special Ability | Right Click / Shift   | Left Bumper (LB)  |
 
-## Instructions
+## How to Play
 
 **Objective:** Protect the planet from invading enemies!
 
