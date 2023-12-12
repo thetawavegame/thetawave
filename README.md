@@ -8,20 +8,6 @@
 
 Thetawave is a physics-based space shooter with procedurally generated levels, diverse foes, and distinct characters. As an open-source project, it invites collaboration and creativity from the community, allowing enthusiasts and developers to contribute to its evolution. This aspect of open-source development adds a unique dimension to Thetawave, as it grows and diversifies with inputs from its user base. Engaging in both gameplay and development, players and developers alike can experience the thrill of space combat while shaping the game's future.
 
-- [Thetawave](#thetawave)
-  - [What is Thetawave?](#what-is-thetawave)
-  - [Gameplay](#gameplay)
-  - [Controls](#controls)
-  - [Instructions](#instructions)
-  - [Credits](#credits)
-    - [Music by Joel Schuman](#music-by-joel-schuman)
-    - [Sound Effects](#sound-effects)
-      - [*Space Ultimate Megapack*](#space-ultimate-megapack)
-    - [Assets](#assets)
-      - [*Kadith's icons*](#kadiths-icons)
-    - [Fonts](#fonts)
-      - [*Space Madness*](#space-madness)
-
 ## Gameplay
 
 ![formation_spawn](assets/images/formation_spawn.gif)
