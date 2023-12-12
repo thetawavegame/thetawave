@@ -36,17 +36,11 @@ Thetawave is a physics-based space shooter with procedurally generated levels, d
 
 ## Team
 
-- **@cdsupina** 💡  
-  *Role*: Creative Director  
-  *Contribution*: Visionary leadership and creative oversight.
-
-- **@varoonp123** 🤓  
-  *Role*: Lead Programmer  
-  *Contribution*: Primary architect of the game's codebase and technical features.
-
-- **@LordDeatHunter** 🎨  
-  *Role*: Lead Artist  
-  *Contribution*: Key driver of the game's visual style and artistic assets.
+|                                                                           |                                                                                                                                      |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| <img src="https://avatars.githubusercontent.com/u/15306815" height="100"> | **@cdsupina** 💡<br>**Role**: Creative Director<br>**Contribution**: Visionary leadership and creative oversight.                     |
+| <img src="https://avatars.githubusercontent.com/u/22409608" height="100"> | **@varoonp123** 💻<br>**Role**: Lead Programmer<br>**Contribution**: Primary architect of the game's codebase and technical features. |
+| <img src="https://avatars.githubusercontent.com/u/26803198" height="100"> | **@LordDeatHunter** 🎨<br>**Role**: Lead Artist<br>**Contribution**: Key driver of the game's visual style and artistic assets.       |
 
 ## External Assets
 
