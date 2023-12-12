@@ -27,22 +27,30 @@ The game is lost when all players have their health bars depleted from taking da
 - Armor negates damage
 - Allowing cargo hauler mobs to reach the bottom of the arena heals defense
 
-## Credits
+## Team
 
-### Music by [Joel Schuman](https://joelhasa.site/)
+- **@cdsupina**  
+  *Role*: Creative Director  
+  *Contribution*: Visionary leadership and creative oversight.
 
-### Sound Effects
+- **@varoonp123**  
+  *Role*: Lead Programmer  
+  *Contribution*: Primary architect of the game's codebase and technical features.
 
-#### [*Space Ultimate Megapack*](https://gamesupply.itch.io/ultimate-space-game-mega-asset-package)
+- **@LordDeatHunter**  
+  *Role*: Lead Artist  
+  *Contribution*: Key driver of the game's visual style and artistic assets.
 
-### Assets
+## External Assets
 
-#### [*Kadith's icons*](https://kadith.itch.io/kadiths-free-icons)
+### 🎵 Music
+[Joel Schuman](https://joelhasa.site/) - Original Game Soundtrack
 
-### Fonts
+### 📢 Sound Effects
+[*Space Ultimate Megapack*](https://gamesupply.itch.io/ultimate-space-game-mega-asset-package) - Comprehensive Space Audio Collection
 
-#### *Space Madness*
+### 🎨 Art
+[Kadith's icons](https://kadith.itch.io/kadiths-free-icons) - Game Iconography
 
-*Space Madness* by [Rose Frye](https://modernmodron.itch.io/)
-
-Licensed under [Creative Commons: By Attribution 4.0 International](http://creativecommons.org/licenses/by/4.0/).
+### 📜 Fonts
+[*Space Madness*](https://modernmodron.itch.io/) - Font Design by Rose Frye
