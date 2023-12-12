@@ -30,11 +30,11 @@ Thetawave is a physics-based space shooter with procedurally generated levels, d
 
 ## Controls
 
-| Input           | Action     | Keyboard              | Controller        |
-| --------------- | ---------- | --------------------- | ----------------- |
-| Movement        | 🕹️ Navigate | 'WASD' / Arrow Keys   | D-Pad             |
-| Fire Weapon     | 🔫 Shoot    | Left Click / Spacebar | Right Bumper (RB) |
-| Special Ability | 💥 Activate | Right Click / Shift   | Left Bumper (LB)  |
+| Action            | Keyboard 🖮            | Controller 🎮      |
+| ----------------- | --------------------- | ----------------- |
+| 🕹️ Movement        | 'WASD' / Arrow Keys   | D-Pad             |
+| 🔫 Fire Weapon     | Left Click / Spacebar | Right Bumper (RB) |
+| 💥 Special Ability | Right Click / Shift   | Left Bumper (LB)  |
 
 ## Instructions
 
