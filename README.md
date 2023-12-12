@@ -20,8 +20,6 @@
     - [Fonts](#fonts)
       - [*Space Madness*](#space-madness)
 
-**Play in browser NOW on [itch](https://metalmancy.itch.io/thetawave)!**
-
 ## Gameplay
 
 ![formation_spawn](assets/images/formation_spawn.gif)
