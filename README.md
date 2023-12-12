@@ -29,15 +29,15 @@ The game is lost when all players have their health bars depleted from taking da
 
 ## Team
 
-- **@cdsupina**  
+- **@cdsupina** 💡  
   *Role*: Creative Director  
   *Contribution*: Visionary leadership and creative oversight.
 
-- **@varoonp123**  
+- **@varoonp123** 🤓  
   *Role*: Lead Programmer  
   *Contribution*: Primary architect of the game's codebase and technical features.
 
-- **@LordDeatHunter**  
+- **@LordDeatHunter** 🎨  
   *Role*: Lead Artist  
   *Contribution*: Key driver of the game's visual style and artistic assets.
 
