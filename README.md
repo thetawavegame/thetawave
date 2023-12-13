@@ -11,9 +11,10 @@ Thetawave is a physics-based space shooter with procedurally generated levels, d
 
 ## Gameplay
 
-
-
-https://github.com/cdsupina/thetawave/assets/15306815/cd03ae52-a6e0-4057-9cb0-67aa9a9f2a42
+<div style="display: flex; justify-content: space-around; align-items: center;">
+  <img src="https://assets.thetawave.metalmancy.tech/promo/gameplay_1.gif">
+  <img src="https://assets.thetawave.metalmancy.tech/promo/gameplay_1.gif">
+</div>
 
 
 
