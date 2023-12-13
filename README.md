@@ -13,7 +13,7 @@ Thetawave is a physics-based space shooter with procedurally generated levels, d
 
 <div>
   <img src="https://assets.thetawave.metalmancy.tech/promo/gameplay_1.gif" width="400">
-  <img src="https://assets.thetawave.metalmancy.tech/promo/gameplay_1.gif" width="400">
+  <img src="https://assets.thetawave.metalmancy.tech/promo/gameplay_2.gif" width="400">
 </div>
 
 ## Controls
