@@ -1,64 +1,29 @@
 <!doctype html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <style>
-      body {
-        margin: 0;
-        background: rgb(39, 0, 71);
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
+<html lang="en">
 
-      canvas {
-        background-color: white;
-      }
-      button {
-        padding: 10px 20px;
-        font-size: x-large;
-        width: 80%;
-        height: 20%;
-        background-color: rgb(0, 128, 128);
-        color: rgb(218, 165, 32);
-        border: none;
-        cursor: pointer;
-        font-weight: bold;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Thetawave</title>
+</head>
 
-      .title {
-        color: white;
-      }
-    </style>
-  </head>
+<body>
+  <div class="screen scanlines">
+    <div class="flexbox hcenter screen-content">
+      <div id="logo-container" class="hcenter">
+        <img src="https://assets.thetawave.metalmancy.tech/promo/thetawave_logo_animated.gif" width="800" alt="logo" />
+      </div>
+      <div id="link-container" class="flexbox hcenter">
+        <div class="hdiv"></div>
+        <a id="trigger_game_button" href="#">Play</a>
+        <div class="hdiv"></div>
+        <a href="https://github.com/thetawavegame" target="_blank">Source Code</a>
+        <div class="hdiv"></div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="thetawave-init.js"></script>
+</body>
 
-  <body>
-    <button id="buttonToTriggerGame">Click to Play Thetawave!</button>
-    <script type="module">
-      import init from "./thetawave.js";
-      // prevent right click
-      document.addEventListener("contextmenu", (event) =>
-        event.preventDefault(),
-      );
-      // Chrome and firefox do not want sound starting unless there is a user gesture. Hence we start the game onClick
-      const buttonToInitGame = document.getElementById("buttonToTriggerGame");
-      buttonToInitGame.addEventListener("click", () => {
-        // Permit the browser to play audio
-        const audioContext = new (window.AudioContext ||
-          window.webkitAudioContext)();
-        // Check if the AudioContext is suspended
-        if (audioContext.state === "suspended") {
-          audioContext.resume().then(() => {
-            console.log("AudioContext resumed successfully.");
-          });
-        }
-        init();
-        // Hide the button so we can play the game.
-        buttonToInitGame.remove();
-      });
-    </script>
-  </body>
 </html>
