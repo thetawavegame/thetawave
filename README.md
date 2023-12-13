@@ -41,6 +41,21 @@ Thetawave is a physics-based space shooter with procedurally generated levels, d
 **Special Mechanics:**
 - Letting cargo hauler mobs reach the bottom of the arena heals the defense bar.
 
+## How to Contribute
+
+### Building and Running
+- Run game locally: `cargo run --release --features storage`
+- Build for WASM: Run `./build_wasm.sh` and then serve the `out/` directory, e.g., `python3 -m http.server -d out/`
+- Run tests: `cargo test --workspace --all-features`
+- Build with arcade functionality: `cargo build --release --features "storage, arcade"`
+
+### Asset Management
+- Assets are stored in AWS S3 for efficiency.
+- To contribute, create an AWS account and an IAM user, then send your IAM User ARN to a maintainer.
+- Configure AWS CLI for local asset management.
+
+For detailed guidelines, see the [Contributing Guide](CONTRIBUTING.md).
+
 
 ## Team
 
