@@ -33,10 +33,21 @@ Thetawave is a physics-based space shooter with procedurally generated levels, d
 - When the blue defense bar is depleted (occurs when enemies reach the bottom of the arena).
 
 **Power-Ups:**
-- **Wrenches**: Restore health.
-- **Gems**: Increase fire rate.
-- **Armor**: Negates damage.
-- ...and more!
+
+<table>
+  <tr>
+    <td><img src="https://assets.thetawave.metalmancy.tech/promo/health_wrench.png" class="responsive-img"></td>
+    <td>Wrenches restore health.</td>
+  </tr>
+  <tr>
+    <td><img src="https://assets.thetawave.metalmancy.tech/promo/money.png" class="responsive-img"></td>
+    <td>Gems increase fire rate.</td>
+  </tr>
+  <tr>
+    <td><img src="https://assets.thetawave.metalmancy.tech/promo/armor.png" class="responsive-img"></td>
+    <td>Armor negates damage.</td>
+  </tr>
+</table>
 
 **Special Mechanics:**
 - Letting cargo hauler mobs reach the bottom of the arena heals the defense bar.
