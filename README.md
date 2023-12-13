@@ -36,15 +36,16 @@ Thetawave is a physics-based space shooter with procedurally generated levels, d
 
 <table>
   <tr>
-    <td><img src="https://assets.thetawave.metalmancy.tech/promo/health_wrench.png" class="responsive-img"></td>
+    <td><img src="https://assets.thetawave.metalmancy.tech/promo/health_wrench.png" 
+    style="max-height: 100px; height: auto; display: block;"></td>
     <td>Wrenches restore health.</td>
   </tr>
   <tr>
-    <td><img src="https://assets.thetawave.metalmancy.tech/promo/money.png" class="responsive-img"></td>
+    <td><img src="https://assets.thetawave.metalmancy.tech/promo/money.png" style="max-height: 100px; height: auto; display: block;"></td>
     <td>Gems increase fire rate.</td>
   </tr>
   <tr>
-    <td><img src="https://assets.thetawave.metalmancy.tech/promo/armor.png" class="responsive-img"></td>
+    <td><img src="https://assets.thetawave.metalmancy.tech/promo/armor.png" style="max-height: 100px; height: auto; display: block;"></td>
     <td>Armor negates damage.</td>
   </tr>
 </table>
@@ -60,25 +61,17 @@ For complete guidelines on contributing, please see our [Contributing Guide](CON
 
 ## Team
 
-<style>
-  img.responsive-img {
-    max-height: 100px;
-    height: auto;
-    display: block;
-  }
-</style>
-
 <table>
   <tr>
-    <td><img src="https://avatars.githubusercontent.com/u/15306815" class="responsive-img"></td>
+    <td><img src="https://avatars.githubusercontent.com/u/15306815" style="max-height: 100px; height: auto; display: block;"></td>
     <td><strong>@cdsupina</strong> 💡<br><strong>Role:</strong> Creative Director<br><strong>Contribution:</strong> Visionary leadership and creative oversight.</td>
   </tr>
   <tr>
-    <td><img src="https://avatars.githubusercontent.com/u/22409608" class="responsive-img"></td>
+    <td><img src="https://avatars.githubusercontent.com/u/22409608" style="max-height: 100px; height: auto; display: block;"></td>
     <td><strong>@varoonp123</strong> 💻<br><strong>Role:</strong> Lead Programmer<br><strong>Contribution:</strong> Primary architect of the game's codebase and technical features.</td>
   </tr>
   <tr>
-    <td><img src="https://avatars.githubusercontent.com/u/26803198" class="responsive-img"></td>
+    <td><img src="https://avatars.githubusercontent.com/u/26803198" style="max-height: 100px; height: auto; display: block;"></td>
     <td><strong>@LordDeatHunter</strong> 🎨<br><strong>Role:</strong> Lead Artist<br><strong>Contribution:</strong> Key driver of the game's visual style and artistic assets.</td>
   </tr>
 </table>
