@@ -33,9 +33,9 @@ Thetawave is a physics-based space shooter with procedurally generated levels, d
 - When the blue defense bar is depleted (occurs when enemies reach the bottom of the arena).
 
 **Power-Ups:**
-- 🛠️ **Wrenches**: Restore health.
-- 💎 **Gems**: Increase fire rate.
-- 🛡️ **Armor**: Negates damage.
+- **Wrenches**: Restore health.
+- **Gems**: Increase fire rate.
+- **Armor**: Negates damage.
 - ...and more!
 
 **Special Mechanics:**
