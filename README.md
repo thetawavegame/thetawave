@@ -9,14 +9,13 @@
 
 Thetawave is a physics-based space shooter with procedurally generated levels, diverse foes, and distinct characters. As an open-source project, it invites collaboration and creativity from the community, allowing enthusiasts and developers to contribute to its evolution. This aspect of open-source development adds a unique dimension to Thetawave, as it grows and diversifies with inputs from its user base. Engaging in both gameplay and development, players and developers alike can experience the thrill of space combat while shaping the game's future.
 
-## Gameplay Videos
+## Gameplay
 
-<div style="display: flex; justify-content: space-around; align-items: center;">
-  <video height="320" controls>
-    <source src="https://assets.thetawave.metalmancy.tech/promo/gameplay_1.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-</div>
+
+
+https://github.com/cdsupina/thetawave/assets/15306815/cd03ae52-a6e0-4057-9cb0-67aa9a9f2a42
+
+
 
 ## Controls
 
