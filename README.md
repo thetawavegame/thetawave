@@ -49,20 +49,29 @@ For complete guidelines on contributing, please see our [Contributing Guide](CON
 
 ## Team
 
+<style>
+  img.responsive-img {
+    max-height: 100px;
+    height: auto;
+    display: block;
+  }
+</style>
+
 <table>
   <tr>
-    <td><img src="https://avatars.githubusercontent.com/u/15306815" height="100"></td>
+    <td><img src="https://avatars.githubusercontent.com/u/15306815" class="responsive-img"></td>
     <td><strong>@cdsupina</strong> 💡<br><strong>Role:</strong> Creative Director<br><strong>Contribution:</strong> Visionary leadership and creative oversight.</td>
   </tr>
   <tr>
-    <td><img src="https://avatars.githubusercontent.com/u/22409608" height="100"></td>
+    <td><img src="https://avatars.githubusercontent.com/u/22409608" class="responsive-img"></td>
     <td><strong>@varoonp123</strong> 💻<br><strong>Role:</strong> Lead Programmer<br><strong>Contribution:</strong> Primary architect of the game's codebase and technical features.</td>
   </tr>
   <tr>
-    <td><img src="https://avatars.githubusercontent.com/u/26803198" height="100"></td>
+    <td><img src="https://avatars.githubusercontent.com/u/26803198" class="responsive-img"></td>
     <td><strong>@LordDeatHunter</strong> 🎨<br><strong>Role:</strong> Lead Artist<br><strong>Contribution:</strong> Key driver of the game's visual style and artistic assets.</td>
   </tr>
 </table>
+
 
 ## External Assets
 
