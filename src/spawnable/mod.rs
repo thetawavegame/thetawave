@@ -106,7 +106,7 @@ impl Plugin for SpawnablePlugin {
                 spawn_projectile_system,
                 spawn_consumable_system, // event generated in mob execute behavior
                 spawn_mob_system,        // event generated in mob execute behavior
-                check_boss_mobs_system,
+                check_boss_mobs_system.after(spawn_mob_system),
                 attract_to_player_system,
             )
                 .run_if(in_state(states::AppStates::Game))
