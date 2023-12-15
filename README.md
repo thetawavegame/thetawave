@@ -47,6 +47,10 @@ Thetawave is a physics-based space shooter with procedurally generated levels, d
     <td><img src="https://assets.thetawave.metalmancy.tech/promo/armor.png"></td>
     <td>Armor negates damage.</td>
   </tr>
+  <tr>
+    <td><img src="https://assets.thetawave.metalmancy.tech/promo/gain_projectiles.png"></td>
+  <td>Energy orbs give additional projectiles.</td>
+  </tr>
 </table>
 
 **Special Mechanics:**
