@@ -270,6 +270,7 @@ mod test {
             initial_motion: Default::default(),
             projectile_count: 1,
             projectile_direction: FRAC_PI_2,
+            speed: 1.0,
         };
         app.world.send_event(player_1_projectile_event.clone());
         app.update();

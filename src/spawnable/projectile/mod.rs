@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
-use std::{collections::HashMap, f32::consts::PI, string::ToString};
+use std::{collections::HashMap, string::ToString};
 use thetawave_interface::{
     spawnable::{Faction, ProjectileType, SpawnableType},
     states::GameCleanup,
@@ -41,6 +41,7 @@ pub struct SpawnProjectileEvent {
     /// Initial motion of the projectile
     pub initial_motion: InitialMotion,
     pub source: Entity,
+    pub speed: f32,
 }
 
 /// Core component for projectiles
@@ -101,6 +102,7 @@ pub fn spawn_projectile_system(
             event.projectile_count,
             event.damage,
             event.projectile_direction,
+            event.speed,
             event.despawn_time,
             event.initial_motion.clone(),
             &mut commands,
@@ -120,6 +122,7 @@ pub fn spawn_projectile(
     projectile_count: usize,
     damage: usize,
     direction: f32,
+    speed: f32,
     despawn_time: f32, // time before despawning
     initial_motion: InitialMotion,
     commands: &mut Commands,
@@ -149,25 +152,27 @@ pub fn spawn_projectile(
     let spread_angle_segment = spread_arc / (projectile_count as f32 - 1.).max(1.);
 
     for p in 0..projectile_count {
-        let new_initial_motion = if let Some(mut initial_motion_linvel) =
-            initial_motion.clone().linvel
-        {
-            // the start angle is half of {spread_arc} of radians to the left of the center, so that the arc is centered on the player
-            let spread_angle_start = (PI + spread_arc) / 2.;
-            // the angle of the current projectile
-            let spread_angle = spread_angle_start - (p as f32 * spread_angle_segment);
-            // convert the angle to a distance vector
-            let spread_distance = Vec2::new(spread_angle.cos() * 200., spread_angle.sin() * 400.);
-            initial_motion_linvel.x += spread_distance.x;
-            initial_motion_linvel.y += spread_distance.y * direction.sin();
+        let new_initial_motion =
+            if let Some(mut initial_motion_linvel) = initial_motion.clone().linvel {
+                // Calculate the angle for the current projectile.
+                // The first projectile is spread_angle_segment/2 radians to the left of the direction,
+                // and the last projectile is spread_angle_segment/2 radians to the right.
+                let angle_offset =
+                    (p as f32 - (projectile_count as f32 - 1.) / 2.) * spread_angle_segment;
+                let projectile_angle = direction + angle_offset;
 
-            InitialMotion {
-                linvel: Some(initial_motion_linvel),
-                ..initial_motion.clone()
-            }
-        } else {
-            initial_motion.clone()
-        };
+                let weights = Vec2::new(1.0, 2.0); //TODO: move to a weapon struct
+
+                // Convert the angle to a velocity vector
+                initial_motion_linvel += Vec2::from_angle(projectile_angle) * speed * weights;
+
+                InitialMotion {
+                    linvel: Some(initial_motion_linvel),
+                    ..initial_motion.clone()
+                }
+            } else {
+                initial_motion.clone()
+            };
 
         // create projectile entity
         let mut projectile = commands.spawn_empty();

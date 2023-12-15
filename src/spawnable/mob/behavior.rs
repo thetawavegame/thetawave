@@ -127,11 +127,7 @@ pub fn mob_execute_behavior_system(
                             };
 
                             let initial_motion = InitialMotion {
-                                linvel: Some(
-                                    (Vec2::from_angle(projectile_spawner.direction)
-                                        * projectile_spawner.velocity)
-                                        + mob_velocity.linvel,
-                                ),
+                                linvel: Some(mob_velocity.linvel),
                                 ..Default::default()
                             };
                             //spawn_blast
@@ -148,6 +144,7 @@ pub fn mob_execute_behavior_system(
                                 source: entity,
                                 projectile_direction: projectile_spawner.direction,
                                 projectile_count: projectile_spawner.count,
+                                speed: projectile_spawner.speed,
                             });
                         }
                     }

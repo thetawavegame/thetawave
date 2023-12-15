@@ -88,11 +88,7 @@ pub fn player_ability_system(
 
                     // pass player velocity into the spawned blast
                     let initial_motion = InitialMotion {
-                        linvel: Some(
-                            (Vec2::from_angle(player_component.projectile_direction)
-                                * player_component.projectile_speed)
-                                + player_vel.linvel,
-                        ),
+                        linvel: Some(player_vel.linvel),
                         ..Default::default()
                     };
 
@@ -106,6 +102,7 @@ pub fn player_ability_system(
                         source: entity,
                         projectile_count: player_component.projectile_count,
                         projectile_direction: player_component.projectile_direction,
+                        speed: player_component.projectile_speed,
                     });
                 }
             }

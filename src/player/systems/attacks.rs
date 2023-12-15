@@ -59,11 +59,7 @@ pub fn player_fire_weapon_system(
 
         // pass player velocity into the spawned blast
         let initial_motion = InitialMotion {
-            linvel: Some(
-                (Vec2::from_angle(player_component.projectile_direction)
-                    * player_component.projectile_speed)
-                    + rb_vels.linvel,
-            ),
+            linvel: Some(rb_vels.linvel),
             ..Default::default()
         };
 
@@ -77,6 +73,7 @@ pub fn player_fire_weapon_system(
             despawn_time: player_component.projectile_despawn_time,
             initial_motion,
             source: entity,
+            speed: player_component.projectile_speed,
         });
 
         // play firing blast sound effect
