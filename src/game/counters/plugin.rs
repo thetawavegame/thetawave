@@ -236,6 +236,7 @@ mod test {
         events.send(MobDestroyedEvent {
             mob_type: MobType::Enemy(EnemyMobType::Drone),
             entity,
+            is_boss: false,
         });
         app.update();
         let got_mob_kills = app

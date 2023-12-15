@@ -72,13 +72,6 @@ pub enum MobType {
 }
 
 impl MobType {
-    pub fn is_boss(&self) -> bool {
-        match self {
-            MobType::Enemy(EnemyMobType::Repeater) => true,
-            _ => false,
-        }
-    }
-
     pub fn get_name(&self) -> String {
         match self {
             MobType::Enemy(enemy_type) => match enemy_type {
@@ -209,6 +202,7 @@ pub enum TextEffectType {
 pub struct MobDestroyedEvent {
     pub mob_type: MobType,
     pub entity: Entity,
+    pub is_boss: bool,
 }
 
 #[derive(Event)]

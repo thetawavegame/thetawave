@@ -477,7 +477,7 @@ pub fn check_boss_mobs_system(
 ) {
     for event in mob_destroyed_event_reader.read() {
         // check if the mob that was destroyed was a boss, and check that there are no remaining boss mobs
-        if event.mob_type.is_boss() && boss_mobs_query.get_single().is_err() {
+        if event.is_boss && boss_mobs_query.get_single().is_err() {
             info!("Sending bosses destroyed event");
             bosses_destroyed_event_writer.send(BossesDestroyedEvent);
         }
