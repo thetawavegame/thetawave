@@ -161,7 +161,7 @@ pub fn spawn_projectile(
                     (p as f32 - (projectile_count as f32 - 1.) / 2.) * spread_angle_segment;
                 let projectile_angle = direction + angle_offset;
 
-                let weights = Vec2::new(1.0, 2.0); //TODO: move to a weapon struct
+                let weights = Vec2::new(0.5, 1.0); //TODO: move to a weapon struct
 
                 // Convert the angle to a velocity vector
                 initial_motion_linvel += Vec2::from_angle(projectile_angle) * speed * weights;
