@@ -103,9 +103,8 @@ impl WeaponComponent {
         } else {
             self.reload_timer.tick(delta_time);
 
-            // if the reload timer is finished return true and reset the timer fire_mode is Automatic
-            // if ther timer is not finsished then return false
-
+            // fire the weapon and return the projectile data if automatic
+            // othewise return none
             match self.fire_mode {
                 FireMode::Automatic => self.fire_weapon(),
                 FireMode::Manual => None,
@@ -113,10 +112,12 @@ impl WeaponComponent {
         }
     }
 
+    /// Returns ture if the weapon can be fired
     pub fn can_fire(&self) -> bool {
         self.reload_timer.finished()
     }
 
+    /// Returs the projectiles data if the weapon can be fired and resets the reload timer
     pub fn fire_weapon(&mut self) -> Option<WeaponProjectileData> {
         if self.can_fire() {
             self.reload_timer.reset();
@@ -124,5 +125,10 @@ impl WeaponComponent {
         } else {
             None
         }
+    }
+
+    /// Gain projectiles, but limit to the capacity of the weapon
+    pub fn gain_projectiles(&mut self, projectiles: usize) {
+        self.projectile_data.count = (self.projectile_data.count + projectiles).min(self.capacity);
     }
 }
