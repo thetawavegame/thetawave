@@ -7,7 +7,9 @@ use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     health::{DamageDealtEvent, HealthComponent},
     player::PlayerComponent,
-    spawnable::{EffectType, MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnItemEvent},
+    spawnable::{
+        EffectType, MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnItemEvent, SpawnPosition,
+    },
 };
 
 use crate::{
@@ -16,7 +18,6 @@ use crate::{
     loot::LootDropsResource,
     spawnable::{
         behavior_sequence::EntityPair, SpawnConsumableEvent, SpawnEffectEvent, SpawnMobEvent,
-        SpawnPosition,
     },
 };
 

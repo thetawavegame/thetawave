@@ -8,6 +8,7 @@ use thetawave_interface::{
     player::PlayerComponent,
     spawnable::{
         EffectType, MobDestroyedEvent, MobType, ProjectileType, SpawnItemEvent, SpawnMobEvent,
+        SpawnPosition,
     },
 };
 
@@ -18,7 +19,7 @@ use crate::{
     spawnable::{InitialMotion, SpawnConsumableEvent, SpawnEffectEvent, SpawnProjectileEvent},
 };
 
-use super::{MobComponent, SpawnPosition};
+use super::MobComponent;
 
 /// Types of behaviors that can be performed by mobs
 #[derive(Deserialize, Clone)]

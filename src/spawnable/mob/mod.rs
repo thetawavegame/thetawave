@@ -27,7 +27,9 @@ use thetawave_interface::{
     audio::CollisionSoundType,
     health::HealthComponent,
     objective::DefenseInteraction,
-    spawnable::{MobDestroyedEvent, MobSegmentType, MobType, ProjectileType, SpawnMobEvent},
+    spawnable::{
+        MobDestroyedEvent, MobSegmentType, MobType, ProjectileType, SpawnMobEvent, SpawnPosition,
+    },
     states::GameCleanup,
 };
 
@@ -175,12 +177,6 @@ pub struct MobSpawnerData {
     pub mob_type: MobType,
     pub period: f32,
     pub position: SpawnPosition,
-}
-
-#[derive(Deserialize, Clone, Debug)]
-pub enum SpawnPosition {
-    Global(Vec2),
-    Local(Vec2),
 }
 
 pub struct BehaviorSequenceTracker {

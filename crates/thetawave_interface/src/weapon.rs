@@ -1,19 +1,19 @@
+use bevy_math::Vec2;
+use bevy_time::{Timer, TimerMode};
+use serde::Deserialize;
+
+use crate::spawnable::{ProjectileType, SpawnPosition};
+
 use std::time::Duration;
 
-use bevy::{
-    math::Vec2,
-    time::{Timer, TimerMode},
-};
-use thetawave_interface::spawnable::ProjectileType;
-
-use crate::spawnable::SpawnPosition;
-
+#[derive(Deserialize, Clone)]
 pub enum FireMode {
     Automatic,
     Manual,
 }
 
 /// Stores data about about a Weapon using minimal data
+#[derive(Deserialize, Clone)]
 pub struct WeaponData {
     /// Projectile type that the weapon spawns
     pub ammunition: ProjectileType,

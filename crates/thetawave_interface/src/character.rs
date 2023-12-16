@@ -1,7 +1,9 @@
 use bevy_math::Vec2;
 use serde::Deserialize;
 
-use crate::{health::HealthComponent, player::AbilityType, spawnable::ProjectileType};
+use crate::{
+    health::HealthComponent, player::AbilityType, spawnable::ProjectileType, weapon::WeaponData,
+};
 
 /// The playable character types. To a player, these will have different appearances and abilities.
 #[derive(Deserialize, Clone, Debug, Hash, PartialEq, Eq)]
@@ -61,6 +63,7 @@ pub struct Character {
     pub ability_period: f32,
     /// Type of ability
     pub ability_type: AbilityType,
+    pub weapon: WeaponData,
 }
 
 impl From<&Character> for HealthComponent {

@@ -237,3 +237,9 @@ pub struct SpawnItemEvent {
 /// Tag for applying an in-game thing to the closest player based on the player's "gravity" params.
 #[derive(Component)]
 pub struct AttractToClosestPlayerComponent;
+
+#[derive(Deserialize, Clone, Debug)]
+pub enum SpawnPosition {
+    Global(Vec2),
+    Local(Vec2),
+}
