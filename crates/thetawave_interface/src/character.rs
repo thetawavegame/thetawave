@@ -63,6 +63,7 @@ pub struct Character {
     pub ability_period: f32,
     /// Type of ability
     pub ability_type: AbilityType,
+    /// Describes the player's weapon
     pub weapon: WeaponData,
 }
 

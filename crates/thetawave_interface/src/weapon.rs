@@ -26,7 +26,7 @@ pub struct WeaponData {
     /// Initial delay before first projectile(s) can be spawned
     pub initial_time: f32,
     /// Base speed of spawned projectiles
-    pub projectile_speed: f32,
+    pub speed: f32,
     /// Angle in radians of spawned projectiles
     pub direction: f32,
     /// Time before spawned projectiles despawn
@@ -58,7 +58,7 @@ pub struct Weapon {
     /// Initial delay before first projectile(s) can be spawned
     pub initial_timer: Timer,
     /// Base speed of spawned projectiles
-    pub projectile_speed: f32,
+    pub speed: f32,
     /// Angle in radians of spawned projectiles
     pub direction: f32,
     /// Time before spawned projectiles despawn
@@ -85,7 +85,7 @@ impl From<WeaponData> for Weapon {
             position: value.position,
             reload_timer: Timer::from_seconds(value.reload_time, TimerMode::Once),
             initial_timer: Timer::from_seconds(value.initial_time, TimerMode::Once),
-            projectile_speed: value.projectile_speed,
+            speed: value.speed,
             direction: value.direction,
             despawn_time: value.despawn_time,
             count: value.count,
