@@ -3,11 +3,11 @@ use bevy_rapier2d::prelude::{ExternalImpulse, Velocity};
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::input::PlayerAction;
 use thetawave_interface::{
-    audio::{PlaySoundEffectEvent, SoundEffectType},
+    audio::PlaySoundEffectEvent,
     player::{AbilityType, PlayerComponent},
 };
 
-use crate::spawnable::{InitialMotion, SpawnProjectileEvent};
+use crate::spawnable::SpawnProjectileEvent;
 
 #[allow(clippy::too_many_arguments)]
 pub fn player_ability_system(
@@ -71,39 +71,7 @@ pub fn player_ability_system(
                 }
                 // shoot a giant projectile
                 AbilityType::MegaBlast(multiplier) => {
-                    sound_effect_event_writer.send(PlaySoundEffectEvent {
-                        sound_effect_type: SoundEffectType::MegablastAbility,
-                    });
-                    let projectile_transform = Transform {
-                        translation: Vec3::new(
-                            player_trans.translation.x
-                                + player_component.projectile_offset_position.x,
-                            player_trans.translation.y
-                                + player_component.projectile_offset_position.y,
-                            1.0,
-                        ),
-                        scale: Vec3::new(multiplier, multiplier, 1.0),
-                        ..Default::default()
-                    };
-
-                    // pass player velocity into the spawned blast
-                    let initial_motion = InitialMotion {
-                        linvel: Some(player_vel.linvel),
-                        ..Default::default()
-                    };
-
-                    spawn_projectile.send(SpawnProjectileEvent {
-                        projectile_type: player_component.projectile_type.clone(),
-                        transform: projectile_transform,
-                        damage: (player_component.attack_damage as f32 * multiplier).round()
-                            as usize,
-                        despawn_time: player_component.projectile_despawn_time,
-                        initial_motion,
-                        source: entity,
-                        projectile_count: player_component.projectile_count,
-                        projectile_direction: player_component.projectile_direction,
-                        speed: player_component.projectile_speed,
-                    });
+                    info!("Spawn a Megablast");
                 }
             }
             // reset ability timer

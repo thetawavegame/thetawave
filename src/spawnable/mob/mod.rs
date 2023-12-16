@@ -12,14 +12,14 @@ use crate::{
     assets::MobAssets,
     game::GameParametersResource,
     loot::DropListType,
-    spawnable::{InitialMotion, SpawnableBehavior, SpawnableComponent},
+    spawnable::{SpawnableBehavior, SpawnableComponent},
 };
 
 mod behavior;
 mod mob_segment;
 pub use self::{behavior::*, mob_segment::*};
 
-use super::behavior_sequence::MobBehaviorSequenceType;
+use super::{behavior_sequence::MobBehaviorSequenceType, InitialMotion};
 use crate::collision::{
     HORIZONTAL_BARRIER_COLLIDER_GROUP, MOB_COLLIDER_GROUP, SPAWNABLE_COLLIDER_GROUP,
 };

@@ -2,7 +2,9 @@ use bevy_math::Vec2;
 use serde::Deserialize;
 
 use crate::{
-    health::HealthComponent, player::AbilityType, spawnable::ProjectileType, weapon::WeaponData,
+    health::HealthComponent,
+    player::AbilityType,
+    weapon::{WeaponComponent, WeaponData},
 };
 
 /// The playable character types. To a player, these will have different appearances and abilities.
@@ -30,19 +32,6 @@ pub struct Character {
     pub collider_density: f32,
     /// Character type
     pub character_type: CharacterType,
-    /// Projectile type
-    pub projectile_type: ProjectileType,
-    /// Number of projectiles fired per shot
-    pub projectile_count: usize,
-    pub projectile_direction: f32,
-    /// Time until fired projectile despawns
-    pub projectile_despawn_time: f32,
-    /// Base speed of fired projectile
-    pub projectile_speed: f32,
-    /// Position of projectile spawn relative to player
-    pub projectile_offset_position: Vec2,
-    /// Period of time between firing blasts
-    pub fire_period: f32,
     /// Health of the player
     pub health: usize,
     /// Shields of the player
@@ -61,6 +50,8 @@ pub struct Character {
     pub money: usize,
     /// Ability cooldown time
     pub ability_period: f32,
+    // Megablast offset position
+    pub megablast_offset_position: Vec2,
     /// Type of ability
     pub ability_type: AbilityType,
     /// Describes the player's weapon
@@ -74,5 +65,11 @@ impl From<&Character> for HealthComponent {
             character.shields,
             character.shields_recharge_rate,
         )
+    }
+}
+
+impl From<&Character> for WeaponComponent {
+    fn from(value: &Character) -> Self {
+        WeaponComponent::from(value.weapon.clone())
     }
 }

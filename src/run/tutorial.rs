@@ -16,7 +16,6 @@ use thetawave_interface::spawnable::{
 fn enable_player_actions_at_end_of_phase(players: &mut Query<&mut PlayerComponent>) {
     for mut player in players.iter_mut() {
         player.enable_special_attacks();
-        player.enable_main_attacks();
     }
 }
 pub(super) fn modify_player_spawn_params_for_lesson_phase(
@@ -309,14 +308,11 @@ impl TutorialLesson {
     ) {
         for mut player in players.iter_mut() {
             match self {
-                Self::Ability { .. } => {
-                    player.disable_main_attacks();
-                }
+                Self::Ability { .. } => {}
                 Self::Attack { .. } => {
                     player.disable_special_attacks();
                 }
                 Self::Movement { .. } => {
-                    player.disable_main_attacks();
                     player.disable_special_attacks();
                 }
             }

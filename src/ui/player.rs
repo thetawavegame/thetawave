@@ -360,7 +360,7 @@ pub fn update_player_ui_system(
         for (mut style, ability_value_ui) in player_ui.p3().iter_mut() {
             if player_index == ability_value_ui.player_index && ability_value_ui.ability_index == 0
             {
-                style.height = Val::Percent(100.0 * (1.0 - player_component.fire_timer.percent()));
+                //style.height = Val::Percent(100.0 * (1.0 - player_component.fire_timer.percent()));
             }
         }
 

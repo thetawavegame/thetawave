@@ -5,6 +5,7 @@ use std::{collections::HashMap, string::ToString};
 use thetawave_interface::{
     spawnable::{Faction, ProjectileType, SpawnableType},
     states::GameCleanup,
+    weapon::WeaponProjectileData,
 };
 
 use crate::collision::{
@@ -15,7 +16,6 @@ use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::ProjectileAssets,
     game::GameParametersResource,
-    spawnable::InitialMotion,
     spawnable::{SpawnableBehavior, SpawnableComponent},
 };
 
@@ -23,7 +23,15 @@ mod behavior;
 
 pub use self::behavior::{projectile_execute_behavior_system, ProjectileBehavior};
 
-use super::ColliderData;
+use super::{ColliderData, InitialMotion};
+
+#[derive(Event)]
+pub struct FireWeaponEvent {
+    pub weapon_projectile_data: WeaponProjectileData,
+    pub source_transform: Transform,
+    pub source_entity: Entity,
+    pub initial_motion: InitialMotion,
+}
 
 /// Event for spawning projectiles
 #[derive(Event, Clone)]
@@ -88,12 +96,26 @@ pub struct ProjectileResource {
 /// Spawns projectiles from events
 pub fn spawn_projectile_system(
     mut commands: Commands,
-    mut event_reader: EventReader<SpawnProjectileEvent>,
+    mut spawn_projectile_event_reader: EventReader<SpawnProjectileEvent>,
+    mut fire_weapon_event_reader: EventReader<FireWeaponEvent>,
     projectile_resource: Res<ProjectileResource>,
     projectile_assets: Res<ProjectileAssets>,
     game_parameters: Res<GameParametersResource>,
 ) {
-    for event in event_reader.read() {
+    for event in fire_weapon_event_reader.read() {
+        spawn_projectile_from_weapon(
+            &mut commands,
+            event.weapon_projectile_data.clone(),
+            event.initial_motion.clone(),
+            event.source_entity,
+            event.source_transform,
+            &projectile_resource,
+            &projectile_assets,
+            &game_parameters,
+        );
+    }
+
+    for event in spawn_projectile_event_reader.read() {
         spawn_projectile(
             &event.projectile_type,
             &projectile_resource,
@@ -112,8 +134,126 @@ pub fn spawn_projectile_system(
     }
 }
 
+pub fn spawn_projectile_from_weapon(
+    commands: &mut Commands,
+    weapon_projectile_data: WeaponProjectileData,
+    initial_motion: InitialMotion,
+    source_entity: Entity,
+    source_transform: Transform,
+    projectile_resource: &ProjectileResource,
+    projectile_assets: &ProjectileAssets,
+    game_parameters: &GameParametersResource,
+) {
+    let projectile_data = &projectile_resource.projectiles[&weapon_projectile_data.ammunition];
+
+    let mut projectile_behaviors = projectile_data.projectile_behaviors.clone();
+    projectile_behaviors.push(ProjectileBehavior::TimedDespawn {
+        despawn_time: weapon_projectile_data.despawn_time,
+    });
+
+    let projectile_transform = Transform {
+        translation: match weapon_projectile_data.position {
+            thetawave_interface::spawnable::SpawnPosition::Global(pos) => pos,
+            thetawave_interface::spawnable::SpawnPosition::Local(pos) => {
+                source_transform.translation.xy() + pos
+            }
+        }
+        .extend(projectile_data.z_level),
+        scale: Vec2::splat(game_parameters.sprite_scale).extend(1.0),
+        ..Default::default()
+    };
+
+    let spread_angle_segment =
+        weapon_projectile_data.get_spread_angle_segment(game_parameters.max_player_projectiles);
+
+    let projectile_colider_group =
+        get_projectile_collider_group(weapon_projectile_data.ammunition.get_faction());
+
+    for p in 0..weapon_projectile_data.count {
+        let new_initial_motion =
+            if let Some(mut initial_motion_linvel) = initial_motion.clone().linvel {
+                // Calculate the angle for the current projectile.
+                // The first projectile is spread_angle_segment/2 radians to the left of the direction,
+                // and the last projectile is spread_angle_segment/2 radians to the right.
+                let angle_offset = (p as f32 - (weapon_projectile_data.count as f32 - 1.) / 2.)
+                    * spread_angle_segment;
+                let projectile_angle = weapon_projectile_data.direction + angle_offset;
+
+                // Convert the angle to a velocity vector
+                initial_motion_linvel += Vec2::from_angle(projectile_angle)
+                    * weapon_projectile_data.speed
+                    * weapon_projectile_data.spread_weights;
+
+                InitialMotion {
+                    linvel: Some(initial_motion_linvel),
+                    ..initial_motion.clone()
+                }
+            } else {
+                initial_motion.clone()
+            };
+
+        // create projectile entity
+        let mut projectile = commands.spawn_empty();
+
+        projectile
+            .insert(LockedAxes::ROTATION_LOCKED)
+            .insert(SpriteSheetBundle {
+                texture_atlas: projectile_assets.get_asset(&weapon_projectile_data.ammunition),
+                sprite: TextureAtlasSprite {
+                    color: projectile_assets.get_color(&weapon_projectile_data.ammunition),
+                    ..Default::default()
+                },
+                ..Default::default()
+            })
+            .insert(AnimationComponent {
+                timer: Timer::from_seconds(
+                    projectile_data.animation.frame_duration,
+                    TimerMode::Repeating,
+                ),
+                direction: projectile_data.animation.direction.clone(),
+            })
+            .insert(RigidBody::Dynamic)
+            .insert(Velocity::from(new_initial_motion))
+            .insert(projectile_transform)
+            .insert(Collider::cuboid(
+                projectile_data.collider.dimensions.x,
+                projectile_data.collider.dimensions.y,
+            ))
+            .insert(ProjectileComponent {
+                projectile_type: projectile_data.projectile_type.clone(),
+                behaviors: projectile_behaviors.clone(),
+                damage: weapon_projectile_data.damage,
+                time_alive: 0.0,
+                source: source_entity,
+            })
+            .insert(SpawnableComponent {
+                spawnable_type: SpawnableType::Projectile(projectile_data.projectile_type.clone()),
+                acceleration: Vec2::ZERO,
+                deceleration: Vec2::ZERO,
+                speed: [game_parameters.max_speed, game_parameters.max_speed].into(), // highest possible speed
+                angular_acceleration: 0.0,
+                angular_deceleration: 0.0,
+                angular_speed: game_parameters.max_speed,
+                behaviors: projectile_data.spawnable_behaviors.clone(),
+            })
+            .insert(ActiveEvents::COLLISION_EVENTS)
+            .insert(CollisionGroups {
+                memberships: SPAWNABLE_COLLIDER_GROUP | projectile_colider_group,
+                filters: Group::ALL
+                    ^ (HORIZONTAL_BARRIER_COLLIDER_GROUP
+                        | SPAWNABLE_COLLIDER_GROUP
+                        | projectile_colider_group),
+            })
+            .insert(GameCleanup)
+            .insert(Name::new(projectile_data.projectile_type.to_string()));
+
+        if !projectile_data.is_solid {
+            projectile.insert(Sensor);
+        }
+    }
+}
+
 /// Spawn a projectile entity
-#[allow(clippy::too_many_arguments)]
 pub fn spawn_projectile(
     projectile_type: &ProjectileType,
     projectile_resource: &ProjectileResource,
