@@ -20,6 +20,7 @@ use crate::{
 };
 
 mod behavior;
+mod weapon;
 
 pub use self::behavior::{projectile_execute_behavior_system, ProjectileBehavior};
 
