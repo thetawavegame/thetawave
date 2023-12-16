@@ -8,7 +8,7 @@ use thetawave_interface::spawnable::ProjectileType;
 
 use crate::spawnable::SpawnPosition;
 
-enum FireMode {
+pub enum FireMode {
     Automatic,
     Manual,
 }
@@ -37,6 +37,12 @@ pub struct WeaponData {
     pub spread_weights: Vec2,
     /// Determines how the weapon handles the reload timer
     pub fire_mode: FireMode,
+    /// Maximum number of projectiles the weapon can have
+    pub capacity: usize,
+    /// Maximum spead angle of fired projectiles
+    pub max_spread_arc: f32,
+    /// Target gap between fired projectiles
+    pub projectile_gap: f32,
 }
 
 /// Describes how projectiles are spawned
@@ -63,6 +69,12 @@ pub struct Weapon {
     pub spread_weights: Vec2,
     /// Determines how the weapon handles the reload timer
     pub fire_mode: FireMode,
+    /// Maximum number of projectiles the weapon can have
+    pub capacity: usize,
+    /// Maximum spead angle of fired projectiles
+    pub max_spread_arc: f32,
+    /// Target gap between fired projectiles
+    pub projectile_gap: f32,
 }
 
 impl From<WeaponData> for Weapon {
@@ -79,6 +91,9 @@ impl From<WeaponData> for Weapon {
             count: value.count,
             spread_weights: value.spread_weights,
             fire_mode: value.fire_mode,
+            capacity: value.capacity,
+            max_spread_arc: value.max_spread_arc,
+            projectile_gap: value.projectile_gap,
         }
     }
 }
