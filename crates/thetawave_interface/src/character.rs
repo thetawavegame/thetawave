@@ -38,8 +38,6 @@ pub struct Character {
     pub shields: usize,
     /// Shields recharging rate
     pub shields_recharge_rate: f32,
-    /// Amount of damage dealt per attack
-    pub attack_damage: usize,
     /// Amount of damage dealt on contact
     pub collision_damage: usize,
     /// Distance to attract items and consumables
