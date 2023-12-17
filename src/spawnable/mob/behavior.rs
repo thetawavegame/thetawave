@@ -1,6 +1,5 @@
 use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
