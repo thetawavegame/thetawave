@@ -8,6 +8,7 @@ use thetawave_interface::{
     health::HealthComponent,
     player::PlayerComponent,
     spawnable::{ConsumableType, EffectType, TextEffectType},
+    weapon::{self, WeaponComponent},
 };
 
 use super::ConsumableEffect;
@@ -28,6 +29,7 @@ pub fn consumable_execute_behavior_system(
         &mut PlayerComponent,
         &Transform,
         &mut HealthComponent,
+        &mut WeaponComponent,
     )>,
     mut collision_events: EventReader<SortedCollisionEvent>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
@@ -76,6 +78,7 @@ fn apply_effects_on_impact(
         &mut PlayerComponent,
         &Transform,
         &mut HealthComponent,
+        &mut WeaponComponent,
     )>,
     consumable_effects: &Vec<ConsumableEffect>,
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
@@ -122,8 +125,13 @@ fn apply_effects_on_impact(
                 });
 
                 //apply effect to player
-                for (player_entity_q, mut player_component, _, mut health_component) in
-                    player_query.iter_mut()
+                for (
+                    player_entity_q,
+                    mut player_component,
+                    _,
+                    mut health_component,
+                    mut weapon_component,
+                ) in player_query.iter_mut()
                 {
                     if *player_entity == player_entity_q {
                         // play consumable pickup sound
@@ -143,7 +151,9 @@ fn apply_effects_on_impact(
                                 ConsumableEffect::GainMoney(money) => {
                                     player_component.money += *money;
                                 }
-                                ConsumableEffect::GainProjectiles(projectile) => {}
+                                ConsumableEffect::GainProjectiles(projectile) => {
+                                    weapon_component.gain_projectiles(*projectile)
+                                }
                             }
                         }
                     }

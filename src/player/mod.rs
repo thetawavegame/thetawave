@@ -11,7 +11,7 @@ use thetawave_interface::{
 
 use crate::{GameEnterSet, GameUpdateSet};
 
-use self::systems::player_fire_weapon_system;
+use self::systems::{fire_weapon_system, scale_fire_rate_system};
 pub use self::{
     resources::CharactersResource,
     spawn::spawn_players_system,
@@ -47,7 +47,8 @@ impl Plugin for PlayerPlugin {
         app.add_systems(
             Update,
             (
-                player_fire_weapon_system,
+                scale_fire_rate_system,
+                fire_weapon_system,
                 player_death_system,
                 player_movement_system.in_set(GameUpdateSet::Movement),
                 player_tilt_system.in_set(GameUpdateSet::Movement),

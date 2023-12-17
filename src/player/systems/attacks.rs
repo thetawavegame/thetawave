@@ -11,8 +11,14 @@ use thetawave_interface::{
 
 use crate::spawnable::{FireWeaponEvent, InitialMotion};
 
+pub fn scale_fire_rate_system(mut player_query: Query<(&PlayerComponent, &mut WeaponComponent)>) {
+    for (player, mut weapon) in player_query.iter_mut() {
+        weapon.set_reload_time_from_money(player.money);
+    }
+}
+
 /// Manages the players firing weapons
-pub fn player_fire_weapon_system(
+pub fn fire_weapon_system(
     mut player_query: Query<
         (
             &mut WeaponComponent,

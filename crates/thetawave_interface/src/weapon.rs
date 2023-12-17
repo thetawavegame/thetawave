@@ -67,6 +67,8 @@ impl WeaponProjectileData {
 /// Describes how projectiles are spawned
 #[derive(Component, Clone)]
 pub struct WeaponComponent {
+    /// Base reload time of the weapon
+    pub base_reload_time: f32,
     /// Tracks time until next projectile(s) can be spawned
     pub reload_timer: Timer,
     /// Initial delay before first projectile(s) can be spawned
@@ -82,6 +84,7 @@ pub struct WeaponComponent {
 impl From<WeaponData> for WeaponComponent {
     fn from(value: WeaponData) -> Self {
         WeaponComponent {
+            base_reload_time: value.reload_time,
             reload_timer: Timer::from_seconds(value.reload_time, TimerMode::Once),
             initial_timer: Timer::from_seconds(value.initial_time, TimerMode::Once),
             fire_mode: value.fire_mode,
@@ -130,5 +133,21 @@ impl WeaponComponent {
     /// Gain projectiles, but limit to the capacity of the weapon
     pub fn gain_projectiles(&mut self, projectiles: usize) {
         self.projectile_data.count = (self.projectile_data.count + projectiles).min(self.capacity);
+    }
+
+    /// Set reload time to a new duration
+    pub fn set_reload_time(&mut self, new_reload_time: f32) {
+        self.reload_timer
+            .set_duration(Duration::from_secs_f32(new_reload_time));
+    }
+
+    /// Set the fire rate of the weapon based on the amount of money colleted
+    pub fn set_reload_time_from_money(&mut self, money: usize) {
+        let diminishing_factor = 0.08;
+        let min_reload_time = 0.1;
+        let adjusted_money = (1.0 + money as f32).ln();
+        self.set_reload_time(
+            (self.base_reload_time - (adjusted_money * diminishing_factor)).max(min_reload_time),
+        );
     }
 }

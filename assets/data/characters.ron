@@ -26,8 +26,8 @@
 			ability_type: MegaBlast(5.0),
 			megablast_offset_position: (0.0, 40.0),
 			weapon: (
-				reload_time: 0.4,
-				initial_time: 0.4,
+				reload_time: 0.5,
+				initial_time: 0.5,
 				fire_mode: Manual,
 				capacity: 10,
 				projectile_data: (
@@ -70,8 +70,8 @@
 			ability_type: Charge(0.5),
 			megablast_offset_position: (0.0, 45.0),
 			weapon: (
-				reload_time: 0.7,
-				initial_time: 0.7,
+				reload_time: 0.6,
+				initial_time: 0.6,
 				fire_mode: Manual,
 				capacity: 10,
 				projectile_data: (

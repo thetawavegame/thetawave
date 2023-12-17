@@ -18,7 +18,7 @@
                 consumable: Money1,
             )),
             Consumable((
-                rolls: 1,
+                rolls: 50,
                 probability: 0.01,
                 consumable: GainProjectiles,
             )),
