@@ -16,7 +16,7 @@ use crate::{
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     loot::LootDropsResource,
-    spawnable::{InitialMotion, SpawnConsumableEvent, SpawnEffectEvent, SpawnProjectileEvent},
+    spawnable::{InitialMotion, SpawnConsumableEvent, SpawnEffectEvent},
 };
 
 use super::MobComponent;
@@ -24,7 +24,6 @@ use super::MobComponent;
 /// Types of behaviors that can be performed by mobs
 #[derive(Deserialize, Clone)]
 pub enum MobBehavior {
-    PeriodicFire(String),
     SpawnMob(String),
     ExplodeOnImpact,
     DealDamageToPlayerOnImpact,
@@ -70,18 +69,11 @@ pub fn mob_execute_behavior_system(
     mut commands: Commands,
     mut collision_events: EventReader<SortedCollisionEvent>,
     time: Res<Time>,
-    mut mob_query: Query<(
-        Entity,
-        &mut MobComponent,
-        &Transform,
-        &Velocity,
-        &HealthComponent,
-    )>,
+    mut mob_query: Query<(Entity, &mut MobComponent, &Transform, &HealthComponent)>,
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     mut spawn_consumable_event_writer: EventWriter<SpawnConsumableEvent>,
     mut spawn_item_event_writer: EventWriter<SpawnItemEvent>,
-    mut spawn_projectile_event_writer: EventWriter<SpawnProjectileEvent>,
     mut spawn_mob_event_writer: EventWriter<SpawnMobEvent>,
     mut mob_destroyed_event_writer: EventWriter<MobDestroyedEvent>,
     mut damage_dealt_event_writer: EventWriter<DamageDealtEvent>,
@@ -96,60 +88,10 @@ pub fn mob_execute_behavior_system(
     }
 
     // Iterate through all spawnable entities and execute their behavior
-    for (entity, mut mob_component, mob_transform, mob_velocity, mob_health) in mob_query.iter_mut()
-    {
+    for (entity, mut mob_component, mob_transform, mob_health) in mob_query.iter_mut() {
         let behaviors = mob_component.behaviors.clone();
         for behavior in behaviors {
             match behavior {
-                MobBehavior::PeriodicFire(projectile_spawner_key) => {
-                    let attack_damage = mob_component.attack_damage;
-
-                    // get all the mob spawners under the given key
-                    let projectile_spawners = mob_component
-                        .projectile_spawners
-                        .get_mut(&projectile_spawner_key)
-                        .unwrap();
-
-                    for projectile_spawner in projectile_spawners.iter_mut() {
-                        projectile_spawner.timer.tick(time.delta());
-
-                        if projectile_spawner.timer.just_finished() {
-                            let projectile_transform = Transform {
-                                translation: match projectile_spawner.position {
-                                    SpawnPosition::Global(coords) => coords.extend(1.0),
-                                    SpawnPosition::Local(coords) => {
-                                        (mob_transform.translation.xy()
-                                            + mob_transform.local_x().xy() * coords.x
-                                            + mob_transform.local_y().xy() * coords.y)
-                                            .extend(1.0)
-                                    }
-                                },
-                                ..Default::default()
-                            };
-
-                            let initial_motion = InitialMotion {
-                                linvel: Some(mob_velocity.linvel),
-                                ..Default::default()
-                            };
-                            //spawn_blast
-                            sound_effect_event_writer.send(PlaySoundEffectEvent {
-                                sound_effect_type: SoundEffectType::EnemyFireBlast,
-                            });
-
-                            spawn_projectile_event_writer.send(SpawnProjectileEvent {
-                                projectile_type: projectile_spawner.projectile_type.clone(),
-                                transform: projectile_transform,
-                                damage: attack_damage,
-                                despawn_time: projectile_spawner.despawn_time,
-                                initial_motion,
-                                source: entity,
-                                projectile_direction: projectile_spawner.direction,
-                                projectile_count: projectile_spawner.count,
-                                speed: projectile_spawner.speed,
-                            });
-                        }
-                    }
-                }
                 MobBehavior::SpawnMob(mob_spawner_key) => {
                     // get data
 

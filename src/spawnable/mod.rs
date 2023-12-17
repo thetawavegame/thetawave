@@ -26,7 +26,7 @@ use self::item::ItemPlugin;
 pub use self::mob::*;
 pub use self::projectile::{
     projectile_execute_behavior_system, spawn_projectile_system, FireWeaponEvent,
-    ProjectileComponent, ProjectileData, ProjectileResource, SpawnProjectileEvent,
+    ProjectileComponent, ProjectileData, ProjectileResource,
 };
 
 pub use self::behavior::{
@@ -80,7 +80,6 @@ impl Plugin for SpawnablePlugin {
         });
 
         app.add_event::<SpawnConsumableEvent>()
-            .add_event::<SpawnProjectileEvent>()
             .add_event::<FireWeaponEvent>()
             .add_event::<SpawnMobEvent>()
             .add_event::<MobBehaviorUpdateEvent>()

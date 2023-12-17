@@ -31,6 +31,7 @@ use thetawave_interface::{
         MobDestroyedEvent, MobSegmentType, MobType, ProjectileType, SpawnMobEvent, SpawnPosition,
     },
     states::GameCleanup,
+    weapon::{WeaponComponent, WeaponData},
 };
 
 /// Core component for mobs
@@ -52,10 +53,6 @@ pub struct MobComponent {
     pub behavior_sequence_tracker: Option<BehaviorSequenceTracker>,
     /// Tracks available mob spawning patterns for the mob
     pub mob_spawners: HashMap<String, Vec<MobSpawner>>,
-    /// Tracks available mob spawning patterns for projectiles
-    pub projectile_spawners: HashMap<String, Vec<ProjectileSpawner>>,
-    /// Damage dealt to other factions through attacks
-    pub attack_damage: usize,
     /// Damage dealt to other factions on collision
     pub collision_damage: usize,
     pub collision_sound: CollisionSoundType,
@@ -82,21 +79,6 @@ impl From<&MobData> for MobComponent {
             }
         }
 
-        let mut projectile_spawners: HashMap<String, Vec<ProjectileSpawner>> = HashMap::new();
-
-        for (spawner_name, spawners) in mob_data.projectile_spawners.iter() {
-            for spawner in spawners.iter() {
-                match projectile_spawners.entry(spawner_name.clone()) {
-                    Entry::Occupied(mut e) => {
-                        e.get_mut().push(ProjectileSpawner::from(spawner.clone()));
-                    }
-                    Entry::Vacant(e) => {
-                        e.insert(vec![ProjectileSpawner::from(spawner.clone())]);
-                    }
-                }
-            }
-        }
-
         MobComponent {
             mob_type: mob_data.mob_type.clone(),
             behaviors: mob_data.mob_behaviors.clone(),
@@ -105,8 +87,6 @@ impl From<&MobData> for MobComponent {
             control_behaviors: mob_data.control_behaviors.clone(),
             behavior_sequence_tracker: None,
             mob_spawners,
-            projectile_spawners,
-            attack_damage: mob_data.attack_damage,
             collision_damage: mob_data.collision_damage,
             collision_sound: mob_data.collision_sound.clone(),
             defense_interaction: mob_data.defense_interaction.clone(),
@@ -233,9 +213,6 @@ pub struct MobData {
     pub thruster: Option<ThrusterData>,
     /// Damage dealt to other factions through attacks
     #[serde(default)]
-    pub attack_damage: usize,
-    /// Damage dealt to other factions on collision
-    #[serde(default)]
     pub collision_damage: usize,
     /// Damage dealt to defense objective, after reaching bottom of arena
     #[serde(default)]
@@ -256,13 +233,20 @@ pub struct MobData {
     pub mob_spawners: HashMap<String, Vec<MobSpawnerData>>,
     /// projectile spawners that the mob can use
     #[serde(default)]
-    pub projectile_spawners: HashMap<String, Vec<ProjectileSpawnerData>>,
+    pub weapon: Option<WeaponData>,
 }
 impl From<&MobData> for HealthComponent {
     fn from(mob_data: &MobData) -> Self {
         HealthComponent::new(mob_data.health, 0, 0.0)
     }
 }
+
+impl MobData {
+    pub fn get_weapon_component(&self) -> Option<WeaponComponent> {
+        self.weapon.clone().map(WeaponComponent::from)
+    }
+}
+
 #[derive(Deserialize, Clone)]
 pub struct ColliderData {
     pub dimensions: Vec2,
@@ -404,6 +388,10 @@ pub fn spawn_mob(
 
     if boss {
         mob.insert(BossComponent);
+    }
+
+    if let Some(weapon_component) = mob_data.get_weapon_component() {
+        mob.insert(weapon_component);
     }
 
     // spawn thruster as child if mob has thruster

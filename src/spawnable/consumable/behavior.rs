@@ -8,7 +8,7 @@ use thetawave_interface::{
     health::HealthComponent,
     player::PlayerComponent,
     spawnable::{ConsumableType, EffectType, TextEffectType},
-    weapon::{self, WeaponComponent},
+    weapon::WeaponComponent,
 };
 
 use super::ConsumableEffect;
