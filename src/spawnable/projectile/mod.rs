@@ -160,7 +160,7 @@ pub fn spawn_projectile_from_weapon(
         }
         .extend(projectile_data.z_level),
         scale: Vec2::splat(game_parameters.sprite_scale * weapon_projectile_data.size).extend(1.0),
-        ..Default::default()
+        rotation: Quat::from_rotation_z(weapon_projectile_data.direction),
     };
 
     let spread_angle_segment =
