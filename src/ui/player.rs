@@ -3,6 +3,7 @@ use thetawave_interface::{
     character::CharacterType,
     health::HealthComponent,
     player::{PlayerComponent, PlayersResource},
+    weapon::WeaponComponent,
 };
 
 // Player data Uis
@@ -317,7 +318,7 @@ fn build_armor_counter(parent: &mut ChildBuilder) {
 
 pub fn update_player_ui_system(
     mut commands: Commands,
-    player_query: Query<(&HealthComponent, &PlayerComponent)>,
+    player_query: Query<(&HealthComponent, &PlayerComponent, &WeaponComponent)>,
     mut player_ui: ParamSet<(
         Query<(&mut Style, &HealthValueUI)>,
         Query<(&mut Style, &ShieldsValueUI)>,
@@ -325,7 +326,7 @@ pub fn update_player_ui_system(
         Query<(&mut Style, &AbilityValueUI)>,
     )>,
 ) {
-    for (player_health, player_component) in player_query.iter() {
+    for (player_health, player_component, weapon_component) in player_query.iter() {
         let player_index = player_component.player_index;
 
         // health ui
@@ -360,7 +361,8 @@ pub fn update_player_ui_system(
         for (mut style, ability_value_ui) in player_ui.p3().iter_mut() {
             if player_index == ability_value_ui.player_index && ability_value_ui.ability_index == 0
             {
-                //style.height = Val::Percent(100.0 * (1.0 - player_component.fire_timer.percent()));
+                style.height =
+                    Val::Percent(100.0 * (1.0 - weapon_component.reload_timer.percent()));
             }
         }
 
