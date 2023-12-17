@@ -1,13 +1,15 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::{ExternalImpulse, Velocity};
 use leafwing_input_manager::prelude::ActionState;
+use thetawave_interface::audio::SoundEffectType;
 use thetawave_interface::input::PlayerAction;
+use thetawave_interface::weapon::{WeaponComponent, WeaponProjectileData};
 use thetawave_interface::{
     audio::PlaySoundEffectEvent,
     player::{AbilityType, PlayerComponent},
 };
 
-use crate::spawnable::SpawnProjectileEvent;
+use crate::spawnable::{FireWeaponEvent, InitialMotion};
 
 #[allow(clippy::too_many_arguments)]
 pub fn player_ability_system(
@@ -18,9 +20,10 @@ pub fn player_ability_system(
         &mut ExternalImpulse,
         &ActionState<PlayerAction>,
         Entity,
+        &WeaponComponent,
     )>,
     time: Res<Time>,
-    mut spawn_projectile: EventWriter<SpawnProjectileEvent>,
+    mut fire_weapon: EventWriter<FireWeaponEvent>,
     mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
 ) {
     for (
@@ -30,6 +33,7 @@ pub fn player_ability_system(
         mut player_ext_impulse,
         action_state,
         entity,
+        weapon_component,
     ) in player_query.iter_mut()
     // No-op for players whose special attack is disabled
     {
@@ -71,7 +75,27 @@ pub fn player_ability_system(
                 }
                 // shoot a giant projectile
                 AbilityType::MegaBlast(multiplier) => {
-                    info!("Spawn a Megablast");
+                    sound_effect_event_writer.send(PlaySoundEffectEvent {
+                        sound_effect_type: SoundEffectType::MegablastAbility,
+                    });
+
+                    let initial_motion = InitialMotion {
+                        linvel: Some(player_vel.linvel),
+                        ..Default::default()
+                    };
+
+                    fire_weapon.send(FireWeaponEvent {
+                        weapon_projectile_data: WeaponProjectileData {
+                            damage: weapon_component.projectile_data.damage * multiplier as usize,
+                            speed: weapon_component.projectile_data.speed + (multiplier * 50.0),
+                            count: (weapon_component.projectile_data.count / 2).max(1),
+                            size: multiplier,
+                            ..weapon_component.projectile_data.clone()
+                        },
+                        source_transform: *player_trans,
+                        source_entity: entity,
+                        initial_motion,
+                    });
                 }
             }
             // reset ability timer

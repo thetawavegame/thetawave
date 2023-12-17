@@ -50,6 +50,8 @@ pub struct WeaponProjectileData {
     pub max_spread_arc: f32,
     /// Target gap between fired projectiles
     pub projectile_gap: f32,
+    /// Size multiplier of the projectile
+    pub size: f32,
 }
 
 impl WeaponProjectileData {
@@ -77,6 +79,8 @@ pub struct WeaponComponent {
     pub fire_mode: FireMode,
     /// Maximum number of projectiles the weapon can have
     pub capacity: usize,
+    /// Whether weapon is enabled
+    pub is_enabled: bool,
     /// Data about the projectiles fired from the weapon
     pub projectile_data: WeaponProjectileData,
 }
@@ -90,6 +94,7 @@ impl From<WeaponData> for WeaponComponent {
             fire_mode: value.fire_mode,
             capacity: value.capacity,
             projectile_data: value.projectile_data,
+            is_enabled: true,
         }
     }
 }
@@ -98,23 +103,34 @@ impl WeaponComponent {
     /// Updates the weapon's timers
     /// Returns true if the weapon can be fired
     pub fn update(&mut self, delta_time: Duration) -> Option<WeaponProjectileData> {
-        // tick the initial timer if there is still time remaining
-        // if the initial timer is finished then the reload timer is ticked
-        if !self.initial_timer.finished() {
-            self.initial_timer.tick(delta_time);
-            None
-        } else {
-            self.reload_timer.tick(delta_time);
+        if self.is_enabled {
+            // tick the initial timer if there is still time remaining
+            // if the initial timer is finished then the reload timer is ticked
+            if !self.initial_timer.finished() {
+                self.initial_timer.tick(delta_time);
+                None
+            } else {
+                self.reload_timer.tick(delta_time);
 
-            // fire the weapon and return the projectile data if automatic
-            // othewise return none
-            match self.fire_mode {
-                FireMode::Automatic => self.fire_weapon(),
-                FireMode::Manual => None,
+                // fire the weapon and return the projectile data if automatic
+                // othewise return none
+                match self.fire_mode {
+                    FireMode::Automatic => self.fire_weapon(),
+                    FireMode::Manual => None,
+                }
             }
+        } else {
+            None
         }
     }
 
+    pub fn enable(&mut self) {
+        self.is_enabled = true;
+    }
+
+    pub fn disable(&mut self) {
+        self.is_enabled = false;
+    }
     /// Returns ture if the weapon can be fired
     pub fn can_fire(&self) -> bool {
         self.reload_timer.finished()
@@ -122,7 +138,7 @@ impl WeaponComponent {
 
     /// Returs the projectiles data if the weapon can be fired and resets the reload timer
     pub fn fire_weapon(&mut self) -> Option<WeaponProjectileData> {
-        if self.can_fire() {
+        if self.can_fire() && self.is_enabled {
             self.reload_timer.reset();
             Some(self.projectile_data.clone())
         } else {

@@ -6,6 +6,7 @@ use serde::Deserialize;
 use std::collections::{HashMap, VecDeque};
 use thetawave_interface::input::PlayerAction;
 use thetawave_interface::player::InputRestrictionsAtSpawn;
+use thetawave_interface::weapon::WeaponComponent;
 use thetawave_interface::{
     audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent, SoundEffectType},
     objective::{DefenseInteraction, MobReachedBottomGateEvent, Objective},
@@ -180,7 +181,7 @@ impl CurrentRunProgressResource {
         mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
         mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
         play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
-        player_component_query: &mut Query<&mut PlayerComponent>,
+        player_component_query: &mut Query<(&mut PlayerComponent, &mut WeaponComponent)>,
         player_spawn_params: ResMut<InputRestrictionsAtSpawn>,
     ) {
         if let Some(current_level) = &mut self.current_level {
@@ -263,7 +264,7 @@ fn tick_run_system(
     mut mob_reached_bottom_event_reader: EventReader<MobReachedBottomGateEvent>,
     mut mob_segment_destroyed_event_reader: EventReader<MobSegmentDestroyedEvent>,
     mut play_sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
-    mut player_component_query: Query<&mut PlayerComponent>,
+    mut player_component_query: Query<(&mut PlayerComponent, &mut WeaponComponent)>,
     player_spawn_params: ResMut<InputRestrictionsAtSpawn>,
 ) {
     run_res.tick(

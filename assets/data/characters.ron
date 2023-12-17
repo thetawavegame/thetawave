@@ -24,7 +24,6 @@
 			money: 0,
 			ability_period: 5.0,
 			ability_type: MegaBlast(5.0),
-			megablast_offset_position: (0.0, 40.0),
 			weapon: (
 				reload_time: 0.5,
 				initial_time: 0.5,
@@ -41,6 +40,7 @@
 					spread_weights: (0.5, 1.0),
 					max_spread_arc: 1.57080,
 					projectile_gap: 3.14159,
+					size: 1.0,
 				),
 			),
 		),
@@ -68,7 +68,6 @@
 			money: 0,
 			ability_period: 2.0,
 			ability_type: Charge(0.5),
-			megablast_offset_position: (0.0, 45.0),
 			weapon: (
 				reload_time: 0.6,
 				initial_time: 0.6,
@@ -85,6 +84,7 @@
 					spread_weights: (0.8, 1.0),
 					max_spread_arc: 1.57080,
 					projectile_gap: 3.14159,
+					size: 1.0,
 				)
 			),
 		),

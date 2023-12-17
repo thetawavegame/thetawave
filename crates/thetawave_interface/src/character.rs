@@ -50,8 +50,6 @@ pub struct Character {
     pub money: usize,
     /// Ability cooldown time
     pub ability_period: f32,
-    // Megablast offset position
-    pub megablast_offset_position: Vec2,
     /// Type of ability
     pub ability_type: AbilityType,
     /// Describes the player's weapon

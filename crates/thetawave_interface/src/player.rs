@@ -79,7 +79,6 @@ pub struct PlayerComponent {
     pub ability_action_timer: Option<Timer>,
     /// Type of ability
     pub ability_type: AbilityType,
-    pub megablast_offset_position: Vec2,
     /// Whether the player responds to move inputs
     pub movement_enabled: bool,
     /// Multiplier for incoming damage
@@ -106,7 +105,6 @@ impl From<&Character> for PlayerComponent {
             movement_enabled: true,
             incoming_damage_multiplier: 1.0,
             player_index: 0,
-            megablast_offset_position: character.megablast_offset_position,
         }
     }
 }
