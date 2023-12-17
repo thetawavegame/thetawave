@@ -215,6 +215,7 @@ mod test {
             .add_state::<GameStates>()
             .add_event::<SortedCollisionEvent>()
             .add_event::<MobDestroyedEvent>()
+            .add_event::<FireWeaponEvent>()
             .insert_resource(UserStatsByPlayerForCurrentGameCache::default())
             .add_plugins((
                 InputPlugin,
@@ -291,6 +292,7 @@ mod test {
             .get(&DEFAULT_USER_ID)
             .unwrap()
             .total_shots_fired;
+        println!("n1_p1_shots_fired: {n_p1_shots_fired}");
         assert_eq!(n_p1_shots_fired, 1);
         app.world.send_event(player_1_projectile_event.clone());
         app.update();
@@ -303,6 +305,7 @@ mod test {
             .get(&DEFAULT_USER_ID)
             .unwrap()
             .total_shots_fired;
+        println!("n1_p1_shots_fired_2: {n_p1_shots_fired_2}");
         assert_eq!(n_p1_shots_fired_2, 2);
     }
 }
