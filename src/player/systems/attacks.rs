@@ -2,12 +2,7 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use leafwing_input_manager::prelude::ActionState;
 
-use thetawave_interface::{
-    audio::{PlaySoundEffectEvent, SoundEffectType},
-    input::PlayerAction,
-    player::PlayerComponent,
-    weapon::WeaponComponent,
-};
+use thetawave_interface::{input::PlayerAction, player::PlayerComponent, weapon::WeaponComponent};
 
 use crate::spawnable::{FireWeaponEvent, InitialMotion};
 
@@ -30,7 +25,6 @@ pub fn fire_weapon_system(
         With<PlayerComponent>,
     >,
     mut fire_weapon: EventWriter<FireWeaponEvent>,
-    mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
 ) {
     for (mut weapon, rb_vels, transform, action_state, entity) in player_query.iter_mut() {
         let fire_input = action_state.pressed(PlayerAction::BasicAttack);
@@ -53,11 +47,6 @@ pub fn fire_weapon_system(
                 source_transform: *transform,
                 source_entity: entity,
                 initial_motion,
-            });
-
-            // play firing blast sound effect
-            sound_effect_event_writer.send(PlaySoundEffectEvent {
-                sound_effect_type: SoundEffectType::PlayerFireBlast,
             });
         }
     }

@@ -198,6 +198,7 @@ mod test {
     use bevy::math::Vec2;
     use bevy::prelude::{App, Component, Events};
     use bevy::MinimalPlugins;
+    use thetawave_interface::audio::SoundEffectType;
     use thetawave_interface::character::{Character, CharacterType};
     use thetawave_interface::game::historical_metrics::{
         MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
@@ -277,6 +278,7 @@ mod test {
                 max_spread_arc: FRAC_PI_2,
                 projectile_gap: PI,
                 size: 1.0,
+                sound: SoundEffectType::PlayerFireBlast,
             },
             source_transform: Default::default(),
             source_entity: player_1_entity.id(),

@@ -3,7 +3,10 @@ use bevy_math::Vec2;
 use bevy_time::{Timer, TimerMode};
 use serde::Deserialize;
 
-use crate::spawnable::{ProjectileType, SpawnPosition};
+use crate::{
+    audio::SoundEffectType,
+    spawnable::{ProjectileType, SpawnPosition},
+};
 
 use std::time::Duration;
 
@@ -52,6 +55,8 @@ pub struct WeaponProjectileData {
     pub projectile_gap: f32,
     /// Size multiplier of the projectile
     pub size: f32,
+    /// Sound that the weapon makes when fired
+    pub sound: SoundEffectType,
 }
 
 impl WeaponProjectileData {

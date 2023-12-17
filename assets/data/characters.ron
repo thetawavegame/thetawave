@@ -33,6 +33,7 @@
 					max_spread_arc: 1.57080,
 					projectile_gap: 3.14159,
 					size: 1.0,
+					sound: PlayerFireBlast,
 				),
 			),
 		),
@@ -69,6 +70,7 @@
 					max_spread_arc: 1.57080,
 					projectile_gap: 3.14159,
 					size: 1.0,
+					sound: PlayerFireBlast,
 				)
 			),
 		),

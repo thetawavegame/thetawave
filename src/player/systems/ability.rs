@@ -3,11 +3,8 @@ use bevy_rapier2d::prelude::{ExternalImpulse, Velocity};
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::audio::SoundEffectType;
 use thetawave_interface::input::PlayerAction;
+use thetawave_interface::player::{AbilityType, PlayerComponent};
 use thetawave_interface::weapon::{WeaponComponent, WeaponProjectileData};
-use thetawave_interface::{
-    audio::PlaySoundEffectEvent,
-    player::{AbilityType, PlayerComponent},
-};
 
 use crate::spawnable::{FireWeaponEvent, InitialMotion};
 
@@ -24,7 +21,6 @@ pub fn player_ability_system(
     )>,
     time: Res<Time>,
     mut fire_weapon: EventWriter<FireWeaponEvent>,
-    mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
 ) {
     for (
         mut player_component,
@@ -75,10 +71,6 @@ pub fn player_ability_system(
                 }
                 // shoot a giant projectile
                 AbilityType::MegaBlast(multiplier) => {
-                    sound_effect_event_writer.send(PlaySoundEffectEvent {
-                        sound_effect_type: SoundEffectType::MegablastAbility,
-                    });
-
                     let initial_motion = InitialMotion {
                         linvel: Some(player_vel.linvel),
                         ..Default::default()
@@ -90,6 +82,7 @@ pub fn player_ability_system(
                             speed: weapon_component.projectile_data.speed + (multiplier * 50.0),
                             count: (weapon_component.projectile_data.count / 2).max(1),
                             size: multiplier,
+                            sound: SoundEffectType::MegablastAbility,
                             ..weapon_component.projectile_data.clone()
                         },
                         source_transform: *player_trans,

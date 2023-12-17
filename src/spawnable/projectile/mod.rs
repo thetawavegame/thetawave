@@ -3,6 +3,7 @@ use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 use std::{collections::HashMap, string::ToString};
 use thetawave_interface::{
+    audio::PlaySoundEffectEvent,
     spawnable::{Faction, ProjectileType, SpawnableType},
     states::GameCleanup,
     weapon::WeaponProjectileData,
@@ -78,6 +79,7 @@ pub struct ProjectileResource {
 pub fn spawn_projectile_system(
     mut commands: Commands,
     mut fire_weapon_event_reader: EventReader<FireWeaponEvent>,
+    mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
     projectile_resource: Res<ProjectileResource>,
     projectile_assets: Res<ProjectileAssets>,
     game_parameters: Res<GameParametersResource>,
@@ -85,6 +87,7 @@ pub fn spawn_projectile_system(
     for event in fire_weapon_event_reader.read() {
         spawn_projectile_from_weapon(
             &mut commands,
+            &mut sound_effect_event_writer,
             event.weapon_projectile_data.clone(),
             event.initial_motion.clone(),
             event.source_entity,
@@ -98,6 +101,7 @@ pub fn spawn_projectile_system(
 
 pub fn spawn_projectile_from_weapon(
     commands: &mut Commands,
+    sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
     weapon_projectile_data: WeaponProjectileData,
     initial_motion: InitialMotion,
     source_entity: Entity,
@@ -106,6 +110,10 @@ pub fn spawn_projectile_from_weapon(
     projectile_assets: &ProjectileAssets,
     game_parameters: &GameParametersResource,
 ) {
+    sound_effect_event_writer.send(PlaySoundEffectEvent {
+        sound_effect_type: weapon_projectile_data.sound.clone(),
+    });
+
     let projectile_data = &projectile_resource.projectiles[&weapon_projectile_data.ammunition];
 
     let mut projectile_behaviors = projectile_data.projectile_behaviors.clone();
