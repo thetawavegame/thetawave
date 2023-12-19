@@ -18,7 +18,7 @@ use crate::{
     spawnable::{InitialMotion, SpawnConsumableEvent, SpawnEffectEvent, SpawnProjectileEvent},
 };
 
-use super::{MobComponent, SpawnPosition};
+use super::{BossComponent, MobComponent, SpawnPosition};
 
 /// Types of behaviors that can be performed by mobs
 #[derive(Deserialize, Clone)]
@@ -75,6 +75,7 @@ pub fn mob_execute_behavior_system(
         &Transform,
         &Velocity,
         &HealthComponent,
+        Option<&BossComponent>,
     )>,
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
@@ -95,7 +96,8 @@ pub fn mob_execute_behavior_system(
     }
 
     // Iterate through all spawnable entities and execute their behavior
-    for (entity, mut mob_component, mob_transform, mob_velocity, mob_health) in mob_query.iter_mut()
+    for (entity, mut mob_component, mob_transform, mob_velocity, mob_health, boss_tag) in
+        mob_query.iter_mut()
     {
         let behaviors = mob_component.behaviors.clone();
         for behavior in behaviors {
@@ -250,6 +252,7 @@ pub fn mob_execute_behavior_system(
                         mob_destroyed_event_writer.send(MobDestroyedEvent {
                             entity,
                             mob_type: mob_component.mob_type.clone(),
+                            is_boss: boss_tag.is_some(),
                         });
                     }
                 }

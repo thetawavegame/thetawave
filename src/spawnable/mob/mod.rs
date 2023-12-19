@@ -436,7 +436,6 @@ pub fn spawn_mob(
 
     let mob_entity = mob.id();
     // add mob segment if anchor point
-
     for anchor_point in mob_data.mob_segment_anchor_points.iter() {
         // spawn mob_segment
 
@@ -473,11 +472,14 @@ pub struct BossesDestroyedEvent;
 
 pub fn check_boss_mobs_system(
     boss_mobs_query: Query<&BossComponent>,
-    mob_destroyed_event_reader: EventReader<MobDestroyedEvent>,
+    mut mob_destroyed_event_reader: EventReader<MobDestroyedEvent>,
     mut bosses_destroyed_event_writer: EventWriter<BossesDestroyedEvent>,
 ) {
-    // if a mob was just destroyed, check if there are any boss mobs left
-    if !mob_destroyed_event_reader.is_empty() && boss_mobs_query.get_single().is_err() {
-        bosses_destroyed_event_writer.send(BossesDestroyedEvent);
+    for event in mob_destroyed_event_reader.read() {
+        // check if the mob that was destroyed was a boss, and check that there are no remaining boss mobs
+        if event.is_boss && boss_mobs_query.get_single().is_err() {
+            info!("Sending bosses destroyed event");
+            bosses_destroyed_event_writer.send(BossesDestroyedEvent);
+        }
     }
 }
