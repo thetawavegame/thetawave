@@ -71,7 +71,7 @@ For complete guidelines on contributing, please see our [Contributing Guide](CON
   </tr>
   <tr>
     <td><img src="https://avatars.githubusercontent.com/u/22409608" height="100"></td>
-    <td><strong>@varoonp123</strong> 💻<br><strong>Role:</strong> Lead Programmer<br><strong>Contribution:</strong> Primary architect of the game's codebase and technical features.</td>
+    <td><strong>@varoonp123</strong> 💻<br><strong>Role:</strong> Lead Programmer<br><strong>Contribution:</strong> Architect of the game's deployment and technical features.</td>
   </tr>
   <tr>
     <td><img src="https://avatars.githubusercontent.com/u/26803198" height="100"></td>
