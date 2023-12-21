@@ -6,12 +6,19 @@ use bevy::{
     },
     prelude::*,
 };
+use thetawave_interface::camera::ScreenShakeEvent;
+
+use self::screen_shake::screen_shake_system;
+
+mod screen_shake;
 
 pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
+        app.add_event::<ScreenShakeEvent>();
         app.add_systems(Startup, setup_cameras_system);
+        app.add_systems(Update, screen_shake_system);
     }
 }
 
@@ -45,6 +52,7 @@ pub fn setup_cameras_system(
             },
             ..BloomSettings::OLD_SCHOOL
         },
+        screen_shake::ScreenShakeComponent {},
     ));
 
     // 3d camera for background objects
@@ -63,5 +71,9 @@ pub fn setup_cameras_system(
         }),
         ..Default::default()
     };
-    commands.spawn((camera_3d, BloomSettings::default()));
+    commands.spawn((
+        camera_3d,
+        BloomSettings::default(),
+        screen_shake::ScreenShakeComponent {},
+    ));
 }
