@@ -1,6 +1,19 @@
-use bevy::{app::{Plugin, App, Update}, ecs::{schedule::{common_conditions::in_state, IntoSystemConfigs}, component::Component, system::{Res, Query}, entity::Entity, event::EventWriter}, math::Vec2, time::{Timer, Time}, asset::{Assets, Handle}, sprite::{TextureAtlas, TextureAtlasSprite}};
+use bevy::{
+    app::{App, Plugin, Update},
+    asset::{Assets, Handle},
+    ecs::{
+        component::Component,
+        entity::Entity,
+        event::EventWriter,
+        schedule::{common_conditions::in_state, IntoSystemConfigs},
+        system::{Query, Res},
+    },
+    math::Vec2,
+    sprite::{TextureAtlas, TextureAtlasSprite},
+    time::{Time, Timer},
+};
 use serde::Deserialize;
-use thetawave_interface::{states, animation::AnimationCompletedEvent};
+use thetawave_interface::{animation::AnimationCompletedEvent, states};
 
 pub struct AnimationPlugin;
 

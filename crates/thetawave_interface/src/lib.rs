@@ -1,3 +1,4 @@
+pub mod animation;
 pub mod audio;
 pub mod character;
 pub mod character_selection;
@@ -9,4 +10,3 @@ pub mod player;
 pub mod run;
 pub mod spawnable;
 pub mod states;
-pub mod animation;

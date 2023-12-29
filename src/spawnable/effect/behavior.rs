@@ -1,7 +1,16 @@
 use crate::animation::AnimationComponent;
 use crate::GameUpdateSet;
-use bevy::prelude::*;
-use bevy::time::Stopwatch;
+use bevy::app::{App, Plugin, Update};
+use bevy::asset::{Assets, Handle};
+use bevy::ecs::entity::Entity;
+use bevy::ecs::event::EventReader;
+use bevy::ecs::schedule::common_conditions::in_state;
+use bevy::ecs::schedule::IntoSystemConfigs;
+use bevy::ecs::system::{Commands, Query, Res};
+use bevy::hierarchy::DespawnRecursiveExt;
+use bevy::sprite::{TextureAtlas, TextureAtlasSprite};
+use bevy::text::Text;
+use bevy::time::{Stopwatch, Time, Timer, TimerMode};
 use serde::Deserialize;
 use thetawave_interface::animation::AnimationCompletedEvent;
 use thetawave_interface::states;
@@ -178,6 +187,11 @@ fn fade_out_despawn_after_animation_effect_behavior_system(
     time: Res<Time>,
     texture_atlases: Res<Assets<TextureAtlas>>,
 ) {
+    let mut animation_completed_events = vec![];
+    for event in animation_completed_event_reader.read() {
+        animation_completed_events.push(event);
+    }
+
     for (entity, mut effect_component, mut sprite, animation, texture_atlas_handle) in
         effect_query.iter_mut()
     {
@@ -192,7 +206,7 @@ fn fade_out_despawn_after_animation_effect_behavior_system(
             }),
         ) {
             // Despawn if the animation is completed, otherwise continue fading out
-            if animation_completed_event_reader.read().any(|e| e.0 == entity) {
+            if animation_completed_events.iter().any(|e| e.0 == entity) {
                 commands.entity(entity).despawn_recursive();
             } else {
                 stopwatch.tick(time.delta());
