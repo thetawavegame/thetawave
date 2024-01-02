@@ -16,7 +16,7 @@ pub enum FireMode {
     Manual,
 }
 
-/// Stores data about about a Weapon using minimal data
+/// Stores data about about a Weapon using minimal defining characteristics
 #[derive(Deserialize, Clone)]
 pub struct WeaponData {
     /// Time between firing projectiles
@@ -59,18 +59,6 @@ pub struct WeaponProjectileData {
     pub sound: SoundEffectType,
 }
 
-impl WeaponProjectileData {
-    pub fn get_spread_angle_segment(&self, max_projectiles: f32) -> f32 {
-        let total_projectiles_percent = (self.count as f32 - 1.) / (max_projectiles - 1.);
-        // indicates the angle between the first and last projectile
-        let spread_arc = self
-            .max_spread_arc
-            .min(total_projectiles_percent * self.projectile_gap);
-        // indicates the angle between each projectile
-        spread_arc / (self.count as f32 - 1.).max(1.)
-    }
-}
-
 /// Describes how projectiles are spawned
 #[derive(Component, Clone)]
 pub struct WeaponComponent {
@@ -105,30 +93,6 @@ impl From<WeaponData> for WeaponComponent {
 }
 
 impl WeaponComponent {
-    /// Updates the weapon's timers
-    /// Returns true if the weapon can be fired
-    pub fn update(&mut self, delta_time: Duration) -> Option<WeaponProjectileData> {
-        if self.is_enabled {
-            // tick the initial timer if there is still time remaining
-            // if the initial timer is finished then the reload timer is ticked
-            if !self.initial_timer.finished() {
-                self.initial_timer.tick(delta_time);
-                None
-            } else {
-                self.reload_timer.tick(delta_time);
-
-                // fire the weapon and return the projectile data if automatic
-                // othewise return none
-                match self.fire_mode {
-                    FireMode::Automatic => self.fire_weapon(),
-                    FireMode::Manual => None,
-                }
-            }
-        } else {
-            None
-        }
-    }
-
     pub fn enable(&mut self) {
         self.is_enabled = true;
     }
@@ -136,12 +100,12 @@ impl WeaponComponent {
     pub fn disable(&mut self) {
         self.is_enabled = false;
     }
-    /// Returns ture if the weapon can be fired
+    /// Returns ture if the weapon can be fired (<=> is currently reloaded)
     pub fn can_fire(&self) -> bool {
         self.reload_timer.finished()
     }
 
-    /// Returs the projectiles data if the weapon can be fired and resets the reload timer
+    /// Returns the projectiles data if the weapon can be fired and resets the reload timer
     pub fn fire_weapon(&mut self) -> Option<WeaponProjectileData> {
         if self.can_fire() && self.is_enabled {
             self.reload_timer.reset();
@@ -157,18 +121,8 @@ impl WeaponComponent {
     }
 
     /// Set reload time to a new duration
-    pub fn set_reload_time(&mut self, new_reload_time: f32) {
+    pub fn set_reload_time(&mut self, new_reload_time_seconds: f32) {
         self.reload_timer
-            .set_duration(Duration::from_secs_f32(new_reload_time));
-    }
-
-    /// Set the fire rate of the weapon based on the amount of money colleted
-    pub fn set_reload_time_from_money(&mut self, money: usize) {
-        let diminishing_factor = 0.08;
-        let min_reload_time = 0.1;
-        let adjusted_money = (1.0 + money as f32).ln();
-        self.set_reload_time(
-            (self.base_reload_time - (adjusted_money * diminishing_factor)).max(min_reload_time),
-        );
+            .set_duration(Duration::from_secs_f32(new_reload_time_seconds));
     }
 }

@@ -6,9 +6,16 @@ use thetawave_interface::{input::PlayerAction, player::PlayerComponent, weapon::
 
 use crate::spawnable::{FireWeaponEvent, InitialMotion};
 
+const MIN_RELOAD_TIME: f32 = 0.1;
+
 pub fn scale_fire_rate_system(mut player_query: Query<(&PlayerComponent, &mut WeaponComponent)>) {
     for (player, mut weapon) in player_query.iter_mut() {
-        weapon.set_reload_time_from_money(player.money);
+        let diminishing_factor = 0.08;
+        let adjusted_money = (1.0 + player.money as f32).ln();
+        let new_reload_time =
+            weapon.base_reload_time - (adjusted_money * diminishing_factor).max(MIN_RELOAD_TIME);
+
+        weapon.set_reload_time(new_reload_time);
     }
 }
 

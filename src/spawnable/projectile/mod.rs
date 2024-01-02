@@ -98,7 +98,16 @@ pub fn spawn_projectile_system(
         );
     }
 }
-
+/// The angle in between each fired projectile for the shot. Evenly space `weapon.count` projectiles in an arc
+fn get_spread_angle_segment(weapon: &WeaponProjectileData, max_projectiles: f32) -> f32 {
+    let total_projectiles_percent = (weapon.count as f32 - 1.) / (max_projectiles - 1.);
+    // indicates the angle between the first and last projectile
+    let spread_arc = weapon
+        .max_spread_arc
+        .min(total_projectiles_percent * weapon.projectile_gap);
+    // indicates the angle between each projectile
+    spread_arc / (weapon.count as f32 - 1.).max(1.)
+}
 pub fn spawn_projectile_from_weapon(
     commands: &mut Commands,
     sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
@@ -133,8 +142,10 @@ pub fn spawn_projectile_from_weapon(
         rotation: Quat::from_rotation_z(weapon_projectile_data.direction),
     };
 
-    let spread_angle_segment =
-        weapon_projectile_data.get_spread_angle_segment(game_parameters.max_player_projectiles);
+    let spread_angle_segment = get_spread_angle_segment(
+        &weapon_projectile_data,
+        game_parameters.max_player_projectiles,
+    );
 
     let projectile_colider_group =
         get_projectile_collider_group(weapon_projectile_data.ammunition.get_faction());
