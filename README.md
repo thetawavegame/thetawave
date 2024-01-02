@@ -1,79 +1,95 @@
-# Thetawave
+# <img src="https://assets.thetawave.metalmancy.tech/promo/thetawave_logo_animated_banner.gif">
+
 [![Demo](https://img.shields.io/badge/Demo-Play%20Now%21-blue)](https://thetawave.metalmancy.tech)
 [![Build](https://github.com/thetawavegame/thetawave/actions/workflows/ci.yml/badge.svg?)](https://github.com/thetawavegame/thetawave/actions/workflows/ci.yml)
 [![Discord](https://img.shields.io/badge/chat-on%20discord-green.svg?logo=discord&logoColor=fff&labelColor=1e1c24&color=8d5b3f)](https://discord.gg/4smxjcheE5)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-- [Thetawave](#thetawave)
-  - [Gameplay](#gameplay)
-  - [Description](#description)
-  - [Controls](#controls)
-    - [Keyboard](#keyboard)
-    - [Xbox Controller](#xbox-controller)
-  - [Instructions](#instructions)
-  - [Credits](#credits)
-    - [Music by Joel Schuman](#music-by-joel-schuman)
-    - [Sound Effects](#sound-effects)
-      - [*Space Ultimate Megapack*](#space-ultimate-megapack)
-    - [Assets](#assets)
-      - [*Kadith's icons*](#kadiths-icons)
-    - [Fonts](#fonts)
-      - [*Space Madness*](#space-madness)
+## What is Thetawave?
 
-**Play in browser NOW on [itch](https://metalmancy.itch.io/thetawave)!**
+Thetawave is a physics-based space shooter with procedurally generated levels, diverse foes, and distinct characters. As an open-source project, it invites collaboration and creativity from the community, allowing enthusiasts and developers to contribute to its evolution. This aspect of open-source development adds a unique dimension to Thetawave, as it grows and diversifies with inputs from its user base. Engaging in both gameplay and development, players and developers alike can experience the thrill of space combat while shaping the game's future.
 
 ## Gameplay
 
-![formation_spawn](assets/images/formation_spawn.gif)
-
-![boss](assets/images/boss.gif)
-
-## Description
-
-Thetawave is an open-source space shooter game, designed to be easily expandable. It is programmed in the Rust Language using the Bevy Engine.
+<div>
+  <img src="https://assets.thetawave.metalmancy.tech/promo/gameplay_1.gif" width="400">
+  <img src="https://assets.thetawave.metalmancy.tech/promo/gameplay_2.gif" width="400">
+</div>
 
 ## Controls
 
-### Keyboard
+| Action            | Keyboard 🖮            | Controller 🎮      |
+| ----------------- | --------------------- | ----------------- |
+| 🕹️ Movement        | 'WASD' / Arrow Keys   | D-Pad             |
+| 🔫 Fire Weapon     | Left Click / Spacebar | Right Bumper (RB) |
+| 💥 Special Ability | Right Click / Shift   | Left Bumper (LB)  |
 
-- Movement: WASD or Arrow Keys
-- Fire weapon (can hold) : Spacebar or Left Click 
-- Special ability (when ready): Right Click or Shift
+## How to Play
 
-### Xbox Controller
+**Objective:** Protect the planet from invading enemies!
 
-- Movement: D-Pad
-- Fire weapon (can hold) : Right bumper
-- Special ability (when ready): Left bumper
+**Game Over Conditions:**
+- When all players' health bars are depleted from damage.
+- When the blue defense bar is depleted (occurs when enemies reach the bottom of the arena).
+
+**Power-Ups:**
+
+<table>
+  <tr>
+    <td><img src="https://assets.thetawave.metalmancy.tech/promo/health_wrench.png"></td>
+    <td>Wrenches restore health.</td>
+  </tr>
+  <tr>
+    <td><img src="https://assets.thetawave.metalmancy.tech/promo/money.png"></td>
+    <td>Gems increase fire rate.</td>
+  </tr>
+  <tr>
+    <td><img src="https://assets.thetawave.metalmancy.tech/promo/armor.png"></td>
+    <td>Armor negates damage.</td>
+  </tr>
+  <tr>
+    <td><img src="https://assets.thetawave.metalmancy.tech/promo/gain_projectiles.png"></td>
+  <td>Energy orbs give additional projectiles.</td>
+  </tr>
+</table>
+
+**Special Mechanics:**
+- Letting cargo hauler mobs reach the bottom of the arena heals the defense bar.
+
+## How to Contribute
+
+We welcome contributions from all community members. Your insights and improvements help us grow.
+
+For complete guidelines on contributing, please see our [Contributing Guide](CONTRIBUTING.md). It includes all the necessary information on how you can participate in shaping Thetawave.
+
+## Team
+
+<table>
+  <tr>
+    <td><img src="https://avatars.githubusercontent.com/u/15306815" height="100"></td>
+    <td><strong>@cdsupina</strong> 💡<br><strong>Role:</strong> Creative Director<br><strong>Contribution:</strong> Visionary leadership and creative oversight.</td>
+  </tr>
+  <tr>
+    <td><img src="https://avatars.githubusercontent.com/u/22409608" height="100"></td>
+    <td><strong>@varoonp123</strong> 💻<br><strong>Role:</strong> Lead Programmer<br><strong>Contribution:</strong> Architect of the game's deployment and technical features.</td>
+  </tr>
+  <tr>
+    <td><img src="https://avatars.githubusercontent.com/u/26803198" height="100"></td>
+    <td><strong>@LordDeatHunter</strong> 🎨<br><strong>Role:</strong> Lead Artist<br><strong>Contribution:</strong> Key driver of the game's visual style and artistic assets.</td>
+  </tr>
+</table>
 
 
-## Instructions
+## External Assets
 
-Protect the Earth from invading enemies!
+### 🎵 Music
+[Joel Schuman](https://joelhasa.site/) - Original Game Soundtrack
 
-The game is lost when all players have their health bars depleted from taking damage or when the blue defense bar is depleted from letting enemies reach the bottom of the arena.
+### 📢 Sound Effects
+[*Space Ultimate Megapack*](https://gamesupply.itch.io/ultimate-space-game-mega-asset-package) - Comprehensive Space Audio Collection
 
-- Wrenches heal health
-- Gems increase fire rate
-- Armor negates damage
-- Allowing cargo hauler mobs to reach the bottom of the arena heals defense
+### 🎨 Art
+[Kadith's icons](https://kadith.itch.io/kadiths-free-icons) - Game Iconography
 
-## Credits
-
-### Music by [Joel Schuman](https://joelhasa.site/)
-
-### Sound Effects
-
-#### [*Space Ultimate Megapack*](https://gamesupply.itch.io/ultimate-space-game-mega-asset-package)
-
-### Assets
-
-#### [*Kadith's icons*](https://kadith.itch.io/kadiths-free-icons)
-
-### Fonts
-
-#### *Space Madness*
-
-*Space Madness* by [Rose Frye](https://modernmodron.itch.io/)
-
-Licensed under [Creative Commons: By Attribution 4.0 International](http://creativecommons.org/licenses/by/4.0/).
+### 📜 Fonts
+[*Space Madness*](https://modernmodron.itch.io/) - Font Design by Rose Frye

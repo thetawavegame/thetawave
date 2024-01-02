@@ -17,8 +17,7 @@ use crate::{
     loot::LootDropsResource,
     spawnable::{InitialMotion, SpawnConsumableEvent, SpawnEffectEvent},
 };
-
-use super::MobComponent;
+use super::{BossComponent, MobComponent};
 
 /// Types of behaviors that can be performed by mobs
 #[derive(Deserialize, Clone)]
@@ -68,7 +67,13 @@ pub fn mob_execute_behavior_system(
     mut commands: Commands,
     mut collision_events: EventReader<SortedCollisionEvent>,
     time: Res<Time>,
-    mut mob_query: Query<(Entity, &mut MobComponent, &Transform, &HealthComponent)>,
+    mut mob_query: Query<(
+        Entity,
+        &mut MobComponent,
+        &Transform,
+        &HealthComponent,
+        Option<&BossComponent>,
+    )>,
     mut player_query: Query<(Entity, &mut PlayerComponent)>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     mut spawn_consumable_event_writer: EventWriter<SpawnConsumableEvent>,
@@ -87,7 +92,7 @@ pub fn mob_execute_behavior_system(
     }
 
     // Iterate through all spawnable entities and execute their behavior
-    for (entity, mut mob_component, mob_transform, mob_health) in mob_query.iter_mut() {
+    for (entity, mut mob_component, mob_transform, mob_health, boss_tag) in mob_query.iter_mut() {
         let behaviors = mob_component.behaviors.clone();
         for behavior in behaviors {
             match behavior {
@@ -189,6 +194,7 @@ pub fn mob_execute_behavior_system(
                         mob_destroyed_event_writer.send(MobDestroyedEvent {
                             entity,
                             mob_type: mob_component.mob_type.clone(),
+                            is_boss: boss_tag.is_some(),
                         });
                     }
                 }

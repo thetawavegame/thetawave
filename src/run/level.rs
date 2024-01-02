@@ -195,7 +195,13 @@ impl Level {
                 } => {
                     if spawn_timer.finished() {
                         // check if no entities with a BossComponent tag exist
-                        !bosses_destroyed_event_reader.is_empty()
+
+                        if bosses_destroyed_event_reader.is_empty() {
+                            return false;
+                        } else {
+                            bosses_destroyed_event_reader.clear();
+                            true
+                        }
                     } else {
                         spawn_timer.tick(time.delta());
                         if spawn_timer.just_finished() {
@@ -236,8 +242,11 @@ impl Level {
             self.current_phase = Some(modified_current_phase);
 
             // this will short circuit and not call cycle_phase if !phase_completed
-            if phase_completed && !self.cycle_phase(cycle_phase_event_writer) {
-                self.init_phase(change_bg_music_event_writer);
+            if phase_completed {
+                info!("Phase completed");
+                if !self.cycle_phase(cycle_phase_event_writer) {
+                    self.init_phase(change_bg_music_event_writer);
+                }
             }
 
             false

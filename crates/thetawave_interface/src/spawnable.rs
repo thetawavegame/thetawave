@@ -198,10 +198,13 @@ pub enum TextEffectType {
     ConsumableCollected(ConsumableType),
 }
 
+/// Sends information about destroyed mobs
+/// Includes information that is lost when the entity is destroyed
 #[derive(Event)]
 pub struct MobDestroyedEvent {
     pub mob_type: MobType,
     pub entity: Entity,
+    pub is_boss: bool,
 }
 
 #[derive(Event)]
