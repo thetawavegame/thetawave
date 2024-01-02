@@ -193,7 +193,7 @@ mod test {
     use crate::collision::SortedCollisionEvent;
     use crate::game::counters::plugin::CountingMetricsPlugin;
     use crate::player::{CharactersResource, PlayerPlugin};
-    use crate::spawnable::{FireWeaponEvent, InitialMotion};
+    use crate::spawnable::FireWeaponEvent;
     use bevy::input::InputPlugin;
     use bevy::math::Vec2;
     use bevy::prelude::{App, Component, Events};

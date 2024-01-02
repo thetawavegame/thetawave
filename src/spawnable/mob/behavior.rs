@@ -11,13 +11,13 @@ use thetawave_interface::{
     },
 };
 
+use super::{BossComponent, MobComponent};
 use crate::{
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     loot::LootDropsResource,
     spawnable::{InitialMotion, SpawnConsumableEvent, SpawnEffectEvent},
 };
-use super::{BossComponent, MobComponent};
 
 /// Types of behaviors that can be performed by mobs
 #[derive(Deserialize, Clone)]
