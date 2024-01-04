@@ -35,31 +35,31 @@ console_error_panic_hook = "0.1.7"
 version = "0.12"
 default-features = false
 features = [
-  # Non-default/'extra' features features
-  "serialize",
-  # Part of bevy's default features
-  "animation",
-  "bevy_asset",
-  "bevy_audio",
-  "bevy_gilrs",
-  "bevy_scene",
-  "bevy_winit",
-  "bevy_core_pipeline",
-  "bevy_pbr",
-  "bevy_gltf",
-  "bevy_render",
-  "bevy_sprite",
-  "bevy_text",
-  "bevy_ui",
-  "hdr",
-  "ktx2",
-  "tonemapping_luts",
-  "multi-threaded",
-  "png",
-  "x11",
-  "bevy_gizmos",
-  "webgl2",
-  "zstd",
+    # Non-default/'extra' features features
+    "serialize",
+    # Part of bevy's default features
+    "animation",
+    "bevy_asset",
+    "bevy_audio",
+    "bevy_gilrs",
+    "bevy_scene",
+    "bevy_winit",
+    "bevy_core_pipeline",
+    "bevy_pbr",
+    "bevy_gltf",
+    "bevy_render",
+    "bevy_sprite",
+    "bevy_text",
+    "bevy_ui",
+    "hdr",
+    "ktx2",
+    "tonemapping_luts",
+    "multi-threaded",
+    "png",
+    "x11",
+    "bevy_gizmos",
+    "webgl2",
+    "zstd",
 ]
 
 [dev-dependencies]

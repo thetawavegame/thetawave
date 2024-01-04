@@ -26,6 +26,7 @@ mod spawnable;
 mod states;
 mod tools;
 mod ui;
+mod weapon;
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone, SystemSet)]
 pub enum GameEnterSet {
@@ -185,6 +186,7 @@ impl PluginGroup for ThetawaveGamePlugins {
             .add(states::StatesPlugin)
             .add(game::counters::plugin::CountingMetricsPlugin)
             .add(misc::HealthPlugin)
+            .add(weapon::WeaponPlugin)
             .add(
                 RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(PHYSICS_SCALE)
                     .in_fixed_schedule(),

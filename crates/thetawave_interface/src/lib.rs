@@ -9,3 +9,4 @@ pub mod player;
 pub mod run;
 pub mod spawnable;
 pub mod states;
+pub mod weapon;

@@ -1,5 +1,6 @@
 /// Expose all of the mutations for the within-game metric counters via a bevy plugin.
-use crate::{collision::SortedCollisionEvent, spawnable::SpawnProjectileEvent};
+use crate::collision::SortedCollisionEvent;
+use crate::spawnable::FireWeaponEvent;
 use bevy::prelude::{debug, App, Entity, EventReader, OnEnter, Plugin, Query, ResMut, Update};
 
 use std::collections::HashMap;
@@ -120,7 +121,7 @@ fn inc_in_memory_projectile_hits_counter_system(
 
 fn count_shots_fired_by_player_1_system(
     mut current_game_user_stats: ResMut<UserStatsByPlayerForCurrentGameCache>,
-    mut shots_fired_event_reader: EventReader<SpawnProjectileEvent>,
+    mut fire_weapon_event_reader: EventReader<FireWeaponEvent>,
     query: Query<(Entity, &PlayerComponent)>,
 ) {
     let maybe_player_1_entity_id = query
@@ -128,9 +129,9 @@ fn count_shots_fired_by_player_1_system(
         .find(|(_, pc)| pc.player_index == 0)
         .map(|(x, _)| x);
     let n_p1_shots_fired = match maybe_player_1_entity_id {
-        Some(player_1) => shots_fired_event_reader
+        Some(player_1) => fire_weapon_event_reader
             .read()
-            .filter(|x| x.source == player_1)
+            .filter(|x| x.source_entity == player_1)
             .count(),
         None => 0,
     };
@@ -187,24 +188,27 @@ fn roll_current_game_counters_into_completed_game_metrics(
 
 #[cfg(test)]
 mod test {
-    use std::f32::consts::FRAC_PI_2;
+    use std::f32::consts::{FRAC_PI_2, PI};
 
     use crate::collision::SortedCollisionEvent;
     use crate::game::counters::plugin::CountingMetricsPlugin;
     use crate::player::{CharactersResource, PlayerPlugin};
-    use crate::spawnable::SpawnProjectileEvent;
+    use crate::spawnable::FireWeaponEvent;
     use bevy::input::InputPlugin;
+    use bevy::math::Vec2;
     use bevy::prelude::{App, Component, Events};
     use bevy::MinimalPlugins;
+    use thetawave_interface::audio::SoundEffectType;
     use thetawave_interface::character::{Character, CharacterType};
     use thetawave_interface::game::historical_metrics::{
         MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
     };
     use thetawave_interface::player::PlayerComponent;
     use thetawave_interface::spawnable::{
-        EnemyMobType, Faction, MobDestroyedEvent, MobType, ProjectileType,
+        EnemyMobType, Faction, MobDestroyedEvent, MobType, ProjectileType, SpawnPosition,
     };
     use thetawave_interface::states::{AppStates, GameStates};
+    use thetawave_interface::weapon::WeaponProjectileData;
 
     fn base_app_required_for_counting_metrics() -> App {
         let mut app = App::new();
@@ -212,7 +216,7 @@ mod test {
             .add_state::<GameStates>()
             .add_event::<SortedCollisionEvent>()
             .add_event::<MobDestroyedEvent>()
-            .add_event::<SpawnProjectileEvent>()
+            .add_event::<FireWeaponEvent>()
             .insert_resource(UserStatsByPlayerForCurrentGameCache::default())
             .add_plugins((
                 InputPlugin,
@@ -262,15 +266,24 @@ mod test {
         let player_1: PlayerComponent = PlayerComponent::from(&player_1_character);
 
         let player_1_entity = app.world.spawn(player_1.clone());
-        let player_1_projectile_event = SpawnProjectileEvent {
-            projectile_type: ProjectileType::Bullet(Faction::Ally),
-            damage: 0,
-            despawn_time: 0.0,
-            source: player_1_entity.id(),
-            transform: Default::default(),
+        let player_1_projectile_event = FireWeaponEvent {
+            weapon_projectile_data: WeaponProjectileData {
+                ammunition: ProjectileType::Bullet(Faction::Ally),
+                damage: 0,
+                position: SpawnPosition::Local(Vec2::new(0.0, 40.0)),
+                speed: 1.0,
+                direction: FRAC_PI_2,
+                despawn_time: 0.0,
+                count: 1,
+                spread_weights: Vec2::new(0.5, 1.0),
+                max_spread_arc: FRAC_PI_2,
+                projectile_gap: PI,
+                size: 1.0,
+                sound: SoundEffectType::PlayerFireBlast,
+            },
+            source_transform: Default::default(),
+            source_entity: player_1_entity.id(),
             initial_motion: Default::default(),
-            projectile_count: 1,
-            projectile_direction: FRAC_PI_2,
         };
         app.world.send_event(player_1_projectile_event.clone());
         app.update();

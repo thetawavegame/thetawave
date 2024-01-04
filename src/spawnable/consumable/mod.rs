@@ -11,7 +11,7 @@ use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::ConsumableAssets,
     game::GameParametersResource,
-    spawnable::{InitialMotion, SpawnableBehavior, SpawnableComponent},
+    spawnable::{SpawnableBehavior, SpawnableComponent},
 };
 
 mod behavior;
@@ -19,6 +19,8 @@ mod behavior;
 pub use self::behavior::{consumable_execute_behavior_system, ConsumableBehavior};
 
 use thetawave_interface::spawnable::AttractToClosestPlayerComponent;
+
+use super::InitialMotion;
 
 /// All the different consumable effects
 #[derive(Deserialize, Clone)]
