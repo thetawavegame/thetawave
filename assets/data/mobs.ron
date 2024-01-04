@@ -367,12 +367,10 @@
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
 			DieAtZeroHealth,
-			PeriodicFire("blast"),
 		],
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
 		speed: (0.0, 85.0),
-		attack_damage: 10,
 		collision_damage: 8,
 		defense_interaction: Some(Damage(8)),
 		colliders: [
@@ -396,30 +394,26 @@
 				frame_duration: 0.15,
 			),	
 		)),
-		projectile_spawners: {
-			"bullet": [
-				(
-					projectile_type: Bullet(Enemy),
-					period: 3.0,
-					position: Local((0.0, -40.0)),
-					despawn_time: 2.5,
-					velocity: 200.0,
-					direction: 4.71239,
-					count: 1,
-				)
-			],
-			"blast": [
-				(
-					projectile_type: Blast(Enemy),
-					period: 3.0,
-					position: Local((0.0, -40.0)),
-					despawn_time: 2.5,
-					velocity: 200.0,
-					direction: 4.71239,
-					count: 2,
-				)
-			]
-		}
+		weapon: Some((
+			reload_time: 3.0,
+			initial_time: 1.0,
+			fire_mode: Automatic,
+			capacity: 2,
+			projectile_data: (
+				ammunition: Blast(Enemy),
+				damage: 10,
+				position: Local((0.0, -40.0)),
+				speed: 400.0,
+				direction: 4.71239,
+				despawn_time: 2.5,
+				count: 2,
+				spread_weights: (0.5, 1.0),
+				max_spread_arc: 1.57080,
+				projectile_gap: 3.14159,
+				size: 1.0,
+				sound: EnemyFireBlast,
+			),
+		)),
 	),
 	Enemy(Shelly): (
 		mob_type: Enemy(Shelly),
@@ -428,12 +422,10 @@
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
 			DieAtZeroHealth,
-			PeriodicFire("bullet"),
 		],
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
 		speed: (0.0, 75.0),
-		attack_damage: 10,
 		collision_damage: 8,
 		defense_interaction: Some(Damage(8)),
 		colliders: [
@@ -450,19 +442,26 @@
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
 		),
-		projectile_spawners: {
-			"bullet": [
-				(
-					projectile_type: Bullet(Enemy),
-					period: 3.0,
-					position: Local((0.0, -40.0)),
-					despawn_time: 2.5,
-					velocity: 200.0,
-					direction: 4.71239,
-					count: 1,
-				)
-			],
-		}
+		weapon: Some((
+			reload_time: 3.0,
+			initial_time: 1.0,
+			fire_mode: Automatic,
+			capacity: 1,
+			projectile_data: (
+				ammunition: Bullet(Enemy),
+				damage: 10,
+				position: Local((0.0, -40.0)),
+				speed: 400.0,
+				direction: 4.71239,
+				despawn_time: 2.0,
+				count: 1,
+				spread_weights: (0.5, 1.0),
+				max_spread_arc: 1.57080,
+				projectile_gap: 3.14159,
+				size: 1.0,
+				sound: EnemyFireBlast,
+			),
+		)),
 	),
 	Ally(Hauler3): (
 		mob_type: Ally(Hauler3),
@@ -664,12 +663,10 @@
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
 			DieAtZeroHealth,
-			PeriodicFire("blast"),
 		],
 		acceleration: (2.0, 2.0),
 		deceleration: (2.0, 2.0),
 		speed: (75.0, 75.0),
-		attack_damage: 8,
 		collision_damage: 10,
 		defense_interaction: Some(Damage(12)),
 		colliders: [
@@ -693,19 +690,26 @@
 				frame_duration: 0.15,
 			),
 		)),
-		projectile_spawners: {
-			"blast": [
-				(
-					projectile_type: Blast(Enemy),
-					period: 3.0,
-					position: Local((0.0, -40.0)),
-					despawn_time: 2.5,
-					velocity: 200.0,
-					direction: 4.71239,
-					count: 1,
-				)
-			]
-		}
+		weapon: Some((
+			reload_time: 3.0,
+			initial_time: 1.0,
+			fire_mode: Automatic,
+			capacity: 1,
+			projectile_data: (
+				ammunition: Blast(Enemy),
+				damage: 8,
+				position: Local((0.0, -40.0)),
+				speed: 400.0,
+				direction: 4.71239,
+				despawn_time: 1.0,
+				count: 1,
+				spread_weights: (0.5, 1.0),
+				max_spread_arc: 1.57080,
+				projectile_gap: 3.14159,
+				size: 1.0,
+				sound: EnemyFireBlast,
+			),
+		)),
 	),
 	Enemy(StraferLeft): (
 		mob_type: Enemy(StraferLeft),
@@ -714,12 +718,10 @@
 			ReceiveDamageOnImpact,
 			DealDamageToPlayerOnImpact,
 			DieAtZeroHealth,
-			PeriodicFire("blast"),
 		],
 		acceleration: (2.0, 2.0),
 		deceleration: (2.0, 2.0),
 		speed: (75.0, 75.0),
-		attack_damage: 8,
 		collision_damage: 10,
 		defense_interaction: Some(Damage(12)),
 		colliders: [
@@ -743,19 +745,26 @@
 				frame_duration: 0.15,
 			),
 		)),
-		projectile_spawners: {
-			"blast": [
-				(
-					projectile_type: Blast(Enemy),
-					period: 3.0,
-					position: Local((0.0, -40.0)),
-					despawn_time: 2.5,
-					velocity: 200.0,
-					count: 1,
-					direction: 4.71239,
-				)
-			]
-		}
+		weapon: Some((
+			reload_time: 3.0,
+			initial_time: 1.0,
+			fire_mode: Automatic,
+			capacity: 1,
+			projectile_data: (
+				ammunition: Blast(Enemy),
+				damage: 8,
+				position: Local((0.0, -40.0)),
+				speed: 400.0,
+				direction: 4.71239,
+				despawn_time: 1.0,
+				count: 1,
+				spread_weights: (0.5, 1.0),
+				max_spread_arc: 1.57080,
+				projectile_gap: 3.14159,
+				size: 1.0,
+				sound: EnemyFireBlast,
+			),
+		)),
 	),
 	Neutral(MoneyAsteroid): (
 		mob_type: Neutral(MoneyAsteroid),

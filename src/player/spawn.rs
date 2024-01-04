@@ -3,6 +3,7 @@ use bevy_rapier2d::prelude::*;
 use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
 use thetawave_interface::input::{InputsResource, PlayerAction};
 use thetawave_interface::player::InputRestrictionsAtSpawn;
+use thetawave_interface::weapon::WeaponComponent;
 use thetawave_interface::{
     health::HealthComponent,
     player::{PlayerComponent, PlayerInput},
@@ -94,6 +95,7 @@ pub fn spawn_players_system(
                 .insert(GameCleanup)
                 .insert(ActiveEvents::COLLISION_EVENTS)
                 .insert(ExternalImpulse::default())
+                .insert(WeaponComponent::from(character))
                 .insert(Name::new("Player"));
 
             // add colored outline to player if multiplayer
