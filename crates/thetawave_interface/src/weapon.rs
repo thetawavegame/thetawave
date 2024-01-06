@@ -16,6 +16,22 @@ pub enum FireMode {
     Manual,
 }
 
+#[derive(Deserialize, Clone)]
+pub enum SpreadPattern {
+    Arc(ArcPatternData),
+    Random,
+}
+
+#[derive(Deserialize, Clone)]
+pub struct ArcPatternData {
+    /// Determines the shape of the arc using (x, y) velocity multipliers
+    pub spread_weights: Vec2,
+    /// Maximum spead angle of fired projectiles
+    pub max_spread: f32,
+    /// Target gap between fired projectiles
+    pub projectile_gap: f32,
+}
+
 /// Stores data about about a Weapon using minimal defining characteristics
 #[derive(Deserialize, Clone)]
 pub struct WeaponData {
@@ -47,16 +63,53 @@ pub struct WeaponProjectileData {
     pub despawn_time: f32,
     /// Number of projectiles spawned at once
     pub count: usize,
-    /// Determines the shape of the arc using (x, y) velocity multipliers
-    pub spread_weights: Vec2,
-    /// Maximum spead angle of fired projectiles
-    pub max_spread_arc: f32,
-    /// Target gap between fired projectiles
-    pub projectile_gap: f32,
+    /// How projectiles are organized when they spawn
+    pub spread_pattern: SpreadPattern,
     /// Size multiplier of the projectile
     pub size: f32,
     /// Sound that the weapon makes when fired
     pub sound: SoundEffectType,
+}
+
+impl WeaponProjectileData {
+    pub fn get_linvels(&self, max_projectiles: f32) -> Vec<Vec2> {
+        match &self.spread_pattern {
+            SpreadPattern::Arc(arc_pattern) => {
+                // Get the segment of a spread angle
+                let spread_angle_segment = {
+                    // percentage of the game's maximum amount of projectiles being spawned
+                    let total_projectiles_percent =
+                        (self.count as f32 - 1.) / (max_projectiles - 1.);
+                    // indicates the angle between the first and last projectile
+                    let spread_arc = arc_pattern
+                        .max_spread
+                        .min(total_projectiles_percent * arc_pattern.projectile_gap);
+                    // indicates the angle between each projectile
+                    spread_arc / (self.count as f32 - 1.).max(1.)
+                };
+
+                let mut linvels = vec![];
+
+                for p in 0..self.count {
+                    // Calculate the angle for the current projectile.
+                    // The first projectile is spread_angle_segment/2 radians to the left of the direction,
+                    // and the last projectile is spread_angle_segment/2 radians to the right.
+                    let angle_offset =
+                        (p as f32 - (self.count as f32 - 1.) / 2.) * spread_angle_segment;
+                    let projectile_angle = self.direction + angle_offset;
+
+                    linvels.push(
+                        Vec2::from_angle(projectile_angle)
+                            * self.speed
+                            * arc_pattern.spread_weights,
+                    );
+                }
+
+                linvels
+            }
+            SpreadPattern::Random => todo!(),
+        }
+    }
 }
 
 /// Describes how projectiles are spawned

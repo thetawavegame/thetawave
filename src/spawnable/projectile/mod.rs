@@ -98,16 +98,7 @@ pub fn spawn_projectile_system(
         );
     }
 }
-/// The angle in between each fired projectile for the shot. Evenly space `weapon.count` projectiles in an arc
-fn get_spread_angle_segment(weapon: &WeaponProjectileData, max_projectiles: f32) -> f32 {
-    let total_projectiles_percent = (weapon.count as f32 - 1.) / (max_projectiles - 1.);
-    // indicates the angle between the first and last projectile
-    let spread_arc = weapon
-        .max_spread_arc
-        .min(total_projectiles_percent * weapon.projectile_gap);
-    // indicates the angle between each projectile
-    spread_arc / (weapon.count as f32 - 1.).max(1.)
-}
+
 pub fn spawn_projectile_from_weapon(
     commands: &mut Commands,
     sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
@@ -119,17 +110,21 @@ pub fn spawn_projectile_from_weapon(
     projectile_assets: &ProjectileAssets,
     game_parameters: &GameParametersResource,
 ) {
+    // Play the sound effect for the projectiles firing
     sound_effect_event_writer.send(PlaySoundEffectEvent {
         sound_effect_type: weapon_projectile_data.sound.clone(),
     });
 
+    // Get data for the type of ammunition being spawned
     let projectile_data = &projectile_resource.projectiles[&weapon_projectile_data.ammunition];
 
+    // Get the behaviors for the type of ammunition being spawned and add a despawn behavior
     let mut projectile_behaviors = projectile_data.projectile_behaviors.clone();
     projectile_behaviors.push(ProjectileBehavior::TimedDespawn {
         despawn_time: weapon_projectile_data.despawn_time,
     });
 
+    // Create the transform for spawned projectiles
     let projectile_transform = Transform {
         translation: match weapon_projectile_data.position {
             thetawave_interface::spawnable::SpawnPosition::Global(pos) => pos,
@@ -142,28 +137,18 @@ pub fn spawn_projectile_from_weapon(
         rotation: Quat::from_rotation_z(weapon_projectile_data.direction),
     };
 
-    let spread_angle_segment = get_spread_angle_segment(
-        &weapon_projectile_data,
-        game_parameters.max_player_projectiles,
-    );
-
+    // Set the correct collider group for the ammunition based on the faction
     let projectile_colider_group =
         get_projectile_collider_group(weapon_projectile_data.ammunition.get_faction());
 
-    for p in 0..weapon_projectile_data.count {
+    // Get a vec of linvels to create the spread pattern
+    let spread_linvels = weapon_projectile_data.get_linvels(game_parameters.max_player_projectiles);
+
+    for linvel in spread_linvels {
         let new_initial_motion =
             if let Some(mut initial_motion_linvel) = initial_motion.clone().linvel {
-                // Calculate the angle for the current projectile.
-                // The first projectile is spread_angle_segment/2 radians to the left of the direction,
-                // and the last projectile is spread_angle_segment/2 radians to the right.
-                let angle_offset = (p as f32 - (weapon_projectile_data.count as f32 - 1.) / 2.)
-                    * spread_angle_segment;
-                let projectile_angle = weapon_projectile_data.direction + angle_offset;
-
                 // Convert the angle to a velocity vector
-                initial_motion_linvel += Vec2::from_angle(projectile_angle)
-                    * weapon_projectile_data.speed
-                    * weapon_projectile_data.spread_weights;
+                initial_motion_linvel += linvel;
 
                 InitialMotion {
                     linvel: Some(initial_motion_linvel),
