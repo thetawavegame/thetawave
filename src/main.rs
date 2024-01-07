@@ -159,6 +159,10 @@ fn build_app<P1: PluginGroup, P2: PluginGroup>(base_plugins: P1, game_plugins: P
 
 // setup rapier
 fn setup_physics(mut rapier_config: ResMut<RapierConfiguration>) {
+    rapier_config.timestep_mode = TimestepMode::Fixed {
+        dt: 1.0 / 60.0,
+        substeps: 1,
+    };
     rapier_config.physics_pipeline_active = true;
     rapier_config.query_pipeline_active = true;
     rapier_config.gravity = Vec2::ZERO;
