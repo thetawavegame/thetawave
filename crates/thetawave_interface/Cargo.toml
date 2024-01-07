@@ -17,3 +17,4 @@ leafwing-input-manager = { workspace = true }
 bevy_input = { workspace = true }
 bevy_time = { workspace = true }
 bevy_math = { workspace = true }
+rand = { workspace = true }

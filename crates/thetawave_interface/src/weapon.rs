@@ -1,6 +1,7 @@
 use bevy_ecs::component::Component;
 use bevy_math::Vec2;
 use bevy_time::{Timer, TimerMode};
+use rand::{thread_rng, Rng};
 use serde::Deserialize;
 
 use crate::{
@@ -8,7 +9,7 @@ use crate::{
     spawnable::{ProjectileType, SpawnPosition},
 };
 
-use std::time::Duration;
+use std::{ops::Range, time::Duration};
 
 #[derive(Deserialize, Clone)]
 pub enum FireMode {
@@ -19,7 +20,7 @@ pub enum FireMode {
 #[derive(Deserialize, Clone)]
 pub enum SpreadPattern {
     Arc(ArcPatternData),
-    Random,
+    Random(RandomPatternData),
 }
 
 #[derive(Deserialize, Clone)]
@@ -30,6 +31,12 @@ pub struct ArcPatternData {
     pub max_spread: f32,
     /// Target gap between fired projectiles
     pub projectile_gap: f32,
+}
+
+#[derive(Deserialize, Clone)]
+pub struct RandomPatternData {
+    pub speed_range: Range<f32>,
+    pub angle_range: Range<f32>,
 }
 
 /// Stores data about about a Weapon using minimal defining characteristics
@@ -107,7 +114,21 @@ impl WeaponProjectileData {
 
                 linvels
             }
-            SpreadPattern::Random => todo!(),
+            SpreadPattern::Random(random_pattern) => {
+                let mut linvels = vec![];
+
+                for _ in 0..self.count {
+                    linvels.push(
+                        // multiply the speed the projectile by a random angle and velocity multiplier
+                        Vec2::from_angle(
+                            thread_rng().gen_range(random_pattern.angle_range.clone()),
+                        ) * self.speed
+                            * thread_rng().gen_range(random_pattern.speed_range.clone()),
+                    );
+                }
+
+                linvels
+            }
         }
     }
 }

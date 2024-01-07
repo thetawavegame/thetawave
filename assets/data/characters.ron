@@ -68,10 +68,15 @@
 					direction: 1.57080,
 					despawn_time: 0.4,
 					count: 2,
-					spread_pattern: Arc((
-						spread_weights: (0.8, 1.0),
-						max_spread: 1.57080,
-						projectile_gap: 3.14159,
+					spread_pattern: Random((
+						speed_range: (
+							start: 0.75,
+							end: 1.25,
+						),
+						angle_range: (
+							start: 1.37445,
+							end: 1.76715,
+						),
 					)),
 					size: 1.0,
 					sound: PlayerFireBlast,
