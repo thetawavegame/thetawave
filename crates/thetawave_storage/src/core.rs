@@ -10,6 +10,7 @@ pub(super) const THETAWAVE_DB_PATH_ENVVAR: &'static str = "THETAWAVE_DB_PATH";
 const THETAWAVE_DB_FILE: &'static str = "thetawave.sqlite";
 pub(super) const USERSTAT: &'static str = "UserStat";
 pub(super) const ENEMY_KILL_HISTORY_TABLE_NAME: &'static str = "EnemiesKilled";
+pub(super) const OPTIONS_TABLE_NAME: &'static str = "Options";
 
 #[derive(Error, Debug, derive_more::From)]
 pub(super) enum OurDBError {
@@ -56,9 +57,16 @@ pub(super) fn setup_db(conn: Connection) -> rusqlite::Result<()> {
         PRIMARY KEY (userId, enemyMobType)
     )"
     );
+
+    let create_options_table_sql = format!(
+        "CREATE TABLE IF NOT EXISTS {OPTIONS_TABLE_NAME} (
+        bloom BOOLEAN NOT NULL DEFAULT TRUE
+    )"
+    );
     conn.execute(&create_user_stats_sql, []).map(|_| ())?;
     conn.execute(&create_enemies_killed_table_sql, [])
         .map(|_| ())?;
+    conn.execute(&create_options_table_sql, []).map(|_| ())?;
     info!("Created sqlite db");
     Ok(())
 }
