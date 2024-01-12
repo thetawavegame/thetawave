@@ -187,10 +187,8 @@ fn fade_out_despawn_after_animation_effect_behavior_system(
     time: Res<Time>,
     texture_atlases: Res<Assets<TextureAtlas>>,
 ) {
-    let mut animation_completed_events = vec![];
-    for event in animation_completed_event_reader.read() {
-        animation_completed_events.push(event);
-    }
+    let animation_completed_events: Vec<&AnimationCompletedEvent> =
+        animation_completed_event_reader.read().collect();
 
     for (entity, mut effect_component, mut sprite, animation, texture_atlas_handle) in
         effect_query.iter_mut()
