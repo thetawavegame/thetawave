@@ -61,7 +61,7 @@ pub(super) fn setup_db(conn: Connection) -> rusqlite::Result<()> {
     let create_options_table_sql = format!(
         "CREATE TABLE IF NOT EXISTS {OPTIONS_TABLE_NAME} (
         optionsProfileId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-        bloom BOOLEAN NOT NULL DEFAULT TRUE,
+        bloomEnabled BOOLEAN NOT NULL DEFAULT TRUE,
         bloomIntensity REAL NOT NULL DEFAULT 1.0
     )"
     );
