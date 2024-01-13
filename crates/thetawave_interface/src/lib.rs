@@ -1,3 +1,4 @@
+pub mod animation;
 pub mod audio;
 pub mod character;
 pub mod character_selection;
