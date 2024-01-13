@@ -60,13 +60,18 @@ pub(super) fn setup_db(conn: Connection) -> rusqlite::Result<()> {
 
     let create_options_table_sql = format!(
         "CREATE TABLE IF NOT EXISTS {OPTIONS_TABLE_NAME} (
+        optionsProfileId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
         bloom BOOLEAN NOT NULL DEFAULT TRUE
     )"
     );
+
+    let create_default_options = format!("INSERT INTO {OPTIONS_TABLE_NAME} DEFAULT VALUES");
+
     conn.execute(&create_user_stats_sql, []).map(|_| ())?;
     conn.execute(&create_enemies_killed_table_sql, [])
         .map(|_| ())?;
     conn.execute(&create_options_table_sql, []).map(|_| ())?;
+    conn.execute(&create_default_options, []).map(|_| ())?;
     info!("Created sqlite db");
     Ok(())
 }
