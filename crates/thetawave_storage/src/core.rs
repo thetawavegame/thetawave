@@ -1,4 +1,4 @@
-use bevy::prelude::info;
+use bevy::log::info;
 use directories::ProjectDirs;
 use rusqlite;
 use rusqlite::Connection;
