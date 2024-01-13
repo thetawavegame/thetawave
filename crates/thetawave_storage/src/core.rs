@@ -1,7 +1,7 @@
 use bevy::log::info;
 use directories::ProjectDirs;
-use rusqlite;
 use rusqlite::Connection;
+use rusqlite::{self, OptionalExtension};
 use std::env::var_os;
 use std::ffi::OsStr;
 use std::path::PathBuf;
@@ -61,17 +61,23 @@ pub(super) fn setup_db(conn: Connection) -> rusqlite::Result<()> {
     let create_options_table_sql = format!(
         "CREATE TABLE IF NOT EXISTS {OPTIONS_TABLE_NAME} (
         optionsProfileId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-        bloom BOOLEAN NOT NULL DEFAULT TRUE
+        bloom BOOLEAN NOT NULL DEFAULT TRUE,
+        bloomIntensity REAL NOT NULL DEFAULT 1.0
     )"
     );
-
-    let create_default_options = format!("INSERT INTO {OPTIONS_TABLE_NAME} DEFAULT VALUES");
 
     conn.execute(&create_user_stats_sql, []).map(|_| ())?;
     conn.execute(&create_enemies_killed_table_sql, [])
         .map(|_| ())?;
     conn.execute(&create_options_table_sql, []).map(|_| ())?;
-    conn.execute(&create_default_options, []).map(|_| ())?;
+
+    // insert a default options row if it is not in the db
+    let default_options_row_exists: Option<u32> = conn
+        .query_row("SELECT 1 FROM Options LIMIT 1", [], |row| row.get(0))
+        .optional()?;
+    if default_options_row_exists.is_none() {
+        conn.execute("INSERT INTO Options DEFAULT VALUES", [])?;
+    }
     info!("Created sqlite db");
     Ok(())
 }
