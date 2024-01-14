@@ -25,6 +25,7 @@ use crate::collision::{
 };
 use thetawave_interface::{
     audio::CollisionSoundType,
+    game::options::GameOptions,
     health::HealthComponent,
     objective::DefenseInteraction,
     spawnable::{
@@ -289,6 +290,7 @@ pub fn spawn_mob_system(
     mob_segments_resource: Res<MobSegmentsResource>,
     mob_assets: Res<MobAssets>,
     game_parameters: Res<GameParametersResource>,
+    game_options: Res<GameOptions>,
 ) {
     for event in event_reader.read() {
         spawn_mob(
@@ -301,6 +303,7 @@ pub fn spawn_mob_system(
             event.boss,
             &mut commands,
             &game_parameters,
+            &game_options,
         );
     }
 }
@@ -336,6 +339,7 @@ pub fn spawn_mob(
     boss: bool,
     commands: &mut Commands,
     game_parameters: &GameParametersResource,
+    game_options: &GameOptions,
 ) {
     // Get data from mob resource
     let mob_data = &mob_resource.mobs[mob_type];
@@ -402,7 +406,8 @@ pub fn spawn_mob(
                     texture_atlas: mob_assets.get_thruster_asset(mob_type).unwrap(),
                     transform: Transform::from_xyz(0.0, thruster.y_offset, -1.0),
                     sprite: TextureAtlasSprite {
-                        color: mob_assets.get_thruster_color(mob_type),
+                        color: mob_assets
+                            .get_thruster_color(mob_type, game_options.bloom_intensity),
                         ..Default::default()
                     },
                     ..Default::default()

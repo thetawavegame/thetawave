@@ -3,6 +3,7 @@ use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
 use std::collections::HashMap;
 use thetawave_interface::{
+    game::options::GameOptions,
     spawnable::{ConsumableType, SpawnableType},
     states::GameCleanup,
 };
@@ -58,6 +59,7 @@ pub fn spawn_consumable_system(
     consumables_resource: Res<ConsumableResource>,
     consumable_assets: Res<ConsumableAssets>,
     game_parameters: Res<GameParametersResource>,
+    game_options: Res<GameOptions>,
 ) {
     for event in event_reader.read() {
         spawn_consumable(
@@ -67,6 +69,7 @@ pub fn spawn_consumable_system(
             event.position,
             &mut commands,
             &game_parameters,
+            &game_options,
         );
     }
 }
@@ -113,6 +116,7 @@ pub fn spawn_consumable(
     position: Vec2,
     commands: &mut Commands,
     game_parameters: &GameParametersResource,
+    game_options: &GameOptions,
 ) {
     //Get data from the consumable resource
     let consumable_data = &consumable_resource.consumables[consumable_type];
@@ -136,7 +140,7 @@ pub fn spawn_consumable(
         .insert(SpriteSheetBundle {
             texture_atlas: consumable_assets.get_asset(consumable_type),
             sprite: TextureAtlasSprite {
-                color: consumable_assets.get_color(consumable_type),
+                color: consumable_assets.get_color(consumable_type, game_options.bloom_intensity),
                 ..Default::default()
             },
             ..Default::default()
