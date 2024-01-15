@@ -218,6 +218,7 @@ mod test {
     use bevy::MinimalPlugins;
     use bevy_kira_audio::AudioPlugin;
     use thetawave_interface::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent};
+    use thetawave_interface::game::options::GameOptions;
     use thetawave_interface::states::AppStates;
 
     #[test]
@@ -266,6 +267,8 @@ mod test {
         let mut app = build_app(base_plugins, game_plugins);
         app.add_event::<ChangeBackgroundMusicEvent>()
             .add_event::<PlaySoundEffectEvent>();
+
+        app.insert_resource(GameOptions::default());
         app
     }
 }

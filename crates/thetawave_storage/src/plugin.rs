@@ -118,6 +118,7 @@ mod test {
         MobKillsByPlayerForCompletedGames, MobsKilledBy1PlayerCacheT, MobsKilledByPlayerCacheT,
         UserStat, UserStatsByPlayerForCompletedGamesCache, DEFAULT_USER_ID,
     };
+    use thetawave_interface::game::options::GameOptions;
     use thetawave_interface::spawnable::EnemyMobType;
     use thetawave_interface::states::AppStates;
 
@@ -215,7 +216,8 @@ mod test {
                 level: Level::DEBUG,
             })
             .insert_resource(MobKillsByPlayerForCompletedGames::default())
-            .insert_resource(UserStatsByPlayerForCompletedGamesCache::default());
+            .insert_resource(UserStatsByPlayerForCompletedGamesCache::default())
+            .insert_resource(GameOptions::default());
         app
     }
     fn _test_can_flush_caches_to_db() {
