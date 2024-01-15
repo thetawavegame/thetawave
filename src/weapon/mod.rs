@@ -86,18 +86,19 @@ pub fn update_weapon_system(
 
 pub(crate) trait WeaponProjectileInitialVelocitiesExt {
     /// The initial velocities of `n` projectiles using existing/'partially evaluated' params.
-    /// Could be evenly spaced, or something else based on the struct params.
-    fn get_linvels(&self, max_projectiles: f32) -> Vec<Vec2>;
+    /// Could be evenly spaced, or something else based on the struct params. max_projectiles
+    /// should be greater than 0.
+    fn get_linvels(&self, max_projectiles: u16) -> Vec<Vec2>;
 }
 impl WeaponProjectileInitialVelocitiesExt for WeaponProjectileData {
-    fn get_linvels(&self, max_projectiles: f32) -> Vec<Vec2> {
+    fn get_linvels(&self, max_projectiles: u16) -> Vec<Vec2> {
         match &self.spread_pattern {
             SpreadPattern::Arc(arc_pattern) => {
                 // Get the segment of a spread angle
                 let spread_angle_segment = {
                     // percentage of the game's maximum amount of projectiles being spawned
                     let total_projectiles_percent =
-                        (self.count as f32 - 1.) / (max_projectiles - 1.);
+                        (self.count as f32 - 1.) / (max_projectiles as f32 - 1.);
                     // indicates the angle between the first and last projectile
                     let spread_arc = arc_pattern
                         .max_spread
