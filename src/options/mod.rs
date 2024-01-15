@@ -53,7 +53,7 @@ impl GameInitCLIOptions {
     }
 }
 
-pub fn apply_game_options(
+pub fn apply_game_options_system(
     mut game_options: ResMut<GameOptions>,
     mut camera_2d_query: Query<
         (&mut Camera, &mut Tonemapping),
@@ -64,26 +64,23 @@ pub fn apply_game_options(
         (With<Camera3d>, Without<Camera2d>),
     >,
 ) {
-    let (mut camera_2d, mut tonemapping_2d) = match camera_2d_query.get_single_mut() {
-        Ok(camera) => camera,
-        Err(_) => panic!("Didn't find exactly one 2D camera to apply bloom settings to."),
-    };
+    if let (Ok((mut camera_2d, mut tonemapping_2d)), Ok((mut camera_3d, mut tonemapping_3d))) = (
+        camera_2d_query.get_single_mut(),
+        camera_3d_query.get_single_mut(),
+    ) {
+        camera_2d.hdr = game_options.bloom_enabled;
+        camera_3d.hdr = game_options.bloom_enabled;
 
-    let (mut camera_3d, mut tonemapping_3d) = match camera_3d_query.get_single_mut() {
-        Ok(camera) => camera,
-        Err(_) => panic!("Didn't find exactly one 3D camera to apply bloom settings to."),
-    };
-
-    camera_2d.hdr = game_options.bloom_enabled;
-    camera_3d.hdr = game_options.bloom_enabled;
-
-    if game_options.bloom_enabled {
-        *tonemapping_2d = Tonemapping::TonyMcMapface;
-        *tonemapping_3d = Tonemapping::TonyMcMapface;
+        if game_options.bloom_enabled {
+            *tonemapping_2d = Tonemapping::TonyMcMapface;
+            *tonemapping_3d = Tonemapping::TonyMcMapface;
+        } else {
+            *tonemapping_2d = Tonemapping::None;
+            *tonemapping_3d = Tonemapping::None;
+            game_options.bloom_intensity = 0.0;
+        }
     } else {
-        *tonemapping_2d = Tonemapping::None;
-        *tonemapping_3d = Tonemapping::None;
-        game_options.bloom_intensity = 0.0;
+        error!("Failed to get singleton 2d and 3d cameras to apply game opts");
     }
 }
 
@@ -118,7 +115,10 @@ impl Plugin for OptionsPlugin {
             toggle_zoom_system.run_if(in_state(states::AppStates::Game)),
         );
 
-        app.add_systems(OnEnter(states::AppStates::MainMenu), apply_game_options);
+        app.add_systems(
+            OnEnter(states::AppStates::MainMenu),
+            apply_game_options_system,
+        );
     }
 }
 
