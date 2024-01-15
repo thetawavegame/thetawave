@@ -3,6 +3,7 @@ use bevy::{asset::AssetPlugin, pbr::AmbientLight, prelude::*};
 use bevy_kira_audio::prelude::*;
 
 use bevy_rapier2d::prelude::*;
+use bevy_screen_diagnostics::{ScreenDiagnosticsPlugin, ScreenFrameDiagnosticsPlugin};
 use options::{generate_config_files, GameInitCLIOptions};
 use thetawave_interface::states::{AppStates, GameStates};
 
@@ -141,6 +142,8 @@ fn build_app<P1: PluginGroup, P2: PluginGroup>(base_plugins: P1, game_plugins: P
         .add_state::<GameStates>(); // start the game in playing state
     app.add_plugins(base_plugins);
     app.add_plugins(game_plugins);
+    app.add_plugins(ScreenDiagnosticsPlugin::default());
+    app.add_plugins(ScreenFrameDiagnosticsPlugin);
     app.insert_resource(ClearColor(Color::BLACK))
         .insert_resource(AmbientLight {
             color: Color::WHITE,
