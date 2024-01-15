@@ -5,6 +5,7 @@ use rusqlite::{self, OptionalExtension};
 use std::env::var_os;
 use std::ffi::OsStr;
 use std::path::PathBuf;
+use thetawave_interface::game::options::DEFAULT_OPTIONS_PROFILE_ID;
 use thiserror::Error;
 pub(super) const THETAWAVE_DB_PATH_ENVVAR: &'static str = "THETAWAVE_DB_PATH";
 const THETAWAVE_DB_FILE: &'static str = "thetawave.sqlite";
@@ -72,12 +73,11 @@ pub(super) fn setup_db(conn: Connection) -> rusqlite::Result<()> {
     conn.execute(&create_options_table_sql, []).map(|_| ())?;
 
     // insert a default options row if it is not in the db
-    let default_options_row_exists: Option<u32> = conn
-        .query_row("SELECT 1 FROM Options LIMIT 1", [], |row| row.get(0))
-        .optional()?;
-    if default_options_row_exists.is_none() {
-        conn.execute("INSERT INTO Options DEFAULT VALUES", [])?;
-    }
+    let upsert_default_gameops_sql =
+        format!("INSERT OR REPLACE INTO {OPTIONS_TABLE_NAME} (optionsProfileId) VALUES (?1)");
+    conn.execute(&upsert_default_gameops_sql, [DEFAULT_OPTIONS_PROFILE_ID])
+        .map(|_| ())?;
+
     info!("Created sqlite db");
     Ok(())
 }

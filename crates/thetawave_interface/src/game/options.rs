@@ -1,7 +1,7 @@
 use bevy_ecs::system::Resource;
 use serde::Deserialize;
 
-pub const DEFAULT_OPTIONS_PROFILE_ID: usize = 1;
+pub const DEFAULT_OPTIONS_PROFILE_ID: usize = 0;
 
 /// The 'model' of the Options Sqlite table.
 /// Defaults the least graphically intense options.
