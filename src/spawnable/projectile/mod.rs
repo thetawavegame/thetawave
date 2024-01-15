@@ -18,6 +18,7 @@ use crate::{
     assets::ProjectileAssets,
     game::GameParametersResource,
     spawnable::{SpawnableBehavior, SpawnableComponent},
+    weapon::WeaponProjectileInitialVelocitiesExt,
 };
 
 mod behavior;

@@ -1,7 +1,6 @@
 use bevy_ecs::component::Component;
 use bevy_math::Vec2;
 use bevy_time::{Timer, TimerMode};
-use rand::{thread_rng, Rng};
 use serde::Deserialize;
 
 use crate::{
@@ -76,61 +75,6 @@ pub struct WeaponProjectileData {
     pub size: f32,
     /// Sound that the weapon makes when fired
     pub sound: SoundEffectType,
-}
-
-impl WeaponProjectileData {
-    pub fn get_linvels(&self, max_projectiles: f32) -> Vec<Vec2> {
-        match &self.spread_pattern {
-            SpreadPattern::Arc(arc_pattern) => {
-                // Get the segment of a spread angle
-                let spread_angle_segment = {
-                    // percentage of the game's maximum amount of projectiles being spawned
-                    let total_projectiles_percent =
-                        (self.count as f32 - 1.) / (max_projectiles - 1.);
-                    // indicates the angle between the first and last projectile
-                    let spread_arc = arc_pattern
-                        .max_spread
-                        .min(total_projectiles_percent * arc_pattern.projectile_gap);
-                    // indicates the angle between each projectile
-                    spread_arc / (self.count as f32 - 1.).max(1.)
-                };
-
-                let mut linvels = vec![];
-
-                for p in 0..self.count {
-                    // Calculate the angle for the current projectile.
-                    // The first projectile is spread_angle_segment/2 radians to the left of the direction,
-                    // and the last projectile is spread_angle_segment/2 radians to the right.
-                    let angle_offset =
-                        (p as f32 - (self.count as f32 - 1.) / 2.) * spread_angle_segment;
-                    let projectile_angle = self.direction + angle_offset;
-
-                    linvels.push(
-                        Vec2::from_angle(projectile_angle)
-                            * self.speed
-                            * arc_pattern.spread_weights,
-                    );
-                }
-
-                linvels
-            }
-            SpreadPattern::Random(random_pattern) => {
-                let mut linvels = vec![];
-
-                for _ in 0..self.count {
-                    linvels.push(
-                        // multiply the speed the projectile by a random angle and velocity multiplier
-                        Vec2::from_angle(
-                            thread_rng().gen_range(random_pattern.angle_range.clone()),
-                        ) * self.speed
-                            * thread_rng().gen_range(random_pattern.speed_range.clone()),
-                    );
-                }
-
-                linvels
-            }
-        }
-    }
 }
 
 /// Describes how projectiles are spawned
