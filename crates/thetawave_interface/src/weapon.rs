@@ -8,12 +8,34 @@ use crate::{
     spawnable::{ProjectileType, SpawnPosition},
 };
 
-use std::time::Duration;
+use std::{ops::Range, time::Duration};
 
 #[derive(Deserialize, Clone)]
 pub enum FireMode {
     Automatic,
     Manual,
+}
+
+#[derive(Deserialize, Clone)]
+pub enum SpreadPattern {
+    Arc(ArcPatternData),
+    Random(RandomPatternData),
+}
+
+#[derive(Deserialize, Clone)]
+pub struct ArcPatternData {
+    /// Determines the shape of the arc using (x, y) velocity multipliers
+    pub spread_weights: Vec2,
+    /// Maximum spead angle of fired projectiles
+    pub max_spread: f32,
+    /// Target gap between fired projectiles
+    pub projectile_gap: f32,
+}
+
+#[derive(Deserialize, Clone)]
+pub struct RandomPatternData {
+    pub speed_range: Range<f32>,
+    pub angle_range: Range<f32>,
 }
 
 /// Stores data about about a Weapon using minimal defining characteristics
@@ -47,12 +69,8 @@ pub struct WeaponProjectileData {
     pub despawn_time: f32,
     /// Number of projectiles spawned at once
     pub count: usize,
-    /// Determines the shape of the arc using (x, y) velocity multipliers
-    pub spread_weights: Vec2,
-    /// Maximum spead angle of fired projectiles
-    pub max_spread_arc: f32,
-    /// Target gap between fired projectiles
-    pub projectile_gap: f32,
+    /// How projectiles are organized when they spawn
+    pub spread_pattern: SpreadPattern,
     /// Size multiplier of the projectile
     pub size: f32,
     /// Sound that the weapon makes when fired

@@ -208,7 +208,7 @@ mod test {
         EnemyMobType, Faction, MobDestroyedEvent, MobType, ProjectileType, SpawnPosition,
     };
     use thetawave_interface::states::{AppStates, GameStates};
-    use thetawave_interface::weapon::WeaponProjectileData;
+    use thetawave_interface::weapon::{ArcPatternData, SpreadPattern, WeaponProjectileData};
 
     fn base_app_required_for_counting_metrics() -> App {
         let mut app = App::new();
@@ -275,9 +275,11 @@ mod test {
                 direction: FRAC_PI_2,
                 despawn_time: 0.0,
                 count: 1,
-                spread_weights: Vec2::new(0.5, 1.0),
-                max_spread_arc: FRAC_PI_2,
-                projectile_gap: PI,
+                spread_pattern: SpreadPattern::Arc(ArcPatternData {
+                    spread_weights: Vec2::new(0.5, 1.0),
+                    max_spread: FRAC_PI_2,
+                    projectile_gap: PI,
+                }),
                 size: 1.0,
                 sound: SoundEffectType::PlayerFireBlast,
             },
