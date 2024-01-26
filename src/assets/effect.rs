@@ -47,19 +47,59 @@ impl EffectAssets {
         }
     }
 
-    pub fn get_color(&self, effect_type: &EffectType) -> Color {
+    pub fn get_color(&self, effect_type: &EffectType, bloom_intensity: f32) -> Color {
         match effect_type {
-            EffectType::BarrierGlow => Color::rgb(1.0, 1.0, 1.4),
-            EffectType::AllyBlastExplosion => Color::rgb(4.0, 4.0, 4.0),
-            EffectType::EnemyBlastExplosion => Color::rgb(4.0, 4.0, 4.0),
-            EffectType::AllyBulletExplosion => Color::rgb(5.0, 5.0, 5.0),
-            EffectType::EnemyBulletExplosion => Color::rgb(5.0, 5.0, 5.0),
-            EffectType::MobExplosion => Color::rgb(6.0, 6.0, 6.0),
-            EffectType::AllyBlastDespawn => Color::rgb(4.0, 4.0, 4.0),
-            EffectType::ConsumableDespawn => Color::rgb(3.0, 3.0, 3.0),
-            EffectType::EnemyBlastDespawn => Color::rgb(4.0, 4.0, 4.0),
-            EffectType::AllyBulletDespawn => Color::rgb(5.0, 5.0, 5.0),
-            EffectType::EnemyBulletDespawn => Color::rgb(5.0, 5.0, 5.0),
+            EffectType::BarrierGlow => Color::rgb(1.0, 1.0, 1.0 + 0.4 * bloom_intensity),
+            EffectType::AllyBlastExplosion => Color::rgb(
+                1.0 + 3.0 * bloom_intensity,
+                1.0 + 3.0 * bloom_intensity,
+                1.0 + 3.0 * bloom_intensity,
+            ),
+            EffectType::EnemyBlastExplosion => Color::rgb(
+                1.0 + 3.0 * bloom_intensity,
+                1.0 + 3.0 * bloom_intensity,
+                1.0 + 3.0 * bloom_intensity,
+            ),
+            EffectType::AllyBulletExplosion => Color::rgb(
+                1.0 + 4.0 * bloom_intensity,
+                1.0 + 4.0 * bloom_intensity,
+                1.0 + 4.0 * bloom_intensity,
+            ),
+            EffectType::EnemyBulletExplosion => Color::rgb(
+                1.0 + 4.0 * bloom_intensity,
+                1.0 + 4.0 * bloom_intensity,
+                1.0 + 4.0 * bloom_intensity,
+            ),
+            EffectType::MobExplosion => Color::rgb(
+                1.0 + 5.0 * bloom_intensity,
+                1.0 + 5.0 * bloom_intensity,
+                1.0 + 5.0 * bloom_intensity,
+            ),
+            EffectType::AllyBlastDespawn => Color::rgb(
+                1.0 + 3.0 * bloom_intensity,
+                1.0 + 3.0 * bloom_intensity,
+                1.0 + 3.0 * bloom_intensity,
+            ),
+            EffectType::ConsumableDespawn => Color::rgb(
+                1.0 + 2.0 * bloom_intensity,
+                1.0 + 2.0 * bloom_intensity,
+                1.0 + 2.0 * bloom_intensity,
+            ),
+            EffectType::EnemyBlastDespawn => Color::rgb(
+                1.0 + 3.0 * bloom_intensity,
+                1.0 + 3.0 * bloom_intensity,
+                1.0 + 3.0 * bloom_intensity,
+            ),
+            EffectType::AllyBulletDespawn => Color::rgb(
+                1.0 + 4.0 * bloom_intensity,
+                1.0 + 4.0 * bloom_intensity,
+                1.0 + 4.0 * bloom_intensity,
+            ),
+            EffectType::EnemyBulletDespawn => Color::rgb(
+                1.0 + 4.0 * bloom_intensity,
+                1.0 + 4.0 * bloom_intensity,
+                1.0 + 4.0 * bloom_intensity,
+            ),
             EffectType::Text(_) => Color::rgb(0.0, 0.0, 0.0),
         }
     }

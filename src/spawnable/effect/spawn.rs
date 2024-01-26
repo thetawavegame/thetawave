@@ -5,6 +5,7 @@ use crate::spawnable::{EffectsResource, InitialMotion, SpawnEffectEvent, Spawnab
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use rand::Rng;
+use thetawave_interface::game::options::GameOptions;
 use thetawave_interface::spawnable::{EffectType, SpawnableType, TextEffectType};
 use thetawave_interface::states;
 use thetawave_interface::states::GameCleanup;
@@ -33,6 +34,7 @@ fn spawn_effect_system(
     mut event_reader: EventReader<SpawnEffectEvent>,
     effects_resource: Res<EffectsResource>,
     effect_assets: Res<EffectAssets>,
+    game_options: Res<GameOptions>,
 ) {
     for event in event_reader.read() {
         if !matches!(event.effect_type, EffectType::Text(..)) {
@@ -43,6 +45,7 @@ fn spawn_effect_system(
                 event.transform,
                 event.initial_motion.clone(),
                 &mut commands,
+                &game_options,
             );
         }
     }
@@ -145,6 +148,7 @@ fn spawn_effect(
     transform: Transform,
     initial_motion: InitialMotion,
     commands: &mut Commands,
+    game_options: &GameOptions,
 ) {
     // Get data from effect resource
     let effect_data = &effects_resource.effects[effect_type];
@@ -159,7 +163,7 @@ fn spawn_effect(
         .insert(SpriteSheetBundle {
             texture_atlas: effect_assets.get_asset(effect_type).unwrap_or_default(),
             sprite: TextureAtlasSprite {
-                color: effect_assets.get_color(effect_type),
+                color: effect_assets.get_color(effect_type, game_options.bloom_intensity),
                 ..Default::default()
             },
             ..Default::default()

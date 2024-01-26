@@ -2,5 +2,6 @@
 /// thetawave releases. There are public functions to read data (exposing as few db implementation details as possible),
 /// while all upserts/mutations/deletions are handled via a Bevy plugin.
 pub mod core;
+pub mod options;
 pub mod plugin;
 pub mod user_stats;

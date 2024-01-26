@@ -4,6 +4,7 @@ use serde::Deserialize;
 use std::{collections::HashMap, string::ToString};
 use thetawave_interface::{
     audio::PlaySoundEffectEvent,
+    game::options::GameOptions,
     spawnable::{Faction, ProjectileType, SpawnableType},
     states::GameCleanup,
     weapon::WeaponProjectileData,
@@ -84,6 +85,7 @@ pub fn spawn_projectile_system(
     projectile_resource: Res<ProjectileResource>,
     projectile_assets: Res<ProjectileAssets>,
     game_parameters: Res<GameParametersResource>,
+    game_options: Res<GameOptions>,
 ) {
     for event in fire_weapon_event_reader.read() {
         spawn_projectile_from_weapon(
@@ -96,6 +98,7 @@ pub fn spawn_projectile_system(
             &projectile_resource,
             &projectile_assets,
             &game_parameters,
+            &game_options,
         );
     }
 }
@@ -110,6 +113,7 @@ pub fn spawn_projectile_from_weapon(
     projectile_resource: &ProjectileResource,
     projectile_assets: &ProjectileAssets,
     game_parameters: &GameParametersResource,
+    game_options: &GameOptions,
 ) {
     // Play the sound effect for the projectiles firing
     sound_effect_event_writer.send(PlaySoundEffectEvent {
@@ -167,7 +171,10 @@ pub fn spawn_projectile_from_weapon(
             .insert(SpriteSheetBundle {
                 texture_atlas: projectile_assets.get_asset(&weapon_projectile_data.ammunition),
                 sprite: TextureAtlasSprite {
-                    color: projectile_assets.get_color(&weapon_projectile_data.ammunition),
+                    color: projectile_assets.get_color(
+                        &weapon_projectile_data.ammunition,
+                        game_options.bloom_intensity,
+                    ),
                     ..Default::default()
                 },
                 ..Default::default()

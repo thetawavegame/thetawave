@@ -31,10 +31,18 @@ impl ProjectileAssets {
             },
         }
     }
-    pub fn get_color(&self, projectile_type: &ProjectileType) -> Color {
+    pub fn get_color(&self, projectile_type: &ProjectileType, bloom_intensity: f32) -> Color {
         match projectile_type {
-            ProjectileType::Blast(_) => Color::rgb(3.0, 3.0, 3.0),
-            ProjectileType::Bullet(_) => Color::rgb(2.0, 2.0, 2.0),
+            ProjectileType::Blast(_) => Color::rgb(
+                1.0 + 2.0 * bloom_intensity,
+                1.0 + 2.0 * bloom_intensity,
+                1.0 + 2.0 * bloom_intensity,
+            ),
+            ProjectileType::Bullet(_) => Color::rgb(
+                1.0 + 1.0 * bloom_intensity,
+                1.0 + 1.0 * bloom_intensity,
+                1.0 + 1.0 * bloom_intensity,
+            ),
         }
     }
 }
