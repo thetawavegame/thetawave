@@ -120,7 +120,7 @@ impl WeaponProjectileInitialVelocitiesExt for WeaponProjectileData {
                     linvels.push(
                         Vec2::from_angle(projectile_angle)
                             * self.speed
-                            * arc_pattern.spread_weights,
+                            * Vec2::from(&arc_pattern.spread_weights),
                     );
                 }
 

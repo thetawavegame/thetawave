@@ -2,6 +2,7 @@ pub mod animation;
 pub mod audio;
 pub mod character;
 pub mod character_selection;
+pub mod engine;
 pub mod game;
 pub mod health;
 pub mod input;

@@ -200,6 +200,7 @@ mod test {
     use bevy::MinimalPlugins;
     use thetawave_interface::audio::SoundEffectType;
     use thetawave_interface::character::{Character, CharacterType};
+    use thetawave_interface::engine::Vec2 as InterfaceVec2;
     use thetawave_interface::game::historical_metrics::{
         MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
     };
@@ -276,7 +277,7 @@ mod test {
                 despawn_time: 0.0,
                 count: 1,
                 spread_pattern: SpreadPattern::Arc(ArcPatternData {
-                    spread_weights: Vec2::new(0.5, 1.0),
+                    spread_weights: InterfaceVec2::new(0.5, 1.0),
                     max_spread: FRAC_PI_2,
                     projectile_gap: PI,
                 }),

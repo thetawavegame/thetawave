@@ -1,5 +1,5 @@
+use crate::engine::Vec2;
 use bevy_ecs::component::Component;
-use bevy_math::Vec2;
 use bevy_time::{Timer, TimerMode};
 use serde::Deserialize;
 
