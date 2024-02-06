@@ -358,6 +358,12 @@
 				direction: PingPong(Forward),
 				frame_duration: 0.15,
 			),
+			color: Rgba (
+				red: 2.8,
+				green: 1.2,
+				blue: 0.0,
+				alpha: 1.0,
+			),
 		)),
 	),
 	Enemy(Pawn): (
@@ -392,7 +398,13 @@
 			animation: (
 				direction: PingPong(Forward),
 				frame_duration: 0.15,
-			),	
+			),
+			color: Rgba (
+				red: 2.8,
+				green: 1.2,
+				blue: 0.0,
+				alpha: 1.0,
+			),
 		)),
 		weapon: Some((
 			reload_time: 3.0,
@@ -504,6 +516,12 @@
 				direction: PingPong(Forward),
 				frame_duration: 0.15,
 			),
+			color: Rgba (
+				red: 2.8,
+				green: 1.2,
+				blue: 0.0,
+				alpha: 1.0,
+			),
 		)),
 	),
 	Ally(Hauler2): (
@@ -542,6 +560,12 @@
 			animation: (
 				direction: PingPong(Forward),
 				frame_duration: 0.15,
+			),
+			color: Rgba (
+				red: 2.8,
+				green: 1.2,
+				blue: 0.0,
+				alpha: 1.0,
 			),
 		)),
 	),
@@ -582,6 +606,12 @@
 				direction: PingPong(Forward),
 				frame_duration: 0.15,
 			),
+			color: Rgba (
+				red: 2.8,
+				green: 1.2,
+				blue: 0.0,
+				alpha: 1.0,
+			),
 		)),
 	),
 	Enemy(MissileLauncher): (
@@ -617,6 +647,12 @@
 			animation: (
 				direction: PingPong(Forward),
 				frame_duration: 0.15,
+			),
+			color: Rgba (
+				red: 2.8,
+				green: 1.2,
+				blue: 0.0,
+				alpha: 1.0,
 			),
 		)),
 		mob_spawners: {
@@ -658,6 +694,12 @@
 				direction: Forward,
 				frame_duration: 0.15,
 			),
+			color: Rgba (
+				red: 2.8,
+				green: 1.2,
+				blue: 0.0,
+				alpha: 1.0,
+			),
 		)),
 	),
 	Enemy(StraferRight): (
@@ -692,6 +734,12 @@
 			animation: (
 				direction: PingPong(Forward),
 				frame_duration: 0.15,
+			),
+			color: Rgba (
+				red: 2.8,
+				green: 1.2,
+				blue: 0.0,
+				alpha: 1.0,
 			),
 		)),
 		weapon: Some((
@@ -749,6 +797,12 @@
 			animation: (
 				direction: PingPong(Forward),
 				frame_duration: 0.15,
+			),
+			color: Rgba (
+				red: 2.8,
+				green: 1.2,
+				blue: 0.0,
+				alpha: 1.0,
 			),
 		)),
 		weapon: Some((

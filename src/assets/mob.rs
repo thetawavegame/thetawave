@@ -141,24 +141,4 @@ impl MobAssets {
             },
         }
     }
-
-    pub fn get_thruster_color(&self, mob_type: &MobType, bloom_intensity: f32) -> Color {
-        match mob_type {
-            MobType::Enemy(_) => Color::rgb(
-                1.0 + 2.8 * bloom_intensity,
-                1.0 + 1.2 * bloom_intensity,
-                1.0,
-            ),
-            MobType::Ally(_) => Color::rgb(
-                1.0 + 2.8 * bloom_intensity,
-                1.0 + 1.2 * bloom_intensity,
-                1.0,
-            ),
-            MobType::Neutral(_) => Color::rgb(
-                1.0 + 2.8 * bloom_intensity,
-                1.0 + 1.2 * bloom_intensity,
-                1.0,
-            ),
-        }
-    }
 }
