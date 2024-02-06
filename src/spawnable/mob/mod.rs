@@ -322,7 +322,11 @@ pub struct ThrusterData {
 impl ThrusterData {
     /// Color for bloom effect, multiplied by the bloom intensity value
     pub fn get_color(&self, bloom_intensity: f32) -> Color {
-        Color::rgb(1.0, 1.0, 1.0) + (self.color * bloom_intensity)
+        Color::rgb(
+            1.0 + self.color.r() * bloom_intensity,
+            1.0 + self.color.g() * bloom_intensity,
+            1.0 + self.color.b() * bloom_intensity,
+        )
     }
 }
 /// Stores data about mob entities
