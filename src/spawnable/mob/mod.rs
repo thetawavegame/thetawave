@@ -320,8 +320,9 @@ pub struct ThrusterData {
 }
 
 impl ThrusterData {
-    pub fn get_thruster_color(&self, bloom_intensity: f32) -> Color {
-        Color::rgb(1.0, 1.0, 1.0) + self.color * bloom_intensity
+    /// Color for bloom effect, multiplied by the bloom intensity value
+    pub fn get_color(&self, bloom_intensity: f32) -> Color {
+        Color::rgb(1.0, 1.0, 1.0) + (self.color * bloom_intensity)
     }
 }
 /// Stores data about mob entities
@@ -413,7 +414,7 @@ pub fn spawn_mob(
                     texture_atlas: mob_assets.get_thruster_asset(mob_type).unwrap(),
                     transform: Transform::from_xyz(0.0, thruster.y_offset, -1.0),
                     sprite: TextureAtlasSprite {
-                        color: thruster.get_thruster_color(game_options.bloom_intensity),
+                        color: thruster.get_color(game_options.bloom_intensity),
                         ..Default::default()
                     },
                     ..Default::default()

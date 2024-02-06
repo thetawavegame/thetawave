@@ -99,6 +99,15 @@ pub struct ConsumableData {
     pub deceleration: Vec2,
     /// z value of the transform
     pub z_level: f32,
+    /// Color for bloom effect
+    pub color: Color,
+}
+
+impl ConsumableData {
+    /// Color for bloom effect, multiplied by the bloom intensity value
+    pub fn get_color(&self, bloom_intensity: f32) -> Color {
+        Color::rgb(1.0, 1.0, 1.0) + (self.color * bloom_intensity)
+    }
 }
 
 /// Consumable resource stores data about all consumables
@@ -140,7 +149,7 @@ pub fn spawn_consumable(
         .insert(SpriteSheetBundle {
             texture_atlas: consumable_assets.get_asset(consumable_type),
             sprite: TextureAtlasSprite {
-                color: consumable_assets.get_color(consumable_type, game_options.bloom_intensity),
+                color: consumable_data.get_color(game_options.bloom_intensity),
                 ..Default::default()
             },
             ..Default::default()
