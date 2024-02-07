@@ -7,6 +7,12 @@
 			direction: Forward,
 			frame_duration: 0.1,
 		),
+		color: Rgba (
+            red: 3.0,
+            green: 3.0,
+            blue: 3.0,
+            alpha: 1.0,
+        ),
 	),
 	EnemyBlastExplosion: (
 		effect_type: EnemyBlastExplosion,
@@ -16,6 +22,12 @@
 			direction: Forward,
 			frame_duration: 0.1,
 		),
+		color: Rgba (
+            red: 3.0,
+            green: 3.0,
+            blue: 3.0,
+            alpha: 1.0,
+        ),
 	),
 	AllyBlastDespawn: (
 		effect_type: AllyBlastDespawn,
@@ -25,6 +37,12 @@
 			direction: Forward,
 			frame_duration: 0.1,
 		),
+		color: Rgba (
+            red: 3.0,
+            green: 3.0,
+            blue: 3.0,
+            alpha: 1.0,
+        ),
 	),
 	EnemyBlastDespawn: (
 		effect_type: EnemyBlastDespawn,
@@ -34,6 +52,12 @@
 			direction: Forward,
 			frame_duration: 0.1,
 		),
+		color: Rgba (
+            red: 3.0,
+            green: 3.0,
+            blue: 3.0,
+            alpha: 1.0,
+        ),
 	),
 	MobExplosion: (
 		effect_type: MobExplosion,
@@ -43,6 +67,12 @@
 			direction: Forward,
 			frame_duration: 0.1,
 		),
+		color: Rgba (
+            red: 5.0,
+            green: 5.0,
+            blue: 5.0,
+            alpha: 1.0,
+        ),
 	),
 	ConsumableDespawn: (
 		effect_type: ConsumableDespawn,
@@ -52,6 +82,12 @@
 			direction: Forward,
 			frame_duration: 0.05,
 		),
+		color: Rgba (
+            red: 2.0,
+            green: 2.0,
+            blue: 2.0,
+            alpha: 1.0,
+        ),
 	),
 	BarrierGlow: (
 		effect_type: BarrierGlow,
@@ -61,6 +97,12 @@
 			direction: PingPong(Forward),
 			frame_duration: 0.2,
 		),
+		color: Rgba (
+            red: 0.0,
+            green: 0.0,
+            blue: 0.4,
+            alpha: 1.0,
+        ),
 	),
 	AllyBulletDespawn: (
 		effect_type: AllyBulletDespawn,
@@ -70,6 +112,12 @@
 			direction: Forward,
 			frame_duration: 0.1,
 		),
+		color: Rgba (
+            red: 4.0,
+            green: 4.0,
+            blue: 4.0,
+            alpha: 1.0,
+        ),
 	),
 	EnemyBulletDespawn: (
 		effect_type: EnemyBulletDespawn,
@@ -79,6 +127,12 @@
 			direction: Forward,
 			frame_duration: 0.1,
 		),
+		color: Rgba (
+            red: 4.0,
+            green: 4.0,
+            blue: 4.0,
+            alpha: 1.0,
+        ),
 	),
 	AllyBulletExplosion: (
 		effect_type: AllyBulletExplosion,
@@ -88,6 +142,12 @@
 			direction: Forward,
 			frame_duration: 0.1,
 		),
+		color: Rgba (
+            red: 4.0,
+            green: 4.0,
+            blue: 4.0,
+            alpha: 1.0,
+        ),
 	),
 	EnemyBulletExplosion: (
 		effect_type: EnemyBulletExplosion,
@@ -97,6 +157,12 @@
 			direction: Forward,
 			frame_duration: 0.1,
 		),
+		color: Rgba (
+            red: 4.0,
+            green: 4.0,
+            blue: 4.0,
+            alpha: 1.0,
+        ),
 	),
 	Text(DamageDealt): (
 		effect_type: Text(DamageDealt),
@@ -106,6 +172,12 @@
 			direction: None,
 			frame_duration: 0.1,
 		),
+		color: Rgba (
+            red: 0.0,
+            green: 0.0,
+            blue: 0.0,
+            alpha: 1.0,
+        ),
 	),
 	Text(ConsumableCollected(Money1)): (
 		effect_type: Text(ConsumableCollected(Money1)),
@@ -115,6 +187,12 @@
 			direction: None,
 			frame_duration: 0.1,
 		),
+		color: Rgba (
+            red: 0.0,
+            green: 0.0,
+            blue: 0.0,
+            alpha: 1.0,
+        ),
 	),
 	Text(ConsumableCollected(Money3)): (
 		effect_type: Text(ConsumableCollected(Money3)),
@@ -124,6 +202,12 @@
 			direction: None,
 			frame_duration: 0.1,
 		),
+		color: Rgba (
+            red: 0.0,
+            green: 0.0,
+            blue: 0.0,
+            alpha: 1.0,
+        ),
 	),
 	Text(ConsumableCollected(HealthWrench)): (
 		effect_type: Text(ConsumableCollected(HealthWrench)),
@@ -133,6 +217,12 @@
 			direction: None,
 			frame_duration: 0.1,
 		),
+		color: Rgba (
+            red: 0.0,
+            green: 0.0,
+            blue: 0.0,
+            alpha: 1.0,
+        ),
 	),
 	Text(ConsumableCollected(Armor)): (
 		effect_type: Text(ConsumableCollected(Armor)),
@@ -142,6 +232,12 @@
 			direction: None,
 			frame_duration: 0.1,
 		),
+		color: Rgba (
+            red: 0.0,
+            green: 0.0,
+            blue: 0.0,
+            alpha: 1.0,
+        ),
 	),
 	Text(ConsumableCollected(GainProjectiles)): (
 		effect_type: Text(ConsumableCollected(GainProjectiles)),
@@ -151,5 +247,11 @@
 			direction: None,
 			frame_duration: 0.1,
 		),
+		color: Rgba (
+            red: 0.0,
+            green: 0.0,
+            blue: 0.0,
+            alpha: 1.0,
+        ),
 	),
 }
