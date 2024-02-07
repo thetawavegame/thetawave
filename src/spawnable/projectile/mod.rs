@@ -68,6 +68,18 @@ pub struct ProjectileData {
     pub collider: ColliderData,
     /// If it has a contact collider
     pub is_solid: bool,
+    /// Color for bloom effect
+    pub color: Color,
+}
+
+impl ProjectileData {
+    pub fn get_color(&self, bloom_intensity: f32) -> Color {
+        Color::rgb(
+            1.0 + self.color.r() * bloom_intensity,
+            1.0 + self.color.g() * bloom_intensity,
+            1.0 + self.color.b() * bloom_intensity,
+        )
+    }
 }
 
 /// Stores data about mob entities
@@ -171,10 +183,7 @@ pub fn spawn_projectile_from_weapon(
             .insert(SpriteSheetBundle {
                 texture_atlas: projectile_assets.get_asset(&weapon_projectile_data.ammunition),
                 sprite: TextureAtlasSprite {
-                    color: projectile_assets.get_color(
-                        &weapon_projectile_data.ammunition,
-                        game_options.bloom_intensity,
-                    ),
+                    color: projectile_data.get_color(game_options.bloom_intensity),
                     ..Default::default()
                 },
                 ..Default::default()
