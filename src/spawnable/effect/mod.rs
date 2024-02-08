@@ -3,7 +3,12 @@ use self::behavior::EffectBehaviorData;
 use crate::animation::AnimationData;
 use crate::spawnable::effect::behavior::EffectBehaviorPlugin;
 use crate::spawnable::effect::spawn::EffectSpawnPlugin;
-use bevy::{core_pipeline::bloom, prelude::*};
+use bevy::{
+    app::{App, Plugin},
+    ecs::{component::Component, event::Event, system::Resource},
+    render::color::Color,
+    transform::components::Transform,
+};
 use ron::de::from_bytes;
 use serde::Deserialize;
 use std::{collections::HashMap, ops::Range};
