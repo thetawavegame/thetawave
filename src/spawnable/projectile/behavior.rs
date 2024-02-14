@@ -180,8 +180,6 @@ fn deal_damage_on_contact(
                             target: *player_entity,
                         });
                     }
-
-                    continue;
                 }
             }
             SortedCollisionEvent::MobToProjectileContact {
@@ -209,8 +207,6 @@ fn deal_damage_on_contact(
                             target: *mob_entity,
                         });
                     }
-
-                    continue;
                 }
             }
             SortedCollisionEvent::MobSegmentToProjectileContact {
@@ -237,8 +233,6 @@ fn deal_damage_on_contact(
                             target: *mob_segment_entity,
                         });
                     }
-
-                    continue;
                 }
             }
             _ => {}
