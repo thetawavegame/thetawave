@@ -267,21 +267,17 @@ fn deal_damage_on_intersection(
                         projectile_faction.clone(),
                         Faction::Neutral | Faction::Enemy
                     )
+                    && player_query.contains(*player_entity)
+                    && *projectile_damage > 0
                 {
                     // deal damage to player
-                    for (player_entity_q, _player_component) in player_query.iter() {
-                        if *player_entity == player_entity_q && *projectile_damage > 0 {
-                            damage_dealt_event_writer.send(DamageDealtEvent {
-                                damage: *projectile_damage,
-                                target: player_entity_q,
-                            });
-                            sound_effect_event_writer.send(PlaySoundEffectEvent {
-                                sound_effect_type: SoundEffectType::PlayerHit,
-                            });
-                        }
-                    }
-
-                    continue;
+                    damage_dealt_event_writer.send(DamageDealtEvent {
+                        damage: *projectile_damage,
+                        target: *player_entity,
+                    });
+                    sound_effect_event_writer.send(PlaySoundEffectEvent {
+                        sound_effect_type: SoundEffectType::PlayerHit,
+                    });
                 }
             }
 
@@ -294,23 +290,15 @@ fn deal_damage_on_intersection(
                 projectile_source: _,
             } => {
                 if entity == *projectile_entity
-                    && !match mob_faction {
-                        Faction::Ally => matches!(projectile_faction, Faction::Ally),
-                        Faction::Enemy => matches!(projectile_faction, Faction::Enemy),
-                        Faction::Neutral => matches!(projectile_faction, Faction::Neutral),
-                    }
+                    && mob_faction != projectile_faction
+                    && mob_query.contains(*mob_entity)
+                    && *projectile_damage > 0
                 {
                     // deal damage to mob
-                    for (mob_entity_q, _mob_component) in mob_query.iter_mut() {
-                        if *mob_entity == mob_entity_q && *projectile_damage > 0 {
-                            damage_dealt_event_writer.send(DamageDealtEvent {
-                                damage: *projectile_damage,
-                                target: mob_entity_q,
-                            });
-                        }
-                    }
-
-                    continue;
+                    damage_dealt_event_writer.send(DamageDealtEvent {
+                        damage: *projectile_damage,
+                        target: *mob_entity,
+                    });
                 }
             }
             SortedCollisionEvent::MobSegmentToProjectileIntersection {
@@ -321,25 +309,15 @@ fn deal_damage_on_intersection(
                 projectile_damage,
             } => {
                 if entity == *projectile_entity
-                    && !match mob_segment_faction {
-                        Faction::Ally => matches!(projectile_faction, Faction::Ally),
-                        Faction::Enemy => matches!(projectile_faction, Faction::Enemy),
-                        Faction::Neutral => matches!(projectile_faction, Faction::Neutral),
-                    }
+                    && mob_segment_faction != projectile_faction
+                    && mob_segment_query.contains(*mob_segment_entity)
+                    && *projectile_damage > 0
                 {
                     // deal damage to mob
-                    for (mob_segment_entity_q, _mob_segment_component) in
-                        mob_segment_query.iter_mut()
-                    {
-                        if *mob_segment_entity == mob_segment_entity_q && *projectile_damage > 0 {
-                            damage_dealt_event_writer.send(DamageDealtEvent {
-                                damage: *projectile_damage,
-                                target: mob_segment_entity_q,
-                            });
-                        }
-                    }
-
-                    continue;
+                    damage_dealt_event_writer.send(DamageDealtEvent {
+                        damage: *projectile_damage,
+                        target: *mob_segment_entity,
+                    });
                 }
             }
             _ => {}
