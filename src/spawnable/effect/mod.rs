@@ -66,7 +66,7 @@ pub struct EffectData {
     /// Z level of transform
     pub z_level: f32,
     /// Color for bloom effect
-    pub color: Color,
+    pub bloom_color: Color,
 }
 
 impl From<&EffectData> for EffectComponent {
@@ -84,11 +84,11 @@ impl From<&EffectData> for EffectComponent {
 }
 
 impl EffectData {
-    pub fn get_color(&self, bloom_intensity: f32) -> Color {
+    pub fn affine_bloom_transformation(&self, bloom_intensity: f32) -> Color {
         Color::rgb(
-            1.0 + self.color.r() * bloom_intensity,
-            1.0 + self.color.g() * bloom_intensity,
-            1.0 + self.color.b() * bloom_intensity,
+            1.0 + self.bloom_color.r() * bloom_intensity,
+            1.0 + self.bloom_color.g() * bloom_intensity,
+            1.0 + self.bloom_color.b() * bloom_intensity,
         )
     }
 }

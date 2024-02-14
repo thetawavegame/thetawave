@@ -163,7 +163,7 @@ fn spawn_effect(
         .insert(SpriteSheetBundle {
             texture_atlas: effect_assets.get_asset(effect_type).unwrap_or_default(),
             sprite: TextureAtlasSprite {
-                color: effect_data.get_color(game_options.bloom_intensity),
+                color: effect_data.affine_bloom_transformation(game_options.bloom_intensity),
                 ..Default::default()
             },
             ..Default::default()

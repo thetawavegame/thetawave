@@ -316,16 +316,16 @@ pub struct ThrusterData {
     /// Texture
     pub animation: AnimationData,
     /// Color for bloom effect
-    pub color: Color,
+    pub bloom_color: Color,
 }
 
 impl ThrusterData {
     /// Color for bloom effect, multiplied by the bloom intensity value
-    pub fn get_color(&self, bloom_intensity: f32) -> Color {
+    pub fn affine_bloom_transformation(&self, bloom_intensity: f32) -> Color {
         Color::rgb(
-            1.0 + self.color.r() * bloom_intensity,
-            1.0 + self.color.g() * bloom_intensity,
-            1.0 + self.color.b() * bloom_intensity,
+            1.0 + self.bloom_color.r() * bloom_intensity,
+            1.0 + self.bloom_color.g() * bloom_intensity,
+            1.0 + self.bloom_color.b() * bloom_intensity,
         )
     }
 }
@@ -418,7 +418,7 @@ pub fn spawn_mob(
                     texture_atlas: mob_assets.get_thruster_asset(mob_type).unwrap(),
                     transform: Transform::from_xyz(0.0, thruster.y_offset, -1.0),
                     sprite: TextureAtlasSprite {
-                        color: thruster.get_color(game_options.bloom_intensity),
+                        color: thruster.affine_bloom_transformation(game_options.bloom_intensity),
                         ..Default::default()
                     },
                     ..Default::default()
