@@ -17,7 +17,7 @@
             frame_duration: 1.0,
             direction: None,
         ),
-        color: Rgba (
+        bloom_color: Rgba (
             red: 0.6,
             green: 0.6,
             blue: 0.6,
@@ -42,7 +42,7 @@
             frame_duration: 1.0,
             direction: None,
         ),
-        color: Rgba (
+        bloom_color: Rgba (
             red: 0.6,
             green: 0.6,
             blue: 0.6,
@@ -67,7 +67,7 @@
             frame_duration: 1.0,
             direction: None,
         ),
-        color: Rgba (
+        bloom_color: Rgba (
             red: 0.6,
             green: 0.6,
             blue: 0.6,
@@ -92,7 +92,7 @@
             frame_duration: 1.0,
             direction: None,
         ),
-        color: Rgba (
+        bloom_color: Rgba (
             red: 0.6,
             green: 0.6,
             blue: 0.6,
@@ -117,7 +117,7 @@
             frame_duration: 1.0,
             direction: None,
         ),
-        color: Rgba (
+        bloom_color: Rgba (
             red: 0.6,
             green: 0.6,
             blue: 0.6,

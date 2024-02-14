@@ -14,7 +14,7 @@
 			rotation: 0.0,
 		),
 		is_solid: false,
-		color: Rgba (
+		bloom_color: Rgba (
             red: 2.0,
             green: 2.0,
             blue: 2.0,
@@ -37,7 +37,7 @@
 			rotation: 0.0,
 		),
 		is_solid: false,
-		color: Rgba (
+		bloom_color: Rgba (
             red: 2.0,
             green: 2.0,
             blue: 2.0,
@@ -60,7 +60,7 @@
 			rotation: 0.0,
 		),
 		is_solid: false,
-		color: Rgba (
+		bloom_color: Rgba (
             red: 2.0,
             green: 2.0,
             blue: 2.0,
@@ -83,7 +83,7 @@
 			rotation: 0.0,
 		),
 		is_solid: true,
-		color: Rgba (
+		bloom_color: Rgba (
             red: 1.0,
             green: 1.0,
             blue: 1.0,
@@ -106,7 +106,7 @@
 			rotation: 0.0,
 		),
 		is_solid: true,
-		color: Rgba (
+		bloom_color: Rgba (
             red: 1.0,
             green: 1.0,
             blue: 1.0,
@@ -129,7 +129,7 @@
 			rotation: 0.0,
 		),
 		is_solid: true,
-		color: Rgba (
+		bloom_color: Rgba (
             red: 1.0,
             green: 1.0,
             blue: 1.0,
