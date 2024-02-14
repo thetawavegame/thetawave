@@ -23,14 +23,14 @@ pub enum ProjectileBehavior {
     TimedDespawn { despawn_time: f32 },
 }
 
-/// Manages executing behaviors of mobs
+/// Manages executing behaviors of all projectiles
 #[allow(clippy::too_many_arguments)]
 pub fn projectile_execute_behavior_system(
     mut commands: Commands,
     mut projectile_query: Query<(Entity, &Transform, &mut ProjectileComponent)>,
     player_query: Query<(Entity, &PlayerComponent)>,
-    mut mob_query: Query<(Entity, &mut MobComponent)>,
-    mut mob_segment_query: Query<(Entity, &mut MobSegmentComponent)>,
+    mob_query: Query<(Entity, &MobComponent)>,
+    mob_segment_query: Query<(Entity, &MobSegmentComponent)>,
     mut collision_events: EventReader<SortedCollisionEvent>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     time: Res<Time>,
@@ -38,11 +38,7 @@ pub fn projectile_execute_behavior_system(
     mut damage_dealt_event_writer: EventWriter<DamageDealtEvent>,
 ) {
     // Put all collision events in a vec so they can be read more than once
-    let mut collision_events_vec = vec![];
-    for collision_event in collision_events.read() {
-        collision_events_vec.push(collision_event);
-    }
-
+    let collision_events_vec: Vec<_> = collision_events.read().collect();
     // iterate through all projectiles
     for (entity, projectile_transform, mut projectile_component) in projectile_query.iter_mut() {
         let projectile_type = projectile_component.projectile_type.clone();
@@ -68,8 +64,8 @@ pub fn projectile_execute_behavior_system(
                     entity,
                     &collision_events_vec,
                     &player_query,
-                    &mut mob_query,
-                    &mut mob_segment_query,
+                    &mob_query,
+                    &mob_segment_query,
                     &mut sound_effect_event_writer,
                     &mut damage_dealt_event_writer,
                 ),
@@ -77,8 +73,8 @@ pub fn projectile_execute_behavior_system(
                     entity,
                     &collision_events_vec,
                     &player_query,
-                    &mut mob_query,
-                    &mut mob_segment_query,
+                    &mob_query,
+                    &mob_segment_query,
                     &mut sound_effect_event_writer,
                     &mut damage_dealt_event_writer,
                 ),
@@ -152,8 +148,8 @@ fn deal_damage_on_contact(
     entity: Entity,
     collision_events: &[&SortedCollisionEvent],
     player_query: &Query<(Entity, &PlayerComponent)>,
-    mob_query: &mut Query<(Entity, &mut MobComponent)>,
-    mob_segment_query: &mut Query<(Entity, &mut MobSegmentComponent)>,
+    mob_query: &Query<(Entity, &MobComponent)>,
+    mob_segment_query: &Query<(Entity, &MobSegmentComponent)>,
     sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
     damage_dealt_event_writer: &mut EventWriter<DamageDealtEvent>,
 ) {
@@ -253,8 +249,8 @@ fn deal_damage_on_intersection(
     entity: Entity,
     collision_events: &[&SortedCollisionEvent],
     player_query: &Query<(Entity, &PlayerComponent)>,
-    mob_query: &mut Query<(Entity, &mut MobComponent)>,
-    mob_segment_query: &mut Query<(Entity, &mut MobSegmentComponent)>,
+    mob_query: &Query<(Entity, &MobComponent)>,
+    mob_segment_query: &Query<(Entity, &MobSegmentComponent)>,
     sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
     damage_dealt_event_writer: &mut EventWriter<DamageDealtEvent>,
 ) {
