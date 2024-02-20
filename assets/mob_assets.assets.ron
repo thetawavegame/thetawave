@@ -48,6 +48,20 @@
         columns: 3,
         rows: 1,
     ),
+    "enemy_cargo_ship": TextureAtlas (
+        path: "texture/enemy_cargo_ship_spritesheet.png",
+        tile_size_x: 38.,
+        tile_size_y: 46.,
+        columns: 2,
+        rows: 1,
+    ),
+    "enemy_cargo_ship.thruster": TextureAtlas (
+        path: "texture/enemy_cargo_ship_thrusters_spritesheet.png",
+        tile_size_x: 38.,
+        tile_size_y: 30.,
+        columns: 6,
+        rows: 1,
+    ),
     "pawn": TextureAtlas (
         path: "texture/pawn_spritesheet.png",
         tile_size_x: 20.,

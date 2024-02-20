@@ -117,6 +117,52 @@
 				weight: 1.0,
 				period: 6.5,
 			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(EnemyCargoShip)),
+						position: (0.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (100.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (0.0, 500.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (-100.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(MissileLauncher)),
+						position: (150.0, 400.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(MissileLauncher)),
+						position: (-150.0, 400.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (300.0, 700.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-300.0, 700.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (400.0, 800.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-400.0, 800.0),
+					),
+				],
+				weight: 0.7,
+				period: 20.,
+			),
 		],
 		"medium": [
 			(
@@ -358,6 +404,52 @@
 				],
 				weight: 1.0,
 				period: 6.5,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(EnemyCargoShip)),
+						position: (0.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (100.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (0.0, 500.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (-100.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(MissileLauncher)),
+						position: (150.0, 400.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(MissileLauncher)),
+						position: (-150.0, 400.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (300.0, 700.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-300.0, 700.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (400.0, 800.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-400.0, 800.0),
+					),
+				],
+				weight: 0.7,
+				period: 16.,
 			),
 		],
 		"hard": [
@@ -644,6 +736,52 @@
 				],
 				weight: 0.2,
 				period: 5.5,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(EnemyCargoShip)),
+						position: (0.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (100.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (0.0, 500.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (-100.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(MissileLauncher)),
+						position: (150.0, 400.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(MissileLauncher)),
+						position: (-150.0, 400.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (300.0, 700.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-300.0, 700.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (400.0, 800.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-400.0, 800.0),
+					),
+				],
+				weight: 0.5,
+				period: 14.,
 			),
 		],
 		"asteroids": [

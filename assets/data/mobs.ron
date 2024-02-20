@@ -774,6 +774,36 @@
 			),
 		)),
 	),
+	Enemy(EnemyCargoShip): (
+		mob_type: Enemy(EnemyCargoShip),
+		spawnable_behaviors: [MoveDown, BrakeHorizontal],
+		mob_behaviors: [DealDamageToPlayerOnImpact, DieAtZeroHealth],
+		acceleration: (0.0, 4.0),
+		deceleration: (2.0, 1.0),
+		speed: (0.0, 60.0),
+		defense_interaction: Some(Damage(20)),
+		colliders: [
+			(
+				dimensions: (13.5, 16.5),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
+		z_level: 4.0,
+		consumable_drops: EnemyCargoShip,
+		health: 650,
+		animation: (
+			direction: PingPong(Forward),
+			frame_duration: 0.25,
+		),
+		thruster: Some((
+			y_offset: 9,
+			animation: (
+				direction: PingPong(Forward),
+				frame_duration: 0.15,
+			),
+		))
+	),
 	Neutral(MoneyAsteroid): (
 		mob_type: Neutral(MoneyAsteroid),
 		spawnable_behaviors: [MoveDown],
