@@ -1,5 +1,8 @@
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use bevy::prelude::{
+    Commands, Component, Event, EventReader, Name, Res, Resource, SpriteSheetBundle,
+    TextureAtlasSprite, Timer, TimerMode, Transform, Vec2, Vec3,
+};
+use bevy_rapier2d::prelude::{ActiveEvents, Collider, LockedAxes, RigidBody, Sensor, Velocity};
 use serde::Deserialize;
 use std::collections::HashMap;
 use thetawave_interface::{

@@ -2,8 +2,12 @@ use crate::animation::AnimationComponent;
 use crate::assets::EffectAssets;
 use crate::spawnable::effect::{EffectComponent, TextEffectData, TextEffectsResource};
 use crate::spawnable::{EffectsResource, InitialMotion, SpawnEffectEvent, SpawnableComponent};
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use bevy::prelude::{
+    in_state, App, AssetServer, Commands, EventReader, IntoSystemConfigs, Name, Plugin, Res,
+    SpriteSheetBundle, Text, Text2dBundle, TextStyle, TextureAtlasSprite, Timer, TimerMode,
+    Transform, Update, Vec3,
+};
+use bevy_rapier2d::prelude::{LockedAxes, RigidBody, Velocity};
 use rand::Rng;
 use thetawave_interface::game::options::GameOptions;
 use thetawave_interface::spawnable::{EffectType, SpawnableType, TextEffectType};
@@ -112,7 +116,10 @@ fn spawn_text_effect(
 
     // spawn text effect entity
     commands
-        .spawn(Text2dBundle { text, ..default() })
+        .spawn(Text2dBundle {
+            text,
+            ..Default::default()
+        })
         .insert(
             transform
                 .with_translation(
@@ -131,7 +138,7 @@ fn spawn_text_effect(
         )
         .insert(SpawnableComponent {
             spawnable_type: SpawnableType::Effect(EffectType::Text(text_effect_type.clone())),
-            ..default()
+            ..Default::default()
         })
         .insert(EffectComponent::from(effect_data))
         .insert(GameCleanup);
@@ -175,7 +182,7 @@ fn spawn_effect(
         .insert(EffectComponent::from(effect_data))
         .insert(SpawnableComponent {
             spawnable_type: SpawnableType::Effect(effect_data.effect_type.clone()),
-            ..default()
+            ..Default::default()
         })
         .insert(LockedAxes::default())
         .insert(RigidBody::KinematicVelocityBased)
