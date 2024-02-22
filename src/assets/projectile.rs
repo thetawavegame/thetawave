@@ -1,5 +1,5 @@
-use bevy::prelude::*;
-use bevy_asset_loader::prelude::*;
+use bevy::prelude::{Color, Handle, Resource, TextureAtlas};
+use bevy_asset_loader::prelude::AssetCollection;
 use thetawave_interface::spawnable::{Faction, ProjectileType};
 
 #[derive(AssetCollection, Resource)]

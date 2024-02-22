@@ -1,5 +1,8 @@
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use bevy::prelude::{
+    in_state, App, Commands, EventReader, IntoSystemConfigs, Name, Plugin, Res, SpriteSheetBundle,
+    Timer, TimerMode, Transform, Update, Vec2, Vec3,
+};
+use bevy_rapier2d::prelude::{ActiveEvents, Collider, LockedAxes, RigidBody, Sensor, Velocity};
 use thetawave_interface::spawnable::{ItemComponent, SpawnItemEvent};
 use thetawave_interface::{
     spawnable::ItemType,
@@ -78,7 +81,7 @@ pub fn spawn_item(
     // Sprite components
     item.insert(SpriteSheetBundle {
         texture_atlas: item_assets.get_asset(item_type),
-        ..default()
+        ..Default::default()
     })
     .insert(AnimationComponent {
         timer: Timer::from_seconds(item_data.animation.frame_duration, TimerMode::Repeating),
@@ -97,7 +100,7 @@ pub fn spawn_item(
             game_parameters.sprite_scale,
             1.0,
         ),
-        ..default()
+        ..Default::default()
     });
 
     // Collider components
