@@ -85,6 +85,8 @@ rand = { workspace = true }
 bevy_kira_audio = { workspace = true }
 winit = "0.28.4"
 image = "0.24.6"
+# Bevy and Egui are individually pre-1.0 and have regular breaking changes.
+bevy_egui = "0.24"
 thiserror = { workspace = true }
 leafwing-input-manager = { workspace = true }
 

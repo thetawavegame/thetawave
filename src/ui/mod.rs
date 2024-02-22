@@ -12,6 +12,7 @@ mod game_over;
 mod instructions;
 mod level;
 mod main_menu;
+mod options_menu;
 mod pause_menu;
 mod phase;
 mod player;
@@ -22,6 +23,8 @@ pub use self::character_selection::{
     player_join_system, select_character_system, setup_character_selection_system,
 };
 use self::game_center::text_fade_out_system;
+use self::main_menu::enable_options_menu_overlay_on_input_action;
+use self::options_menu::OptionsMenuPlugin;
 use self::player::update_player_ui_system;
 use self::{game_center::update_center_text_ui_system, instructions::setup_instructions_system};
 pub use self::{
@@ -37,8 +40,18 @@ pub struct UiPlugin;
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<PlayerJoinEvent>();
+        app.add_plugins(OptionsMenuPlugin);
 
         app.add_systems(Update, bouncing_prompt_system);
+        app.add_systems(
+            Update,
+            enable_options_menu_overlay_on_input_action.run_if(
+                not(in_state(states::OptionsMenuOverlay::Enabled)).and_then(
+                    in_state(states::GameStates::Paused)
+                        .or_else(in_state(states::AppStates::MainMenu)),
+                ),
+            ),
+        );
 
         app.add_systems(
             OnEnter(states::AppStates::Game),

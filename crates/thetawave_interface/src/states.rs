@@ -1,5 +1,13 @@
 use bevy_ecs_macros::{Component, States};
 
+/// The options menu can be overlayed at various AppStates. We will mainly edit
+/// thetawve_interface::game::options::GameOptions while in the options menu.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default, States)]
+pub enum OptionsMenuOverlay {
+    #[default]
+    Disabled,
+    Enabled,
+}
 // states of the game
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default, States)]
 pub enum AppStates {
