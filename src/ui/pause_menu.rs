@@ -11,12 +11,14 @@ pub fn setup_pause_system(
     asset_server: Res<AssetServer>,
     playing_on_arcade: Res<PlayingOnArcadeResource>,
 ) {
+    let font = asset_server.load("fonts/wibletown-regular.otf");
     commands
         .spawn(NodeBundle {
             style: Style {
                 width: Val::Percent(100.0),
                 height: Val::Percent(100.0),
                 position_type: PositionType::Absolute,
+                flex_direction: FlexDirection::Column,
                 ..Default::default()
             },
             background_color: Color::rgba(0.5, 0.5, 0.5, 0.1).into(),
@@ -51,5 +53,25 @@ pub fn setup_pause_system(
                     flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
                     is_active: true,
                 });
+            parent.spawn(TextBundle {
+                style: Style {
+                    width: Val::Auto,
+                    height: Val::Auto,
+                    margin: UiRect::axes(Val::Auto, Val::Auto),
+                    ..Default::default()
+                },
+
+                text: Text::from_section(
+                    "Press O or 'Select' for options".to_owned(),
+                    TextStyle {
+                        font,
+                        font_size: 32.0,
+                        color: Color::WHITE,
+                    },
+                )
+                .with_alignment(TextAlignment::Center),
+
+                ..default()
+            });
         });
 }
