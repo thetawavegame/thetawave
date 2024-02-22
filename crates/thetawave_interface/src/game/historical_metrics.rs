@@ -2,7 +2,6 @@
 //! corresponding systems are not 'online' to mutate the resources.
 use crate::spawnable::EnemyMobType;
 use bevy_ecs_macros::Resource;
-use derive_more;
 use std::collections::HashMap;
 
 /// The 'model' of the UserStat Sqlite table. Persisted user stats about past games.

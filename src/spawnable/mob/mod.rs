@@ -1,11 +1,10 @@
 use bevy::prelude::*;
-use bevy_rapier2d::geometry::Group;
-use bevy_rapier2d::prelude::*;
-use serde::Deserialize;
-use std::{
-    collections::{hash_map::Entry, HashMap},
-    string::ToString,
+use bevy_rapier2d::prelude::{
+    ActiveEvents, CoefficientCombineRule, Collider, CollisionGroups, Friction, Group, LockedAxes,
+    Restitution, RevoluteJointBuilder, RigidBody, Velocity,
 };
+use serde::Deserialize;
+use std::collections::{hash_map::Entry, HashMap};
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
@@ -17,7 +16,7 @@ use crate::{
 
 mod behavior;
 mod mob_segment;
-pub use self::{behavior::*, mob_segment::*};
+pub(crate) use self::{behavior::*, mob_segment::*};
 
 use super::{behavior_sequence::MobBehaviorSequenceType, InitialMotion};
 use crate::collision::{
@@ -117,7 +116,6 @@ impl From<MobSpawnerData> for MobSpawner {
 }
 
 #[derive(Deserialize, Clone)]
-
 pub struct ProjectileSpawner {
     pub projectile_type: ProjectileType,
     pub timer: Timer,

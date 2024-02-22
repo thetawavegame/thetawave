@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use serde::Deserialize;
-use std::{collections::HashMap, string::ToString};
+use std::collections::HashMap;
 use thetawave_interface::{
     audio::PlaySoundEffectEvent,
     game::options::GameOptions,
