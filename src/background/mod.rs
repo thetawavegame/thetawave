@@ -1,12 +1,10 @@
 //! `thetawave` background module
 
-use std::fs;
-
-use bevy::prelude::Commands;
 use bevy::prelude::*;
 use rand::{seq::IteratorRandom, Rng};
 use ron::de::from_bytes;
 use serde::Deserialize;
+use std::fs;
 use std::ops::Range;
 use thetawave_interface::{
     game::options::GameOptions,
@@ -202,10 +200,12 @@ pub fn create_background_system(
             Err(_) => {
                 error!("Failed to get random model from ./assets/models/planets. Using fallback model instead.");
 
-                let maybe_icosphere = Mesh::try_from(shape::Icosphere {
-                    radius: 10.0,
-                    subdivisions: backgrounds_res.planet_subdivisions,
-                });
+                let maybe_icosphere = Mesh::try_from(
+                    Sphere { radius: 10.0 }
+                        .mesh()
+                        .ico(backgrounds_res.planet_subdivisions)
+                        .unwrap(),
+                );
 
                 match maybe_icosphere {
                     Ok(icosphere) => {

@@ -105,7 +105,7 @@ pub fn animate_sprite_system(
                 AnimationDirection::Forward => {
                     let new_idx = (sprite.index + 1) % texture_atlas.textures.len();
                     if new_idx == 0 {
-                        animation_complete_event_writer.send(AnimationCompletedEvent(entity))
+                        animation_complete_event_writer.send(AnimationCompletedEvent(entity));
                     }
                     sprite.index = new_idx;
                 }

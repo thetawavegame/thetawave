@@ -16,15 +16,15 @@ strum = "0.25.0"
 strum_macros = "0.25.1"
 thiserror = "1.0"
 derive_more = "0.99.17"
-bevy_ecs_macros = "0.12"
-bevy_ecs = "0.12"
-bevy_reflect = "0.12"
-bevy_input = "0.12"
-bevy_kira_audio = { version = "0.18", features = ["mp3", "wav"] }
-leafwing-input-manager = "0.11"
+bevy_ecs_macros = "0.13"
+bevy_ecs = "0.13"
+bevy_reflect = "0.13"
+bevy_input = "0.13"
+bevy_kira_audio = { version = "0.19", features = ["mp3", "wav"] }
+leafwing-input-manager = "0.13"
 ron = "0.8.0"
-bevy_time = "0.12"
-bevy_math = "0.12"
+bevy_time = "0.13"
+bevy_math = "0.13"
 # We value minimizing the binary sizes and keeping the CLI maximally simple over a more feature complete CLI library
 # like clap.
 argh = "0.1.12"
@@ -32,7 +32,7 @@ rand = "0.8.5"
 console_error_panic_hook = "0.1.7"
 
 [workspace.dependencies.bevy]
-version = "0.12"
+version = "0.13"
 default-features = false
 features = [
     # Non-default/'extra' features features
@@ -68,11 +68,11 @@ assert_cmd = "2.0.12"
 
 [dependencies]
 bevy = { workspace = true }
-bevy_rapier2d = { version = "0.23", features = [
+bevy_rapier2d = { version = "0.25", features = [
     "simd-stable",
     "debug-render-2d",
 ] }
-bevy_asset_loader = { version = "0.18", features = [
+bevy_asset_loader = { version = "0.20", features = [
     "2d",
     "3d",
     "standard_dynamic_assets",
@@ -83,7 +83,7 @@ strum_macros = { workspace = true }
 ron = { workspace = true }
 rand = { workspace = true }
 bevy_kira_audio = { workspace = true }
-winit = "0.28.4"
+winit = "0.29.10"
 image = "0.24.6"
 thiserror = { workspace = true }
 leafwing-input-manager = { workspace = true }

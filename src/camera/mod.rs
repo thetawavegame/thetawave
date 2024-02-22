@@ -1,11 +1,14 @@
 use crate::game;
+use bevy::app::{App, Plugin, Startup};
 use bevy::core_pipeline::bloom::BloomPrefilterSettings;
-use bevy::{
-    core_pipeline::{
-        bloom::BloomSettings, clear_color::ClearColorConfig, tonemapping::Tonemapping,
-    },
-    prelude::*,
-};
+use bevy::core_pipeline::core_2d::{Camera2d, Camera2dBundle};
+use bevy::core_pipeline::core_3d::Camera3dBundle;
+use bevy::core_pipeline::{bloom::BloomSettings, tonemapping::Tonemapping};
+use bevy::ecs::system::{Commands, Res};
+use bevy::math::Vec3;
+use bevy::render::camera::{Camera, PerspectiveProjection, Projection};
+use bevy::transform::components::Transform;
+use bevy::utils::default;
 
 pub struct CameraPlugin;
 

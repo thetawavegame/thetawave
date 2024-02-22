@@ -136,7 +136,7 @@ fn fade_out_text_effect_behavior_system(
                     .iter_mut()
                     .map(|section| &mut section.style.color)
                 {
-                    color.set_a(timer.percent_left());
+                    color.set_a(timer.fraction_remaining());
                 }
             }
         }

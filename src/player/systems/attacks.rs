@@ -34,7 +34,7 @@ pub fn fire_weapon_system(
     mut fire_weapon: EventWriter<FireWeaponEvent>,
 ) {
     for (mut weapon, rb_vels, transform, action_state, entity) in player_query.iter_mut() {
-        let fire_input = action_state.pressed(PlayerAction::BasicAttack);
+        let fire_input = action_state.pressed(&PlayerAction::BasicAttack);
 
         // fire blast if timer finished and input pressed
         if !weapon.can_fire() || !fire_input {

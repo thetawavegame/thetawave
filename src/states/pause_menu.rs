@@ -1,13 +1,14 @@
-use bevy::prelude::*;
-use bevy_kira_audio::prelude::*;
-use bevy_rapier2d::prelude::*;
-use leafwing_input_manager::prelude::ActionState;
+use crate::audio;
+use bevy::asset::AssetServer;
+use bevy::ecs::query::With;
+use bevy::ecs::schedule::NextState;
+use bevy::ecs::system::{Query, Res, ResMut};
+use bevy_kira_audio::{AudioChannel, AudioControl};
+use bevy_rapier2d::plugin::RapierConfiguration;
+use leafwing_input_manager::action_state::ActionState;
 use thetawave_interface::input::{MenuAction, MenuExplorer};
 use thetawave_interface::states::GameStates;
 
-use crate::audio;
-
-// opens pause menu if input given
 pub fn open_pause_menu_system(
     menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
     mut next_game_state: ResMut<NextState<GameStates>>,
@@ -18,7 +19,7 @@ pub fn open_pause_menu_system(
     let action_state = menu_input_query.single();
 
     // swiitch to pause menu state if input read
-    if action_state.just_released(MenuAction::PauseGame) {
+    if action_state.just_released(&MenuAction::PauseGame) {
         next_game_state.set(GameStates::Paused);
 
         // play sound effect
@@ -42,7 +43,7 @@ pub fn close_pause_menu_system(
     let action_state = menu_input_query.single();
 
     // pop the pause state if input read
-    if action_state.just_released(MenuAction::ExitPauseMenu) {
+    if action_state.just_released(&MenuAction::ExitPauseMenu) {
         next_game_state.set(GameStates::Playing);
 
         // play sound effect

@@ -23,6 +23,7 @@ use super::{behavior_sequence::MobBehaviorSequenceType, InitialMotion};
 use crate::collision::{
     HORIZONTAL_BARRIER_COLLIDER_GROUP, MOB_COLLIDER_GROUP, SPAWNABLE_COLLIDER_GROUP,
 };
+use bevy::prelude::Asset;
 use thetawave_interface::{
     audio::CollisionSoundType,
     game::options::GameOptions,
@@ -323,8 +324,13 @@ pub struct MobsResource {
     /// Mob types mapped to mob data
     pub mobs: HashMap<MobType, MobData>,
     /// Mob types mapped to their texture and optional thruster texture
-    pub texture_atlas_handle:
-        HashMap<MobType, (Handle<TextureAtlas>, Option<Handle<TextureAtlas>>)>,
+    pub texture_atlas_handle: HashMap<
+        MobType,
+        (
+            Handle<TextureAtlasLayout>,
+            Option<Handle<TextureAtlasLayout>>,
+        ),
+    >,
 }
 
 /// Spawn a mob entity

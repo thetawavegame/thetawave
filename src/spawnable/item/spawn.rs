@@ -120,7 +120,7 @@ pub fn spawn_item(
 
 fn add_item_behavior_components(
     item_data: &super::ItemData,
-    mut item: bevy::ecs::system::EntityCommands<'_, '_, '_>,
+    mut item: bevy::ecs::system::EntityCommands<'_>,
 ) {
     for behavior in item_data.item_behaviors.iter() {
         match behavior {
