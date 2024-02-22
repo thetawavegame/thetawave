@@ -2,11 +2,13 @@ use std::time::Duration;
 
 use crate::options::PlayingOnArcadeResource;
 use bevy::prelude::*;
+use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::audio::{BGMusicType, ChangeBackgroundMusicEvent};
 use thetawave_interface::game::historical_metrics::{
     MobKillsByPlayerForCompletedGames, UserStatsByPlayerForCompletedGamesCache, DEFAULT_USER_ID,
 };
-use thetawave_interface::states::MainMenuCleanup;
+use thetawave_interface::input::{MenuAction, MenuExplorer};
+use thetawave_interface::states::{MainMenuCleanup, OptionsMenuOverlay};
 
 #[derive(Component)]
 pub struct MainMenuUI;
@@ -110,7 +112,7 @@ pub fn setup_main_menu_system(
                                         super::pprint_mob_kills_from_data(&historical_games_enemy_mob_kill_counts),
                                     ),
                                     TextStyle {
-                                        font,
+                                        font: font.clone(),
                                         font_size: 32.0,
                                         color: Color::WHITE,
                                     },
@@ -148,6 +150,26 @@ pub fn setup_main_menu_system(
                             flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
                             is_active: true,
                         });
+                        parent.spawn(TextBundle {
+                            style: Style {
+                                width: Val::Auto,
+                                height: Val::Auto,
+                                margin: UiRect::axes(Val::Auto, Val::Percent(5.)),
+                                ..Default::default()
+                            },
+
+                            text: Text::from_section(
+                              "Press O or 'Select' for options".to_owned(),
+                                TextStyle {
+                                    font,
+                                    font_size: 32.0,
+                                    color: Color::WHITE,
+                                },
+                            )
+                                .with_alignment(TextAlignment::Center),
+
+                            ..default()
+                        });
                 });
         });
 }
@@ -169,5 +191,19 @@ pub fn bouncing_prompt_system(
 
         transform.scale.x = scale;
         transform.scale.y = scale;
+    }
+}
+
+pub(super) fn enable_options_menu_overlay_on_input_action(
+    mut next_options_menu_overlay_state: ResMut<NextState<OptionsMenuOverlay>>,
+    menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
+) {
+    if let Ok(menu_action) = menu_input_query.get_single() {
+        if menu_action.just_released(MenuAction::OptionsMenu) {
+            info!("Entering options menu overlay state");
+            next_options_menu_overlay_state.set(OptionsMenuOverlay::Enabled)
+        }
+    } else {
+        error!("Cannot find input device");
     }
 }
