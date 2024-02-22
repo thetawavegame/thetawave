@@ -1,4 +1,11 @@
-use bevy::{math::Vec3Swizzles, prelude::*, window::PrimaryWindow};
+use bevy::{
+    prelude::{
+        in_state, App, Entity, IntoSystemConfigs, Plugin, Query, Res, Transform, Update, Vec2,
+        Vec3Swizzles, Window, With,
+    },
+    utils::tracing::debug,
+    window::PrimaryWindow,
+};
 use thetawave_interface::health::HealthComponent;
 
 use crate::{game::GameParametersResource, spawnable::MobComponent};
