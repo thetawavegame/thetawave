@@ -54,7 +54,7 @@ impl GameInitCLIOptions {
 }
 
 pub fn apply_game_options_system(
-    mut game_options: ResMut<GameOptions>,
+    game_options: Res<GameOptions>,
     mut camera_2d_query: Query<
         (&mut Camera, &mut Tonemapping),
         (With<Camera2d>, Without<Camera3d>),
@@ -71,13 +71,12 @@ pub fn apply_game_options_system(
         camera_2d.hdr = game_options.bloom_enabled;
         camera_3d.hdr = game_options.bloom_enabled;
 
-        if game_options.bloom_enabled {
+        if game_options.bloom_enabled && game_options.bloom_intensity >= 0. {
             *tonemapping_2d = Tonemapping::TonyMcMapface;
             *tonemapping_3d = Tonemapping::TonyMcMapface;
         } else {
             *tonemapping_2d = Tonemapping::None;
             *tonemapping_3d = Tonemapping::None;
-            game_options.bloom_intensity = 0.0;
         }
     } else {
         error!("Failed to get singleton 2d and 3d cameras to apply game opts");
