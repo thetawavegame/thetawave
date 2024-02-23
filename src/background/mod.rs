@@ -1,6 +1,5 @@
 //! `thetawave` background module
 
-use bevy::math::primitives::Sphere;
 use bevy::prelude::*;
 use rand::{seq::IteratorRandom, Rng};
 use ron::de::from_bytes;
@@ -56,9 +55,9 @@ pub struct BackgroundsResource {
     /// Range of colors for the star
     pub star_color_range: Range<f32>,
     /// Width of the background quad mesh
-    pub background_quad_width: f32,
+    pub background_rect_width: f32,
     /// Height of the background quad mesh
-    pub background_quad_height: f32,
+    pub background_rect_height: f32,
     /// Alpha channel value of the background
     pub background_alpha: f32,
     /// Radius of the star's icosphere mesh
@@ -230,10 +229,10 @@ pub fn create_background_system(
 
     // Spawn a quad textured with a random background image
     // Create a quad mesh for the background
-    let quad_handle = meshes.add(Mesh::from(shape::Quad::new(Vec2::new(
-        backgrounds_res.background_quad_width,
-        backgrounds_res.background_quad_height,
-    ))));
+    let quad_handle = meshes.add(Mesh::from(Rectangle::new(
+        backgrounds_res.background_rect_width,
+        backgrounds_res.background_rect_height,
+    )));
 
     // Choose a random background or fallback to a black color
     let mut background_commands = commands.spawn_empty();

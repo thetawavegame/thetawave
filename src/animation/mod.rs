@@ -1,6 +1,6 @@
 use bevy::{
     app::{App, Plugin, Update},
-    asset::{Assets, Handle},
+    asset::Assets,
     ecs::{
         component::Component,
         entity::Entity,

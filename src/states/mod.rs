@@ -5,7 +5,6 @@ use bevy::prelude::{
 use bevy_asset_loader::loading_state::config::ConfigureLoadingState;
 use bevy_asset_loader::loading_state::LoadingState;
 use bevy_asset_loader::loading_state::LoadingStateAppExt;
-use bevy_asset_loader::prelude::*;
 use bevy_asset_loader::standard_dynamic_asset::StandardDynamicAssetCollection;
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::input::MenuAction;
@@ -22,7 +21,6 @@ use thetawave_interface::states::{AppStates, GameStates};
 mod game;
 mod pause_menu;
 
-use crate::assets;
 use crate::assets::ConsumableAssets;
 use crate::assets::EffectAssets;
 use crate::assets::GameAudioAssets;
