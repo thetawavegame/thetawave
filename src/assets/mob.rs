@@ -1,5 +1,5 @@
-use bevy::prelude::*;
-use bevy_asset_loader::prelude::*;
+use bevy::prelude::{Color, Handle, Resource, TextureAtlas};
+use bevy_asset_loader::prelude::AssetCollection;
 use thetawave_interface::spawnable::{
     AllyMobType, EnemyMobSegmentType, EnemyMobType, MobSegmentType, MobType, NeutralMobSegmentType,
     NeutralMobType,
@@ -142,11 +142,23 @@ impl MobAssets {
         }
     }
 
-    pub fn get_thruster_color(&self, mob_type: &MobType) -> Color {
+    pub fn get_thruster_color(&self, mob_type: &MobType, bloom_intensity: f32) -> Color {
         match mob_type {
-            MobType::Enemy(_) => Color::rgb(3.8, 2.2, 1.0),
-            MobType::Ally(_) => Color::rgb(3.8, 2.2, 1.0),
-            MobType::Neutral(_) => Color::rgb(3.8, 2.2, 1.0),
+            MobType::Enemy(_) => Color::rgb(
+                1.0 + 2.8 * bloom_intensity,
+                1.0 + 1.2 * bloom_intensity,
+                1.0,
+            ),
+            MobType::Ally(_) => Color::rgb(
+                1.0 + 2.8 * bloom_intensity,
+                1.0 + 1.2 * bloom_intensity,
+                1.0,
+            ),
+            MobType::Neutral(_) => Color::rgb(
+                1.0 + 2.8 * bloom_intensity,
+                1.0 + 1.2 * bloom_intensity,
+                1.0,
+            ),
         }
     }
 }

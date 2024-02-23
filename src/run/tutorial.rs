@@ -12,11 +12,14 @@ use thetawave_interface::spawnable::{
     AllyMobType, MobDestroyedEvent, MobSegmentDestroyedEvent, MobSegmentType, MobType,
     NeutralMobSegmentType, NeutralMobType, SpawnMobEvent,
 };
+use thetawave_interface::weapon::WeaponComponent;
 
-fn enable_player_actions_at_end_of_phase(players: &mut Query<&mut PlayerComponent>) {
-    for mut player in players.iter_mut() {
+fn enable_player_actions_at_end_of_phase(
+    players: &mut Query<(&mut PlayerComponent, &mut WeaponComponent)>,
+) {
+    for (mut player, mut weapon) in players.iter_mut() {
         player.enable_special_attacks();
-        player.enable_main_attacks();
+        weapon.enable();
     }
 }
 pub(super) fn modify_player_spawn_params_for_lesson_phase(
@@ -270,7 +273,7 @@ impl TutorialLesson {
         mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
         mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
         play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
-        players: &mut Query<&mut PlayerComponent>,
+        players: &mut Query<(&mut PlayerComponent, &mut WeaponComponent)>,
     ) -> bool {
         self.disable_player_actions_for_current_phase(players);
         // tutorial will only be run for single player
@@ -305,18 +308,18 @@ impl TutorialLesson {
     }
     pub fn disable_player_actions_for_current_phase(
         &self,
-        players: &mut Query<&mut PlayerComponent>,
+        players: &mut Query<(&mut PlayerComponent, &mut WeaponComponent)>,
     ) {
-        for mut player in players.iter_mut() {
+        for (mut player, mut weapon) in players.iter_mut() {
             match self {
                 Self::Ability { .. } => {
-                    player.disable_main_attacks();
+                    weapon.disable();
                 }
                 Self::Attack { .. } => {
                     player.disable_special_attacks();
                 }
                 Self::Movement { .. } => {
-                    player.disable_main_attacks();
+                    weapon.disable();
                     player.disable_special_attacks();
                 }
             }

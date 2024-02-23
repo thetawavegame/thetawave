@@ -1,3 +1,4 @@
+pub mod animation;
 pub mod audio;
 pub mod camera;
 pub mod character;
@@ -10,3 +11,4 @@ pub mod player;
 pub mod run;
 pub mod spawnable;
 pub mod states;
+pub mod weapon;

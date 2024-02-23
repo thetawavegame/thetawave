@@ -1,5 +1,5 @@
-use bevy::prelude::*;
-use bevy_asset_loader::prelude::*;
+use bevy::prelude::{Color, Handle, Resource, TextureAtlas};
+use bevy_asset_loader::prelude::AssetCollection;
 
 use thetawave_interface::spawnable::ConsumableType;
 
@@ -29,7 +29,11 @@ impl ConsumableAssets {
     }
 
     #[allow(unused)] // Placeholder for if we put this in the item config files
-    pub fn get_color(&self, consumable_type: &ConsumableType) -> Color {
-        Color::rgb(1.6, 1.6, 1.6)
+    pub fn get_color(&self, consumable_type: &ConsumableType, bloom_intensity: f32) -> Color {
+        Color::rgb(
+            1.0 + 0.6 * bloom_intensity,
+            1.0 + 0.6 * bloom_intensity,
+            1.0 + 0.6 * bloom_intensity,
+        )
     }
 }

@@ -1,10 +1,18 @@
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use bevy::prelude::{
+    Commands, Component, Entity, Event, EventReader, EventWriter, Name, Quat, Res, Resource,
+    SpriteSheetBundle, TextureAtlasSprite, Timer, TimerMode, Transform, Vec2, Vec3Swizzles,
+};
+use bevy_rapier2d::prelude::{
+    ActiveEvents, Collider, CollisionGroups, Group, LockedAxes, RigidBody, Sensor, Velocity,
+};
 use serde::Deserialize;
-use std::{collections::HashMap, f32::consts::PI, string::ToString};
+use std::collections::HashMap;
 use thetawave_interface::{
+    audio::PlaySoundEffectEvent,
+    game::options::GameOptions,
     spawnable::{Faction, ProjectileType, SpawnableType},
     states::GameCleanup,
+    weapon::WeaponProjectileData,
 };
 
 use crate::collision::{
@@ -15,32 +23,22 @@ use crate::{
     animation::{AnimationComponent, AnimationData},
     assets::ProjectileAssets,
     game::GameParametersResource,
-    spawnable::InitialMotion,
     spawnable::{SpawnableBehavior, SpawnableComponent},
+    weapon::WeaponProjectileInitialVelocitiesExt,
 };
 
 mod behavior;
 
 pub use self::behavior::{projectile_execute_behavior_system, ProjectileBehavior};
 
-use super::ColliderData;
+use super::{ColliderData, InitialMotion};
 
-/// Event for spawning projectiles
 #[derive(Event, Clone)]
-pub struct SpawnProjectileEvent {
-    /// Type of projectile to spawn
-    pub projectile_type: ProjectileType,
-    pub projectile_count: usize,
-    pub projectile_direction: f32,
-    /// Position to spawn
-    pub transform: Transform,
-    /// Damage of projectile
-    pub damage: usize,
-    /// Time until projectile despawns
-    pub despawn_time: f32,
-    /// Initial motion of the projectile
+pub struct FireWeaponEvent {
+    pub weapon_projectile_data: WeaponProjectileData,
+    pub source_transform: Transform,
+    pub source_entity: Entity,
     pub initial_motion: InitialMotion,
-    pub source: Entity,
 }
 
 /// Core component for projectiles
@@ -87,98 +85,101 @@ pub struct ProjectileResource {
 /// Spawns projectiles from events
 pub fn spawn_projectile_system(
     mut commands: Commands,
-    mut event_reader: EventReader<SpawnProjectileEvent>,
+    mut fire_weapon_event_reader: EventReader<FireWeaponEvent>,
+    mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
     projectile_resource: Res<ProjectileResource>,
     projectile_assets: Res<ProjectileAssets>,
     game_parameters: Res<GameParametersResource>,
+    game_options: Res<GameOptions>,
 ) {
-    for event in event_reader.read() {
-        spawn_projectile(
-            &event.projectile_type,
+    for event in fire_weapon_event_reader.read() {
+        spawn_projectile_from_weapon(
+            &mut commands,
+            &mut sound_effect_event_writer,
+            event.weapon_projectile_data.clone(),
+            event.initial_motion.clone(),
+            event.source_entity,
+            event.source_transform,
             &projectile_resource,
             &projectile_assets,
-            event.transform,
-            event.projectile_count,
-            event.damage,
-            event.projectile_direction,
-            event.despawn_time,
-            event.initial_motion.clone(),
-            &mut commands,
             &game_parameters,
-            event.source,
+            &game_options,
         );
     }
 }
 
-/// Spawn a projectile entity
-#[allow(clippy::too_many_arguments)]
-pub fn spawn_projectile(
-    projectile_type: &ProjectileType,
+pub fn spawn_projectile_from_weapon(
+    commands: &mut Commands,
+    sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
+    weapon_projectile_data: WeaponProjectileData,
+    initial_motion: InitialMotion,
+    source_entity: Entity,
+    source_transform: Transform,
     projectile_resource: &ProjectileResource,
     projectile_assets: &ProjectileAssets,
-    transform: Transform,
-    projectile_count: usize,
-    damage: usize,
-    direction: f32,
-    despawn_time: f32, // time before despawning
-    initial_motion: InitialMotion,
-    commands: &mut Commands,
     game_parameters: &GameParametersResource,
-    source: Entity,
+    game_options: &GameOptions,
 ) {
-    // Get data from projectile resource
-    let projectile_data = &projectile_resource.projectiles[projectile_type];
+    // Play the sound effect for the projectiles firing
+    sound_effect_event_writer.send(PlaySoundEffectEvent {
+        sound_effect_type: weapon_projectile_data.sound.clone(),
+    });
 
+    // Get data for the type of ammunition being spawned
+    let projectile_data = &projectile_resource.projectiles[&weapon_projectile_data.ammunition];
+
+    // Get the behaviors for the type of ammunition being spawned and add a despawn behavior
     let mut projectile_behaviors = projectile_data.projectile_behaviors.clone();
-    projectile_behaviors.push(ProjectileBehavior::TimedDespawn { despawn_time });
+    projectile_behaviors.push(ProjectileBehavior::TimedDespawn {
+        despawn_time: weapon_projectile_data.despawn_time,
+    });
 
-    let mut projectile_transform = transform;
-    projectile_transform.translation.z = projectile_data.z_level;
-    projectile_transform.scale.x *= game_parameters.sprite_scale;
-    projectile_transform.scale.y *= game_parameters.sprite_scale;
-    projectile_transform.scale.z = 1.0;
-
-    // the percentage of the total number of projectiles that the player has acquired
-    let total_projectiles_percent =
-        (projectile_count as f32 - 1.) / (game_parameters.max_player_projectiles - 1.);
-    // indicates the angle between the first and last projectile
-    let spread_arc = game_parameters
-        .max_spread_arc
-        .min(total_projectiles_percent * game_parameters.projectile_gap);
-    // indicates the angle between each projectile
-    let spread_angle_segment = spread_arc / (projectile_count as f32 - 1.).max(1.);
-
-    for p in 0..projectile_count {
-        let new_initial_motion = if let Some(mut initial_motion_linvel) =
-            initial_motion.clone().linvel
-        {
-            // the start angle is half of {spread_arc} of radians to the left of the center, so that the arc is centered on the player
-            let spread_angle_start = (PI + spread_arc) / 2.;
-            // the angle of the current projectile
-            let spread_angle = spread_angle_start - (p as f32 * spread_angle_segment);
-            // convert the angle to a distance vector
-            let spread_distance = Vec2::new(spread_angle.cos() * 200., spread_angle.sin() * 400.);
-            initial_motion_linvel.x += spread_distance.x;
-            initial_motion_linvel.y += spread_distance.y * direction.sin();
-
-            InitialMotion {
-                linvel: Some(initial_motion_linvel),
-                ..initial_motion.clone()
+    // Create the transform for spawned projectiles
+    let projectile_transform = Transform {
+        translation: match weapon_projectile_data.position {
+            thetawave_interface::spawnable::SpawnPosition::Global(pos) => pos,
+            thetawave_interface::spawnable::SpawnPosition::Local(pos) => {
+                source_transform.translation.xy() + pos
             }
-        } else {
-            initial_motion.clone()
-        };
+        }
+        .extend(projectile_data.z_level),
+        scale: Vec2::splat(game_parameters.sprite_scale * weapon_projectile_data.size).extend(1.0),
+        rotation: Quat::from_rotation_z(weapon_projectile_data.direction),
+    };
+
+    // Set the correct collider group for the ammunition based on the faction
+    let projectile_colider_group =
+        get_projectile_collider_group(weapon_projectile_data.ammunition.get_faction());
+
+    // Get a vec of linvels to create the spread pattern
+    let spread_linvels = weapon_projectile_data.get_linvels(game_parameters.max_player_projectiles);
+
+    for linvel in spread_linvels {
+        let new_initial_motion =
+            if let Some(mut initial_motion_linvel) = initial_motion.clone().linvel {
+                // Convert the angle to a velocity vector
+                initial_motion_linvel += linvel;
+
+                InitialMotion {
+                    linvel: Some(initial_motion_linvel),
+                    ..initial_motion.clone()
+                }
+            } else {
+                initial_motion.clone()
+            };
 
         // create projectile entity
         let mut projectile = commands.spawn_empty();
-        let projectile_colider_group = get_projectile_collider_group(projectile_type.get_faction());
 
         projectile
             .insert(LockedAxes::ROTATION_LOCKED)
             .insert(SpriteSheetBundle {
-                texture_atlas: projectile_assets.get_asset(projectile_type),
+                texture_atlas: projectile_assets.get_asset(&weapon_projectile_data.ammunition),
                 sprite: TextureAtlasSprite {
-                    color: projectile_assets.get_color(projectile_type),
+                    color: projectile_assets.get_color(
+                        &weapon_projectile_data.ammunition,
+                        game_options.bloom_intensity,
+                    ),
                     ..Default::default()
                 },
                 ..Default::default()
@@ -200,9 +201,9 @@ pub fn spawn_projectile(
             .insert(ProjectileComponent {
                 projectile_type: projectile_data.projectile_type.clone(),
                 behaviors: projectile_behaviors.clone(),
-                damage,
+                damage: weapon_projectile_data.damage,
                 time_alive: 0.0,
-                source,
+                source: source_entity,
             })
             .insert(SpawnableComponent {
                 spawnable_type: SpawnableType::Projectile(projectile_data.projectile_type.clone()),

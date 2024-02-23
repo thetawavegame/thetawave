@@ -2,13 +2,17 @@ use crate::animation::AnimationComponent;
 use crate::assets::EffectAssets;
 use crate::spawnable::effect::{EffectComponent, TextEffectData, TextEffectsResource};
 use crate::spawnable::{EffectsResource, InitialMotion, SpawnEffectEvent, SpawnableComponent};
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use bevy::prelude::{
+    in_state, App, AssetServer, Commands, EventReader, IntoSystemConfigs, Name, Plugin, Res,
+    SpriteSheetBundle, Text, Text2dBundle, TextStyle, TextureAtlasSprite, Timer, TimerMode,
+    Transform, Update, Vec3,
+};
+use bevy_rapier2d::prelude::{LockedAxes, RigidBody, Velocity};
 use rand::Rng;
+use thetawave_interface::game::options::GameOptions;
 use thetawave_interface::spawnable::{EffectType, SpawnableType, TextEffectType};
 use thetawave_interface::states;
 use thetawave_interface::states::GameCleanup;
-
 /// `EffectSpawnPlugin` manages the spawning of in-game effects.
 ///
 /// This plugin is responsible for adding the system that handles the spawning of effects during the game.
@@ -34,6 +38,7 @@ fn spawn_effect_system(
     mut event_reader: EventReader<SpawnEffectEvent>,
     effects_resource: Res<EffectsResource>,
     effect_assets: Res<EffectAssets>,
+    game_options: Res<GameOptions>,
 ) {
     for event in event_reader.read() {
         if !matches!(event.effect_type, EffectType::Text(..)) {
@@ -44,6 +49,7 @@ fn spawn_effect_system(
                 event.transform,
                 event.initial_motion.clone(),
                 &mut commands,
+                &game_options,
             );
         }
     }
@@ -110,7 +116,10 @@ fn spawn_text_effect(
 
     // spawn text effect entity
     commands
-        .spawn(Text2dBundle { text, ..default() })
+        .spawn(Text2dBundle {
+            text,
+            ..Default::default()
+        })
         .insert(
             transform
                 .with_translation(
@@ -129,7 +138,7 @@ fn spawn_text_effect(
         )
         .insert(SpawnableComponent {
             spawnable_type: SpawnableType::Effect(EffectType::Text(text_effect_type.clone())),
-            ..default()
+            ..Default::default()
         })
         .insert(EffectComponent::from(effect_data))
         .insert(GameCleanup);
@@ -146,6 +155,7 @@ fn spawn_effect(
     transform: Transform,
     initial_motion: InitialMotion,
     commands: &mut Commands,
+    game_options: &GameOptions,
 ) {
     // Get data from effect resource
     let effect_data = &effects_resource.effects[effect_type];
@@ -160,7 +170,7 @@ fn spawn_effect(
         .insert(SpriteSheetBundle {
             texture_atlas: effect_assets.get_asset(effect_type).unwrap_or_default(),
             sprite: TextureAtlasSprite {
-                color: effect_assets.get_color(effect_type),
+                color: effect_assets.get_color(effect_type, game_options.bloom_intensity),
                 ..Default::default()
             },
             ..Default::default()
@@ -172,7 +182,7 @@ fn spawn_effect(
         .insert(EffectComponent::from(effect_data))
         .insert(SpawnableComponent {
             spawnable_type: SpawnableType::Effect(effect_data.effect_type.clone()),
-            ..default()
+            ..Default::default()
         })
         .insert(LockedAxes::default())
         .insert(RigidBody::KinematicVelocityBased)

@@ -14,7 +14,7 @@ use thetawave_interface::run::{RunDefeatType, RunEndEvent, RunOutcomeType};
 use thetawave_interface::spawnable::EffectType;
 
 pub use self::ability::*;
-pub use self::attacks::{player_fire_weapon_system, player_scale_fire_rate_system};
+pub use self::attacks::{fire_weapon_system, scale_fire_rate_system};
 pub use self::movement::{player_movement_system, player_tilt_system};
 
 use super::PlayersResource;

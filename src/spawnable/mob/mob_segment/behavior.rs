@@ -1,13 +1,14 @@
-use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
-use bevy_rapier2d::{prelude::*, rapier::prelude::JointAxis};
+use bevy_rapier2d::prelude::{ImpulseJoint, JointAxis};
 use rand::{thread_rng, Rng};
 use serde::Deserialize;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     health::{DamageDealtEvent, HealthComponent},
     player::PlayerComponent,
-    spawnable::{EffectType, MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnItemEvent},
+    spawnable::{
+        EffectType, MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnItemEvent, SpawnPosition,
+    },
 };
 
 use crate::{
@@ -16,7 +17,6 @@ use crate::{
     loot::LootDropsResource,
     spawnable::{
         behavior_sequence::EntityPair, SpawnConsumableEvent, SpawnEffectEvent, SpawnMobEvent,
-        SpawnPosition,
     },
 };
 

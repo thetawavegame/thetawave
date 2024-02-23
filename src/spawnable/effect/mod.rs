@@ -1,6 +1,5 @@
 use self::behavior::EffectBehaviorData;
 
-use super::InitialMotion;
 use crate::animation::AnimationData;
 use crate::spawnable::effect::behavior::EffectBehaviorPlugin;
 use crate::spawnable::effect::spawn::EffectSpawnPlugin;
@@ -9,6 +8,8 @@ use ron::de::from_bytes;
 use serde::Deserialize;
 use std::{collections::HashMap, ops::Range};
 use thetawave_interface::spawnable::{EffectType, TextEffectType};
+
+use super::InitialMotion;
 
 mod behavior;
 mod spawn;

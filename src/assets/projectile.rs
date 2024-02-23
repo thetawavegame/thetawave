@@ -1,5 +1,5 @@
-use bevy::prelude::*;
-use bevy_asset_loader::prelude::*;
+use bevy::prelude::{Color, Handle, Resource, TextureAtlas};
+use bevy_asset_loader::prelude::AssetCollection;
 use thetawave_interface::spawnable::{Faction, ProjectileType};
 
 #[derive(AssetCollection, Resource)]
@@ -31,10 +31,18 @@ impl ProjectileAssets {
             },
         }
     }
-    pub fn get_color(&self, projectile_type: &ProjectileType) -> Color {
+    pub fn get_color(&self, projectile_type: &ProjectileType, bloom_intensity: f32) -> Color {
         match projectile_type {
-            ProjectileType::Blast(_) => Color::rgb(3.0, 3.0, 3.0),
-            ProjectileType::Bullet(_) => Color::rgb(2.0, 2.0, 2.0),
+            ProjectileType::Blast(_) => Color::rgb(
+                1.0 + 2.0 * bloom_intensity,
+                1.0 + 2.0 * bloom_intensity,
+                1.0 + 2.0 * bloom_intensity,
+            ),
+            ProjectileType::Bullet(_) => Color::rgb(
+                1.0 + 1.0 * bloom_intensity,
+                1.0 + 1.0 * bloom_intensity,
+                1.0 + 1.0 * bloom_intensity,
+            ),
         }
     }
 }

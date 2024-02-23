@@ -1,6 +1,8 @@
 /// Exposes a single Plugin that links the game and our persistence layer.
 use bevy::prelude::*;
+use thetawave_interface::game::options::{GameOptions, DEFAULT_OPTIONS_PROFILE_ID};
 
+use crate::options::get_game_options;
 use crate::user_stats::{
     get_mob_killed_counts_for_user, get_user_stats, set_user_stats_for_user_id,
 };
@@ -47,7 +49,11 @@ impl Plugin for DBPlugin {
         app.add_systems(OnEnter(states::AppStates::LoadingAssets), db_setup_system);
         app.add_systems(
             OnExit(states::AppStates::LoadingAssets),
-            (load_user_stats_cache_from_db, load_mob_kills_cache_from_db),
+            (
+                load_user_stats_cache_from_db,
+                load_mob_kills_cache_from_db,
+                load_game_options_from_db,
+            ),
         );
         app.add_systems(
             OnExit(states::AppStates::GameOver),
@@ -58,6 +64,13 @@ impl Plugin for DBPlugin {
         );
     }
 }
+
+fn load_game_options_from_db(mut game_options: ResMut<GameOptions>) {
+    if let Some(db_game_options) = get_game_options(DEFAULT_OPTIONS_PROFILE_ID) {
+        *game_options = db_game_options;
+    }
+}
+
 fn load_user_stats_cache_from_db(
     mut user_stats_cache: ResMut<UserStatsByPlayerForCompletedGamesCache>,
 ) {
@@ -105,6 +118,7 @@ mod test {
         MobKillsByPlayerForCompletedGames, MobsKilledBy1PlayerCacheT, MobsKilledByPlayerCacheT,
         UserStat, UserStatsByPlayerForCompletedGamesCache, DEFAULT_USER_ID,
     };
+    use thetawave_interface::game::options::GameOptions;
     use thetawave_interface::spawnable::EnemyMobType;
     use thetawave_interface::states::AppStates;
 
@@ -202,7 +216,8 @@ mod test {
                 level: Level::DEBUG,
             })
             .insert_resource(MobKillsByPlayerForCompletedGames::default())
-            .insert_resource(UserStatsByPlayerForCompletedGamesCache::default());
+            .insert_resource(UserStatsByPlayerForCompletedGamesCache::default())
+            .insert_resource(GameOptions::default());
         app
     }
     fn _test_can_flush_caches_to_db() {

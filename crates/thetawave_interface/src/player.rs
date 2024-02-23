@@ -1,7 +1,4 @@
-use crate::{
-    character::{Character, CharacterType},
-    spawnable::ProjectileType,
-};
+use crate::character::{Character, CharacterType};
 use bevy_ecs::prelude::Component;
 use bevy_ecs::system::Resource;
 use bevy_math::Vec2;
@@ -68,23 +65,6 @@ pub struct PlayerComponent {
     pub collider_dimensions: Vec2,
     /// Collider density
     pub collider_density: f32,
-    /// Type of projectile fired
-    pub projectile_type: ProjectileType,
-    /// Number of projectiles fired per shot
-    pub projectile_count: usize,
-    pub projectile_direction: f32,
-    /// Time until fired projectile despawns
-    pub projectile_despawn_time: f32,
-    /// Base speed of fired projectiles
-    pub projectile_speed: f32,
-    /// Position of projectile spawn relative to player
-    pub projectile_offset_position: Vec2,
-    /// Tracks time between firing blasts
-    pub fire_timer: Timer,
-    /// Time between firing projectiles
-    pub fire_period: f32,
-    /// Amount of damage dealt per attack
-    pub attack_damage: usize,
     /// Amount of damage dealt on contact
     pub collision_damage: usize,
     /// Distance to attract items and consumables
@@ -115,14 +95,6 @@ impl From<&Character> for PlayerComponent {
             speed: character.speed,
             collider_dimensions: character.collider_dimensions,
             collider_density: character.collider_density,
-            projectile_type: character.projectile_type.clone(),
-            projectile_despawn_time: character.projectile_despawn_time,
-            projectile_speed: character.projectile_speed,
-            projectile_offset_position: character.projectile_offset_position,
-            projectile_direction: character.projectile_direction,
-            fire_timer: Timer::from_seconds(character.fire_period, TimerMode::Once),
-            fire_period: character.fire_period,
-            attack_damage: character.attack_damage,
             collision_damage: character.collision_damage,
             attraction_distance: character.attraction_distance,
             attraction_acceleration: character.attraction_acceleration,
@@ -133,7 +105,6 @@ impl From<&Character> for PlayerComponent {
             movement_enabled: true,
             incoming_damage_multiplier: 1.0,
             player_index: 0,
-            projectile_count: character.projectile_count,
         }
     }
 }
@@ -143,25 +114,13 @@ impl PlayerComponent {
         spawn_params: &InputRestrictionsAtSpawn,
     ) -> Self {
         let mut res = Self::from(character);
-        if spawn_params.forbid_main_attack_reason.is_some() {
-            res.disable_main_attacks();
-        }
         if spawn_params.forbid_special_attack_reason.is_some() {
             res.disable_special_attacks();
         }
         res
     }
-    pub fn disable_main_attacks(&mut self) {
-        self.fire_timer.pause();
-    }
     pub fn disable_special_attacks(&mut self) {
         self.ability_cooldown_timer.pause();
-    }
-    pub fn enable_main_attacks(&mut self) {
-        self.fire_timer.unpause();
-    }
-    pub fn main_attack_is_enabled(&self) -> bool {
-        !self.fire_timer.paused()
     }
     pub fn ability_is_enabled(&self) -> bool {
         !self.ability_cooldown_timer.paused()

@@ -1,15 +1,16 @@
-use bevy::prelude::info;
+use bevy::log::info;
 use directories::ProjectDirs;
-use rusqlite;
 use rusqlite::Connection;
 use std::env::var_os;
 use std::ffi::OsStr;
 use std::path::PathBuf;
+use thetawave_interface::game::options::DEFAULT_OPTIONS_PROFILE_ID;
 use thiserror::Error;
 pub(super) const THETAWAVE_DB_PATH_ENVVAR: &'static str = "THETAWAVE_DB_PATH";
 const THETAWAVE_DB_FILE: &'static str = "thetawave.sqlite";
 pub(super) const USERSTAT: &'static str = "UserStat";
 pub(super) const ENEMY_KILL_HISTORY_TABLE_NAME: &'static str = "EnemiesKilled";
+pub(super) const OPTIONS_TABLE_NAME: &'static str = "Options";
 
 #[derive(Error, Debug, derive_more::From)]
 pub(super) enum OurDBError {
@@ -56,9 +57,26 @@ pub(super) fn setup_db(conn: Connection) -> rusqlite::Result<()> {
         PRIMARY KEY (userId, enemyMobType)
     )"
     );
+
+    let create_options_table_sql = format!(
+        "CREATE TABLE IF NOT EXISTS {OPTIONS_TABLE_NAME} (
+        optionsProfileId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+        bloomEnabled BOOLEAN NOT NULL DEFAULT TRUE,
+        bloomIntensity REAL NOT NULL DEFAULT 1.0
+    )"
+    );
+
     conn.execute(&create_user_stats_sql, []).map(|_| ())?;
     conn.execute(&create_enemies_killed_table_sql, [])
         .map(|_| ())?;
+    conn.execute(&create_options_table_sql, []).map(|_| ())?;
+
+    // insert a default options row if it is not in the db
+    let upsert_default_gameops_sql =
+        format!("INSERT OR REPLACE INTO {OPTIONS_TABLE_NAME} (optionsProfileId) VALUES (?1)");
+    conn.execute(&upsert_default_gameops_sql, [DEFAULT_OPTIONS_PROFILE_ID])
+        .map(|_| ())?;
+
     info!("Created sqlite db");
     Ok(())
 }

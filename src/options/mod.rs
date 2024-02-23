@@ -1,7 +1,8 @@
 //! `thetawave` player module
-use bevy::prelude::*;
+use bevy::{core_pipeline::tonemapping::Tonemapping, prelude::*};
 use leafwing_input_manager::prelude::InputManagerPlugin;
 use thetawave_interface::{
+    game::options::GameOptions,
     input::{InputsResource, MenuAction},
     states,
 };
@@ -51,6 +52,38 @@ impl GameInitCLIOptions {
         Default::default()
     }
 }
+
+pub fn apply_game_options_system(
+    mut game_options: ResMut<GameOptions>,
+    mut camera_2d_query: Query<
+        (&mut Camera, &mut Tonemapping),
+        (With<Camera2d>, Without<Camera3d>),
+    >,
+    mut camera_3d_query: Query<
+        (&mut Camera, &mut Tonemapping),
+        (With<Camera3d>, Without<Camera2d>),
+    >,
+) {
+    if let (Ok((mut camera_2d, mut tonemapping_2d)), Ok((mut camera_3d, mut tonemapping_3d))) = (
+        camera_2d_query.get_single_mut(),
+        camera_3d_query.get_single_mut(),
+    ) {
+        camera_2d.hdr = game_options.bloom_enabled;
+        camera_3d.hdr = game_options.bloom_enabled;
+
+        if game_options.bloom_enabled {
+            *tonemapping_2d = Tonemapping::TonyMcMapface;
+            *tonemapping_3d = Tonemapping::TonyMcMapface;
+        } else {
+            *tonemapping_2d = Tonemapping::None;
+            *tonemapping_3d = Tonemapping::None;
+            game_options.bloom_intensity = 0.0;
+        }
+    } else {
+        error!("Failed to get singleton 2d and 3d cameras to apply game opts");
+    }
+}
+
 /// Whether we are playing on an arcade machine. This affects some different UI elements.
 /// Generally this will be set at app startup (either inferred or explicitly provided as a game
 /// startup parameter, and should probably not be mutated during the game.
@@ -68,6 +101,7 @@ impl Plugin for OptionsPlugin {
 
         app.insert_resource(InputsResource::from(get_input_bindings()));
         app.insert_resource(PlayingOnArcadeResource(self.arcade));
+        app.insert_resource(GameOptions::default());
 
         app.add_systems(Startup, spawn_menu_explorer_system);
 
@@ -79,6 +113,11 @@ impl Plugin for OptionsPlugin {
         app.add_systems(
             Update,
             toggle_zoom_system.run_if(in_state(states::AppStates::Game)),
+        );
+
+        app.add_systems(
+            OnEnter(states::AppStates::MainMenu),
+            apply_game_options_system,
         );
     }
 }

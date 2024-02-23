@@ -1,8 +1,13 @@
 use bevy::app::PluginGroupBuilder;
-use bevy::{asset::AssetPlugin, pbr::AmbientLight, prelude::*};
-use bevy_kira_audio::prelude::*;
+use bevy::prelude::{
+    AmbientLight, App, AssetPlugin, ClearColor, Color, DefaultPlugins, ImagePlugin,
+    IntoSystemConfigs, OnEnter, PluginGroup, ResMut, SystemSet, Vec2, Window, WindowPlugin,
+};
+use bevy_kira_audio::prelude::AudioPlugin;
 
-use bevy_rapier2d::prelude::*;
+use bevy_rapier2d::prelude::{
+    NoUserData, RapierConfiguration, RapierDebugRenderPlugin, RapierPhysicsPlugin, TimestepMode,
+};
 use options::{generate_config_files, GameInitCLIOptions};
 use thetawave_interface::states::{AppStates, GameStates};
 
@@ -26,6 +31,7 @@ mod spawnable;
 mod states;
 mod tools;
 mod ui;
+mod weapon;
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone, SystemSet)]
 pub enum GameEnterSet {
@@ -82,7 +88,7 @@ fn our_default_plugins(
     let res = DefaultPlugins
         .set(WindowPlugin {
             primary_window: Some(Window::from(display_config)),
-            ..default()
+            ..Default::default()
         })
         .set(ImagePlugin::default_nearest());
 
@@ -158,6 +164,10 @@ fn build_app<P1: PluginGroup, P2: PluginGroup>(base_plugins: P1, game_plugins: P
 
 // setup rapier
 fn setup_physics(mut rapier_config: ResMut<RapierConfiguration>) {
+    rapier_config.timestep_mode = TimestepMode::Fixed {
+        dt: 1.0 / 60.0,
+        substeps: 1,
+    };
     rapier_config.physics_pipeline_active = true;
     rapier_config.query_pipeline_active = true;
     rapier_config.gravity = Vec2::ZERO;
@@ -185,6 +195,7 @@ impl PluginGroup for ThetawaveGamePlugins {
             .add(states::StatesPlugin)
             .add(game::counters::plugin::CountingMetricsPlugin)
             .add(misc::HealthPlugin)
+            .add(weapon::WeaponPlugin)
             .add(
                 RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(PHYSICS_SCALE)
                     .in_fixed_schedule(),
@@ -216,6 +227,7 @@ mod test {
     use bevy::MinimalPlugins;
     use bevy_kira_audio::AudioPlugin;
     use thetawave_interface::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent};
+    use thetawave_interface::game::options::GameOptions;
     use thetawave_interface::states::AppStates;
 
     #[test]
@@ -264,6 +276,8 @@ mod test {
         let mut app = build_app(base_plugins, game_plugins);
         app.add_event::<ChangeBackgroundMusicEvent>()
             .add_event::<PlaySoundEffectEvent>();
+
+        app.insert_resource(GameOptions::default());
         app
     }
 }

@@ -2,13 +2,13 @@
 
 use std::fs;
 
-use bevy::prelude::Commands;
 use bevy::prelude::*;
 use rand::{seq::IteratorRandom, Rng};
 use ron::de::from_bytes;
 use serde::Deserialize;
 use std::ops::Range;
 use thetawave_interface::{
+    game::options::GameOptions,
     run::{RunDefeatType, RunEndEvent, RunOutcomeType},
     states::{self, GameCleanup},
 };
@@ -159,6 +159,7 @@ pub fn create_background_system(
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut star_explode_res: ResMut<StarExplodeResource>,
     backgrounds_res: Res<BackgroundsResource>,
+    game_options: Res<GameOptions>,
 ) {
     // reset the star explode reource
     *star_explode_res = StarExplodeResource::default();
@@ -280,9 +281,12 @@ pub fn create_background_system(
 
     // Spawn a star with a random color
     let star_color = Color::rgb_linear(
-        rng.gen_range(backgrounds_res.star_color_range.clone()),
-        rng.gen_range(backgrounds_res.star_color_range.clone()),
-        rng.gen_range(backgrounds_res.star_color_range.clone()),
+        rng.gen_range(backgrounds_res.star_color_range.clone())
+            + 10.0 * game_options.bloom_intensity,
+        rng.gen_range(backgrounds_res.star_color_range.clone())
+            + 10.0 * game_options.bloom_intensity,
+        rng.gen_range(backgrounds_res.star_color_range.clone())
+            + 10.0 * game_options.bloom_intensity,
     );
 
     // Emissive colored star material for bloom
