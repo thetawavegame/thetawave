@@ -1,8 +1,8 @@
 use crate::spawnable::{
     ConsumableComponent, MobComponent, MobSegmentComponent, ProjectileComponent,
 };
-use bevy::prelude::*;
-use bevy_rapier2d::{prelude::*, rapier::prelude::CollisionEventFlags};
+use bevy::prelude::{debug, Entity, EventReader, EventWriter, Query, With};
+use bevy_rapier2d::{prelude::CollisionEvent, rapier::prelude::CollisionEventFlags};
 use thetawave_interface::{
     player::PlayerComponent,
     spawnable::{Faction, ItemComponent, MobSegmentType, MobType, ProjectileType},

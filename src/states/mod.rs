@@ -1,24 +1,13 @@
-use bevy::app::App;
-use bevy::app::Plugin;
-use bevy::app::Update;
-use bevy::ecs::component::Component;
-use bevy::ecs::entity::Entity;
-use bevy::ecs::query::With;
-use bevy::ecs::schedule::common_conditions::in_state;
-use bevy::ecs::schedule::IntoSystemConfigs;
-use bevy::ecs::schedule::IntoSystemSetConfigs;
-use bevy::ecs::schedule::NextState;
-use bevy::ecs::schedule::OnEnter;
-use bevy::ecs::schedule::OnExit;
-use bevy::ecs::system::Commands;
-use bevy::ecs::system::Query;
-use bevy::ecs::system::ResMut;
-use bevy::hierarchy::DespawnRecursiveExt;
+use bevy::prelude::{
+    in_state, App, Commands, Component, DespawnRecursiveExt, Entity, IntoSystemConfigs,
+    IntoSystemSetConfigs, NextState, OnEnter, OnExit, Plugin, Query, ResMut, Update, With,
+};
 use bevy_asset_loader::loading_state::config::ConfigureLoadingState;
 use bevy_asset_loader::loading_state::LoadingState;
 use bevy_asset_loader::loading_state::LoadingStateAppExt;
+use bevy_asset_loader::prelude::*;
 use bevy_asset_loader::standard_dynamic_asset::StandardDynamicAssetCollection;
-use leafwing_input_manager::action_state::ActionState;
+use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::input::MenuAction;
 use thetawave_interface::input::MenuExplorer;
 use thetawave_interface::states::CharacterSelectionCleanup;

@@ -1,21 +1,12 @@
-use bevy::{
-    app::{App, PluginGroup, PluginGroupBuilder},
-    asset::AssetPlugin,
-    ecs::{
-        schedule::{IntoSystemConfigs, OnEnter, SystemSet},
-        system::ResMut,
-    },
-    math::Vec2,
-    pbr::AmbientLight,
-    render::{camera::ClearColor, color::Color, texture::ImagePlugin},
-    utils::default,
-    window::{Window, WindowPlugin},
-    DefaultPlugins,
+use bevy::app::PluginGroupBuilder;
+use bevy::prelude::{
+    AmbientLight, App, AssetPlugin, ClearColor, Color, DefaultPlugins, ImagePlugin,
+    IntoSystemConfigs, OnEnter, PluginGroup, ResMut, SystemSet, Vec2, Window, WindowPlugin,
 };
-use bevy_kira_audio::AudioPlugin;
-use bevy_rapier2d::{
-    plugin::{NoUserData, RapierConfiguration, RapierPhysicsPlugin, TimestepMode},
-    render::RapierDebugRenderPlugin,
+use bevy_kira_audio::prelude::AudioPlugin;
+
+use bevy_rapier2d::prelude::{
+    NoUserData, RapierConfiguration, RapierDebugRenderPlugin, RapierPhysicsPlugin, TimestepMode,
 };
 use options::{generate_config_files, GameInitCLIOptions};
 use thetawave_interface::states::{AppStates, GameStates};
@@ -97,7 +88,7 @@ fn our_default_plugins(
     let res = DefaultPlugins
         .set(WindowPlugin {
             primary_window: Some(Window::from(display_config)),
-            ..default()
+            ..Default::default()
         })
         .set(ImagePlugin::default_nearest());
 

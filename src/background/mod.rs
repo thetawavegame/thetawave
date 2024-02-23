@@ -1,5 +1,6 @@
 //! `thetawave` background module
 
+use bevy::math::primitives::Sphere;
 use bevy::prelude::*;
 use rand::{seq::IteratorRandom, Rng};
 use ron::de::from_bytes;
@@ -297,13 +298,11 @@ pub fn create_background_system(
     });
 
     // Spherical star mesh
-    let star_mesh = meshes.add(
-        shape::Icosphere {
-            radius: backgrounds_res.star_radius,
-            subdivisions: backgrounds_res.star_subdivisions,
-        }
-        .try_into()
-        .unwrap(),
+    let star_mesh: Handle<Mesh> = meshes.add(
+        Sphere::new(backgrounds_res.star_radius)
+            .mesh()
+            .ico(backgrounds_res.star_subdivisions)
+            .expect("Failed to create icosphere"),
     );
 
     // Spawn the star with a child point light of the same color

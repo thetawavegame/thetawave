@@ -1,11 +1,8 @@
 use crate::audio;
-use bevy::asset::AssetServer;
-use bevy::ecs::query::With;
-use bevy::ecs::schedule::NextState;
-use bevy::ecs::system::{Query, Res, ResMut};
-use bevy_kira_audio::{AudioChannel, AudioControl};
-use bevy_rapier2d::plugin::RapierConfiguration;
-use leafwing_input_manager::action_state::ActionState;
+use bevy::prelude::{AssetServer, NextState, Query, Res, ResMut, With};
+use bevy_kira_audio::prelude::{AudioChannel, AudioControl};
+use bevy_rapier2d::prelude::RapierConfiguration;
+use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::input::{MenuAction, MenuExplorer};
 use thetawave_interface::states::GameStates;
 
