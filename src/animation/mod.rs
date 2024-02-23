@@ -9,7 +9,7 @@ use bevy::{
         system::{Query, Res},
     },
     math::Vec2,
-    sprite::{TextureAtlasLayout, TextureAtlas},
+    sprite::{TextureAtlas, TextureAtlasLayout},
     time::{Time, Timer},
 };
 use serde::Deserialize;
@@ -83,21 +83,18 @@ pub fn animate_sprite_system(
     time: Res<Time>,
     texture_atlas_layouts: Res<Assets<TextureAtlasLayout>>,
     mut animation_complete_event_writer: EventWriter<AnimationCompletedEvent>,
-    mut query: Query<(
-        Entity,
-        &mut AnimationComponent,
-        &mut TextureAtlas,
-        &Handle<TextureAtlasLayout>,
-    )>,
+    mut query: Query<(Entity, &mut AnimationComponent, &mut TextureAtlas)>,
 ) {
-    for (entity, mut animation, mut texture_atlas, atlas_layout_handle) in query.iter_mut() {
+    for (entity, mut animation, mut texture_atlas) in query.iter_mut() {
         // tick the animation timer
         animation.timer.tick(time.delta());
 
         // check if frame has completed
         if animation.timer.finished() {
             // get the texture atlas
-            let texture_atlas_layout = texture_atlas_layouts.get(atlas_layout_handle).unwrap();
+            let texture_atlas_layout = texture_atlas_layouts
+                .get(texture_atlas.layout.id())
+                .unwrap();
 
             // update animation based on the animation direction
             match &animation.direction {
