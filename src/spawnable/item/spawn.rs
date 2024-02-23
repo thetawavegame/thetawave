@@ -2,6 +2,7 @@ use bevy::prelude::{
     in_state, App, Commands, EventReader, IntoSystemConfigs, Name, Plugin, Res, SpriteSheetBundle,
     Timer, TimerMode, Transform, Update, Vec2, Vec3,
 };
+use bevy::utils::default;
 use bevy_rapier2d::prelude::{ActiveEvents, Collider, LockedAxes, RigidBody, Sensor, Velocity};
 use thetawave_interface::spawnable::{ItemComponent, SpawnItemEvent};
 use thetawave_interface::{
@@ -80,8 +81,9 @@ pub fn spawn_item(
 
     // Sprite components
     item.insert(SpriteSheetBundle {
-        atlas: item_assets.get_asset(item_type).into(),
-        ..Default::default()
+        atlas: item_assets.get_texture_atlas_layout(item_type).into(),
+        texture: item_assets.get_image(item_type),
+        ..default()
     })
     .insert(AnimationComponent {
         timer: Timer::from_seconds(item_data.animation.frame_duration, TimerMode::Repeating),

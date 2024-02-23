@@ -169,9 +169,10 @@ fn spawn_effect(
     effect
         .insert(SpriteSheetBundle {
             atlas: effect_assets
-                .get_asset(effect_type)
+                .get_texture_atlas_layout(effect_type)
                 .unwrap_or_default()
                 .into(),
+            texture: effect_assets.get_image(effect_type).unwrap_or_default(),
             sprite: Sprite {
                 color: effect_assets.get_color(effect_type, game_options.bloom_intensity),
                 ..Default::default()

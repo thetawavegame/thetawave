@@ -1,6 +1,6 @@
 use bevy::prelude::{
     Commands, Component, Entity, Event, EventReader, EventWriter, Name, Quat, Res, Resource,
-    SpriteSheetBundle, Sprite, Timer, TimerMode, Transform, Vec2, Vec3Swizzles,
+    Sprite, SpriteSheetBundle, Timer, TimerMode, Transform, Vec2, Vec3Swizzles,
 };
 use bevy_rapier2d::prelude::{
     ActiveEvents, Collider, CollisionGroups, Group, LockedAxes, RigidBody, Sensor, Velocity,
@@ -174,7 +174,10 @@ pub fn spawn_projectile_from_weapon(
         projectile
             .insert(LockedAxes::ROTATION_LOCKED)
             .insert(SpriteSheetBundle {
-                atlas: projectile_assets.get_asset(&weapon_projectile_data.ammunition).into(),
+                atlas: projectile_assets
+                    .get_texture_atlas_layout(&weapon_projectile_data.ammunition)
+                    .into(),
+                texture: projectile_assets.get_image(&weapon_projectile_data.ammunition),
                 sprite: Sprite {
                     color: projectile_assets.get_color(
                         &weapon_projectile_data.ammunition,

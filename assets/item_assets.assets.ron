@@ -5,7 +5,7 @@
         columns: 1,
         rows: 1,
     ),
-    "item_placeholder.file": File (
+    "item_placeholder.image": File (
         path: "texture/item_placeholder.png"
     ),
 })

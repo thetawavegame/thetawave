@@ -351,7 +351,8 @@ pub fn spawn_mob(
     let mut mob = commands.spawn_empty();
 
     mob.insert(SpriteSheetBundle {
-        atlas: TextureAtlas::from(mob_assets.get_mob_asset(mob_type)),
+        atlas: mob_assets.get_mob_texture_atlas_layout(mob_type).into(),
+        texture: mob_assets.get_mob_image(mob_type),
         transform: Transform {
             translation: position.extend(mob_data.z_level),
             scale: Vec3::new(
@@ -406,7 +407,11 @@ pub fn spawn_mob(
         mob.with_children(|parent| {
             parent
                 .spawn(SpriteSheetBundle {
-                    atlas: mob_assets.get_thruster_asset(mob_type).unwrap().into(),
+                    atlas: mob_assets
+                        .get_thruster_texture_atlas_layout(mob_type)
+                        .unwrap()
+                        .into(),
+                    texture: mob_assets.get_thruster_image(mob_type).unwrap().into(),
                     transform: Transform::from_xyz(0.0, thruster.y_offset, -1.0),
                     sprite: Sprite {
                         color: mob_assets

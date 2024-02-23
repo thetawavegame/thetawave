@@ -141,11 +141,14 @@ pub fn spawn_consumable(
     // spawn the consumable
     consumable
         .insert(SpriteSheetBundle {
-            atlas: consumable_assets.get_asset(consumable_type).into(),
+            atlas: consumable_assets
+                .get_texture_atlas_layout(consumable_type)
+                .into(),
             sprite: Sprite {
                 color: consumable_assets.get_color(consumable_type, game_options.bloom_intensity),
                 ..Default::default()
             },
+            texture: consumable_assets.get_image(consumable_type),
             ..Default::default()
         })
         .insert(AnimationComponent {

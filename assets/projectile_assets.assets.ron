@@ -5,7 +5,7 @@
         columns: 1,
         rows: 1,
     ),
-    "ally_blast.file": File (
+    "ally_blast.image": File (
         path: "texture/ally_blast.png"
     ),
     "enemy_blast.layout": TextureAtlasLayout (
@@ -14,7 +14,7 @@
         columns: 1,
         rows: 1,
     ),
-    "enemy_blast.file": File (
+    "enemy_blast.image": File (
         path: "texture/enemy_blast.png"
     ),
     "neutral_blast.layout": TextureAtlasLayout (
@@ -23,7 +23,7 @@
         columns: 1,
         rows: 1,
     ),
-    "neutral_blast.file": File (
+    "neutral_blast.image": File (
         path: "texture/neutral_blast.png"
     ),
     "ally_bullet.layout": TextureAtlasLayout (
@@ -32,7 +32,7 @@
         columns: 1,
         rows: 1,
     ),
-    "ally_bullet.file": File (
+    "ally_bullet.image": File (
         path: "texture/ally_bullet.png"
     ),
     "enemy_bullet.layout": TextureAtlasLayout (
@@ -41,7 +41,7 @@
         columns: 1,
         rows: 1,
     ),
-    "enemy_bullet.file": File (
+    "enemy_bullet.image": File (
         path: "texture/enemy_bullet.png"
     ),
 })
