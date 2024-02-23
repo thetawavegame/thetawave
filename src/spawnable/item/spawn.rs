@@ -80,7 +80,7 @@ pub fn spawn_item(
 
     // Sprite components
     item.insert(SpriteSheetBundle {
-        texture_atlas: item_assets.get_asset(item_type),
+        atlas: item_assets.get_asset(item_type).into(),
         ..Default::default()
     })
     .insert(AnimationComponent {

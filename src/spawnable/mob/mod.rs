@@ -22,7 +22,6 @@ use super::{behavior_sequence::MobBehaviorSequenceType, InitialMotion};
 use crate::collision::{
     HORIZONTAL_BARRIER_COLLIDER_GROUP, MOB_COLLIDER_GROUP, SPAWNABLE_COLLIDER_GROUP,
 };
-use bevy::prelude::Asset;
 use thetawave_interface::{
     audio::CollisionSoundType,
     game::options::GameOptions,
@@ -352,7 +351,7 @@ pub fn spawn_mob(
     let mut mob = commands.spawn_empty();
 
     mob.insert(SpriteSheetBundle {
-        texture_atlas: mob_assets.get_mob_asset(mob_type),
+        atlas: TextureAtlas::from(mob_assets.get_mob_asset(mob_type)),
         transform: Transform {
             translation: position.extend(mob_data.z_level),
             scale: Vec3::new(
@@ -407,9 +406,9 @@ pub fn spawn_mob(
         mob.with_children(|parent| {
             parent
                 .spawn(SpriteSheetBundle {
-                    texture_atlas: mob_assets.get_thruster_asset(mob_type).unwrap(),
+                    atlas: mob_assets.get_thruster_asset(mob_type).unwrap().into(),
                     transform: Transform::from_xyz(0.0, thruster.y_offset, -1.0),
-                    sprite: TextureAtlasSprite {
+                    sprite: Sprite {
                         color: mob_assets
                             .get_thruster_color(mob_type, game_options.bloom_intensity),
                         ..Default::default()

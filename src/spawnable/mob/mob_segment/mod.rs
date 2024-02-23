@@ -128,7 +128,7 @@ pub fn spawn_mob_segment(
     mob_segment
         .insert(ImpulseJoint::new(joint_parent_entity, *joint))
         .insert(SpriteSheetBundle {
-            texture_atlas: mob_assets.get_mob_segment_asset(mob_segment_type),
+            atlas: mob_assets.get_mob_segment_asset(mob_segment_type).into(),
             transform: Transform {
                 translation: new_position.extend(mob_segment_data.z_level),
                 scale: Vec3::new(

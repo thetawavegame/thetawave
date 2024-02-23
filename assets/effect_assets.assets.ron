@@ -1,79 +1,80 @@
 ({
-    "ally_blast_explosion": TextureAtlas (
-        path: "texture/ally_blast_explosion_spritesheet.png",
+    "ally_blast_explosion.layout": TextureAtlasLayout (
         tile_size_x: 12.,
         tile_size_y: 12.,
         columns: 7,
         rows: 1,  
     ),
-    "enemy_blast_explosion": TextureAtlas (
-        path: "texture/enemy_blast_explosion_spritesheet.png",
+    "ally_blast_explosion.file": File( path: "texture/ally_blast_explosion_spritesheet.png"),
+    "enemy_blast_explosion.layout": TextureAtlasLayout (
         tile_size_x: 12.,
         tile_size_y: 12.,
         columns: 7,
         rows: 1,  
     ),
-    "ally_blast_despawn": TextureAtlas (
-        path: "texture/ally_blast_despawn_spritesheet.png",
+    "enemy_blast_explosion.file": File( path: "texture/enemy_blast_explosion_spritesheet.png"),
+    "ally_blast_despawn.layout": TextureAtlasLayout (
         tile_size_x: 10.,
         tile_size_y: 10.,
         columns: 6,
         rows: 1,  
     ),
-    "enemy_blast_despawn": TextureAtlas (
-        path: "texture/enemy_blast_despawn_spritesheet.png",
+    "ally_blast_despawn.file": File( path: "texture/ally_blast_despawn_spritesheet.png"),
+    "enemy_blast_despawn.layout": TextureAtlasLayout (
         tile_size_x: 10.,
         tile_size_y: 10.,
         columns: 6,
         rows: 1,  
     ),
-    "mob_explosion": TextureAtlas (
-        path: "texture/mob_explosion_spritesheet.png",
+    "enemy_blast_despawn.file": File( path: "texture/enemy_blast_despawn_spritesheet.png"),
+    "mob_explosion.layout": TextureAtlasLayout (
         tile_size_x: 26.,
         tile_size_y: 26.,
         columns: 10,
         rows: 1,  
     ),
-    "consumable_despawn": TextureAtlas (
-        path: "texture/consumable_despawn_spritesheet.png",
+    "mob_explosion.file": File( path: "texture/mob_explosion_spritesheet.png"),
+    "consumable_despawn.layout": TextureAtlasLayout (
         tile_size_x: 9.,
         tile_size_y: 9.,
         columns: 5,
         rows: 1,  
     ),
-    "barrier_glow": TextureAtlas (
-        path: "texture/barrier_glow_spritesheet.png",
+    "consumable_despawn.file": File( path: "texture/consumable_despawn_spritesheet.png"),
+    "barrier_glow.layout": TextureAtlasLayout (
         tile_size_x: 102.,
         tile_size_y: 17.,
         columns: 3,
         rows: 1,  
     ),
-    "ally_bullet_despawn": TextureAtlas (
-        path: "texture/ally_bullet_despawn_spritesheet.png",
+    "barrier_glow.file": File( path: "texture/barrier_glow_spritesheet.png"),
+    "ally_bullet_despawn.layout": TextureAtlasLayout (
         tile_size_x: 9.,
         tile_size_y: 9.,
         columns: 6,
         rows: 1,  
     ),
-    "enemy_bullet_despawn": TextureAtlas (
-        path: "texture/enemy_bullet_despawn_spritesheet.png",
+    "ally_bullet_despawn.file": File( path: "texture/ally_bullet_despawn_spritesheet.png"),
+    "enemy_bullet_despawn.layout": TextureAtlasLayout (
         tile_size_x: 9.,
         tile_size_y: 9.,
         columns: 6,
         rows: 1,  
     ),
-    "ally_bullet_explosion": TextureAtlas (
-        path: "texture/ally_bullet_explosion_spritesheet.png",
+    "enemy_bullet_despawn.file": File( path: "texture/enemy_bullet_despawn_spritesheet.png"),
+    "ally_bullet_explosion.layout": TextureAtlasLayout (
         tile_size_x: 13.,
         tile_size_y: 13.,
         columns: 6,
         rows: 1,  
     ),
-    "enemy_bullet_explosion": TextureAtlas (
-        path: "texture/enemy_bullet_explosion_spritesheet.png",
+    "ally_bullet_explosion.file": File( path: "texture/ally_bullet_explosion_spritesheet.png"),
+    "enemy_bullet_explosion.layout": TextureAtlasLayout (
         tile_size_x: 13.,
         tile_size_y: 13.,
         columns: 6,
         rows: 1,  
     ),
+    "enemy_bullet_explosion.file": File( path: "texture/enemy_bullet_explosion_spritesheet.png"),
 })
+

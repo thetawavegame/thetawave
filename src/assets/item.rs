@@ -1,4 +1,4 @@
-use bevy::prelude::{Handle, Resource, TextureAtlas};
+use bevy::prelude::{Handle, Resource, TextureAtlasLayout};
 use bevy_asset_loader::prelude::AssetCollection;
 
 use thetawave_interface::spawnable::ItemType;
@@ -6,11 +6,11 @@ use thetawave_interface::spawnable::ItemType;
 #[derive(AssetCollection, Resource)]
 pub struct ItemAssets {
     #[asset(key = "item_placeholder")]
-    pub item_placeholder: Handle<TextureAtlas>,
+    pub item_placeholder: Handle<TextureAtlasLayout>,
 }
 
 impl ItemAssets {
-    pub fn get_asset(&self, item_type: &ItemType) -> Handle<TextureAtlas> {
+    pub fn get_asset(&self, item_type: &ItemType) -> Handle<TextureAtlasLayout> {
         match item_type {
             ItemType::EnhancedPlating => self.item_placeholder.clone(),
             /*

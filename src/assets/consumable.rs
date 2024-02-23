@@ -1,4 +1,4 @@
-use bevy::prelude::{Color, Handle, Resource, TextureAtlas};
+use bevy::prelude::{Color, Handle, Resource, TextureAtlasLayout};
 use bevy_asset_loader::prelude::AssetCollection;
 
 use thetawave_interface::spawnable::ConsumableType;
@@ -6,19 +6,19 @@ use thetawave_interface::spawnable::ConsumableType;
 #[derive(AssetCollection, Resource)]
 pub struct ConsumableAssets {
     #[asset(key = "health_wrench")]
-    pub health_wrench: Handle<TextureAtlas>,
+    pub health_wrench: Handle<TextureAtlasLayout>,
     #[asset(key = "money3")]
-    pub money3: Handle<TextureAtlas>,
+    pub money3: Handle<TextureAtlasLayout>,
     #[asset(key = "money1")]
-    pub money1: Handle<TextureAtlas>,
+    pub money1: Handle<TextureAtlasLayout>,
     #[asset(key = "armor")]
-    pub armor: Handle<TextureAtlas>,
+    pub armor: Handle<TextureAtlasLayout>,
     #[asset(key = "gain_projectiles")]
-    pub gain_projectiles: Handle<TextureAtlas>,
+    pub gain_projectiles: Handle<TextureAtlasLayout>,
 }
 
 impl ConsumableAssets {
-    pub fn get_asset(&self, consumable_type: &ConsumableType) -> Handle<TextureAtlas> {
+    pub fn get_asset(&self, consumable_type: &ConsumableType) -> Handle<TextureAtlasLayout> {
         match consumable_type {
             ConsumableType::Money1 => self.money1.clone(),
             ConsumableType::Money3 => self.money3.clone(),

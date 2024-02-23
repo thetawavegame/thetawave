@@ -1,23 +1,23 @@
-use bevy::prelude::{Color, Handle, Resource, TextureAtlas};
+use bevy::prelude::{Color, Handle, Resource, TextureAtlasLayout};
 use bevy_asset_loader::prelude::AssetCollection;
 use thetawave_interface::spawnable::{Faction, ProjectileType};
 
 #[derive(AssetCollection, Resource)]
 pub struct ProjectileAssets {
     #[asset(key = "ally_blast")]
-    pub ally_blast: Handle<TextureAtlas>,
+    pub ally_blast: Handle<TextureAtlasLayout>,
     #[asset(key = "enemy_blast")]
-    pub enemy_blast: Handle<TextureAtlas>,
+    pub enemy_blast: Handle<TextureAtlasLayout>,
     #[asset(key = "neutral_blast")]
-    pub neutral_blast: Handle<TextureAtlas>,
+    pub neutral_blast: Handle<TextureAtlasLayout>,
     #[asset(key = "ally_bullet")]
-    pub ally_bullet: Handle<TextureAtlas>,
+    pub ally_bullet: Handle<TextureAtlasLayout>,
     #[asset(key = "enemy_bullet")]
-    pub enemy_bullet: Handle<TextureAtlas>,
+    pub enemy_bullet: Handle<TextureAtlasLayout>,
 }
 
 impl ProjectileAssets {
-    pub fn get_asset(&self, projectile_type: &ProjectileType) -> Handle<TextureAtlas> {
+    pub fn get_asset(&self, projectile_type: &ProjectileType) -> Handle<TextureAtlasLayout> {
         match projectile_type {
             ProjectileType::Blast(faction) => match faction {
                 Faction::Ally => self.ally_blast.clone(),

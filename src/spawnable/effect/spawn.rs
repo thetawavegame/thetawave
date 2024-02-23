@@ -4,8 +4,8 @@ use crate::spawnable::effect::{EffectComponent, TextEffectData, TextEffectsResou
 use crate::spawnable::{EffectsResource, InitialMotion, SpawnEffectEvent, SpawnableComponent};
 use bevy::prelude::{
     in_state, App, AssetServer, Commands, EventReader, IntoSystemConfigs, Name, Plugin, Res,
-    SpriteSheetBundle, Text, Text2dBundle, TextStyle, TextureAtlasSprite, Timer, TimerMode,
-    Transform, Update, Vec3,
+    Sprite, SpriteSheetBundle, Text, Text2dBundle, TextStyle, Timer, TimerMode, Transform, Update,
+    Vec3,
 };
 use bevy_rapier2d::prelude::{LockedAxes, RigidBody, Velocity};
 use rand::Rng;
@@ -168,8 +168,11 @@ fn spawn_effect(
 
     effect
         .insert(SpriteSheetBundle {
-            texture_atlas: effect_assets.get_asset(effect_type).unwrap_or_default(),
-            sprite: TextureAtlasSprite {
+            atlas: effect_assets
+                .get_asset(effect_type)
+                .unwrap_or_default()
+                .into(),
+            sprite: Sprite {
                 color: effect_assets.get_color(effect_type, game_options.bloom_intensity),
                 ..Default::default()
             },

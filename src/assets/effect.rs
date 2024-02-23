@@ -6,31 +6,31 @@ use thetawave_interface::spawnable::EffectType;
 #[derive(AssetCollection, Resource)]
 pub struct EffectAssets {
     #[asset(key = "ally_blast_explosion")]
-    pub ally_blast_explosion: Handle<TextureAtlas>,
+    pub ally_blast_explosion: Handle<TextureAtlasLayout>,
     #[asset(key = "enemy_blast_explosion")]
-    pub enemy_blast_explosion: Handle<TextureAtlas>,
+    pub enemy_blast_explosion: Handle<TextureAtlasLayout>,
     #[asset(key = "ally_blast_despawn")]
-    pub ally_blast_despawn: Handle<TextureAtlas>,
+    pub ally_blast_despawn: Handle<TextureAtlasLayout>,
     #[asset(key = "enemy_blast_despawn")]
-    pub enemy_blast_despawn: Handle<TextureAtlas>,
+    pub enemy_blast_despawn: Handle<TextureAtlasLayout>,
     #[asset(key = "ally_bullet_despawn")]
-    pub ally_bullet_despawn: Handle<TextureAtlas>,
+    pub ally_bullet_despawn: Handle<TextureAtlasLayout>,
     #[asset(key = "enemy_bullet_despawn")]
-    pub enemy_bullet_despawn: Handle<TextureAtlas>,
+    pub enemy_bullet_despawn: Handle<TextureAtlasLayout>,
     #[asset(key = "ally_bullet_explosion")]
-    pub ally_bullet_explosion: Handle<TextureAtlas>,
+    pub ally_bullet_explosion: Handle<TextureAtlasLayout>,
     #[asset(key = "enemy_bullet_explosion")]
-    pub enemy_bullet_explosion: Handle<TextureAtlas>,
+    pub enemy_bullet_explosion: Handle<TextureAtlasLayout>,
     #[asset(key = "mob_explosion")]
-    pub mob_explosion: Handle<TextureAtlas>,
+    pub mob_explosion: Handle<TextureAtlasLayout>,
     #[asset(key = "consumable_despawn")]
-    pub consumable_despawn: Handle<TextureAtlas>,
+    pub consumable_despawn: Handle<TextureAtlasLayout>,
     #[asset(key = "barrier_glow")]
-    pub barrier_glow: Handle<TextureAtlas>,
+    pub barrier_glow: Handle<TextureAtlasLayout>,
 }
 
 impl EffectAssets {
-    pub fn get_asset(&self, effect_type: &EffectType) -> Option<Handle<TextureAtlas>> {
+    pub fn get_asset(&self, effect_type: &EffectType) -> Option<Handle<TextureAtlasLayout>> {
         match effect_type {
             EffectType::AllyBlastExplosion => Some(self.ally_blast_explosion.clone()),
             EffectType::AllyBlastDespawn => Some(self.ally_blast_despawn.clone()),

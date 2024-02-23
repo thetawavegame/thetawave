@@ -1,4 +1,4 @@
-use bevy::prelude::{Color, Handle, Resource, TextureAtlas};
+use bevy::prelude::{Color, Handle, Resource, TextureAtlasLayout};
 use bevy_asset_loader::prelude::AssetCollection;
 use thetawave_interface::spawnable::{
     AllyMobType, EnemyMobSegmentType, EnemyMobType, MobSegmentType, MobType, NeutralMobSegmentType,
@@ -8,67 +8,67 @@ use thetawave_interface::spawnable::{
 #[derive(AssetCollection, Resource)]
 pub struct MobAssets {
     #[asset(key = "tutorial_drone")]
-    pub tutorial_drone: Handle<TextureAtlas>,
+    pub tutorial_drone: Handle<TextureAtlasLayout>,
     #[asset(key = "shelly")]
-    pub shelly: Handle<TextureAtlas>,
+    pub shelly: Handle<TextureAtlasLayout>,
     #[asset(key = "drone")]
-    pub drone: Handle<TextureAtlas>,
+    pub drone: Handle<TextureAtlasLayout>,
     #[asset(key = "drone.thruster")]
-    pub drone_thruster: Handle<TextureAtlas>,
+    pub drone_thruster: Handle<TextureAtlasLayout>,
     #[asset(key = "pawn")]
-    pub pawn: Handle<TextureAtlas>,
+    pub pawn: Handle<TextureAtlasLayout>,
     #[asset(key = "pawn.thruster")]
-    pub pawn_thruster: Handle<TextureAtlas>,
+    pub pawn_thruster: Handle<TextureAtlasLayout>,
     #[asset(key = "hauler.thruster")]
-    pub hauler_thruster: Handle<TextureAtlas>,
+    pub hauler_thruster: Handle<TextureAtlasLayout>,
     #[asset(key = "missile_launcher")]
-    pub missile_launcher: Handle<TextureAtlas>,
+    pub missile_launcher: Handle<TextureAtlasLayout>,
     #[asset(key = "missile_launcher.thruster")]
-    pub missile_launcher_thruster: Handle<TextureAtlas>,
+    pub missile_launcher_thruster: Handle<TextureAtlasLayout>,
     #[asset(key = "missile")]
-    pub missile: Handle<TextureAtlas>,
+    pub missile: Handle<TextureAtlasLayout>,
     #[asset(key = "missile.thruster")]
-    pub missile_thruster: Handle<TextureAtlas>,
+    pub missile_thruster: Handle<TextureAtlasLayout>,
     #[asset(key = "strafer")]
-    pub strafer: Handle<TextureAtlas>,
+    pub strafer: Handle<TextureAtlasLayout>,
     #[asset(key = "strafer.thruster")]
-    pub strafer_thruster: Handle<TextureAtlas>,
+    pub strafer_thruster: Handle<TextureAtlasLayout>,
     #[asset(key = "money_asteroid")]
-    pub money_asteroid: Handle<TextureAtlas>,
+    pub money_asteroid: Handle<TextureAtlasLayout>,
     #[asset(key = "hauler.front")]
-    pub hauler_front: Handle<TextureAtlas>,
+    pub hauler_front: Handle<TextureAtlasLayout>,
     #[asset(key = "hauler.back")]
-    pub hauler_back: Handle<TextureAtlas>,
+    pub hauler_back: Handle<TextureAtlasLayout>,
     #[asset(key = "hauler.middle")]
-    pub hauler_middle: Handle<TextureAtlas>,
+    pub hauler_middle: Handle<TextureAtlasLayout>,
     #[asset(key = "crustling.head")]
-    pub crustling_head: Handle<TextureAtlas>,
+    pub crustling_head: Handle<TextureAtlasLayout>,
     #[asset(key = "crustling.tentacle1")]
-    pub crustling_tentacle1: Handle<TextureAtlas>,
+    pub crustling_tentacle1: Handle<TextureAtlasLayout>,
     #[asset(key = "crustling.tentacle2")]
-    pub crustling_tentacle2: Handle<TextureAtlas>,
+    pub crustling_tentacle2: Handle<TextureAtlasLayout>,
     #[asset(key = "crustling.tentacle3")]
-    pub crustling_tentacle3: Handle<TextureAtlas>,
+    pub crustling_tentacle3: Handle<TextureAtlasLayout>,
     #[asset(key = "repeater.head")]
-    pub repeater_head: Handle<TextureAtlas>,
+    pub repeater_head: Handle<TextureAtlasLayout>,
     #[asset(key = "repeater.body")]
-    pub repeater_body: Handle<TextureAtlas>,
+    pub repeater_body: Handle<TextureAtlasLayout>,
     #[asset(key = "repeater.right_shoulder")]
-    pub repeater_right_shoulder: Handle<TextureAtlas>,
+    pub repeater_right_shoulder: Handle<TextureAtlasLayout>,
     #[asset(key = "repeater.left_shoulder")]
-    pub repeater_left_shoulder: Handle<TextureAtlas>,
+    pub repeater_left_shoulder: Handle<TextureAtlasLayout>,
     #[asset(key = "repeater.right_arm")]
-    pub repeater_right_arm: Handle<TextureAtlas>,
+    pub repeater_right_arm: Handle<TextureAtlasLayout>,
     #[asset(key = "repeater.left_arm")]
-    pub repeater_left_arm: Handle<TextureAtlas>,
+    pub repeater_left_arm: Handle<TextureAtlasLayout>,
     #[asset(key = "repeater.right_claw")]
-    pub repeater_right_claw: Handle<TextureAtlas>,
+    pub repeater_right_claw: Handle<TextureAtlasLayout>,
     #[asset(key = "repeater.left_claw")]
-    pub repeater_left_claw: Handle<TextureAtlas>,
+    pub repeater_left_claw: Handle<TextureAtlasLayout>,
 }
 
 impl MobAssets {
-    pub fn get_mob_asset(&self, mob_type: &MobType) -> Handle<TextureAtlas> {
+    pub fn get_mob_asset(&self, mob_type: &MobType) -> Handle<TextureAtlasLayout> {
         match mob_type {
             MobType::Enemy(enemy_type) => match enemy_type {
                 EnemyMobType::Pawn => self.pawn.clone(),
@@ -94,7 +94,7 @@ impl MobAssets {
         }
     }
 
-    pub fn get_mob_segment_asset(&self, mob_segment_type: &MobSegmentType) -> Handle<TextureAtlas> {
+    pub fn get_mob_segment_asset(&self, mob_segment_type: &MobSegmentType) -> Handle<TextureAtlasLayout> {
         match mob_segment_type {
             MobSegmentType::Neutral(neutral_type) => match neutral_type {
                 NeutralMobSegmentType::HaulerBack => self.hauler_back.clone(),
@@ -116,7 +116,7 @@ impl MobAssets {
         }
     }
 
-    pub fn get_thruster_asset(&self, mob_type: &MobType) -> Option<Handle<TextureAtlas>> {
+    pub fn get_thruster_asset(&self, mob_type: &MobType) -> Option<Handle<TextureAtlasLayout>> {
         match mob_type {
             MobType::Enemy(enemy_type) => match enemy_type {
                 EnemyMobType::Pawn => Some(self.pawn_thruster.clone()),
