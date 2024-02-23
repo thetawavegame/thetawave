@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+
 use thetawave_interface::{
     camera::ScreenShakeEvent,
     health::{DamageDealtEvent, HealthComponent},
@@ -47,7 +48,9 @@ pub fn damage_system(
             });
 
             if let Some(_pc) = maybe_player_component {
-                screen_shake_event_writer.send(ScreenShakeEvent {});
+                screen_shake_event_writer.send(ScreenShakeEvent {
+                    trauma: 1.,
+                });
             }
         }
     }

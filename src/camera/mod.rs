@@ -1,14 +1,16 @@
-use crate::game;
-use bevy::core_pipeline::bloom::BloomPrefilterSettings;
 use bevy::{
     core_pipeline::{
         bloom::BloomSettings, clear_color::ClearColorConfig, tonemapping::Tonemapping,
     },
     prelude::*,
 };
+use bevy::core_pipeline::bloom::BloomPrefilterSettings;
+
 use thetawave_interface::camera::ScreenShakeEvent;
 
-use self::screen_shake::screen_shake_system;
+use crate::game;
+
+use self::screen_shake::{add_trauma, shake_screen};
 
 mod screen_shake;
 
@@ -18,7 +20,8 @@ impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<ScreenShakeEvent>();
         app.add_systems(Startup, setup_cameras_system);
-        app.add_systems(Update, screen_shake_system);
+        app.add_systems(Update, add_trauma);
+        app.add_systems(Update, shake_screen);
     }
 }
 
@@ -52,7 +55,12 @@ pub fn setup_cameras_system(
             },
             ..BloomSettings::OLD_SCHOOL
         },
-        screen_shake::ScreenShakeComponent {},
+        screen_shake::ScreenShakeComponent {
+            trauma: 0.0,
+            trauma_decay: 1.,
+            shake_intensity: Vec3 { x: 60., y: 60., z: 0.1 },
+            running: false,
+        },
     ));
 
     // 3d camera for background objects
@@ -73,7 +81,6 @@ pub fn setup_cameras_system(
     };
     commands.spawn((
         camera_3d,
-        BloomSettings::default(),
-        screen_shake::ScreenShakeComponent {},
+        BloomSettings::default()
     ));
 }
