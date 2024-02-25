@@ -6,10 +6,9 @@ use bevy::core_pipeline::core_3d::Camera3dBundle;
 use bevy::core_pipeline::{bloom::BloomSettings, tonemapping::Tonemapping};
 use bevy::ecs::system::{Commands, Res};
 use bevy::math::Vec3;
-use bevy::render::camera::{Camera, PerspectiveProjection, Projection};
+use bevy::render::camera::{Camera, ClearColorConfig, PerspectiveProjection, Projection};
 use bevy::transform::components::Transform;
 use bevy::utils::default;
-use bevy::render::camera::ClearColorConfig;
 
 pub struct CameraPlugin;
 
