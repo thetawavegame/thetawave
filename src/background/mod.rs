@@ -1,6 +1,35 @@
 //! `thetawave` background module
 
-use bevy::prelude::*;
+use bevy::{
+    app::{App, Plugin, Update},
+    asset::{AssetServer, Assets, Handle},
+    core::Name,
+    ecs::{
+        component::Component,
+        event::EventReader,
+        query::With,
+        reflect::ReflectComponent,
+        schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter},
+        system::{Commands, Query, Res, ResMut, Resource},
+    },
+    hierarchy::BuildChildren,
+    log::error,
+    math::{
+        primitives::{Rectangle, Sphere},
+        Quat, Vec3,
+    },
+    pbr::{AlphaMode, PbrBundle, PointLight, PointLightBundle, StandardMaterial},
+    reflect::Reflect,
+    render::{
+        color::Color,
+        mesh::{Mesh, Meshable},
+        view::{InheritedVisibility, Visibility},
+    },
+    scene::{Scene, SceneBundle},
+    time::Time,
+    transform::components::Transform,
+    utils::default,
+};
 use rand::{seq::IteratorRandom, Rng};
 use ron::de::from_bytes;
 use serde::Deserialize;
@@ -72,6 +101,8 @@ pub struct BackgroundsResource {
     pub star_light_intensity: f32,
     /// Range of the point light child of the star
     pub star_light_range: f32,
+    /// Multiplier for the color value that bloom applies to
+    pub star_bloom_brightness: f32,
 }
 
 /// Resource to track if star explosion is happening
@@ -281,18 +312,17 @@ pub fn create_background_system(
         );
 
     // Spawn a star with a random color
-    let star_color = Color::rgb_linear(
-        rng.gen_range(backgrounds_res.star_color_range.clone())
-            + 10.0 * game_options.bloom_intensity,
-        rng.gen_range(backgrounds_res.star_color_range.clone())
-            + 10.0 * game_options.bloom_intensity,
-        rng.gen_range(backgrounds_res.star_color_range.clone())
-            + 10.0 * game_options.bloom_intensity,
-    );
+    let star_color = Color::WHITE
+        + (Color::rgb(
+            rng.gen_range(backgrounds_res.star_color_range.clone()),
+            rng.gen_range(backgrounds_res.star_color_range.clone()),
+            rng.gen_range(backgrounds_res.star_color_range.clone()),
+        ) * backgrounds_res.star_bloom_brightness
+            * game_options.bloom_intensity);
 
     // Emissive colored star material for bloom
     let star_material = materials.add(StandardMaterial {
-        emissive: star_color,
+        base_color: star_color,
         ..default()
     });
 

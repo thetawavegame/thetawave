@@ -10,8 +10,9 @@
     background_alpha: 0.06,
     star_radius: 10.0,
     star_subdivisions: 5,
+    star_bloom_brightness: 10.0,
     planet_subdivisions: 5,
     rotation_speed_range: (start: 0.01, end: 0.05),
-    star_light_intensity: 5000000.0,
+    star_light_intensity: 100000000.0,
     star_light_range: 10000.0,
 )
