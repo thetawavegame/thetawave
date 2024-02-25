@@ -1,8 +1,26 @@
 use crate::{options::PlayingOnArcadeResource, run::CurrentRunProgressResource};
 
 use super::BouncingPromptComponent;
-
-use bevy::{input::gamepad::GamepadButtonChangedEvent, prelude::*};
+use bevy::{
+    asset::AssetServer,
+    ecs::{
+        component::Component,
+        event::{EventReader, EventWriter},
+        query::With,
+        system::{Commands, ParamSet, Query, Res, ResMut},
+    },
+    hierarchy::{BuildChildren, Children},
+    input::gamepad::GamepadButtonChangedEvent,
+    render::{color::Color, view::Visibility},
+    text::{JustifyText, Text, TextStyle},
+    time::{Timer, TimerMode},
+    ui::{
+        node_bundles::{ImageBundle, NodeBundle, TextBundle},
+        AlignItems, AlignSelf, BackgroundColor, Display, FlexDirection, JustifyContent,
+        JustifySelf, Style, UiRect, Val,
+    },
+    utils::default,
+};
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::input::{MenuAction, MenuExplorer};
 use thetawave_interface::{
@@ -529,7 +547,7 @@ pub fn setup_character_selection_system(
                                             color: Color::WHITE,
                                         },
                                     )
-                                    .with_alignment(TextAlignment::Center),
+                                    .with_justify(JustifyText::Center),
                                     ..default()
                                 })
                                 .insert(ToggleTutorialUI);
@@ -560,7 +578,7 @@ pub fn player_join_system(
     let action_state = menu_input_query.single();
 
     // join with keyboard
-    if action_state.just_released(MenuAction::JoinKeyboard) {
+    if action_state.just_released(&MenuAction::JoinKeyboard) {
         // set the first available player input to keyboard
         for (i, player_data) in players_resource.player_data.iter_mut().enumerate() {
             if player_data.is_none() && !used_inputs.contains(&PlayerInput::Keyboard) {
@@ -588,7 +606,7 @@ pub fn player_join_system(
     }
 
     // join with gamepad
-    if action_state.just_released(MenuAction::JoinGamepad) {
+    if action_state.just_released(&MenuAction::JoinGamepad) {
         let gamepad_event = gamepad_events.read().next().unwrap();
 
         // set the first available player input the gamepad
@@ -645,7 +663,7 @@ pub fn toggle_tutorial_system(
     let action_state = menu_input_query.single();
 
     // if input read enter the game state
-    if action_state.just_released(MenuAction::ToggleTutorial) {
+    if action_state.just_released(&MenuAction::ToggleTutorial) {
         // set the state to game
         run_resource.tutorials_on = !run_resource.tutorials_on;
 
@@ -690,9 +708,9 @@ pub fn select_character_system(
 ) {
     let action_state = menu_input_query.single();
 
-    let keyboard_input = action_state.just_pressed(MenuAction::ChangeCharacterKeyboard);
+    let keyboard_input = action_state.just_pressed(&MenuAction::ChangeCharacterKeyboard);
 
-    let gamepad_input = action_state.just_pressed(MenuAction::ChangeCharacterGamepad);
+    let gamepad_input = action_state.just_pressed(&MenuAction::ChangeCharacterGamepad);
 
     let gamepad_event_id = if gamepad_input {
         gamepad_events

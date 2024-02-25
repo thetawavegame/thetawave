@@ -37,14 +37,14 @@ impl From<DisplayConfig> for Window {
 // TODO: fix this function, doesn't toggle back to windowed correctly
 /// Toggles the window between full screen and windowed on key press
 pub fn toggle_fullscreen_system(
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     mut window_query: Query<&mut Window, With<PrimaryWindow>>,
 ) {
     // get primary window
     //let window = windows.get_primary_mut().unwrap();
     let mut primary_window = window_query.get_single_mut().unwrap();
     // get input for toggling full screen
-    let fullscreen_input = keyboard_input.just_released(KeyCode::F);
+    let fullscreen_input = keyboard_input.just_released(KeyCode::KeyF);
 
     // set window mode to the mode it's not in
     if fullscreen_input {
@@ -66,12 +66,12 @@ pub fn toggle_fullscreen_system(
 
 /// Toggles a zoomed out camera perspective on key press
 pub fn toggle_zoom_system(
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     mut camera_query: Query<&mut OrthographicProjection, With<Camera2d>>,
     game_parameters: Res<GameParametersResource>,
 ) {
     // get input for toggling zoom
-    let zoom_input = keyboard_input.just_released(KeyCode::V);
+    let zoom_input = keyboard_input.just_released(KeyCode::KeyV);
 
     // toggle zoom to opposite scale
     if zoom_input {

@@ -1,6 +1,6 @@
 use bevy::prelude::{
-    Commands, Component, Event, EventReader, Name, Res, Resource, SpriteSheetBundle,
-    TextureAtlasSprite, Timer, TimerMode, Transform, Vec2, Vec3,
+    Commands, Component, Event, EventReader, Name, Res, Resource, Sprite, SpriteSheetBundle, Timer,
+    TimerMode, Transform, Vec2, Vec3,
 };
 use bevy_rapier2d::prelude::{ActiveEvents, Collider, LockedAxes, RigidBody, Sensor, Velocity};
 use serde::Deserialize;
@@ -141,11 +141,14 @@ pub fn spawn_consumable(
     // spawn the consumable
     consumable
         .insert(SpriteSheetBundle {
-            texture_atlas: consumable_assets.get_asset(consumable_type),
-            sprite: TextureAtlasSprite {
+            atlas: consumable_assets
+                .get_texture_atlas_layout(consumable_type)
+                .into(),
+            sprite: Sprite {
                 color: consumable_assets.get_color(consumable_type, game_options.bloom_intensity),
                 ..Default::default()
             },
+            texture: consumable_assets.get_image(consumable_type),
             ..Default::default()
         })
         .insert(AnimationComponent {

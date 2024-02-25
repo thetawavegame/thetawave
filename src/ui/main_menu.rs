@@ -1,7 +1,23 @@
-use std::time::Duration;
-
 use crate::options::PlayingOnArcadeResource;
-use bevy::prelude::*;
+use bevy::{
+    asset::AssetServer,
+    ecs::{
+        component::Component,
+        event::EventWriter,
+        system::{Commands, Query, Res},
+    },
+    hierarchy::BuildChildren,
+    render::color::Color,
+    text::{JustifyText, Text, TextStyle},
+    time::{Time, Timer, TimerMode},
+    transform::components::Transform,
+    ui::{
+        node_bundles::{ImageBundle, NodeBundle, TextBundle},
+        BackgroundColor, FlexDirection, JustifyContent, Style, UiRect, Val,
+    },
+    utils::default,
+};
+use std::time::Duration;
 use thetawave_interface::audio::{BGMusicType, ChangeBackgroundMusicEvent};
 use thetawave_interface::game::historical_metrics::{
     MobKillsByPlayerForCompletedGames, UserStatsByPlayerForCompletedGamesCache, DEFAULT_USER_ID,
@@ -115,7 +131,7 @@ pub fn setup_main_menu_system(
                                         color: Color::WHITE,
                                     },
                                 )
-                                    .with_alignment(TextAlignment::Center),
+                                    .with_justify(JustifyText::Center),
 
                                 ..default()
                             });

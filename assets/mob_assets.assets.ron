@@ -1,205 +1,264 @@
 ({
-    "crustling.head": TextureAtlas (
-        path: "texture/crustling_spritesheet.png",
+    "crustling.head.layout": TextureAtlasLayout (
         tile_size_x: 38.,
         tile_size_y: 29.,
         columns: 3,
         rows: 1,
     ),
-    "crustling.tentacle1": TextureAtlas (
-        path: "texture/crustling_tentacle_1.png",
+    "crustling.head.image": File (
+        path: "texture/crustling_spritesheet.png"
+    ),
+    "crustling.tentacle1.layout": TextureAtlasLayout (
         tile_size_x: 10.,
         tile_size_y: 30.,
         columns: 1,
         rows: 1,
     ),
-    "crustling.tentacle2": TextureAtlas (
-        path: "texture/crustling_tentacle_2.png",
+    "crustling.tentacle1.image": File (
+        path: "texture/crustling_tentacle_1.png"
+    ),
+    "crustling.tentacle2.layout": TextureAtlasLayout (
         tile_size_x: 10.,
         tile_size_y: 30.,
         columns: 1,
         rows: 1,
     ),
-    "crustling.tentacle3": TextureAtlas (
-        path: "texture/crustling_tentacle_3.png",
+    "crustling.tentacle2.image": File (
+        path: "texture/crustling_tentacle_2.png"
+    ),
+    "crustling.tentacle3.layout": TextureAtlasLayout (
         tile_size_x: 10.,
         tile_size_y: 30.,
         columns: 1,
         rows: 1,
     ),
-    "tutorial_drone": TextureAtlas (
-        path: "texture/tutorial_drone_spritesheet.png",
+    "crustling.tentacle3.image": File (
+        path: "texture/crustling_tentacle_3.png"
+    ),
+    "tutorial_drone.layout": TextureAtlasLayout (
         tile_size_x: 20.,
         tile_size_y: 21.,
         columns: 3,
         rows: 1,
     ),
-    "drone": TextureAtlas (
-        path: "texture/drone_spritesheet.png",
+    "tutorial_drone.image": File (
+        path: "texture/tutorial_drone_spritesheet.png"
+    ),
+    "drone.layout": TextureAtlasLayout (
         tile_size_x: 20.,
         tile_size_y: 20.,
         columns: 3,
         rows: 1,
     ),
-    "drone.thruster": TextureAtlas (
-        path: "texture/drone_thrusters_spritesheet.png",
+    "drone.image": File (
+        path: "texture/drone_spritesheet.png"
+    ),
+    "drone.thruster.layout": TextureAtlasLayout (
         tile_size_x: 14.,
         tile_size_y: 10.,
         columns: 3,
         rows: 1,
     ),
-    "pawn": TextureAtlas (
-        path: "texture/pawn_spritesheet.png",
+    "drone.thruster.image": File (
+        path: "texture/drone_thrusters_spritesheet.png"
+    ),
+    "pawn.layout": TextureAtlasLayout (
         tile_size_x: 20.,
         tile_size_y: 20.,
         columns: 3,
         rows: 1,
     ),
-    "pawn.thruster": TextureAtlas (
-        path: "texture/pawn_thrusters_spritesheet.png",
+    "pawn.image": File (
+        path: "texture/pawn_spritesheet.png"
+    ),
+    "pawn.thruster.layout": TextureAtlasLayout (
         tile_size_x: 14.,
         tile_size_y: 10.,
         columns: 3,
         rows: 1,
     ),
-    "shelly": TextureAtlas (
-        path: "texture/shelly_spritesheet.png",
+    "pawn.thruster.image": File (
+        path: "texture/pawn_thrusters_spritesheet.png"
+    ),
+    "shelly.layout": TextureAtlasLayout (
         tile_size_x: 24.,
         tile_size_y: 25.,
         columns: 3,
         rows: 1,
     ),
-    "hauler.front": TextureAtlas (
-        path: "texture/hauler_front.png",
+    "shelly.image": File (
+        path: "texture/shelly_spritesheet.png"
+    ),
+    "hauler.front.layout": TextureAtlasLayout (
         tile_size_x: 18.,
         tile_size_y: 15.,
         columns: 1,
         rows: 1,
     ),
-    "hauler.back": TextureAtlas (
-        path: "texture/hauler_back.png",
+    "hauler.front.image": File (
+        path: "texture/hauler_front.png"
+    ),
+    "hauler.back.layout": TextureAtlasLayout (
         tile_size_x: 18.,
         tile_size_y: 24.,
         columns: 1,
         rows: 1,
     ),
-    "hauler.middle": TextureAtlas (
-        path: "texture/hauler_middle.png",
+    "hauler.back.image": File (
+        path: "texture/hauler_back.png"
+    ),
+    "hauler.middle.layout": TextureAtlasLayout (
         tile_size_x: 18.,
         tile_size_y: 26.,
         columns: 1,
         rows: 1,
     ),
-    "hauler.thruster": TextureAtlas (
-        path: "texture/hauler_thrusters_spritesheet.png",
+    "hauler.middle.image": File (
+        path: "texture/hauler_middle.png"
+    ),
+    "hauler.thruster.layout": TextureAtlasLayout (
         tile_size_x: 20.,
         tile_size_y: 9.,
         columns: 3,
         rows: 1,
     ),
-    "missile_launcher": TextureAtlas (
-        path: "texture/missile_launcher_spritesheet.png",
+    "hauler.thruster.image": File (
+        path: "texture/hauler_thrusters_spritesheet.png"
+    ),
+    "missile_launcher.layout": TextureAtlasLayout (
         tile_size_x: 23.,
         tile_size_y: 28.,
         columns: 3,
         rows: 1,
     ),
-    "missile_launcher.thruster": TextureAtlas (
-        path: "texture/missile_launcher_thrusters_spritesheet.png",
+    "missile_launcher.image": File (
+        path: "texture/missile_launcher_spritesheet.png"
+    ),
+    "missile_launcher.thruster.layout": TextureAtlasLayout (
         tile_size_x: 17.,
         tile_size_y: 7.,
         columns: 3,
         rows: 1,
     ),
-    "missile": TextureAtlas (
-        path: "texture/missile_spritesheet.png",
+    "missile_launcher.thruster.image": File (
+        path: "texture/missile_launcher_thrusters_spritesheet.png"
+    ),
+    "missile.layout": TextureAtlasLayout (
         tile_size_x: 11.,
         tile_size_y: 20.,
         columns: 4,
         rows: 1,
     ),
-    "missile.thruster": TextureAtlas (
-        path: "texture/missile_thrusters_spritesheet.png",
+    "missile.image": File (
+        path: "texture/missile_spritesheet.png"
+    ),
+    "missile.thruster.layout": TextureAtlasLayout (
         tile_size_x: 7.,
         tile_size_y: 7.,
         columns: 4,
         rows: 1,
     ),
-    "strafer": TextureAtlas (
-        path: "texture/strafer_spritesheet.png",
+    "missile.thruster.image": File (
+        path: "texture/missile_thrusters_spritesheet.png"
+    ),
+    "strafer.layout": TextureAtlasLayout (
         tile_size_x: 26.,
         tile_size_y: 14.,
         columns: 3,
         rows: 1,
     ),
-    "strafer.thruster": TextureAtlas (
-        path: "texture/strafer_thrusters_spritesheet.png",
+    "strafer.image": File (
+        path: "texture/strafer_spritesheet.png"
+    ),
+    "strafer.thruster.layout": TextureAtlasLayout (
         tile_size_x: 24.,
         tile_size_y: 11.,
         columns: 3,
         rows: 1,
     ),
-    "money_asteroid": TextureAtlas (
-        path: "texture/money_asteroid_spritesheet.png",
+    "strafer.thruster.image": File (
+        path: "texture/strafer_thrusters_spritesheet.png"
+    ),
+    "money_asteroid.layout": TextureAtlasLayout (
         tile_size_x: 21.,
         tile_size_y: 21.,
         columns: 1,
         rows: 1,
     ),
-    "repeater.head": TextureAtlas (
-        path: "texture/repeater_head_spritesheet.png",
+    "money_asteroid.image": File (
+        path: "texture/money_asteroid_spritesheet.png"
+    ),
+    "repeater.head.layout": TextureAtlasLayout (
         tile_size_x: 68.,
         tile_size_y: 49.,
         columns: 3,
         rows: 1,
     ),
-    "repeater.body": TextureAtlas (
-        path: "texture/repeater_body_spritesheet.png",
+    "repeater.head.image": File (
+        path: "texture/repeater_head_spritesheet.png"
+    ),
+    "repeater.body.layout": TextureAtlasLayout (
         tile_size_x: 70.,
         tile_size_y: 43.,
         columns: 3,
         rows: 1,
     ),
-    "repeater.right_shoulder": TextureAtlas (
-        path: "texture/repeater_right_shoulder_spritesheet.png",
+    "repeater.body.image": File (
+        path: "texture/repeater_body_spritesheet.png"
+    ),
+    "repeater.right_shoulder.layout": TextureAtlasLayout (
         tile_size_x: 58.,
         tile_size_y: 64.,
         columns: 3,
         rows: 1,
     ),
-    "repeater.left_shoulder": TextureAtlas (
-        path: "texture/repeater_left_shoulder_spritesheet.png",
+    "repeater.right_shoulder.image": File (
+        path: "texture/repeater_right_shoulder_spritesheet.png"
+    ),
+    "repeater.left_shoulder.layout": TextureAtlasLayout (
         tile_size_x: 58.,
         tile_size_y: 64.,
         columns: 3,
         rows: 1,
     ),
-    "repeater.right_arm": TextureAtlas (
-        path: "texture/repeater_right_arm_spritesheet.png",
+    "repeater.left_shoulder.image": File (
+        path: "texture/repeater_left_shoulder_spritesheet.png"
+    ),
+    "repeater.right_arm.layout": TextureAtlasLayout (
         tile_size_x: 41.,
         tile_size_y: 62.,
         columns: 3,
         rows: 1,
     ),
-    "repeater.left_arm": TextureAtlas (
-        path: "texture/repeater_left_arm_spritesheet.png",
+    "repeater.right_arm.image": File (
+        path: "texture/repeater_right_arm_spritesheet.png"
+    ),
+    "repeater.left_arm.layout": TextureAtlasLayout (
         tile_size_x: 41.,
         tile_size_y: 62.,
         columns: 3,
         rows: 1,
     ),
-    "repeater.right_claw": TextureAtlas (
-        path: "texture/repeater_right_claw_spritesheet.png",
+    "repeater.left_arm.image": File (
+        path: "texture/repeater_left_arm_spritesheet.png"
+    ),
+    "repeater.right_claw.layout": TextureAtlasLayout (
         tile_size_x: 36.,
         tile_size_y: 35.,
         columns: 3,
         rows: 1,
     ),
-    "repeater.left_claw": TextureAtlas (
-        path: "texture/repeater_left_claw_spritesheet.png",
+    "repeater.right_claw.image": File (
+        path: "texture/repeater_right_claw_spritesheet.png"
+    ),
+    "repeater.left_claw.layout": TextureAtlasLayout (
         tile_size_x: 36.,
         tile_size_y: 35.,
         columns: 3,
         rows: 1,
+    ),
+    "repeater.left_claw.image": File (
+        path: "texture/repeater_left_claw_spritesheet.png"
     ),
 })
+

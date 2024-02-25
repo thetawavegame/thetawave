@@ -1,7 +1,19 @@
-use crate::options::PlayingOnArcadeResource;
-
 use super::BouncingPromptComponent;
-use bevy::prelude::*;
+use crate::options::PlayingOnArcadeResource;
+use bevy::{
+    asset::AssetServer,
+    ecs::{
+        component::Component,
+        system::{Commands, Res},
+    },
+    hierarchy::BuildChildren,
+    time::{Timer, TimerMode},
+    ui::{
+        node_bundles::{ImageBundle, NodeBundle},
+        AlignItems, Style, UiRect, Val,
+    },
+    utils::default,
+};
 use thetawave_interface::states::InstructionsCleanup;
 
 #[derive(Component)]
