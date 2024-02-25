@@ -231,17 +231,14 @@ pub fn create_background_system(
             Err(_) => {
                 error!("Failed to get random model from ./assets/models/planets. Using fallback model instead.");
 
-                let maybe_icosphere = Mesh::try_from(
-                    Sphere { radius: 10.0 }
-                        .mesh()
-                        .ico(backgrounds_res.planet_subdivisions)
-                        .unwrap(),
-                );
+                let maybe_planet_mesh = Sphere::new(10.0)
+                    .mesh()
+                    .ico(backgrounds_res.planet_subdivisions);
 
-                match maybe_icosphere {
-                    Ok(icosphere) => {
+                match maybe_planet_mesh {
+                    Ok(mesh) => {
                         planet_commands.insert(PbrBundle {
-                            mesh: meshes.add(icosphere),
+                            mesh: meshes.add(mesh),
                             material: materials.add(StandardMaterial {
                                 base_color: Color::WHITE,
                                 ..default()
@@ -326,38 +323,41 @@ pub fn create_background_system(
         ..default()
     });
 
-    // Spherical star mesh
-    let star_mesh: Handle<Mesh> = meshes.add(
-        Sphere::new(backgrounds_res.star_radius)
-            .mesh()
-            .ico(backgrounds_res.star_subdivisions)
-            .expect("Failed to create icosphere"),
-    );
+    let maybe_star_mesh = Sphere::new(backgrounds_res.star_radius)
+        .mesh()
+        .ico(backgrounds_res.star_subdivisions);
 
-    // Spawn the star with a child point light of the same color
-    commands
-        .spawn((PbrBundle {
-            mesh: star_mesh,
-            material: star_material,
-            transform: star_transform,
-            ..default()
-        },))
-        .insert(GameCleanup)
-        .insert(Visibility::default())
-        .insert(InheritedVisibility::default())
-        .insert(Name::new("Star"))
-        .with_children(|parent| {
-            parent
-                .spawn(PointLightBundle {
-                    point_light: PointLight {
-                        color: star_color,
-                        intensity: backgrounds_res.star_light_intensity,
-                        range: backgrounds_res.star_light_range,
-                        ..Default::default()
-                    },
-                    ..Default::default()
-                })
-                .insert(StarLightComponent)
-                .insert(Name::new("Star Point Light"));
-        });
+    match maybe_star_mesh {
+        Ok(mesh) => {
+            // Spawn the star with a child point light of the same color
+            commands
+                .spawn((PbrBundle {
+                    mesh: meshes.add(mesh),
+                    material: star_material,
+                    transform: star_transform,
+                    ..default()
+                },))
+                .insert(GameCleanup)
+                .insert(Visibility::default())
+                .insert(InheritedVisibility::default())
+                .insert(Name::new("Star"))
+                .with_children(|parent| {
+                    parent
+                        .spawn(PointLightBundle {
+                            point_light: PointLight {
+                                color: star_color,
+                                intensity: backgrounds_res.star_light_intensity,
+                                range: backgrounds_res.star_light_range,
+                                ..Default::default()
+                            },
+                            ..Default::default()
+                        })
+                        .insert(StarLightComponent)
+                        .insert(Name::new("Star Point Light"));
+                });
+        }
+        Err(e) => {
+            error!("{e}\nCould not construct icosphere for star. No star model will be spawned.")
+        }
+    }
 }
