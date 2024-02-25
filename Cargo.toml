@@ -87,7 +87,6 @@ winit = "0.29.10"
 image = "0.24.6"
 thiserror = { workspace = true }
 leafwing-input-manager = { workspace = true }
-
 thetawave_interface = { path = "crates/thetawave_interface" }
 
 
