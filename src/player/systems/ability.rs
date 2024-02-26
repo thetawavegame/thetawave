@@ -33,11 +33,11 @@ pub fn player_ability_system(
     ) in player_query.iter_mut()
     // No-op for players whose special attack is disabled
     {
-        let activate_ability_input = action_state.pressed(PlayerAction::SpecialAttack);
-        let up = action_state.pressed(PlayerAction::MoveUp);
-        let down = action_state.pressed(PlayerAction::MoveDown);
-        let left = action_state.pressed(PlayerAction::MoveLeft);
-        let right = action_state.pressed(PlayerAction::MoveRight);
+        let activate_ability_input = action_state.pressed(&PlayerAction::SpecialAttack);
+        let up = action_state.pressed(&PlayerAction::MoveUp);
+        let down = action_state.pressed(&PlayerAction::MoveDown);
+        let left = action_state.pressed(&PlayerAction::MoveLeft);
+        let right = action_state.pressed(&PlayerAction::MoveRight);
 
         // update ability cooldown timer
         player_component.ability_cooldown_timer.tick(time.delta());

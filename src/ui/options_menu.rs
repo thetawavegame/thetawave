@@ -21,7 +21,7 @@ const MAX_BLOOM_FACTOR: f32 = 2.;
 impl Plugin for OptionsMenuPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(EguiPlugin)
-            .add_state::<OptionsMenuOverlay>()
+            .init_state::<OptionsMenuOverlay>()
             .add_systems(
                 Update,
                 (paint_options_menu, exit_options_menu_on_input_action)
@@ -177,7 +177,7 @@ fn exit_options_menu_on_input_action(
     menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
 ) {
     if let Ok(menu_action) = menu_input_query.get_single() {
-        if menu_action.just_released(MenuAction::Back) {
+        if menu_action.just_released(&MenuAction::Back) {
             info!("Exiting options menu overlay state");
             next_options_menu_overlay_state.set(OptionsMenuOverlay::Disabled)
         }

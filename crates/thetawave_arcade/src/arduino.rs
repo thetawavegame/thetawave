@@ -1,4 +1,12 @@
-use bevy::prelude::*;
+use bevy::{
+    app::{App, Plugin, Startup, Update},
+    ecs::{
+        event::EventReader,
+        schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter, OnExit},
+        system::{Res, ResMut, Resource},
+    },
+    log::{error, info},
+};
 use bevy_serialport::{
     DataBits, FlowControl, Parity, SerialPortPlugin, SerialPortRuntime, SerialPortSetting,
     SerialResource, StopBits,

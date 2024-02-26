@@ -1,37 +1,37 @@
 ({
-    "health_wrench": TextureAtlas (
-        path: "texture/health_wrench_spritesheet.png",
+    "health_wrench.layout": TextureAtlasLayout (
         tile_size_x: 12.,
         tile_size_y: 12.,
         columns: 1,
         rows: 1,  
     ),
-    "money3": TextureAtlas (
-        path: "texture/money5_spritesheet.png",
+    "health_wrench.image": File( path: "texture/health_wrench_spritesheet.png"),
+    "money3.layout": TextureAtlasLayout (
         tile_size_x: 10.,
         tile_size_y: 11.,
         columns: 1,
         rows: 1,  
     ),
-    "money1": TextureAtlas (
-        path: "texture/money1_spritesheet.png",
+    "money3.image": File( path: "texture/money5_spritesheet.png"),
+    "money1.layout": TextureAtlasLayout (
         tile_size_x: 7.,
         tile_size_y: 7.,
         columns: 1,
         rows: 1,  
     ),
-    "armor": TextureAtlas (
-        path: "texture/armor_spritesheet.png",
+    "money1.image": File( path: "texture/money1_spritesheet.png"),
+    "armor.layout": TextureAtlasLayout (
         tile_size_x: 12.,
         tile_size_y: 12.,
         columns: 1,
         rows: 1,  
     ),
-    "gain_projectiles": TextureAtlas (
-        path: "texture/gain_projectiles_spritesheet.png",
+    "armor.image": File( path: "texture/armor_spritesheet.png"),
+    "gain_projectiles.layout": TextureAtlasLayout (
         tile_size_x: 8.,
         tile_size_y: 7.,
         columns: 1,
         rows: 1,
     ),
+    "gain_projectiles.image": File( path: "texture/gain_projectiles_spritesheet.png"),
 })

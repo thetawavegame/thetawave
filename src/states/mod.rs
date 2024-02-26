@@ -2,7 +2,10 @@ use bevy::prelude::{
     in_state, App, Commands, Component, DespawnRecursiveExt, Entity, IntoSystemConfigs,
     IntoSystemSetConfigs, NextState, OnEnter, OnExit, Plugin, Query, ResMut, Update, With,
 };
-use bevy_asset_loader::prelude::*;
+use bevy_asset_loader::loading_state::config::ConfigureLoadingState;
+use bevy_asset_loader::loading_state::LoadingState;
+use bevy_asset_loader::loading_state::LoadingStateAppExt;
+use bevy_asset_loader::standard_dynamic_asset::StandardDynamicAssetCollection;
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::input::MenuAction;
 use thetawave_interface::input::MenuExplorer;
@@ -18,7 +21,13 @@ use thetawave_interface::states::{AppStates, GameStates};
 mod game;
 mod pause_menu;
 
-use crate::assets;
+use crate::assets::ConsumableAssets;
+use crate::assets::EffectAssets;
+use crate::assets::GameAudioAssets;
+use crate::assets::ItemAssets;
+use crate::assets::MobAssets;
+use crate::assets::PlayerAssets;
+use crate::assets::ProjectileAssets;
 use crate::GameEnterSet;
 use crate::GameUpdateSet;
 
@@ -30,43 +39,35 @@ pub struct StatesPlugin;
 impl Plugin for StatesPlugin {
     fn build(&self, app: &mut App) {
         app.add_loading_state(
-            LoadingState::new(AppStates::LoadingAssets).continue_to_state(AppStates::MainMenu),
-        )
-        .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
-            AppStates::LoadingAssets,
-            "player_assets.assets.ron",
-        )
-        .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
-            AppStates::LoadingAssets,
-            "projectile_assets.assets.ron",
-        )
-        .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
-            AppStates::LoadingAssets,
-            "mob_assets.assets.ron",
-        )
-        .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
-            AppStates::LoadingAssets,
-            "consumable_assets.assets.ron",
-        )
-        .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
-            AppStates::LoadingAssets,
-            "item_assets.assets.ron",
-        )
-        .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
-            AppStates::LoadingAssets,
-            "effect_assets.assets.ron",
-        )
-        .add_dynamic_collection_to_loading_state::<_, StandardDynamicAssetCollection>(
-            AppStates::LoadingAssets,
-            "game_audio_assets.assets.ron",
-        )
-        .add_collection_to_loading_state::<_, assets::PlayerAssets>(AppStates::LoadingAssets)
-        .add_collection_to_loading_state::<_, assets::ProjectileAssets>(AppStates::LoadingAssets)
-        .add_collection_to_loading_state::<_, assets::MobAssets>(AppStates::LoadingAssets)
-        .add_collection_to_loading_state::<_, assets::ItemAssets>(AppStates::LoadingAssets)
-        .add_collection_to_loading_state::<_, assets::ConsumableAssets>(AppStates::LoadingAssets)
-        .add_collection_to_loading_state::<_, assets::EffectAssets>(AppStates::LoadingAssets)
-        .add_collection_to_loading_state::<_, assets::GameAudioAssets>(AppStates::LoadingAssets);
+            LoadingState::new(AppStates::LoadingAssets)
+                .continue_to_state(AppStates::MainMenu)
+                .with_dynamic_assets_file::<StandardDynamicAssetCollection>(
+                    "player_assets.assets.ron",
+                )
+                .with_dynamic_assets_file::<StandardDynamicAssetCollection>(
+                    "projectile_assets.assets.ron",
+                )
+                .with_dynamic_assets_file::<StandardDynamicAssetCollection>("mob_assets.assets.ron")
+                .with_dynamic_assets_file::<StandardDynamicAssetCollection>(
+                    "consumable_assets.assets.ron",
+                )
+                .with_dynamic_assets_file::<StandardDynamicAssetCollection>(
+                    "item_assets.assets.ron",
+                )
+                .with_dynamic_assets_file::<StandardDynamicAssetCollection>(
+                    "effect_assets.assets.ron",
+                )
+                .with_dynamic_assets_file::<StandardDynamicAssetCollection>(
+                    "game_audio_assets.assets.ron",
+                )
+                .load_collection::<PlayerAssets>()
+                .load_collection::<ProjectileAssets>()
+                .load_collection::<MobAssets>()
+                .load_collection::<ItemAssets>()
+                .load_collection::<ConsumableAssets>()
+                .load_collection::<EffectAssets>()
+                .load_collection::<GameAudioAssets>(),
+        );
 
         app.edit_schedule(OnEnter(AppStates::Game), |schedule| {
             schedule.configure_sets(
@@ -198,7 +199,7 @@ fn start_mainmenu_system(
     let action_state = menu_input_query.single();
 
     // if reset input provided reset th run
-    if action_state.just_released(MenuAction::Reset) {
+    if action_state.just_released(&MenuAction::Reset) {
         // go to the main menu state
         next_app_state.set(AppStates::MainMenu);
         next_game_state.set(GameStates::Playing);

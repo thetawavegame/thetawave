@@ -1,4 +1,18 @@
-use bevy::prelude::*;
+use bevy::{
+    asset::AssetServer,
+    ecs::{
+        component::Component,
+        system::{Commands, Res},
+    },
+    hierarchy::BuildChildren,
+    prelude::{JustifyText, Text, TextBundle, TextStyle},
+    render::color::Color,
+    time::{Timer, TimerMode},
+    ui::{
+        node_bundles::{ImageBundle, NodeBundle},
+        FlexDirection, PositionType, Style, UiRect, Val,
+    },
+};
 use thetawave_interface::states::PauseCleanup;
 
 use crate::{options::PlayingOnArcadeResource, ui::BouncingPromptComponent};
@@ -69,9 +83,9 @@ pub fn setup_pause_system(
                         color: Color::WHITE,
                     },
                 )
-                .with_alignment(TextAlignment::Center),
+                .with_justify(JustifyText::Center),
 
-                ..default()
+                ..Default::default()
             });
         });
 }
