@@ -366,7 +366,7 @@ mod test {
     use crate::spawnable::{BossesDestroyedEvent, SpawnConsumableEvent};
     use bevy::app::App;
     use bevy::log::{Level, LogPlugin};
-    use bevy::prelude::{NextState, State};
+    use bevy::prelude::{default, NextState, State};
     use bevy::MinimalPlugins;
     use rstest::rstest;
     use thetawave_interface::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent};
@@ -385,9 +385,10 @@ mod test {
             .add_plugins(LogPlugin {
                 filter: "".to_string(),
                 level: Level::TRACE,
+                ..default()
             })
-            .add_state::<AppStates>()
-            .add_state::<GameStates>()
+            .init_state::<AppStates>()
+            .init_state::<GameStates>()
             .add_event::<MobReachedBottomGateEvent>()
             .add_event::<ChangeBackgroundMusicEvent>()
             .add_event::<PlaySoundEffectEvent>()

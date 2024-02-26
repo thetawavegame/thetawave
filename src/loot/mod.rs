@@ -52,10 +52,12 @@ impl LootDropsResource {
                 LootDrop::Consumable(consumable_loot_drop) => {
                     consumable_loot_drop.roll_and_spawn(consumable_event_writer, position);
                 }
-                LootDrop::Item(item_type) => item_event_writer.send(SpawnItemEvent {
-                    item_type: item_type.clone(),
-                    position,
-                }),
+                LootDrop::Item(item_type) => {
+                    item_event_writer.send(SpawnItemEvent {
+                        item_type: item_type.clone(),
+                        position,
+                    });
+                }
             }
         }
     }

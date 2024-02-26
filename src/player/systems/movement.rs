@@ -15,10 +15,10 @@ pub fn player_movement_system(
     mut player_info: Query<(&PlayerComponent, &mut Velocity, &ActionState<PlayerAction>)>,
 ) {
     for (player, mut vel, action_state) in player_info.iter_mut() {
-        let up = action_state.pressed(PlayerAction::MoveUp);
-        let down = action_state.pressed(PlayerAction::MoveDown);
-        let left = action_state.pressed(PlayerAction::MoveLeft);
-        let right = action_state.pressed(PlayerAction::MoveRight);
+        let up = action_state.pressed(&PlayerAction::MoveUp);
+        let down = action_state.pressed(&PlayerAction::MoveDown);
+        let left = action_state.pressed(&PlayerAction::MoveLeft);
+        let right = action_state.pressed(&PlayerAction::MoveRight);
 
         if !player.movement_enabled {
             continue;

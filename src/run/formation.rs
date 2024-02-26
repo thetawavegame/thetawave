@@ -70,7 +70,7 @@ impl Formation {
                         position: formation_spawnable.position,
                         rotation: Quat::default(),
                         boss: false,
-                    })
+                    });
                 }
 
                 SpawnableType::Consumable(consumable_type) => {

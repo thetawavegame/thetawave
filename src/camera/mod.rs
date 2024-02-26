@@ -1,11 +1,15 @@
-use bevy::{
-    core_pipeline::{
-        bloom::{BloomPrefilterSettings, BloomSettings},
-        clear_color::ClearColorConfig,
-        tonemapping::Tonemapping,
-    },
-    prelude::*,
-};
+use crate::game;
+use bevy::app::{App, Plugin, Startup};
+use bevy::core_pipeline::bloom::BloomPrefilterSettings;
+use bevy::core_pipeline::core_2d::{Camera2d, Camera2dBundle};
+use bevy::core_pipeline::core_3d::Camera3dBundle;
+use bevy::core_pipeline::{bloom::BloomSettings, tonemapping::Tonemapping};
+use bevy::ecs::system::{Commands, Res};
+use bevy::math::Vec3;
+use bevy::render::camera::{Camera, ClearColorConfig, PerspectiveProjection, Projection};
+use bevy::transform::components::Transform;
+use bevy::utils::default;
+
 
 use thetawave_interface::camera::ScreenShakeEvent;
 
@@ -35,12 +39,11 @@ pub fn setup_cameras_system(
 
     let camera_2d = Camera2dBundle {
         transform: Transform::from_xyz(0.0, 0.0, game_parameters.camera_z),
-        camera_2d: Camera2d {
-            clear_color: ClearColorConfig::None,
-        },
+        camera_2d: Camera2d,
         camera: Camera {
             order: 1,
             hdr: true,
+            clear_color: ClearColorConfig::None,
             ..default()
         },
         tonemapping: Tonemapping::TonyMcMapface,

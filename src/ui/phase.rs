@@ -1,4 +1,20 @@
-use bevy::prelude::*;
+use bevy::{
+    asset::{AssetServer, Handle},
+    ecs::{
+        component::Component,
+        entity::Entity,
+        query::With,
+        system::{Commands, Query, Res, ResMut},
+    },
+    hierarchy::{BuildChildren, ChildBuilder, DespawnRecursiveExt},
+    render::color::Color,
+    text::{Font, JustifyText, Text, TextStyle},
+    ui::{
+        node_bundles::{NodeBundle, TextBundle},
+        AlignItems, FlexDirection, FlexWrap, JustifyContent, Style, UiRect, Val,
+    },
+    utils::default,
+};
 use thetawave_interface::health::HealthComponent;
 
 use crate::run::level_phase::LevelPhaseType;
@@ -197,7 +213,7 @@ pub fn update_phase_ui_system(
                                                             },
                                                         },
                                                     )
-                                                    .with_alignment(TextAlignment::Left),
+                                                    .with_justify(JustifyText::Left),
                                                     ..default()
                                                 });
                                             }
@@ -223,7 +239,7 @@ pub fn update_phase_ui_system(
                                                             },
                                                         },
                                                     )
-                                                    .with_alignment(TextAlignment::Left),
+                                                    .with_justify(JustifyText::Left),
                                                     ..default()
                                                 });
                                             }
@@ -249,7 +265,7 @@ pub fn update_phase_ui_system(
                                                             },
                                                         },
                                                     )
-                                                    .with_alignment(TextAlignment::Left),
+                                                    .with_justify(JustifyText::Left),
                                                     ..default()
                                                 });
                                             }

@@ -16,11 +16,11 @@ pub fn spawn_menu_explorer_system(mut commands: Commands, inputs_res: Res<Inputs
 
 #[derive(Deserialize)]
 pub struct InputBindings {
-    pub menu_keyboard: Vec<(KeyCode, MenuAction)>,
-    pub menu_gamepad: Vec<(GamepadButtonType, MenuAction)>,
-    pub player_keyboard: Vec<(KeyCode, PlayerAction)>,
-    pub player_gamepad: Vec<(GamepadButtonType, PlayerAction)>,
-    pub player_mouse: Vec<(MouseButton, PlayerAction)>,
+    pub menu_keyboard: Vec<(MenuAction, KeyCode)>,
+    pub menu_gamepad: Vec<(MenuAction, GamepadButtonType)>,
+    pub player_keyboard: Vec<(PlayerAction, KeyCode)>,
+    pub player_gamepad: Vec<(PlayerAction, GamepadButtonType)>,
+    pub player_mouse: Vec<(PlayerAction, MouseButton)>,
 }
 
 impl From<InputBindings> for InputsResource {

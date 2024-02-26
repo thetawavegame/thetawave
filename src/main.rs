@@ -142,15 +142,12 @@ fn main() {
 fn build_app<P1: PluginGroup, P2: PluginGroup>(base_plugins: P1, game_plugins: P2) -> App {
     // Should everything besides adding the plugins be moved into a plugin?
     let mut app = App::new();
-    app.add_state::<AppStates>() // start game in the main menu state
-        .add_state::<GameStates>(); // start the game in playing state
+    app.init_state::<AppStates>() // start game in the main menu state
+        .init_state::<GameStates>(); // start the game in playing state
     app.add_plugins(base_plugins);
     app.add_plugins(game_plugins);
     app.insert_resource(ClearColor(Color::BLACK))
-        .insert_resource(AmbientLight {
-            color: Color::WHITE,
-            brightness: 0.1,
-        });
+        .insert_resource(AmbientLight::default());
 
     app.add_systems(
         OnEnter(AppStates::Game),

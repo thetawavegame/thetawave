@@ -1,9 +1,12 @@
 ({
-    "item_placeholder": TextureAtlas (
-        path: "texture/item_placeholder.png",
+    "item_placeholder.layout": TextureAtlasLayout (
         tile_size_x: 15.,
         tile_size_y: 15.,
         columns: 1,
-        rows: 1,  
+        rows: 1,
+    ),
+    "item_placeholder.image": File (
+        path: "texture/item_placeholder.png"
     ),
 })
+
