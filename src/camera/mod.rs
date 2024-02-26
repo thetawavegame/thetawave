@@ -1,5 +1,5 @@
 use crate::game;
-use bevy::app::{App, Plugin, Startup};
+use bevy::app::{App, Plugin, Startup, Update};
 use bevy::core_pipeline::bloom::BloomPrefilterSettings;
 use bevy::core_pipeline::core_2d::{Camera2d, Camera2dBundle};
 use bevy::core_pipeline::core_3d::Camera3dBundle;
@@ -10,12 +10,8 @@ use bevy::render::camera::{Camera, ClearColorConfig, PerspectiveProjection, Proj
 use bevy::transform::components::Transform;
 use bevy::utils::default;
 
-
-use thetawave_interface::camera::ScreenShakeEvent;
-
-use crate::game;
-
 use self::screen_shake::{add_trauma, shake_screen};
+use thetawave_interface::camera::ScreenShakeEvent;
 
 mod screen_shake;
 
