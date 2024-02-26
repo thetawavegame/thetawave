@@ -4,12 +4,12 @@ use bevy::{
         component::Component,
         event::EventReader,
         query::{With, Without},
-        system::Query,
+        system::{Query, Res},
     },
+    math::{Quat, Vec3},
+    time::Time,
     transform::components::Transform,
 };
-use bevy::math::{Quat, Vec3};
-use bevy::prelude::{Res, Time};
 
 use thetawave_interface::camera::ScreenShakeEvent;
 
@@ -29,9 +29,7 @@ pub fn add_trauma(
     >,
 ) {
     for _event in screen_shake_event_reader.read() {
-        if let Ok((mut screen_shake, _transform)) =
-            camera_2d_query.get_single_mut()
-        {
+        if let Ok((mut screen_shake, _transform)) = camera_2d_query.get_single_mut() {
             screen_shake.trauma = (screen_shake.trauma + _event.trauma).min(1.0);
             screen_shake.running = true;
         };
@@ -58,9 +56,11 @@ pub fn shake_screen(
 
         transform.translation.x = screen_shake.shake_intensity.x * get_random_shake(&screen_shake);
         transform.translation.y = screen_shake.shake_intensity.y * get_random_shake(&screen_shake);
-        transform.rotation.z    = screen_shake.shake_intensity.z * get_random_shake(&screen_shake);
+        transform.rotation.z = screen_shake.shake_intensity.z * get_random_shake(&screen_shake);
 
-        screen_shake.trauma = (screen_shake.trauma - screen_shake.trauma_decay * time.delta_seconds_f64() as f32).max(0.0);
+        screen_shake.trauma = (screen_shake.trauma
+            - screen_shake.trauma_decay * time.delta_seconds_f64() as f32)
+            .max(0.0);
     }
 }
 

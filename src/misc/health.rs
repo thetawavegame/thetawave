@@ -48,9 +48,7 @@ pub fn damage_system(
             });
 
             if let Some(_pc) = maybe_player_component {
-                screen_shake_event_writer.send(ScreenShakeEvent {
-                    trauma: 1.,
-                });
+                screen_shake_event_writer.send(ScreenShakeEvent { trauma: 0.13 });
             }
         }
     }

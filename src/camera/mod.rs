@@ -1,10 +1,11 @@
 use bevy::{
     core_pipeline::{
-        bloom::BloomSettings, clear_color::ClearColorConfig, tonemapping::Tonemapping,
+        bloom::{BloomPrefilterSettings, BloomSettings},
+        clear_color::ClearColorConfig,
+        tonemapping::Tonemapping,
     },
     prelude::*,
 };
-use bevy::core_pipeline::bloom::BloomPrefilterSettings;
 
 use thetawave_interface::camera::ScreenShakeEvent;
 
@@ -58,7 +59,11 @@ pub fn setup_cameras_system(
         screen_shake::ScreenShakeComponent {
             trauma: 0.0,
             trauma_decay: 1.,
-            shake_intensity: Vec3 { x: 60., y: 60., z: 0.1 },
+            shake_intensity: Vec3 {
+                x: 60.,
+                y: 60.,
+                z: 0.1,
+            },
             running: false,
         },
     ));
@@ -79,8 +84,5 @@ pub fn setup_cameras_system(
         }),
         ..Default::default()
     };
-    commands.spawn((
-        camera_3d,
-        BloomSettings::default()
-    ));
+    commands.spawn((camera_3d, BloomSettings::default()));
 }
