@@ -19,6 +19,7 @@ mod pause_menu;
 mod phase;
 mod player;
 mod victory;
+mod button;
 
 use self::character_selection::toggle_tutorial_system;
 pub use self::character_selection::{

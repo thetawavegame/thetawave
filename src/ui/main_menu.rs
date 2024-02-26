@@ -25,6 +25,8 @@ use thetawave_interface::game::historical_metrics::{
 };
 use thetawave_interface::states::MainMenuCleanup;
 
+use super::button::UIChildBuilderExt;
+
 #[derive(Component)]
 pub struct MainMenuUI;
 
@@ -140,7 +142,7 @@ pub fn setup_main_menu_system(
                             });
                         });
                         */
-
+                    /*
                     parent
                         .spawn(ButtonBundle {
                             style: Style {
@@ -175,6 +177,9 @@ pub fn setup_main_menu_system(
                                 },
                             ));
                         });
+                        */
+
+                    parent.spawn_menu_button(String::from("Test"));
 
                     parent
                         .spawn(ButtonBundle {
@@ -202,7 +207,7 @@ pub fn setup_main_menu_system(
                         })
                         .with_children(|parent| {
                             parent.spawn(TextBundle::from_section(
-                                "Beastiary",
+                                "Compendium",
                                 TextStyle {
                                     font: font.clone(),
                                     font_size: 40.0,
