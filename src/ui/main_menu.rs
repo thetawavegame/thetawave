@@ -9,11 +9,12 @@ use bevy::{
     hierarchy::BuildChildren,
     render::color::Color,
     text::{JustifyText, Text, TextStyle},
-    time::{Time, Timer, TimerMode},
+    time::{Time, Timer},
     transform::components::Transform,
     ui::{
-        node_bundles::{ImageBundle, NodeBundle, TextBundle},
-        BackgroundColor, FlexDirection, JustifyContent, Style, UiRect, Val,
+        node_bundles::{ButtonBundle, ImageBundle, NodeBundle, TextBundle},
+        AlignItems, BackgroundColor, BorderColor, FlexDirection, JustifyContent, Style, UiRect,
+        Val,
     },
     utils::default,
 };
@@ -126,7 +127,7 @@ pub fn setup_main_menu_system(
                                         super::pprint_mob_kills_from_data(&historical_games_enemy_mob_kill_counts),
                                     ),
                                     TextStyle {
-                                        font,
+                                        font: font.clone(),
                                         font_size: 32.0,
                                         color: Color::WHITE,
                                     },
@@ -138,32 +139,32 @@ pub fn setup_main_menu_system(
                         });
 
                     parent
-                        .spawn(ImageBundle {
-                            image: asset_server
-                                .load(if **playing_on_arcade {
-                                    "texture/start_game_prompt_arcade.png"
-                                } else {
-                                    "texture/start_game_prompt_keyboard.png"
-                                })
-                                .into(),
-                            style: Style {
-                                width: Val::Px(400.0),
-                                height: Val::Px(100.0),
-                                margin: UiRect {
-                                    bottom: Val::Percent(10.0),
-                                    top: Val::Auto,
-                                    right: Val::Auto,
-                                    left: Val::Auto,
+                        .spawn(
+                            ButtonBundle {
+                                style: Style {
+                                    width: Val::Px(250.0),
+                                    height: Val::Px(100.0),
+                                    border: UiRect::all(Val::Px(5.0)),
+                                    // horizontally center child text
+                                    justify_content: JustifyContent::Center,
+                                    // vertically center child text
+                                    align_items: AlignItems::Center,
+                                    /* */
+                                    margin: UiRect {
+                                        bottom: Val::Percent(10.0),
+                                        top: Val::Auto,
+                                        right: Val::Auto,
+                                        left: Val::Auto,
+                                    },
+                                    ..default()
                                 },
-                                justify_content: JustifyContent::Center,
-                                ..Default::default()
-                            },
-                            ..Default::default()
-                        })
-                        .insert(BouncingPromptComponent {
-                            flash_timer: Timer::from_seconds(2.0, TimerMode::Repeating),
-                            is_active: true,
-                        });
+                                border_color: BorderColor(Color::RED),
+                                background_color: BackgroundColor(Color::GREEN),
+                                ..default()
+                            }
+                    ).with_children(|parent|{
+                        parent.spawn(TextBundle::from_section("Start", TextStyle { font, font_size: 40.0, color: Color::WHITE }));
+                    });
                 });
         });
 }
