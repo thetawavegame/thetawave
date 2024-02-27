@@ -1,0 +1,9 @@
+({
+    "thetawave_logo.layout": TextureAtlasLayout (
+        tile_size_x: 1920.,
+        tile_size_y: 1080.,
+        columns: 4,
+        rows: 12,
+    ),
+    "thetawave_logo.image": File( path: "texture/thetawave_logo_spritesheet.png"),
+})

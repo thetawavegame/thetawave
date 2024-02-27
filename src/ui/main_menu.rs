@@ -1,6 +1,9 @@
-use crate::options::PlayingOnArcadeResource;
+use crate::{
+    animation::{AnimationComponent, AnimationDirection},
+    assets::UiAssets,
+};
 use bevy::{
-    asset::{self, AssetServer},
+    asset::AssetServer,
     ecs::{
         component::Component,
         event::EventWriter,
@@ -8,24 +11,22 @@ use bevy::{
     },
     hierarchy::BuildChildren,
     render::color::Color,
-    text::{JustifyText, Text, TextStyle},
-    time::{Time, Timer},
+    time::{Time, Timer, TimerMode},
     transform::components::Transform,
     ui::{
-        node_bundles::{ButtonBundle, ImageBundle, NodeBundle, TextBundle},
-        AlignItems, BackgroundColor, BorderColor, FlexDirection, JustifyContent, Style, UiRect,
-        Val,
+        node_bundles::{AtlasImageBundle, NodeBundle},
+        AlignItems, FlexDirection, JustifyContent, Style, Val,
     },
     utils::default,
 };
 use std::time::Duration;
 use thetawave_interface::audio::{BGMusicType, ChangeBackgroundMusicEvent};
 use thetawave_interface::game::historical_metrics::{
-    MobKillsByPlayerForCompletedGames, UserStatsByPlayerForCompletedGamesCache, DEFAULT_USER_ID,
+    UserStatsByPlayerForCompletedGamesCache, DEFAULT_USER_ID,
 };
 use thetawave_interface::states::MainMenuCleanup;
 
-use super::button::UIChildBuilderExt;
+use super::button::UiChildBuilderExt;
 
 #[derive(Component)]
 pub struct MainMenuUI;
@@ -41,8 +42,7 @@ pub fn setup_main_menu_system(
     asset_server: Res<AssetServer>,
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     historical_games_shot_counts: Res<UserStatsByPlayerForCompletedGamesCache>,
-    historical_games_enemy_mob_kill_counts: Res<MobKillsByPlayerForCompletedGames>,
-    playing_on_arcade: Res<PlayingOnArcadeResource>,
+    ui_assets: Res<UiAssets>,
 ) {
     let maybe_user_stats = (**historical_games_shot_counts).get(&DEFAULT_USER_ID);
 
@@ -77,110 +77,71 @@ pub fn setup_main_menu_system(
         .insert(MainMenuUI)
         .with_children(|parent| {
             parent
-                .spawn(ImageBundle {
-                    image: asset_server
-                        .load("texture/main_menu_background_54.png")
-                        .into(),
+                .spawn(NodeBundle {
                     style: Style {
                         width: Val::Percent(100.0),
                         flex_direction: FlexDirection::Column,
                         height: Val::Percent(100.0),
-                        justify_content: JustifyContent::FlexEnd,
+                        justify_content: JustifyContent::FlexStart,
                         ..Default::default()
                     },
                     ..default()
                 })
                 .with_children(|parent| {
-                    /*
                     parent
                         .spawn(NodeBundle {
                             style: Style {
-                                width: Val::Auto,
-                                height: Val::Auto,
-                                margin: UiRect {
-                                    bottom: Val::Auto,
-                                    top: Val::Percent(40.0),
-                                    right: Val::Auto,
-                                    left: Val::Auto,
-                                },
-                                padding: UiRect::all(Val::Px(10.0)),
-
+                                width: Val::Percent(100.0),
+                                height: Val::Percent(50.0),
+                                flex_direction: FlexDirection::Column,
                                 justify_content: JustifyContent::Center,
-                                ..Default::default()
-                            },
-                            background_color: BackgroundColor::from(Color::BLACK.with_a(0.9)),
-                            ..default()
-                        })
-                        .with_children(|parent| {
-
-                            parent.spawn(TextBundle {
-                                style: Style {
-                                    width: Val::Auto,
-                                    height: Val::Auto,
-                                    margin: UiRect::all(Val::Auto),
-                                    ..Default::default()
-                                },
-
-                                text: Text::from_section(
-                                    format!(
-                                        "Projectiles fired: {}\nAccuracy: {:.2}%\n\nEnemies destroyed:\n{}",
-                                        total_shots_fired,
-                                        accuracy_rate,
-                                        super::pprint_mob_kills_from_data(&historical_games_enemy_mob_kill_counts),
-                                    ),
-                                    TextStyle {
-                                        font: font.clone(),
-                                        font_size: 32.0,
-                                        color: Color::WHITE,
-                                    },
-                                )
-                                    .with_justify(JustifyText::Center),
-
-                                ..default()
-                            });
-                        });
-                        */
-                    /*
-                    parent
-                        .spawn(ButtonBundle {
-                            style: Style {
-                                width: Val::Percent(20.0),
-                                max_width: Val::Px(300.0),
-                                min_height: Val::Percent(5.0),
-                                border: UiRect::all(Val::Px(5.0)),
-                                // horizontally center child text
-                                justify_content: JustifyContent::Center,
-                                // vertically center child text
                                 align_items: AlignItems::Center,
-                                /* */
-                                margin: UiRect {
-                                    bottom: Val::Percent(3.0),
-                                    top: Val::Percent(50.0),
-                                    right: Val::Auto,
-                                    left: Val::Auto,
-                                },
                                 ..default()
                             },
-                            border_color: BorderColor(Color::RED),
-                            background_color: BackgroundColor(Color::GREEN),
                             ..default()
                         })
                         .with_children(|parent| {
-                            parent.spawn(TextBundle::from_section(
-                                "Start",
-                                TextStyle {
-                                    font: font.clone(),
-                                    font_size: 40.0,
-                                    color: Color::WHITE,
-                                },
-                            ));
+                            parent
+                                .spawn(AtlasImageBundle {
+                                    style: Style {
+                                        max_width: Val::Px(900.0),
+                                        width: Val::Percent(70.0),
+                                        min_width: Val::Px(300.0),
+                                        aspect_ratio: Some(1920.0 / 1080.0),
+                                        justify_content: JustifyContent::Center,
+                                        align_items: AlignItems::Center,
+                                        ..default()
+                                    },
+                                    image: ui_assets.thetawave_logo_image.clone().into(),
+                                    texture_atlas: ui_assets.thetawave_logo_layout.clone().into(),
+                                    ..default()
+                                })
+                                .insert(AnimationComponent {
+                                    timer: Timer::from_seconds(0.1, TimerMode::Repeating),
+                                    direction: AnimationDirection::Forward,
+                                });
                         });
-                        */
-
-                    parent.spawn_menu_button(asset_server.load("texture/start_button.png"));
-                    parent.spawn_menu_button(asset_server.load("texture/compendium_button.png"));
-                    parent.spawn_menu_button(asset_server.load("texture/options_button.png"));
-                    parent.spawn_menu_button(asset_server.load("texture/quit_button.png"));
+                    parent
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Percent(100.0),
+                                height: Val::Percent(50.0),
+                                flex_direction: FlexDirection::Column,
+                                justify_content: JustifyContent::Center,
+                                align_items: AlignItems::Center,
+                                ..default()
+                            },
+                            ..default()
+                        })
+                        .with_children(|parent| {
+                            parent.spawn_menu_button(asset_server.load("texture/start_button.png"));
+                            parent.spawn_menu_button(
+                                asset_server.load("texture/compendium_button.png"),
+                            );
+                            parent
+                                .spawn_menu_button(asset_server.load("texture/options_button.png"));
+                            parent.spawn_menu_button(asset_server.load("texture/quit_button.png"));
+                        });
                 });
         });
 }

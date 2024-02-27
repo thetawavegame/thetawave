@@ -6,17 +6,17 @@ use bevy::{
     utils::default,
 };
 
-const BUTTON_WIDTH: Val = Val::Percent(20.0);
+const BUTTON_WIDTH: Val = Val::Percent(25.0);
 const BUTTON_MAX_WIDTH: Val = Val::Px(500.0);
-const BUTTON_MIN_WIDTH: Val = Val::Px(125.0);
+const BUTTON_MIN_WIDTH: Val = Val::Px(200.0);
 const BUTTON_MARGIN: UiRect =
     UiRect::new(Val::Auto, Val::Auto, Val::Percent(1.0), Val::Percent(1.0));
 
-pub trait UIChildBuilderExt {
+pub trait UiChildBuilderExt {
     fn spawn_menu_button(&mut self, image: Handle<Image>);
 }
 
-impl UIChildBuilderExt for ChildBuilder<'_> {
+impl UiChildBuilderExt for ChildBuilder<'_> {
     fn spawn_menu_button(&mut self, image: Handle<Image>) {
         self.spawn(ButtonBundle {
             style: Style {
