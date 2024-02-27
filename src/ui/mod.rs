@@ -8,6 +8,7 @@ use thetawave_interface::game::historical_metrics::{MobsKilledByPlayerCacheT, DE
 use crate::GameEnterSet;
 use thetawave_interface::states;
 
+mod button;
 mod character_selection;
 mod game;
 mod game_center;
@@ -19,7 +20,6 @@ mod pause_menu;
 mod phase;
 mod player;
 mod victory;
-mod button;
 
 use self::character_selection::toggle_tutorial_system;
 pub use self::character_selection::{

@@ -1,6 +1,6 @@
 use crate::options::PlayingOnArcadeResource;
 use bevy::{
-    asset::AssetServer,
+    asset::{self, AssetServer},
     ecs::{
         component::Component,
         event::EventWriter,
@@ -91,8 +91,6 @@ pub fn setup_main_menu_system(
                     ..default()
                 })
                 .with_children(|parent| {
-                    let font = asset_server.load("fonts/wibletown-regular.otf");
-
                     /*
                     parent
                         .spawn(NodeBundle {
@@ -179,112 +177,10 @@ pub fn setup_main_menu_system(
                         });
                         */
 
-                    parent.spawn_menu_button(String::from("Test"));
-
-                    parent
-                        .spawn(ButtonBundle {
-                            style: Style {
-                                width: Val::Percent(20.0),
-                                max_width: Val::Px(300.0),
-                                min_height: Val::Percent(5.0),
-                                border: UiRect::all(Val::Px(5.0)),
-                                // horizontally center child text
-                                justify_content: JustifyContent::Center,
-                                // vertically center child text
-                                align_items: AlignItems::Center,
-                                /* */
-                                margin: UiRect {
-                                    bottom: Val::Percent(3.0),
-                                    top: Val::Auto,
-                                    right: Val::Auto,
-                                    left: Val::Auto,
-                                },
-                                ..default()
-                            },
-                            border_color: BorderColor(Color::RED),
-                            background_color: BackgroundColor(Color::GREEN),
-                            ..default()
-                        })
-                        .with_children(|parent| {
-                            parent.spawn(TextBundle::from_section(
-                                "Compendium",
-                                TextStyle {
-                                    font: font.clone(),
-                                    font_size: 40.0,
-                                    color: Color::WHITE,
-                                },
-                            ));
-                        });
-
-                    parent
-                        .spawn(ButtonBundle {
-                            style: Style {
-                                width: Val::Percent(20.0),
-                                max_width: Val::Px(300.0),
-                                min_height: Val::Percent(5.0),
-                                border: UiRect::all(Val::Px(5.0)),
-                                // horizontally center child text
-                                justify_content: JustifyContent::Center,
-                                // vertically center child text
-                                align_items: AlignItems::Center,
-                                /* */
-                                margin: UiRect {
-                                    bottom: Val::Percent(3.0),
-                                    top: Val::Auto,
-                                    right: Val::Auto,
-                                    left: Val::Auto,
-                                },
-                                ..default()
-                            },
-                            border_color: BorderColor(Color::RED),
-                            background_color: BackgroundColor(Color::GREEN),
-                            ..default()
-                        })
-                        .with_children(|parent| {
-                            parent.spawn(TextBundle::from_section(
-                                "Options",
-                                TextStyle {
-                                    font: font.clone(),
-                                    font_size: 40.0,
-                                    color: Color::WHITE,
-                                },
-                            ));
-                        });
-
-                    parent
-                        .spawn(ButtonBundle {
-                            style: Style {
-                                width: Val::Percent(20.0),
-                                max_width: Val::Px(300.0),
-                                min_height: Val::Percent(5.0),
-                                border: UiRect::all(Val::Px(5.0)),
-                                // horizontally center child text
-                                justify_content: JustifyContent::Center,
-                                // vertically center child text
-                                align_items: AlignItems::Center,
-                                /* */
-                                margin: UiRect {
-                                    bottom: Val::Percent(5.0),
-                                    top: Val::Auto,
-                                    right: Val::Auto,
-                                    left: Val::Auto,
-                                },
-                                ..default()
-                            },
-                            border_color: BorderColor(Color::RED),
-                            background_color: BackgroundColor(Color::GREEN),
-                            ..default()
-                        })
-                        .with_children(|parent| {
-                            parent.spawn(TextBundle::from_section(
-                                "Quit",
-                                TextStyle {
-                                    font: font.clone(),
-                                    font_size: 40.0,
-                                    color: Color::WHITE,
-                                },
-                            ));
-                        });
+                    parent.spawn_menu_button(asset_server.load("texture/start_button.png"));
+                    parent.spawn_menu_button(asset_server.load("texture/compendium_button.png"));
+                    parent.spawn_menu_button(asset_server.load("texture/options_button.png"));
+                    parent.spawn_menu_button(asset_server.load("texture/quit_button.png"));
                 });
         });
 }

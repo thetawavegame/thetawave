@@ -23,7 +23,7 @@ impl From<DisplayConfig> for Window {
         Window {
             title: "Thetawave".to_string(),
             resolution: (display_config.width, display_config.height).into(),
-            resizable: false,
+            resizable: true,
             mode: if display_config.fullscreen {
                 WindowMode::SizedFullscreen
             } else {
