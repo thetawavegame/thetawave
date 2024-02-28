@@ -3,7 +3,7 @@ use crate::{
     assets::UiAssets,
 };
 use bevy::{
-    asset::AssetServer,
+    asset::{AssetServer, Handle},
     ecs::{
         component::Component,
         event::EventWriter,
@@ -11,6 +11,7 @@ use bevy::{
     },
     hierarchy::BuildChildren,
     render::color::Color,
+    text::Font,
     time::{Time, Timer, TimerMode},
     transform::components::Transform,
     ui::{
@@ -55,6 +56,8 @@ pub fn setup_main_menu_system(
             (accuracy, current_game_shot_counts.total_shots_fired)
         }
     };
+
+    let font: Handle<Font> = asset_server.load("fonts/Lunchds.ttf");
 
     change_bg_music_event_writer.send(ChangeBackgroundMusicEvent {
         bg_music_type: Some(BGMusicType::Main),
@@ -134,6 +137,28 @@ pub fn setup_main_menu_system(
                             ..default()
                         })
                         .with_children(|parent| {
+                            parent.spawn_menu_button(
+                                &asset_server,
+                                "Start".to_string(),
+                                font.clone(),
+                            );
+                            parent.spawn_menu_button(
+                                &asset_server,
+                                "Compendium".to_string(),
+                                font.clone(),
+                            );
+                            parent.spawn_menu_button(
+                                &asset_server,
+                                "Options".to_string(),
+                                font.clone(),
+                            );
+                            parent.spawn_menu_button(
+                                &asset_server,
+                                "Quit".to_string(),
+                                font.clone(),
+                            );
+
+                            /*
                             parent.spawn_menu_button(asset_server.load("texture/start_button.png"));
                             parent.spawn_menu_button(
                                 asset_server.load("texture/compendium_button.png"),
@@ -141,6 +166,7 @@ pub fn setup_main_menu_system(
                             parent
                                 .spawn_menu_button(asset_server.load("texture/options_button.png"));
                             parent.spawn_menu_button(asset_server.load("texture/quit_button.png"));
+                            */
                         });
                 });
         });

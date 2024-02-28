@@ -21,12 +21,12 @@ mod phase;
 mod player;
 mod victory;
 
-use self::character_selection::toggle_tutorial_system;
 pub use self::character_selection::{
     player_join_system, select_character_system, setup_character_selection_system,
 };
 use self::game_center::text_fade_out_system;
 use self::player::update_player_ui_system;
+use self::{button::button_system, character_selection::toggle_tutorial_system};
 use self::{game_center::update_center_text_ui_system, instructions::setup_instructions_system};
 pub use self::{
     game_over::setup_game_over_system,
@@ -42,7 +42,7 @@ impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<PlayerJoinEvent>();
 
-        app.add_systems(Update, bouncing_prompt_system);
+        app.add_systems(Update, (bouncing_prompt_system, button_system));
 
         app.add_systems(
             OnEnter(states::AppStates::Game),
