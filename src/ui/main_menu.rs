@@ -137,26 +137,18 @@ pub fn setup_main_menu_system(
                             ..default()
                         })
                         .with_children(|parent| {
+                            parent.spawn_menu_button(&ui_assets, "Start".to_string(), font.clone());
                             parent.spawn_menu_button(
-                                &asset_server,
-                                "Start".to_string(),
-                                font.clone(),
-                            );
-                            parent.spawn_menu_button(
-                                &asset_server,
+                                &ui_assets,
                                 "Compendium".to_string(),
                                 font.clone(),
                             );
                             parent.spawn_menu_button(
-                                &asset_server,
+                                &ui_assets,
                                 "Options".to_string(),
                                 font.clone(),
                             );
-                            parent.spawn_menu_button(
-                                &asset_server,
-                                "Quit".to_string(),
-                                font.clone(),
-                            );
+                            parent.spawn_menu_button(&ui_assets, "Quit".to_string(), font.clone());
 
                             /*
                             parent.spawn_menu_button(asset_server.load("texture/start_button.png"));

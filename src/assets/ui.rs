@@ -10,4 +10,8 @@ pub struct UiAssets {
     pub thetawave_logo_layout: Handle<TextureAtlasLayout>,
     #[asset(key = "thetawave_logo.image")]
     pub thetawave_logo_image: Handle<Image>,
+    #[asset(key = "thetawave_menu_button.layout")]
+    pub thetawave_menu_button_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "thetawave_menu_button.image")]
+    pub thetawave_menu_button_image: Handle<Image>,
 }

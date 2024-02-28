@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use bevy_kira_audio::AudioSource;
+use rand::Rng;
 use thetawave_interface::audio::{BGMusicType, CollisionSoundType, SoundEffectType};
 
 #[derive(AssetCollection, Resource)]
@@ -47,6 +48,22 @@ pub struct GameAudioAssets {
     pub megablast_ability: Handle<AudioSource>,
     #[asset(key = "sounds.objective_completed")]
     pub objective_completed: Handle<AudioSource>,
+    #[asset(key = "sounds.button_select_1")]
+    pub button_select_1: Handle<AudioSource>,
+    #[asset(key = "sounds.button_select_2")]
+    pub button_select_2: Handle<AudioSource>,
+    #[asset(key = "sounds.button_select_3")]
+    pub button_select_3: Handle<AudioSource>,
+    #[asset(key = "sounds.button_select_4")]
+    pub button_select_4: Handle<AudioSource>,
+    #[asset(key = "sounds.button_select_5")]
+    pub button_select_5: Handle<AudioSource>,
+    #[asset(key = "sounds.button_release_1")]
+    pub button_release_1: Handle<AudioSource>,
+    #[asset(key = "sounds.button_release_2")]
+    pub button_release_2: Handle<AudioSource>,
+    #[asset(key = "sounds.button_release_2")]
+    pub button_release_3: Handle<AudioSource>,
 }
 
 impl GameAudioAssets {
@@ -80,6 +97,24 @@ impl GameAudioAssets {
             SoundEffectType::BulletBounce => self.bullet_bounce.clone(),
             SoundEffectType::MegablastAbility => self.megablast_ability.clone(),
             SoundEffectType::ObjectiveCompleted => self.objective_completed.clone(),
+            SoundEffectType::ButtonRelease => {
+                let idx: u8 = rand::thread_rng().gen_range(1..=3);
+                match idx {
+                    1 => self.button_release_1.clone(),
+                    2 => self.button_release_2.clone(),
+                    _ => self.button_release_3.clone(),
+                }
+            }
+            SoundEffectType::ButtonSelect => {
+                let idx: u8 = rand::thread_rng().gen_range(1..=5);
+                match idx {
+                    1 => self.button_select_1.clone(),
+                    2 => self.button_select_2.clone(),
+                    3 => self.button_select_3.clone(),
+                    4 => self.button_select_4.clone(),
+                    _ => self.button_select_5.clone(),
+                }
+            }
         }
     }
 }
