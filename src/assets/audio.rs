@@ -62,8 +62,10 @@ pub struct GameAudioAssets {
     pub button_release_1: Handle<AudioSource>,
     #[asset(key = "sounds.button_release_2")]
     pub button_release_2: Handle<AudioSource>,
-    #[asset(key = "sounds.button_release_2")]
+    #[asset(key = "sounds.button_release_3")]
     pub button_release_3: Handle<AudioSource>,
+    #[asset(key = "sounds.button_confirm")]
+    pub button_confirm: Handle<AudioSource>,
 }
 
 impl GameAudioAssets {
@@ -115,6 +117,7 @@ impl GameAudioAssets {
                     _ => self.button_select_5.clone(),
                 }
             }
+            SoundEffectType::ButtonConfirm => self.button_confirm.clone(),
         }
     }
 }

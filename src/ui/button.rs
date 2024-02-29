@@ -121,6 +121,9 @@ pub fn button_interaction_system(
         match *interaction {
             Interaction::Pressed => {
                 button_event_writer.send(action.clone());
+                sound_effect.send(PlaySoundEffectEvent {
+                    sound_effect_type: SoundEffectType::ButtonConfirm,
+                });
             }
             Interaction::Hovered => {
                 texture_atlas.index = 1;

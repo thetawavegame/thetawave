@@ -33,6 +33,7 @@ pub enum SoundEffectType {
     ObjectiveCompleted,
     ButtonSelect,
     ButtonRelease,
+    ButtonConfirm,
 }
 
 /// Subtype of sound effect for collisions

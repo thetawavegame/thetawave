@@ -86,4 +86,7 @@
     "sounds.button_release_3": File (
         path: "sounds/button_release_3.wav",
     ),
+    "sounds.button_confirm": File (
+        path: "sounds/button_confirm.wav",
+    ),
 })
