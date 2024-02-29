@@ -15,7 +15,7 @@ pub struct DamageDealtEvent {
 pub struct HealthComponent {
     /// Current health value
     health: usize,
-    /// Maxumum health value
+    /// Maximum health value
     max_health: usize,
     /// Amount of armor, which absorbs full damage from a single hit
     armor: usize,

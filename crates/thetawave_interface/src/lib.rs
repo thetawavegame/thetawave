@@ -1,5 +1,6 @@
 pub mod animation;
 pub mod audio;
+pub mod camera;
 pub mod character;
 pub mod character_selection;
 pub mod game;
