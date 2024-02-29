@@ -27,7 +27,7 @@ use thetawave_interface::game::historical_metrics::{
 };
 use thetawave_interface::states::MainMenuCleanup;
 
-use super::button::UiChildBuilderExt;
+use super::button::{ThetawaveUiButtonActionComponent, UiChildBuilderExt};
 
 #[derive(Component)]
 pub struct MainMenuUI;
@@ -137,28 +137,30 @@ pub fn setup_main_menu_system(
                             ..default()
                         })
                         .with_children(|parent| {
-                            parent.spawn_menu_button(&ui_assets, "Start".to_string(), font.clone());
+                            parent.spawn_menu_button(
+                                &ui_assets,
+                                "Start Game".to_string(),
+                                font.clone(),
+                                ThetawaveUiButtonActionComponent::EnterInstructions,
+                            );
                             parent.spawn_menu_button(
                                 &ui_assets,
                                 "Compendium".to_string(),
                                 font.clone(),
+                                ThetawaveUiButtonActionComponent::EnterCompendium,
                             );
                             parent.spawn_menu_button(
                                 &ui_assets,
                                 "Options".to_string(),
                                 font.clone(),
+                                ThetawaveUiButtonActionComponent::EnterOptions,
                             );
-                            parent.spawn_menu_button(&ui_assets, "Quit".to_string(), font.clone());
-
-                            /*
-                            parent.spawn_menu_button(asset_server.load("texture/start_button.png"));
                             parent.spawn_menu_button(
-                                asset_server.load("texture/compendium_button.png"),
+                                &ui_assets,
+                                "Quit".to_string(),
+                                font.clone(),
+                                ThetawaveUiButtonActionComponent::QuitGame,
                             );
-                            parent
-                                .spawn_menu_button(asset_server.load("texture/options_button.png"));
-                            parent.spawn_menu_button(asset_server.load("texture/quit_button.png"));
-                            */
                         });
                 });
         });
