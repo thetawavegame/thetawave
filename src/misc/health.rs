@@ -1,9 +1,6 @@
 use bevy::prelude::*;
-
 use thetawave_interface::{
-    camera::ScreenShakeEvent,
     health::{DamageDealtEvent, HealthComponent},
-    player::PlayerComponent,
     spawnable::{EffectType, TextEffectType},
 };
 
@@ -19,19 +16,11 @@ pub fn regenerate_shields_system(mut health_query: Query<&mut HealthComponent>, 
 /// Receive damage dealt events, apply damage, and spawn effects
 pub fn damage_system(
     mut damage_dealt_events: EventReader<DamageDealtEvent>,
-    mut health_query: Query<(
-        Entity,
-        &Transform,
-        &mut HealthComponent,
-        Option<&PlayerComponent>,
-    )>,
+    mut health_query: Query<(Entity, &Transform, &mut HealthComponent)>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
-    mut screen_shake_event_writer: EventWriter<ScreenShakeEvent>,
 ) {
     for event in damage_dealt_events.read() {
-        if let Ok((_entity, transform, mut health_component, maybe_player_component)) =
-            health_query.get_mut(event.target)
-        {
+        if let Ok((_entity, transform, mut health_component)) = health_query.get_mut(event.target) {
             // take damage from health
             health_component.take_damage(event.damage);
 
@@ -46,10 +35,6 @@ pub fn damage_system(
                 text: Some(event.damage.to_string()),
                 ..default()
             });
-
-            if let Some(_pc) = maybe_player_component {
-                screen_shake_event_writer.send(ScreenShakeEvent { trauma: 0.13 });
-            }
         }
     }
 }
