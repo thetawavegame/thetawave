@@ -90,7 +90,7 @@ pub(super) fn shake_screen_on_player_damage(
 ) {
     for event in damage_dealt_events.read() {
         if player_query.contains(event.target) && event.damage > 0 {
-            screen_shake_event_writer.send(ScreenShakeEvent { trauma: 0.13 });
+            screen_shake_event_writer.send(ScreenShakeEvent { trauma: 0.23 });
         }
     }
 }
