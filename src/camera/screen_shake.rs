@@ -21,7 +21,7 @@ use thetawave_interface::player::PlayerComponent;
 
 /// A component to represent the camera's "current state of shake". Generally, trauma is 0.
 #[derive(Component)]
-pub struct ScreenShakeComponent {
+pub(super) struct ScreenShakeComponent {
     /// A number from 0. to 1. representing the camera's "current amount of being damaged." It will
     /// exponentially come back to 0, after being jolted up whenever the player is hit.
     pub trauma: f32,
@@ -31,7 +31,7 @@ pub struct ScreenShakeComponent {
     pub shake_intensity: Vec3,
 }
 
-pub fn add_trauma(
+pub(super) fn add_trauma(
     mut screen_shake_event_reader: EventReader<ScreenShakeEvent>,
     mut camera_2d_query: Query<
         (&mut ScreenShakeComponent, &mut Transform),
@@ -45,7 +45,7 @@ pub fn add_trauma(
     }
 }
 
-pub fn shake_screen(
+pub(super) fn shake_screen(
     time: Res<Time>,
     mut camera_2d_query: Query<
         (&mut ScreenShakeComponent, &mut Transform),
