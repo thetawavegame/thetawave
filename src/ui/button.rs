@@ -32,8 +32,13 @@ const BUTTON_MAX_WIDTH: Val = Val::Px(500.0);
 const BUTTON_MIN_WIDTH: Val = Val::Px(200.0);
 const BUTTON_MARGIN: UiRect =
     UiRect::new(Val::Auto, Val::Auto, Val::Percent(1.0), Val::Percent(1.0));
+const BUTTON_ASPECT_RATIO: Option<f32> = Some(160.0 / 34.0);
+const BUTTON_TEXTURE_PADDING: UiRect =
+    UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(9.0), Val::ZERO);
+const BUTTON_TEXTURE_PADDING_HOVERED: UiRect =
+    UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(10.5), Val::ZERO);
 
-/// Event and Component for tracking
+/// Event and Component for giving and sending menu buttons actions
 #[derive(Component, Event, Clone)]
 pub enum MenuButtonActionComponent {
     EnterInstructions,
@@ -45,6 +50,7 @@ pub enum MenuButtonActionComponent {
 
 pub type MenuButtonActionEvent = MenuButtonActionComponent;
 
+/// Extension trait for spawning customized UI elements for Thetawave
 pub trait UiChildBuilderExt {
     fn spawn_menu_button(
         &mut self,
@@ -56,6 +62,7 @@ pub trait UiChildBuilderExt {
 }
 
 impl UiChildBuilderExt for ChildBuilder<'_> {
+    /// Spawn a Thetawave-stylized menu button
     fn spawn_menu_button(
         &mut self,
         ui_assets: &UiAssets,
@@ -63,18 +70,17 @@ impl UiChildBuilderExt for ChildBuilder<'_> {
         font: Handle<Font>,
         action: MenuButtonActionComponent,
     ) {
+        // Spawn button bundle entity, with a child entity containing the texture
         self.spawn(ButtonBundle {
             style: Style {
                 max_width: BUTTON_MAX_WIDTH,
                 width: BUTTON_WIDTH,
                 min_width: BUTTON_MIN_WIDTH,
-                aspect_ratio: Some(160.0 / 34.0),
-
+                aspect_ratio: BUTTON_ASPECT_RATIO,
                 margin: BUTTON_MARGIN,
                 ..default()
             },
             background_color: BackgroundColor(Color::NONE),
-            //image: asset_server.load(BUTTON_UP_PATH).into(),
             ..default()
         })
         .insert(action)
@@ -88,7 +94,7 @@ impl UiChildBuilderExt for ChildBuilder<'_> {
                         height: Val::Percent(100.0),
                         justify_content: JustifyContent::Center,
                         align_items: AlignItems::FlexStart,
-                        padding: UiRect::top(Val::Percent(9.0)),
+                        padding: BUTTON_TEXTURE_PADDING,
                         ..default()
                     },
                     ..default()
@@ -107,6 +113,7 @@ impl UiChildBuilderExt for ChildBuilder<'_> {
     }
 }
 
+/// Handles interactions with the menu buttons (pressed, hovered, none)
 pub fn button_interaction_system(
     mut interaction_query: Query<
         (&MenuButtonActionComponent, &Interaction, &Children),
@@ -128,14 +135,14 @@ pub fn button_interaction_system(
             }
             Interaction::Hovered => {
                 texture_atlas.index = 1;
-                style.padding = UiRect::top(Val::Percent(10.5));
+                style.padding = BUTTON_TEXTURE_PADDING_HOVERED;
                 sound_effect.send(PlaySoundEffectEvent {
                     sound_effect_type: SoundEffectType::ButtonSelect,
                 });
             }
             Interaction::None => {
                 texture_atlas.index = 0;
-                style.padding = UiRect::top(Val::Percent(9.0));
+                style.padding = BUTTON_TEXTURE_PADDING;
                 sound_effect.send(PlaySoundEffectEvent {
                     sound_effect_type: SoundEffectType::ButtonRelease,
                 });
@@ -144,6 +151,7 @@ pub fn button_interaction_system(
     }
 }
 
+// Handles actions for menu buttons, changeing states, quitting
 pub fn button_action_system(
     mut button_event_reader: EventReader<MenuButtonActionEvent>,
     mut next_app_state: ResMut<NextState<AppStates>>,
