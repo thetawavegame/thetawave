@@ -27,7 +27,7 @@ use thetawave_interface::game::historical_metrics::{
 };
 use thetawave_interface::states::MainMenuCleanup;
 
-use super::button::{ThetawaveUiButtonActionComponent, UiChildBuilderExt};
+use super::button::{MenuButtonActionComponent, UiChildBuilderExt};
 
 #[derive(Component)]
 pub struct MainMenuUI;
@@ -141,25 +141,25 @@ pub fn setup_main_menu_system(
                                 &ui_assets,
                                 "Start Game".to_string(),
                                 font.clone(),
-                                ThetawaveUiButtonActionComponent::EnterInstructions,
+                                MenuButtonActionComponent::EnterInstructions,
                             );
                             parent.spawn_menu_button(
                                 &ui_assets,
                                 "Compendium".to_string(),
                                 font.clone(),
-                                ThetawaveUiButtonActionComponent::EnterCompendium,
+                                MenuButtonActionComponent::EnterCompendium,
                             );
                             parent.spawn_menu_button(
                                 &ui_assets,
                                 "Options".to_string(),
                                 font.clone(),
-                                ThetawaveUiButtonActionComponent::EnterOptions,
+                                MenuButtonActionComponent::EnterOptions,
                             );
                             parent.spawn_menu_button(
                                 &ui_assets,
                                 "Quit".to_string(),
                                 font.clone(),
-                                ThetawaveUiButtonActionComponent::QuitGame,
+                                MenuButtonActionComponent::QuitGame,
                             );
                         });
                 });

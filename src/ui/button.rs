@@ -33,8 +33,9 @@ const BUTTON_MIN_WIDTH: Val = Val::Px(200.0);
 const BUTTON_MARGIN: UiRect =
     UiRect::new(Val::Auto, Val::Auto, Val::Percent(1.0), Val::Percent(1.0));
 
+/// Event and Component for tracking
 #[derive(Component, Event, Clone)]
-pub enum ThetawaveUiButtonActionComponent {
+pub enum MenuButtonActionComponent {
     EnterInstructions,
     EnterOptions,
     EnterGame,
@@ -42,7 +43,7 @@ pub enum ThetawaveUiButtonActionComponent {
     QuitGame,
 }
 
-pub type ThetawaveUiButtonActionEvent = ThetawaveUiButtonActionComponent;
+pub type MenuButtonActionEvent = MenuButtonActionComponent;
 
 pub trait UiChildBuilderExt {
     fn spawn_menu_button(
@@ -50,7 +51,7 @@ pub trait UiChildBuilderExt {
         ui_assets: &UiAssets,
         text: String,
         font: Handle<Font>,
-        action: ThetawaveUiButtonActionComponent,
+        action: MenuButtonActionComponent,
     );
 }
 
@@ -60,7 +61,7 @@ impl UiChildBuilderExt for ChildBuilder<'_> {
         ui_assets: &UiAssets,
         text: String,
         font: Handle<Font>,
-        action: ThetawaveUiButtonActionComponent,
+        action: MenuButtonActionComponent,
     ) {
         self.spawn(ButtonBundle {
             style: Style {
@@ -108,12 +109,12 @@ impl UiChildBuilderExt for ChildBuilder<'_> {
 
 pub fn button_interaction_system(
     mut interaction_query: Query<
-        (&ThetawaveUiButtonActionComponent, &Interaction, &Children),
+        (&MenuButtonActionComponent, &Interaction, &Children),
         (Changed<Interaction>, With<Button>),
     >,
     mut button_texture_query: Query<(&mut TextureAtlas, &mut Style)>,
     mut sound_effect: EventWriter<PlaySoundEffectEvent>,
-    mut button_event_writer: EventWriter<ThetawaveUiButtonActionEvent>,
+    mut button_event_writer: EventWriter<MenuButtonActionEvent>,
 ) {
     for (action, interaction, children) in &mut interaction_query {
         let (mut texture_atlas, mut style) = button_texture_query.get_mut(children[0]).unwrap();
@@ -144,19 +145,19 @@ pub fn button_interaction_system(
 }
 
 pub fn button_action_system(
-    mut button_event_reader: EventReader<ThetawaveUiButtonActionEvent>,
+    mut button_event_reader: EventReader<MenuButtonActionEvent>,
     mut next_app_state: ResMut<NextState<AppStates>>,
     mut exit: EventWriter<AppExit>,
 ) {
     for event in button_event_reader.read() {
         match event {
-            ThetawaveUiButtonActionComponent::EnterInstructions => {
+            MenuButtonActionComponent::EnterInstructions => {
                 next_app_state.set(AppStates::Instructions);
             }
-            ThetawaveUiButtonActionComponent::EnterOptions => info!("Enter options menu."),
-            ThetawaveUiButtonActionComponent::EnterGame => info!("Enter game."),
-            ThetawaveUiButtonActionComponent::EnterCompendium => info!("Enter compendium."),
-            ThetawaveUiButtonActionComponent::QuitGame => {
+            MenuButtonActionComponent::EnterOptions => info!("Enter options menu."),
+            MenuButtonActionComponent::EnterGame => info!("Enter game."),
+            MenuButtonActionComponent::EnterCompendium => info!("Enter compendium."),
+            MenuButtonActionComponent::QuitGame => {
                 exit.send(AppExit);
             }
         }

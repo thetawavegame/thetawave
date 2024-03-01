@@ -26,7 +26,7 @@ pub use self::character_selection::{
 };
 use self::{button::button_action_system, game_center::text_fade_out_system};
 use self::{button::button_interaction_system, character_selection::toggle_tutorial_system};
-use self::{button::ThetawaveUiButtonActionEvent, player::update_player_ui_system};
+use self::{button::MenuButtonActionEvent, player::update_player_ui_system};
 use self::{game_center::update_center_text_ui_system, instructions::setup_instructions_system};
 pub use self::{
     game_over::setup_game_over_system,
@@ -41,7 +41,7 @@ pub struct UiPlugin;
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<PlayerJoinEvent>();
-        app.add_event::<ThetawaveUiButtonActionEvent>();
+        app.add_event::<MenuButtonActionEvent>();
 
         app.add_systems(
             Update,
