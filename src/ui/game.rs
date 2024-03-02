@@ -1,15 +1,21 @@
 use bevy::{
     asset::AssetServer,
-    ecs::system::{Commands, Res},
+    ecs::system::{Commands, Local, Res},
     hierarchy::BuildChildren,
-    render::color::Color,
-    ui::{node_bundles::NodeBundle, AlignItems, FlexDirection, JustifyContent, Style, Val},
+    render::{color::Color, view::Visibility},
+    ui::{
+        node_bundles::{ImageBundle, NodeBundle},
+        AlignItems, FlexDirection, JustifyContent, Style, Val, ZIndex,
+    },
     utils::default,
 };
 use thetawave_interface::{player::PlayersResource, states::GameCleanup};
 
 use super::{
-    game_center::build_center_text_ui, level::build_level_ui, phase::build_phase_ui,
+    border_gradient::{BorderGradientType, UiCommandsExt},
+    game_center::build_center_text_ui,
+    level::build_level_ui,
+    phase::build_phase_ui,
     player::build_player_ui,
 };
 
@@ -20,6 +26,9 @@ pub fn setup_game_ui_system(
     players_resource: Res<PlayersResource>,
 ) {
     let font = asset_server.load("fonts/wibletown-regular.otf");
+
+    commands.spawn_border_gradient(&asset_server, BorderGradientType::Defense);
+    commands.spawn_border_gradient(&asset_server, BorderGradientType::Warning);
 
     // top level node of all game UI
     commands

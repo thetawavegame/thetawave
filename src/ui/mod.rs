@@ -8,6 +8,7 @@ use thetawave_interface::game::historical_metrics::{MobsKilledByPlayerCacheT, DE
 use crate::GameEnterSet;
 use thetawave_interface::states;
 
+mod border_gradient;
 mod character_selection;
 mod game;
 mod game_center;
