@@ -215,7 +215,9 @@ impl PluginGroup for ThetawaveGamePlugins {
 
 #[cfg(test)]
 mod test {
+    use crate::animation::AnimationPlugin;
     use crate::audio::ThetawaveAudioPlugin;
+    use crate::background::BackgroundPlugin;
     use crate::{build_app, options, ui, ThetawaveGamePlugins};
     use bevy::app::{App, PluginGroup};
     use bevy::asset::AssetPlugin;
@@ -268,6 +270,8 @@ mod test {
             // Ideally audio is mostly handled via `thetawave_interface::audio` and events, so that
             // we really only skip testing 1 match statement and external audio deps.
             .disable::<ThetawaveAudioPlugin>()
+            .disable::<AnimationPlugin>()
+            .disable::<BackgroundPlugin>()
             .disable::<AudioPlugin>();
 
         let mut app = build_app(base_plugins, game_plugins);
