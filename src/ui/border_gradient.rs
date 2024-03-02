@@ -1,30 +1,39 @@
+use std::{f32::consts::PI, time::Duration};
+
 use bevy::{
     asset::AssetServer,
     ecs::{
         component::Component,
-        system::{Commands, Res},
+        event::{Event, EventReader, EventWriter},
+        system::{Commands, Query, Res},
     },
     hierarchy::BuildChildren,
-    render::{color::Color, view::Visibility},
-    time::{Timer, TimerMode},
+    math::f32,
+    render::color::Color,
+    time::{Time, Timer, TimerMode},
     ui::{
         node_bundles::{ImageBundle, NodeBundle},
-        FlexDirection, Style, Val, ZIndex,
+        BackgroundColor, FlexDirection, Style, Val, ZIndex,
     },
     utils::default,
 };
+use thetawave_interface::objective::{DefenseInteraction, MobReachedBottomGateEvent};
 
-const BG_DURATION: f32 = 1.0;
+const BG_DURATION: f32 = 0.4;
+const BG_MAX_ALPHA: f32 = 0.5;
 
+#[derive(Event, PartialEq)]
 pub enum BorderGradientType {
     Warning,
     Defense,
 }
 
+pub type BorderGradientEvent = BorderGradientType;
+
 #[derive(Component)]
 pub struct BorderGradientComponent {
-    bg_type: BorderGradientType,
-    timer: Timer,
+    pub bg_type: BorderGradientType,
+    pub timer: Timer,
 }
 
 pub trait UiCommandsExt {
@@ -57,14 +66,57 @@ impl UiCommandsExt for Commands<'_, '_> {
                             BorderGradientType::Defense => "texture/defense_gradient.png",
                         })
                         .into(),
-                    background_color: Color::WHITE.with_a(0.50).into(),
-                    visibility: Visibility::Hidden,
+                    background_color: Color::WHITE.with_a(0.0).into(),
                     ..default()
                 })
                 .insert(BorderGradientComponent {
                     bg_type,
-                    timer: Timer::from_seconds(BG_DURATION, TimerMode::Once),
+                    timer: {
+                        let mut timer = Timer::from_seconds(BG_DURATION, TimerMode::Once);
+                        timer.set_elapsed(Duration::from_secs_f32(BG_DURATION));
+                        timer
+                    },
                 });
         });
+    }
+}
+
+pub fn border_gradient_start_system(
+    mut bg_query: Query<(&mut BorderGradientComponent, &mut BackgroundColor)>,
+    mut bg_event_reader: EventReader<BorderGradientEvent>,
+) {
+    for event in bg_event_reader.read() {
+        for (mut bg_component, mut background_color) in bg_query.iter_mut() {
+            if bg_component.bg_type == *event {
+                background_color.0.set_a(1.0);
+                bg_component.timer.reset();
+            }
+        }
+    }
+}
+
+pub fn border_gradient_update_system(
+    mut bg_query: Query<(&mut BorderGradientComponent, &mut BackgroundColor)>,
+    time: Res<Time>,
+) {
+    for (mut bg_component, mut background_color) in bg_query.iter_mut() {
+        bg_component.timer.tick(time.delta());
+        background_color
+            .0
+            .set_a(BG_MAX_ALPHA * f32::sin(PI * bg_component.timer.fraction()));
+    }
+}
+
+/// Trigger a border gradient event mobs reach the bottom gate
+pub fn border_gradient_on_gate_interaction(
+    mut gate_events: EventReader<MobReachedBottomGateEvent>,
+    mut bg_event_writer: EventWriter<BorderGradientEvent>,
+) {
+    for event in gate_events.read() {
+        match event.defense_interaction {
+            DefenseInteraction::Heal(_) => bg_event_writer.send(BorderGradientEvent::Defense),
+
+            DefenseInteraction::Damage(_) => bg_event_writer.send(BorderGradientEvent::Warning),
+        };
     }
 }
