@@ -183,6 +183,9 @@ pub struct MobData {
     pub mob_segment_behaviors: Option<
         HashMap<MobSegmentControlBehavior, HashMap<MobSegmentType, Vec<MobSegmentBehavior>>>,
     >,
+    /// Whether the mob can rotate on its z axis
+    #[serde(default)]
+    pub can_rotate: bool,
     /// Acceleration stat
     #[serde(default)]
     pub acceleration: Vec2,
@@ -369,7 +372,6 @@ pub fn spawn_mob(
         direction: mob_data.animation.direction.clone(),
     })
     .insert(RigidBody::Dynamic)
-    .insert(LockedAxes::ROTATION_LOCKED)
     .insert(Velocity::from(mob_data.initial_motion.clone()))
     .insert(Collider::compound(
         mob_data
@@ -396,6 +398,10 @@ pub fn spawn_mob(
 
     if boss {
         mob.insert(BossComponent);
+    }
+
+    if !mob_data.can_rotate {
+        mob.insert(LockedAxes::ROTATION_LOCKED);
     }
 
     if let Some(weapon_component) = mob_data.get_weapon_component() {
