@@ -2,7 +2,6 @@ use crate::{
     collision::SortedCollisionEvent, game::GameParametersResource, spawnable::SpawnableComponent,
     tools::signed_modulo,
 };
-use bevy::log::info;
 use bevy::prelude::{Entity, EventReader, Query, Res, Transform, Vec2, Vec3Swizzles, With};
 use bevy_rapier2d::prelude::Velocity;
 use serde::Deserialize;
