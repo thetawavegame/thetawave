@@ -7,9 +7,7 @@ use bevy_rapier2d::dynamics::Velocity;
 use leafwing_input_manager::prelude::ActionState;
 
 use thetawave_interface::input::PlayerAction;
-use thetawave_interface::player::{
-    PlayerComponent, PlayerMovementStatsComponent, PlayerStatusComponent,
-};
+use thetawave_interface::player::{PlayerComponent, PlayerMovementComponent};
 
 use crate::game::GameParametersResource;
 
@@ -17,19 +15,18 @@ use crate::game::GameParametersResource;
 pub fn player_movement_system(
     game_parameters: Res<GameParametersResource>,
     mut player_info: Query<(
-        &PlayerMovementStatsComponent,
-        &PlayerStatusComponent,
+        &PlayerMovementComponent,
         &mut Velocity,
         &ActionState<PlayerAction>,
     )>,
 ) {
-    for (player_movement, player_status, mut vel, action_state) in player_info.iter_mut() {
+    for (player_movement, mut vel, action_state) in player_info.iter_mut() {
         let up = action_state.pressed(&PlayerAction::MoveUp);
         let down = action_state.pressed(&PlayerAction::MoveDown);
         let left = action_state.pressed(&PlayerAction::MoveLeft);
         let right = action_state.pressed(&PlayerAction::MoveRight);
 
-        if !player_status.movement_enabled {
+        if !player_movement.movement_enabled {
             continue;
         }
         // convert to axis multipliers

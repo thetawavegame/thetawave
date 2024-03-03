@@ -54,8 +54,7 @@ pub enum PlayerInput {
 
 #[derive(Bundle)]
 pub struct PlayerBundle {
-    pub movement_stats: PlayerMovementStatsComponent,
-    pub status: PlayerStatusComponent,
+    pub movement_stats: PlayerMovementComponent,
     pub id: PlayerIDComponent,
     pub core: PlayerComponent, // TODO: Remove
 }
@@ -65,7 +64,6 @@ impl From<&Character> for PlayerBundle {
         Self {
             movement_stats: character.into(),
             core: character.into(),
-            status: PlayerStatusComponent::default(),
             id: PlayerIDComponent::One,
         }
     }
@@ -102,27 +100,15 @@ impl From<PlayerIDComponent> for usize {
 }
 
 #[derive(Component)]
-pub struct PlayerMovementStatsComponent {
+pub struct PlayerMovementComponent {
     /// Acceleration of the player
     pub acceleration: Vec2,
     /// Deceleration of the player
     pub deceleration: Vec2,
     /// Maximum speed of the player
     pub speed: Vec2,
-}
-
-#[derive(Component)]
-pub struct PlayerStatusComponent {
     /// Whether the player responds to move inputs
     pub movement_enabled: bool,
-}
-
-impl Default for PlayerStatusComponent {
-    fn default() -> Self {
-        Self {
-            movement_enabled: true,
-        }
-    }
 }
 
 /// Component for managing core attributes of the player
@@ -146,12 +132,13 @@ pub struct PlayerComponent {
     pub incoming_damage_multiplier: f32,
 }
 
-impl From<&Character> for PlayerMovementStatsComponent {
+impl From<&Character> for PlayerMovementComponent {
     fn from(character: &Character) -> Self {
         Self {
             acceleration: character.acceleration,
             deceleration: character.deceleration,
             speed: character.speed,
+            movement_enabled: true,
         }
     }
 }
