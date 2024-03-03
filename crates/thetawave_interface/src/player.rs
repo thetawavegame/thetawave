@@ -56,6 +56,7 @@ pub enum PlayerInput {
 pub struct PlayerBundle {
     pub movement_stats: PlayerMovementComponent,
     pub id: PlayerIDComponent,
+    pub attraction: PlayerAttractionComponent,
     pub core: PlayerComponent, // TODO: Remove
 }
 
@@ -64,6 +65,7 @@ impl From<&Character> for PlayerBundle {
         Self {
             movement_stats: character.into(),
             core: character.into(),
+            attraction: character.into(),
             id: PlayerIDComponent::One,
         }
     }
@@ -111,15 +113,19 @@ pub struct PlayerMovementComponent {
     pub movement_enabled: bool,
 }
 
+#[derive(Component)]
+pub struct PlayerAttractionComponent {
+    /// Distance from which to apply acceleration to items and consumables
+    pub distance: f32,
+    /// Acceleration applied to items and consumables in within attraction distance
+    pub acceleration: f32,
+}
+
 /// Component for managing core attributes of the player
 #[derive(Component, Debug, Clone)]
 pub struct PlayerComponent {
     /// Amount of damage dealt on contact
     pub collision_damage: usize,
-    /// Distance to attract items and consumables
-    pub attraction_distance: f32,
-    /// Acceleration applied to items and consumables in attraction distance
-    pub attraction_acceleration: f32,
     /// Amount of money character has collected
     pub money: usize,
     /// Timer for ability cooldown
@@ -143,12 +149,19 @@ impl From<&Character> for PlayerMovementComponent {
     }
 }
 
+impl From<&Character> for PlayerAttractionComponent {
+    fn from(character: &Character) -> Self {
+        Self {
+            acceleration: character.attraction_acceleration,
+            distance: character.attraction_distance,
+        }
+    }
+}
+
 impl From<&Character> for PlayerComponent {
     fn from(character: &Character) -> Self {
         PlayerComponent {
             collision_damage: character.collision_damage,
-            attraction_distance: character.attraction_distance,
-            attraction_acceleration: character.attraction_acceleration,
             money: character.money,
             ability_cooldown_timer: Timer::from_seconds(character.ability_period, TimerMode::Once),
             ability_action_timer: None,

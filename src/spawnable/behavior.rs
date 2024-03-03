@@ -5,6 +5,7 @@ use crate::{
 use bevy::prelude::{Entity, EventReader, Query, Res, Transform, Vec2, Vec3Swizzles, With};
 use bevy_rapier2d::prelude::Velocity;
 use serde::Deserialize;
+use thetawave_interface::player::PlayerAttractionComponent;
 use thetawave_interface::spawnable::AttractToClosestPlayerComponent;
 use thetawave_interface::{
     player::PlayerComponent,
@@ -314,15 +315,15 @@ pub(super) fn attract_to_player_system(
             With<SpawnableComponent>,
         ),
     >,
-    player_query: Query<(&PlayerComponent, &Transform)>,
+    player_query: Query<(&PlayerAttractionComponent, &Transform)>,
 ) {
     let player_positions_and_accels_and_cutoff_distances: Vec<(Vec2, f32, f32)> = player_query
         .iter()
-        .map(|(player, transform)| {
+        .map(|(player_attraction, transform)| {
             (
                 transform.translation.xy(),
-                player.attraction_acceleration,
-                player.attraction_distance,
+                player_attraction.acceleration,
+                player_attraction.distance,
             )
         })
         .collect();
