@@ -96,8 +96,6 @@ impl Default for PlayerStatusComponent {
 /// Component for managing core attributes of the player
 #[derive(Component, Debug, Clone)]
 pub struct PlayerComponent {
-    /// Collider dimensions
-    pub collider_dimensions: Vec2,
     /// Amount of damage dealt on contact
     pub collision_damage: usize,
     /// Distance to attract items and consumables
@@ -131,7 +129,6 @@ impl From<&Character> for PlayerMovementStatsComponent {
 impl From<&Character> for PlayerComponent {
     fn from(character: &Character) -> Self {
         PlayerComponent {
-            collider_dimensions: character.collider_dimensions,
             collision_damage: character.collision_damage,
             attraction_distance: character.attraction_distance,
             attraction_acceleration: character.attraction_acceleration,
