@@ -5,7 +5,7 @@ use serde::Deserialize;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     health::{DamageDealtEvent, HealthComponent},
-    player::PlayerComponent,
+    player::PlayerIncomingDamageComponent,
     spawnable::{
         EffectType, MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnItemEvent, SpawnPosition,
     },
@@ -69,7 +69,7 @@ pub fn mob_segment_execute_behavior_system(
         &HealthComponent,
     )>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
-    mut player_query: Query<(Entity, &mut PlayerComponent)>,
+    player_query: Query<(Entity, &PlayerIncomingDamageComponent)>,
     loot_drops_resource: Res<LootDropsResource>,
     mut spawn_consumable_event_writer: EventWriter<SpawnConsumableEvent>,
     mut spawn_item_event_writer: EventWriter<SpawnItemEvent>,
@@ -95,7 +95,7 @@ pub fn mob_segment_execute_behavior_system(
                     deal_damage_to_player_on_impact(
                         entity,
                         &collision_events_vec,
-                        &mut player_query,
+                        &player_query,
                         &mut damage_dealt_event_writer,
                     );
                 }
@@ -103,7 +103,7 @@ pub fn mob_segment_execute_behavior_system(
                     receive_damage_on_impact(
                         entity,
                         &collision_events_vec,
-                        &mut player_query,
+                        &player_query,
                         &mut damage_dealt_event_writer,
                     );
                 }
@@ -288,7 +288,7 @@ pub fn mob_segment_apply_disconnected_behaviors_system(
 fn deal_damage_to_player_on_impact(
     entity: Entity,
     collision_events: &[&SortedCollisionEvent],
-    player_query: &mut Query<(Entity, &mut PlayerComponent)>,
+    player_query: &Query<(Entity, &PlayerIncomingDamageComponent)>,
     damage_dealt_event_writer: &mut EventWriter<DamageDealtEvent>,
 ) {
     for collision_event in collision_events.iter() {
@@ -302,9 +302,8 @@ fn deal_damage_to_player_on_impact(
         {
             if entity == *mob_segment_entity {
                 // deal damage to player
-                for (player_entity_q, player_component) in player_query.iter_mut() {
-                    let damage = (*mob_segment_damage as f32
-                        * player_component.incoming_damage_multiplier)
+                for (player_entity_q, player_incoming_damage) in player_query.iter() {
+                    let damage = (*mob_segment_damage as f32 * player_incoming_damage.multiplier)
                         .round() as usize;
                     if player_entity_q == *player_entity && damage > 0 {
                         damage_dealt_event_writer.send(DamageDealtEvent {
@@ -322,7 +321,7 @@ fn deal_damage_to_player_on_impact(
 fn receive_damage_on_impact(
     entity: Entity,
     collision_events: &[&SortedCollisionEvent],
-    player_query: &mut Query<(Entity, &mut PlayerComponent)>,
+    player_query: &Query<(Entity, &PlayerIncomingDamageComponent)>,
     damage_dealt_event_writer: &mut EventWriter<DamageDealtEvent>,
 ) {
     for collision_event in collision_events.iter() {
@@ -335,7 +334,7 @@ fn receive_damage_on_impact(
                 mob_segment_damage: _,
             } => {
                 if entity == *mob_segment_entity {
-                    for (player_entity_q, mut _player_component) in player_query.iter_mut() {
+                    for (player_entity_q, _) in player_query.iter() {
                         if player_entity_q == *player_entity && *player_damage > 0 {
                             damage_dealt_event_writer.send(DamageDealtEvent {
                                 damage: *player_damage,

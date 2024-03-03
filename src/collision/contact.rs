@@ -6,7 +6,7 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use thetawave_interface::{
     audio::{CollisionSoundType, PlaySoundEffectEvent, SoundEffectType},
-    player::{PlayerComponent, PlayerOutgoingDamageComponent},
+    player::PlayerOutgoingDamageComponent,
     spawnable::{Faction, MobSegmentType, MobType, ProjectileType},
 };
 

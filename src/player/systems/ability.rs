@@ -8,7 +8,9 @@ use bevy_rapier2d::prelude::{ExternalImpulse, Velocity};
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::audio::SoundEffectType;
 use thetawave_interface::input::PlayerAction;
-use thetawave_interface::player::{AbilityType, PlayerComponent, PlayerMovementComponent};
+use thetawave_interface::player::{
+    AbilityType, PlayerComponent, PlayerIncomingDamageComponent, PlayerMovementComponent,
+};
 use thetawave_interface::weapon::{WeaponComponent, WeaponProjectileData};
 
 use crate::spawnable::{FireWeaponEvent, InitialMotion};
@@ -18,6 +20,7 @@ pub fn player_ability_system(
     mut player_query: Query<(
         &mut PlayerComponent,
         &mut PlayerMovementComponent,
+        &mut PlayerIncomingDamageComponent,
         &mut Velocity,
         &Transform,
         &mut ExternalImpulse,
@@ -31,6 +34,7 @@ pub fn player_ability_system(
     for (
         mut player_component,
         mut player_movement,
+        mut player_incoming_damage,
         mut player_vel,
         player_trans,
         mut player_ext_impulse,
@@ -72,7 +76,7 @@ pub fn player_ability_system(
                     }
                     //player_ext_impulse.impulse = Vec2::new(0.0, 12000.0);
                     player_movement.movement_enabled = false;
-                    player_component.incoming_damage_multiplier -= 0.5;
+                    player_incoming_damage.multiplier -= 0.5;
                     player_component.ability_action_timer =
                         Some(Timer::from_seconds(ability_duration, TimerMode::Once));
                 }
@@ -113,7 +117,7 @@ pub fn player_ability_system(
                     AbilityType::Charge(_) => {
                         player_vel.linvel = Vec2::new(0.0, 0.0);
                         player_movement.movement_enabled = true;
-                        player_component.incoming_damage_multiplier += 0.5;
+                        player_incoming_damage.multiplier += 0.5;
                     }
                     AbilityType::MegaBlast(_) => {}
                 }

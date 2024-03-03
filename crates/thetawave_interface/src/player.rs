@@ -58,6 +58,7 @@ pub struct PlayerBundle {
     pub id: PlayerIDComponent,
     pub attraction: PlayerAttractionComponent,
     pub outgoing_damage: PlayerOutgoingDamageComponent,
+    pub incoming_damage: PlayerIncomingDamageComponent,
     pub core: PlayerComponent, // TODO: Remove
 }
 
@@ -68,6 +69,7 @@ impl From<&Character> for PlayerBundle {
             core: character.into(),
             attraction: character.into(),
             outgoing_damage: character.into(),
+            incoming_damage: PlayerIncomingDamageComponent::default(),
             id: PlayerIDComponent::One,
         }
     }
@@ -129,6 +131,18 @@ pub struct PlayerOutgoingDamageComponent {
     pub collision_damage: usize,
 }
 
+#[derive(Component)]
+pub struct PlayerIncomingDamageComponent {
+    /// Multiplier for incoming damage
+    pub multiplier: f32,
+}
+
+impl Default for PlayerIncomingDamageComponent {
+    fn default() -> Self {
+        Self { multiplier: 1.0 }
+    }
+}
+
 /// Component for managing core attributes of the player
 #[derive(Component, Debug, Clone)]
 pub struct PlayerComponent {
@@ -140,8 +154,6 @@ pub struct PlayerComponent {
     pub ability_action_timer: Option<Timer>,
     /// Type of ability
     pub ability_type: AbilityType,
-    /// Multiplier for incoming damage
-    pub incoming_damage_multiplier: f32,
 }
 
 impl From<&Character> for PlayerMovementComponent {
@@ -179,7 +191,6 @@ impl From<&Character> for PlayerComponent {
             ability_cooldown_timer: Timer::from_seconds(character.ability_period, TimerMode::Once),
             ability_action_timer: None,
             ability_type: character.ability_type.clone(),
-            incoming_damage_multiplier: 1.0,
         }
     }
 }
