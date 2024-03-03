@@ -1,6 +1,6 @@
 use crate::character::{Character, CharacterType};
-use bevy_ecs::prelude::Component;
 use bevy_ecs::system::Resource;
+use bevy_ecs::{bundle::Bundle, prelude::Component};
 use bevy_math::Vec2;
 use bevy_time::{Timer, TimerMode};
 use derive_more::{Deref, DerefMut};
@@ -52,15 +52,50 @@ pub enum PlayerInput {
     Gamepad(usize),
 }
 
-/// Component for managing core attributes of the player
-#[derive(Component, Debug, Clone)]
-pub struct PlayerComponent {
+#[derive(Bundle)]
+pub struct PlayerBundle {
+    pub movement_stats: PlayerMovementStatsComponent,
+    pub player_status: PlayerStatusComponent,
+    pub player_core: PlayerComponent, // TODO: Remove
+}
+
+impl From<&Character> for PlayerBundle {
+    fn from(character: &Character) -> Self {
+        Self {
+            movement_stats: character.into(),
+            player_core: character.into(),
+            player_status: PlayerStatusComponent::default(),
+        }
+    }
+}
+
+#[derive(Component)]
+pub struct PlayerMovementStatsComponent {
     /// Acceleration of the player
     pub acceleration: Vec2,
     /// Deceleration of the player
     pub deceleration: Vec2,
     /// Maximum speed of the player
     pub speed: Vec2,
+}
+
+#[derive(Component)]
+pub struct PlayerStatusComponent {
+    /// Whether the player responds to move inputs
+    pub movement_enabled: bool,
+}
+
+impl Default for PlayerStatusComponent {
+    fn default() -> Self {
+        Self {
+            movement_enabled: true,
+        }
+    }
+}
+
+/// Component for managing core attributes of the player
+#[derive(Component, Debug, Clone)]
+pub struct PlayerComponent {
     /// Collider dimensions
     pub collider_dimensions: Vec2,
     /// Amount of damage dealt on contact
@@ -77,20 +112,25 @@ pub struct PlayerComponent {
     pub ability_action_timer: Option<Timer>,
     /// Type of ability
     pub ability_type: AbilityType,
-    /// Whether the player responds to move inputs
-    pub movement_enabled: bool,
     /// Multiplier for incoming damage
     pub incoming_damage_multiplier: f32,
     /// Index of the player
     pub player_index: usize,
 }
 
-impl From<&Character> for PlayerComponent {
+impl From<&Character> for PlayerMovementStatsComponent {
     fn from(character: &Character) -> Self {
-        PlayerComponent {
+        Self {
             acceleration: character.acceleration,
             deceleration: character.deceleration,
             speed: character.speed,
+        }
+    }
+}
+
+impl From<&Character> for PlayerComponent {
+    fn from(character: &Character) -> Self {
+        PlayerComponent {
             collider_dimensions: character.collider_dimensions,
             collision_damage: character.collision_damage,
             attraction_distance: character.attraction_distance,
@@ -99,23 +139,12 @@ impl From<&Character> for PlayerComponent {
             ability_cooldown_timer: Timer::from_seconds(character.ability_period, TimerMode::Once),
             ability_action_timer: None,
             ability_type: character.ability_type.clone(),
-            movement_enabled: true,
             incoming_damage_multiplier: 1.0,
             player_index: 0,
         }
     }
 }
 impl PlayerComponent {
-    pub fn from_character_with_params(
-        character: &Character,
-        spawn_params: &InputRestrictionsAtSpawn,
-    ) -> Self {
-        let mut res = Self::from(character);
-        if spawn_params.forbid_special_attack_reason.is_some() {
-            res.disable_special_attacks();
-        }
-        res
-    }
     pub fn disable_special_attacks(&mut self) {
         self.ability_cooldown_timer.pause();
     }
@@ -124,6 +153,19 @@ impl PlayerComponent {
     }
     pub fn enable_special_attacks(&mut self) {
         self.ability_cooldown_timer.unpause();
+    }
+}
+
+impl PlayerBundle {
+    pub fn from_character_with_params(
+        character: &Character,
+        spawn_params: &InputRestrictionsAtSpawn,
+    ) -> Self {
+        let mut res = Self::from(character);
+        if spawn_params.forbid_special_attack_reason.is_some() {
+            res.player_core.disable_special_attacks();
+        }
+        res
     }
 }
 

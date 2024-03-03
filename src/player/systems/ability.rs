@@ -8,7 +8,7 @@ use bevy_rapier2d::prelude::{ExternalImpulse, Velocity};
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::audio::SoundEffectType;
 use thetawave_interface::input::PlayerAction;
-use thetawave_interface::player::{AbilityType, PlayerComponent};
+use thetawave_interface::player::{AbilityType, PlayerComponent, PlayerStatusComponent};
 use thetawave_interface::weapon::{WeaponComponent, WeaponProjectileData};
 
 use crate::spawnable::{FireWeaponEvent, InitialMotion};
@@ -17,6 +17,7 @@ use crate::spawnable::{FireWeaponEvent, InitialMotion};
 pub fn player_ability_system(
     mut player_query: Query<(
         &mut PlayerComponent,
+        &mut PlayerStatusComponent,
         &mut Velocity,
         &Transform,
         &mut ExternalImpulse,
@@ -29,6 +30,7 @@ pub fn player_ability_system(
 ) {
     for (
         mut player_component,
+        mut player_status,
         mut player_vel,
         player_trans,
         mut player_ext_impulse,
@@ -69,7 +71,7 @@ pub fn player_ability_system(
                         player_ext_impulse.impulse = Vec2::new(0.0, 12000.0);
                     }
                     //player_ext_impulse.impulse = Vec2::new(0.0, 12000.0);
-                    player_component.movement_enabled = false;
+                    player_status.movement_enabled = false;
                     player_component.incoming_damage_multiplier -= 0.5;
                     player_component.ability_action_timer =
                         Some(Timer::from_seconds(ability_duration, TimerMode::Once));
@@ -110,7 +112,7 @@ pub fn player_ability_system(
                 match player_component.ability_type {
                     AbilityType::Charge(_) => {
                         player_vel.linvel = Vec2::new(0.0, 0.0);
-                        player_component.movement_enabled = true;
+                        player_status.movement_enabled = true;
                         player_component.incoming_damage_multiplier += 0.5;
                     }
                     AbilityType::MegaBlast(_) => {}

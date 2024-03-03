@@ -10,13 +10,9 @@ use bevy_rapier2d::dynamics::{ExternalImpulse, LockedAxes, RigidBody, Velocity};
 use bevy_rapier2d::geometry::{ActiveEvents, Collider, ColliderMassProperties, Restitution};
 use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
 use thetawave_interface::input::{InputsResource, PlayerAction};
-use thetawave_interface::player::InputRestrictionsAtSpawn;
+use thetawave_interface::player::{InputRestrictionsAtSpawn, PlayerBundle};
 use thetawave_interface::weapon::WeaponComponent;
-use thetawave_interface::{
-    health::HealthComponent,
-    player::{PlayerComponent, PlayerInput},
-    states::GameCleanup,
-};
+use thetawave_interface::{health::HealthComponent, player::PlayerInput, states::GameCleanup};
 
 use crate::{
     assets,
@@ -49,9 +45,9 @@ pub fn spawn_players_system(
                 character.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
 
             // create player component from character
-            let mut player_component =
-                PlayerComponent::from_character_with_params(character, &spawn_params);
-            player_component.player_index = player_index;
+            let mut player_bundle =
+                PlayerBundle::from_character_with_params(character, &spawn_params);
+            player_bundle.player_core.player_index = player_index;
 
             // spawn the player
             let mut player_entity = commands.spawn_empty();
@@ -98,7 +94,7 @@ pub fn spawn_players_system(
                 .insert(Velocity::default())
                 .insert(Restitution::new(1.0))
                 .insert(ColliderMassProperties::Density(character.collider_density))
-                .insert(player_component)
+                .insert(player_bundle)
                 .insert(HealthComponent::from(character))
                 .insert(GameCleanup)
                 .insert(ActiveEvents::COLLISION_EVENTS)
