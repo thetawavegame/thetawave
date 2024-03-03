@@ -55,16 +55,48 @@ pub enum PlayerInput {
 #[derive(Bundle)]
 pub struct PlayerBundle {
     pub movement_stats: PlayerMovementStatsComponent,
-    pub player_status: PlayerStatusComponent,
-    pub player_core: PlayerComponent, // TODO: Remove
+    pub status: PlayerStatusComponent,
+    pub id: PlayerIDComponent,
+    pub core: PlayerComponent, // TODO: Remove
 }
 
 impl From<&Character> for PlayerBundle {
     fn from(character: &Character) -> Self {
         Self {
             movement_stats: character.into(),
-            player_core: character.into(),
-            player_status: PlayerStatusComponent::default(),
+            core: character.into(),
+            status: PlayerStatusComponent::default(),
+            id: PlayerIDComponent::One,
+        }
+    }
+}
+
+impl PlayerBundle {
+    pub fn with_id(self, id: PlayerIDComponent) -> Self {
+        Self { id, ..self }
+    }
+}
+
+#[derive(Component, Clone, Copy, PartialEq)]
+pub enum PlayerIDComponent {
+    One,
+    Two,
+}
+
+impl From<usize> for PlayerIDComponent {
+    fn from(value: usize) -> Self {
+        match value {
+            0 => PlayerIDComponent::One,
+            _ => PlayerIDComponent::Two,
+        }
+    }
+}
+
+impl From<PlayerIDComponent> for usize {
+    fn from(value: PlayerIDComponent) -> Self {
+        match value {
+            PlayerIDComponent::One => 0,
+            PlayerIDComponent::Two => 1,
         }
     }
 }
@@ -112,8 +144,6 @@ pub struct PlayerComponent {
     pub ability_type: AbilityType,
     /// Multiplier for incoming damage
     pub incoming_damage_multiplier: f32,
-    /// Index of the player
-    pub player_index: usize,
 }
 
 impl From<&Character> for PlayerMovementStatsComponent {
@@ -137,7 +167,6 @@ impl From<&Character> for PlayerComponent {
             ability_action_timer: None,
             ability_type: character.ability_type.clone(),
             incoming_damage_multiplier: 1.0,
-            player_index: 0,
         }
     }
 }
@@ -160,7 +189,7 @@ impl PlayerBundle {
     ) -> Self {
         let mut res = Self::from(character);
         if spawn_params.forbid_special_attack_reason.is_some() {
-            res.player_core.disable_special_attacks();
+            res.core.disable_special_attacks();
         }
         res
     }
