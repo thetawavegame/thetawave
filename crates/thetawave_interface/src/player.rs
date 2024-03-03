@@ -63,8 +63,6 @@ pub struct PlayerComponent {
     pub speed: Vec2,
     /// Collider dimensions
     pub collider_dimensions: Vec2,
-    /// Collider density
-    pub collider_density: f32,
     /// Amount of damage dealt on contact
     pub collision_damage: usize,
     /// Distance to attract items and consumables
@@ -94,7 +92,6 @@ impl From<&Character> for PlayerComponent {
             deceleration: character.deceleration,
             speed: character.speed,
             collider_dimensions: character.collider_dimensions,
-            collider_density: character.collider_density,
             collision_damage: character.collision_damage,
             attraction_distance: character.attraction_distance,
             attraction_acceleration: character.attraction_acceleration,
