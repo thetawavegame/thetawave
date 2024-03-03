@@ -1,4 +1,9 @@
-use bevy::prelude::*;
+use bevy::ecs::entity::Entity;
+use bevy::ecs::event::EventWriter;
+use bevy::ecs::system::{Query, Res};
+use bevy::math::Vec2;
+use bevy::time::{Time, Timer, TimerMode};
+use bevy::transform::components::Transform;
 use bevy_rapier2d::prelude::{ExternalImpulse, Velocity};
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::audio::SoundEffectType;

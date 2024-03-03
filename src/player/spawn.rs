@@ -1,5 +1,13 @@
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use bevy::core::Name;
+use bevy::ecs::system::{Commands, Res};
+use bevy::hierarchy::BuildChildren;
+use bevy::input::gamepad::Gamepad;
+use bevy::math::Vec3;
+use bevy::render::color::Color;
+use bevy::sprite::{Sprite, SpriteBundle};
+use bevy::transform::components::Transform;
+use bevy_rapier2d::dynamics::{ExternalImpulse, LockedAxes, RigidBody, Velocity};
+use bevy_rapier2d::geometry::{ActiveEvents, Collider, ColliderMassProperties, Restitution};
 use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
 use thetawave_interface::input::{InputsResource, PlayerAction};
 use thetawave_interface::player::InputRestrictionsAtSpawn;

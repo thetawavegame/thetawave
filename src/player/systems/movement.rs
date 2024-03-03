@@ -1,7 +1,9 @@
 use std::f32::consts::PI;
 
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use bevy::ecs::query::With;
+use bevy::ecs::system::{Query, Res};
+use bevy::transform::components::Transform;
+use bevy_rapier2d::dynamics::Velocity;
 use leafwing_input_manager::prelude::ActionState;
 
 use thetawave_interface::input::PlayerAction;
