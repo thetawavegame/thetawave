@@ -43,7 +43,6 @@ const BUTTON_TEXTURE_PADDING_HOVERED: UiRect =
 pub enum MenuButtonActionComponent {
     EnterInstructions,
     EnterOptions,
-    EnterGame,
     EnterCompendium,
     QuitGame,
 }
@@ -163,7 +162,6 @@ pub fn button_action_system(
                 next_app_state.set(AppStates::Instructions);
             }
             MenuButtonActionComponent::EnterOptions => info!("Enter options menu."),
-            MenuButtonActionComponent::EnterGame => info!("Enter game."),
             MenuButtonActionComponent::EnterCompendium => info!("Enter compendium."),
             MenuButtonActionComponent::QuitGame => {
                 exit.send(AppExit);

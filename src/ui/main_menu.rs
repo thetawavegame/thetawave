@@ -22,9 +22,6 @@ use bevy::{
 };
 use std::time::Duration;
 use thetawave_interface::audio::{BGMusicType, ChangeBackgroundMusicEvent};
-use thetawave_interface::game::historical_metrics::{
-    UserStatsByPlayerForCompletedGamesCache, DEFAULT_USER_ID,
-};
 use thetawave_interface::states::MainMenuCleanup;
 
 use super::button::{MenuButtonActionComponent, UiChildBuilderExt};
@@ -42,21 +39,8 @@ pub fn setup_main_menu_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
-    historical_games_shot_counts: Res<UserStatsByPlayerForCompletedGamesCache>,
     ui_assets: Res<UiAssets>,
 ) {
-    let maybe_user_stats = (**historical_games_shot_counts).get(&DEFAULT_USER_ID);
-
-    let (accuracy_rate, total_shots_fired): (f32, usize) = match maybe_user_stats {
-        None => (100.0, 0),
-        Some(current_game_shot_counts) => {
-            let accuracy = (current_game_shot_counts.total_shots_hit as f32
-                / current_game_shot_counts.total_shots_fired as f32)
-                * 100.0;
-            (accuracy, current_game_shot_counts.total_shots_fired)
-        }
-    };
-
     let font: Handle<Font> = asset_server.load("fonts/Lunchds.ttf");
 
     change_bg_music_event_writer.send(ChangeBackgroundMusicEvent {
