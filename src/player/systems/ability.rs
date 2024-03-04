@@ -9,7 +9,8 @@ use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::audio::SoundEffectType;
 use thetawave_interface::input::PlayerAction;
 use thetawave_interface::player::{
-    AbilityType, PlayerAbilitiesComponent, PlayerIncomingDamageComponent, PlayerMovementComponent,
+    AbilityType, PlayerAbilitiesComponent, PlayerAbilityCooldownsComponent,
+    PlayerIncomingDamageComponent, PlayerMovementComponent,
 };
 use thetawave_interface::weapon::{WeaponComponent, WeaponProjectileData};
 
@@ -122,6 +123,23 @@ pub fn player_ability_system(
                     AbilityType::MegaBlast(_) => {}
                 }
             }
+        }
+    }
+}
+
+/// Tick ability cooldown timers for each player
+pub fn player_ability_cooldown_system(
+    mut player_query: Query<&mut PlayerAbilityCooldownsComponent>,
+    time: Res<Time>,
+) {
+    for mut ability_cooldowns in player_query.iter_mut() {
+        // Tick each timer if it is Some
+        for cooldown in ability_cooldowns
+            .cooldowns
+            .iter_mut()
+            .filter_map(|maybe_cooldown| maybe_cooldown.as_mut())
+        {
+            cooldown.tick(time.delta());
         }
     }
 }

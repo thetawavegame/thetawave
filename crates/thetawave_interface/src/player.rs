@@ -6,6 +6,8 @@ use bevy_time::{Timer, TimerMode};
 use derive_more::{Deref, DerefMut};
 use serde::Deserialize;
 
+const MAX_PLAYER_ABILITIES: usize = 2;
+
 /// Parameters for how to spawn new players. By default, the player can do anything.
 #[derive(Resource, Debug, Default, Deref, DerefMut)]
 pub struct InputRestrictionsAtSpawn(InputRestrictions);
@@ -67,6 +69,7 @@ pub struct PlayerBundle {
     inventory: PlayerInventoryComponent,
     abilities: PlayerAbilitiesComponent,
     flag: PlayerComponent,
+    ability_cooldowns: PlayerAbilityCooldownsComponent,
 }
 
 impl From<&Character> for PlayerBundle {
@@ -80,6 +83,7 @@ impl From<&Character> for PlayerBundle {
             inventory: character.into(),
             id: PlayerIDComponent::One,
             flag: PlayerComponent,
+            ability_cooldowns: PlayerAbilityCooldownsComponent::default(),
         }
     }
 }
@@ -178,6 +182,14 @@ pub struct PlayerAbilitiesComponent {
     pub ability_action_timer: Option<Timer>,
     /// Type of ability
     pub ability_type: AbilityType,
+}
+
+/// Tracks cooldowns for player abilities
+#[derive(Component, Default, Debug)]
+pub struct PlayerAbilityCooldownsComponent {
+    // Should have timers equal to the maximum number of abilities that a player can have
+    // If an ability slot is empyty then the value in that slot is none
+    pub cooldowns: [Option<Timer>; MAX_PLAYER_ABILITIES],
 }
 
 /// Flag for Player Entities
