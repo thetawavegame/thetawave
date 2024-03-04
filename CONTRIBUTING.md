@@ -127,3 +127,13 @@ export AWS_SESSION_TOKEN=$(aws sts assume-role --profile thetawavedev --output t
     --role-arn arn:aws:iam::656454124102:role/ThetawaveDeveloperRole \
     --role-session-name vpsession --query="Credentials.SessionToken" )
 ```
+
+## Extra Nuglets
+
+To delete just the premium assets from your local assets directory, run the following from the repo root.
+
+```bash
+aws --profile <YOUR_AWS_PROFILE_NAME> s3 ls --recursive s3://assets-thetawave/premium_assets/ \
+    | awk '{print $4}' | sed 's/^premium_//' \ # Map into our "overlayed free-premium directory structure"
+    | xargs rm -f
+```
