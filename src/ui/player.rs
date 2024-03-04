@@ -3,7 +3,7 @@ use bevy::{
     ecs::{
         component::Component,
         entity::Entity,
-        query::{Changed, With},
+        query::{Changed, Or, With},
         system::{Commands, ParamSet, Query},
     },
     hierarchy::{BuildChildren, ChildBuilder, DespawnRecursiveExt},
@@ -337,11 +337,11 @@ pub fn update_player_ui_system(
             &PlayerAbilitiesComponent,
             &WeaponComponent,
         ),
-        (
+        Or<(
             Changed<HealthComponent>,
             Changed<PlayerAbilitiesComponent>,
             Changed<WeaponComponent>,
-        ),
+        )>,
     >,
     mut player_ui: ParamSet<(
         Query<(&mut Style, &PlayerIDComponent), With<HealthValueUI>>,
