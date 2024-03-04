@@ -1,3 +1,4 @@
+use bevy::log::info;
 use bevy::math::Quat;
 use bevy::prelude::{EventReader, EventWriter, Query, Time, Timer, With};
 use leafwing_input_manager::action_state::ActionState;
@@ -7,22 +8,15 @@ use std::ops::Range;
 use thetawave_interface::audio::{PlaySoundEffectEvent, SoundEffectType};
 use thetawave_interface::input::PlayerAction;
 use thetawave_interface::objective::MobReachedBottomGateEvent;
-use thetawave_interface::player::{
-    InputRestrictionsAtSpawn, PlayerAbilitiesComponent, PlayerComponent,
-};
+use thetawave_interface::player::{InputRestrictionsAtSpawn, PlayerComponent};
 use thetawave_interface::spawnable::{
     AllyMobType, MobDestroyedEvent, MobSegmentDestroyedEvent, MobSegmentType, MobType,
     NeutralMobSegmentType, NeutralMobType, SpawnMobEvent,
 };
 use thetawave_interface::weapon::WeaponComponent;
 
-fn enable_player_actions_at_end_of_phase(
-    players: &mut Query<(&mut PlayerAbilitiesComponent, &mut WeaponComponent)>,
-) {
-    for (mut player_abilities, mut weapon) in players.iter_mut() {
-        player_abilities.enable_special_attacks();
-        weapon.enable();
-    }
+fn enable_player_actions_at_end_of_phase() {
+    info!("TODO: Enable player actions");
 }
 pub(super) fn modify_player_spawn_params_for_lesson_phase(
     spawn_params: &mut InputRestrictionsAtSpawn,
@@ -275,9 +269,8 @@ impl TutorialLesson {
         mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
         mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
         play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
-        players: &mut Query<(&mut PlayerAbilitiesComponent, &mut WeaponComponent)>,
     ) -> bool {
-        self.disable_player_actions_for_current_phase(players);
+        self.disable_player_actions_for_current_phase();
         // tutorial will only be run for single player
         if let Ok(action_state) = player_query.get_single() {
             let finished_tutorial_phase = match self {
@@ -301,31 +294,15 @@ impl TutorialLesson {
                 }
             };
             if finished_tutorial_phase {
-                enable_player_actions_at_end_of_phase(players);
+                enable_player_actions_at_end_of_phase();
             }
             finished_tutorial_phase
         } else {
             false
         }
     }
-    pub fn disable_player_actions_for_current_phase(
-        &self,
-        players: &mut Query<(&mut PlayerAbilitiesComponent, &mut WeaponComponent)>,
-    ) {
-        for (mut player_abilities, mut weapon) in players.iter_mut() {
-            match self {
-                Self::Ability { .. } => {
-                    weapon.disable();
-                }
-                Self::Attack { .. } => {
-                    player_abilities.disable_special_attacks();
-                }
-                Self::Movement { .. } => {
-                    weapon.disable();
-                    player_abilities.disable_special_attacks();
-                }
-            }
-        }
+    pub fn disable_player_actions_for_current_phase(&self) {
+        info!("TODO: disable player actions");
     }
 
     fn attack_tutorial(

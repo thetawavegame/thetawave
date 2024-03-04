@@ -50,8 +50,7 @@ pub fn spawn_players_system(
                 character.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
 
             // create player component from character
-            let player_bundle = PlayerBundle::from_character_with_params(character, &spawn_params)
-                .with_id(player_id);
+            let player_bundle = PlayerBundle::from(character).with_id(player_id);
 
             // spawn the player
             let mut player_entity = commands.spawn_empty();
@@ -107,7 +106,6 @@ pub fn spawn_players_system(
                 .insert(GameCleanup)
                 .insert(ActiveEvents::COLLISION_EVENTS)
                 .insert(ExternalImpulse::default())
-                .insert(WeaponComponent::from(character))
                 .insert(Name::new("Player"));
 
             // add colored outline to player if multiplayer

@@ -68,7 +68,6 @@ pub struct PlayerBundle {
     outgoing_damage: PlayerOutgoingDamageComponent,
     incoming_damage: PlayerIncomingDamageComponent,
     inventory: PlayerInventoryComponent,
-    abilities: PlayerAbilitiesComponent,
     flag: PlayerComponent,
     ability_cooldowns: PlayerAbilityCooldownsComponent,
 }
@@ -77,7 +76,6 @@ impl From<&Character> for PlayerBundle {
     fn from(character: &Character) -> Self {
         Self {
             movement_stats: character.into(),
-            abilities: character.into(),
             attraction: character.into(),
             outgoing_damage: character.into(),
             incoming_damage: PlayerIncomingDamageComponent::default(),
@@ -184,18 +182,6 @@ pub struct PlayerInventoryComponent {
     pub money: usize,
 }
 
-/// Currently just handles the "top" ability
-/// TODO: Overhaul this component for slotting any abilities in (including weapons)
-#[derive(Component, Debug, Clone)]
-pub struct PlayerAbilitiesComponent {
-    /// Timer for ability cooldown
-    pub ability_cooldown_timer: Timer,
-    /// Timer for ability action
-    pub ability_action_timer: Option<Timer>,
-    /// Type of ability
-    pub ability_type: AbilityType,
-}
-
 /// Tracks cooldowns for player abilities
 #[derive(Component, Default, Debug)]
 pub struct PlayerAbilityCooldownsComponent {
@@ -248,45 +234,4 @@ impl From<&Character> for PlayerInventoryComponent {
             money: character.money,
         }
     }
-}
-
-impl From<&Character> for PlayerAbilitiesComponent {
-    fn from(character: &Character) -> Self {
-        Self {
-            ability_cooldown_timer: Timer::from_seconds(character.ability_period, TimerMode::Once),
-            ability_action_timer: None,
-            ability_type: character.ability_type.clone(),
-        }
-    }
-}
-
-impl PlayerAbilitiesComponent {
-    pub fn disable_special_attacks(&mut self) {
-        self.ability_cooldown_timer.pause();
-    }
-    pub fn ability_is_enabled(&self) -> bool {
-        !self.ability_cooldown_timer.paused()
-    }
-    pub fn enable_special_attacks(&mut self) {
-        self.ability_cooldown_timer.unpause();
-    }
-}
-
-impl PlayerBundle {
-    pub fn from_character_with_params(
-        character: &Character,
-        spawn_params: &InputRestrictionsAtSpawn,
-    ) -> Self {
-        let mut res = Self::from(character);
-        if spawn_params.forbid_special_attack_reason.is_some() {
-            res.abilities.disable_special_attacks();
-        }
-        res
-    }
-}
-
-#[derive(Deserialize, Clone, Debug)]
-pub enum AbilityType {
-    Charge(f32),    // ability duration
-    MegaBlast(f32), // scale and damage multiplier
 }

@@ -3,7 +3,6 @@ use serde::Deserialize;
 
 use crate::{
     health::HealthComponent,
-    player::AbilityType,
     spawnable::SpawnPosition,
     weapon::{WeaponComponent, WeaponData},
 };
@@ -45,12 +44,6 @@ pub struct Character {
     pub attraction_acceleration: f32,
     /// Amount of money character has collected
     pub money: usize,
-    /// Ability cooldown time
-    pub ability_period: f32,
-    /// Type of ability
-    pub ability_type: AbilityType,
-    /// Describes the player's weapon
-    pub weapon: WeaponData,
     /// Amount of damage dealt on contact
     pub collision_damage: usize,
     /// Base damage dealt by player through weapon abilities
@@ -74,11 +67,5 @@ impl From<&Character> for HealthComponent {
             character.shields,
             character.shields_recharge_rate,
         )
-    }
-}
-
-impl From<&Character> for WeaponComponent {
-    fn from(value: &Character) -> Self {
-        WeaponComponent::from(value.weapon.clone())
     }
 }

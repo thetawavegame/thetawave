@@ -1,7 +1,6 @@
 //! Systems for managing players
 
-mod ability;
-mod attacks;
+mod abilities;
 mod movement;
 
 use crate::{game::GameParametersResource, spawnable::SpawnEffectEvent};
@@ -20,8 +19,7 @@ use thetawave_interface::player::PlayerComponent;
 use thetawave_interface::run::{RunDefeatType, RunEndEvent, RunOutcomeType};
 use thetawave_interface::spawnable::EffectType;
 
-pub use self::ability::*;
-pub use self::attacks::{fire_weapon_system, scale_fire_rate_system};
+pub use self::abilities::*;
 pub use self::movement::{player_movement_system, player_tilt_system};
 
 use super::PlayersResource;

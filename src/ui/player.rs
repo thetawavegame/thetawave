@@ -17,7 +17,7 @@ use bevy::{
 use thetawave_interface::{
     character::CharacterType,
     health::HealthComponent,
-    player::{PlayerAbilitiesComponent, PlayerIDComponent, PlayersResource},
+    player::{PlayerIDComponent, PlayersResource},
     weapon::WeaponComponent,
 };
 
@@ -175,53 +175,7 @@ fn build_player_ability_slot_ui(
         })
         .insert(AbilitySlotUI { ability_index })
         .insert(player_id)
-        .with_children(|ability_slot_ui| {
-            ability_slot_ui
-                .spawn(ImageBundle {
-                    image: asset_server
-                        .load(match ability_index {
-                            0 => match character {
-                                thetawave_interface::character::CharacterType::Captain => {
-                                    "texture/blast_ability.png"
-                                }
-                                thetawave_interface::character::CharacterType::Juggernaut => {
-                                    "texture/bullet_ability.png"
-                                }
-                            },
-                            _ => match character {
-                                thetawave_interface::character::CharacterType::Captain => {
-                                    "texture/megablast_ability.png"
-                                }
-                                thetawave_interface::character::CharacterType::Juggernaut => {
-                                    "texture/charge_ability.png"
-                                }
-                            },
-                        })
-                        .into(),
-                    style: Style {
-                        width: Val::Percent(100.0),
-                        aspect_ratio: Some(1.0),
-                        flex_direction: FlexDirection::Column,
-                        ..default()
-                    },
-                    ..default()
-                })
-                .insert(AbilityIconUI)
-                .with_children(|ability_icon_ui| {
-                    ability_icon_ui
-                        .spawn(NodeBundle {
-                            style: Style {
-                                width: Val::Percent(100.0),
-                                height: Val::Percent(100.0),
-                                ..default()
-                            },
-                            background_color: Color::BLACK.with_a(0.85).into(),
-                            ..default()
-                        })
-                        .insert(player_id)
-                        .insert(AbilityValueUI { ability_index });
-                });
-        });
+        .with_children(|ability_slot_ui| {});
 }
 
 fn build_inner_ui(player_id: PlayerIDComponent, parent: &mut ChildBuilder) {
@@ -330,19 +284,7 @@ fn build_armor_counter(parent: &mut ChildBuilder) {
 
 pub fn update_player_ui_system(
     mut commands: Commands,
-    player_query: Query<
-        (
-            &HealthComponent,
-            &PlayerIDComponent,
-            &PlayerAbilitiesComponent,
-            &WeaponComponent,
-        ),
-        Or<(
-            Changed<HealthComponent>,
-            Changed<PlayerAbilitiesComponent>,
-            Changed<WeaponComponent>,
-        )>,
-    >,
+    player_query: Query<(&HealthComponent, &PlayerIDComponent), Changed<HealthComponent>>,
     mut player_ui: ParamSet<(
         Query<(&mut Style, &PlayerIDComponent), With<HealthValueUI>>,
         Query<(&mut Style, &PlayerIDComponent), With<ShieldsValueUI>>,
@@ -350,7 +292,7 @@ pub fn update_player_ui_system(
         Query<(&mut Style, &AbilityValueUI, &PlayerIDComponent)>,
     )>,
 ) {
-    for (player_health, player_id, player_abilities, weapon_component) in player_query.iter() {
+    for (player_health, player_id) in player_query.iter() {
         // health ui
         for (mut style, health_id) in player_ui.p0().iter_mut() {
             if player_id == health_id {
@@ -377,21 +319,6 @@ pub fn update_player_ui_system(
                         build_armor_counter(armor_ui);
                     }
                 });
-            }
-        }
-
-        for (mut style, ability_value_ui, ability_id) in player_ui.p3().iter_mut() {
-            if player_id == ability_id && ability_value_ui.ability_index == 0 {
-                style.height =
-                    Val::Percent(100.0 * (1.0 - weapon_component.reload_timer.fraction()));
-            }
-        }
-
-        for (mut style, ability_value_ui, ability_id) in player_ui.p3().iter_mut() {
-            if player_id == ability_id && ability_value_ui.ability_index == 1 {
-                style.height = Val::Percent(
-                    100.0 * (1.0 - player_abilities.ability_cooldown_timer.fraction()),
-                );
             }
         }
     }
