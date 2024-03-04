@@ -1,9 +1,23 @@
-use std::time::Duration;
-
-use bevy::prelude::*;
-
 use crate::options::PlayingOnArcadeResource;
 use crate::ui::BouncingPromptComponent;
+use bevy::{
+    asset::AssetServer,
+    ecs::{
+        component::Component,
+        event::EventWriter,
+        system::{Commands, Res},
+    },
+    hierarchy::BuildChildren,
+    render::color::Color,
+    text::{JustifyText, Text, TextStyle},
+    time::{Timer, TimerMode},
+    ui::{
+        node_bundles::{ImageBundle, NodeBundle, TextBundle},
+        BackgroundColor, FlexDirection, JustifyContent, Style, UiRect, Val,
+    },
+    utils::default,
+};
+use std::time::Duration;
 use thetawave_interface::{
     audio::ChangeBackgroundMusicEvent,
     game::historical_metrics::{
@@ -112,7 +126,7 @@ pub fn setup_victory_system(
                                         color: Color::WHITE,
                                     },
                                 )
-                                    .with_alignment(TextAlignment::Center),
+                                    .with_justify(JustifyText::Center),
 
                                 ..default()
                             });

@@ -1,5 +1,16 @@
 //! `thetawave` player module
-use bevy::{core_pipeline::tonemapping::Tonemapping, prelude::*};
+use bevy::{
+    app::{App, Plugin, Startup, Update},
+    core_pipeline::{core_2d::Camera2d, core_3d::Camera3d, tonemapping::Tonemapping},
+    ecs::{
+        query::{With, Without},
+        schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter},
+        system::{Query, ResMut, Resource},
+    },
+    log::error,
+    prelude::Deref,
+    render::camera::Camera,
+};
 use leafwing_input_manager::prelude::InputManagerPlugin;
 use thetawave_interface::{
     game::options::GameOptions,
@@ -85,7 +96,7 @@ pub fn apply_game_options_system(
 }
 
 /// Whether we are playing on an arcade machine. This affects some different UI elements.
-/// Generally this will be set at app startup (either inferred or explicitly provided as a game
+/// Generally this will be set at app startup either inferred or explicitly provided as a game
 /// startup parameter, and should probably not be mutated during the game.
 #[derive(Resource, Debug, Clone, Copy, PartialEq, Eq, Deref)]
 pub struct PlayingOnArcadeResource(bool);

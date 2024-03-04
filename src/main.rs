@@ -1,8 +1,13 @@
 use bevy::app::PluginGroupBuilder;
-use bevy::{asset::AssetPlugin, pbr::AmbientLight, prelude::*};
-use bevy_kira_audio::prelude::*;
+use bevy::prelude::{
+    AmbientLight, App, AssetPlugin, ClearColor, Color, DefaultPlugins, ImagePlugin,
+    IntoSystemConfigs, OnEnter, PluginGroup, ResMut, SystemSet, Vec2, Window, WindowPlugin,
+};
+use bevy_kira_audio::prelude::AudioPlugin;
 
-use bevy_rapier2d::prelude::*;
+use bevy_rapier2d::prelude::{
+    NoUserData, RapierConfiguration, RapierDebugRenderPlugin, RapierPhysicsPlugin, TimestepMode,
+};
 use options::{generate_config_files, GameInitCLIOptions};
 use thetawave_interface::states::{AppStates, GameStates};
 
@@ -83,7 +88,7 @@ fn our_default_plugins(
     let res = DefaultPlugins
         .set(WindowPlugin {
             primary_window: Some(Window::from(display_config)),
-            ..default()
+            ..Default::default()
         })
         .set(ImagePlugin::default_nearest());
 
@@ -137,15 +142,12 @@ fn main() {
 fn build_app<P1: PluginGroup, P2: PluginGroup>(base_plugins: P1, game_plugins: P2) -> App {
     // Should everything besides adding the plugins be moved into a plugin?
     let mut app = App::new();
-    app.add_state::<AppStates>() // start game in the main menu state
-        .add_state::<GameStates>(); // start the game in playing state
+    app.init_state::<AppStates>() // start game in the main menu state
+        .init_state::<GameStates>(); // start the game in playing state
     app.add_plugins(base_plugins);
     app.add_plugins(game_plugins);
     app.insert_resource(ClearColor(Color::BLACK))
-        .insert_resource(AmbientLight {
-            color: Color::WHITE,
-            brightness: 0.1,
-        });
+        .insert_resource(AmbientLight::default());
 
     app.add_systems(
         OnEnter(AppStates::Game),

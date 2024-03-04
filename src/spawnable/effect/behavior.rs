@@ -8,7 +8,7 @@ use bevy::ecs::schedule::common_conditions::in_state;
 use bevy::ecs::schedule::IntoSystemConfigs;
 use bevy::ecs::system::{Commands, Query, Res};
 use bevy::hierarchy::DespawnRecursiveExt;
-use bevy::sprite::{TextureAtlas, TextureAtlasSprite};
+use bevy::sprite::{Sprite, TextureAtlas, TextureAtlasLayout};
 use bevy::text::Text;
 use bevy::time::{Stopwatch, Time, Timer, TimerMode};
 use serde::Deserialize;
@@ -83,22 +83,26 @@ fn despawn_after_animation_effect_behavior_system(
     effect_query: Query<(
         Entity,
         &EffectComponent,
-        &TextureAtlasSprite,
+        &TextureAtlas,
         &AnimationComponent,
-        &Handle<TextureAtlas>,
+        &Handle<TextureAtlasLayout>,
     )>,
-    texture_atlases: Res<Assets<TextureAtlas>>,
+    texture_atlas_layouts: Res<Assets<TextureAtlasLayout>>,
 ) {
     // Check if entity has  an `DespawnAfterAnimation` behavior
-    for (entity, effect_component, sprite, animation, texture_atlas_handle) in effect_query.iter() {
+    for (entity, effect_component, texture_atlas, animation, texture_atlas_layout_handle) in
+        effect_query.iter()
+    {
         if effect_component
             .behaviors
             .iter()
             .any(|behavior| matches!(behavior, EffectBehavior::DespawnAfterAnimation))
         {
             // Despawn effect entity after animation is complete
-            if let Some(texture_atlas) = texture_atlases.get(texture_atlas_handle) {
-                if sprite.index == texture_atlas.textures.len() - 1
+            if let Some(texture_atlas_layout) =
+                texture_atlas_layouts.get(texture_atlas_layout_handle)
+            {
+                if texture_atlas.index == texture_atlas_layout.textures.len() - 1
                     && animation.timer.just_finished()
                 {
                     commands.entity(entity).despawn_recursive();
@@ -136,7 +140,7 @@ fn fade_out_text_effect_behavior_system(
                     .iter_mut()
                     .map(|section| &mut section.style.color)
                 {
-                    color.set_a(timer.percent_left());
+                    color.set_a(timer.fraction_remaining());
                 }
             }
         }
@@ -148,7 +152,7 @@ fn fade_out_text_effect_behavior_system(
 /// the timer is complete, while also fading out linearly based on the percent of time left in the timer.
 fn fade_out_sprite_effect_behavior_system(
     mut commands: Commands,
-    mut effect_query: Query<(Entity, &mut EffectComponent, &mut TextureAtlasSprite)>,
+    mut effect_query: Query<(Entity, &mut EffectComponent, &mut Sprite)>,
     time: Res<Time>,
 ) {
     for (entity, mut effect_component, mut sprite) in effect_query.iter_mut() {
@@ -165,7 +169,7 @@ fn fade_out_sprite_effect_behavior_system(
             if timer.just_finished() {
                 commands.entity(entity).despawn_recursive();
             } else {
-                sprite.color.set_a(timer.percent_left());
+                sprite.color.set_a(timer.fraction_remaining());
             }
         }
     }
@@ -180,21 +184,21 @@ fn fade_out_despawn_after_animation_effect_behavior_system(
     mut effect_query: Query<(
         Entity,
         &mut EffectComponent,
-        &mut TextureAtlasSprite,
+        &mut Sprite,
         &AnimationComponent,
-        &Handle<TextureAtlas>,
+        &TextureAtlas,
     )>,
     time: Res<Time>,
-    texture_atlases: Res<Assets<TextureAtlas>>,
+    texture_atlases: Res<Assets<TextureAtlasLayout>>,
 ) {
     let animation_completed_events: Vec<&AnimationCompletedEvent> =
         animation_completed_event_reader.read().collect();
 
-    for (entity, mut effect_component, mut sprite, animation, texture_atlas_handle) in
+    for (entity, mut effect_component, mut sprite, animation, texture_atlas) in
         effect_query.iter_mut()
     {
         if let (Some(texture_atlas), Some(stopwatch)) = (
-            texture_atlases.get(texture_atlas_handle),
+            texture_atlases.get(texture_atlas.layout.id()),
             effect_component.behaviors.iter_mut().find_map(|behavior| {
                 if let EffectBehavior::FadeOutAndDespawnAfterAnimation(stopwatch) = behavior {
                     Some(stopwatch)

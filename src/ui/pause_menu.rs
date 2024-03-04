@@ -1,4 +1,17 @@
-use bevy::prelude::*;
+use bevy::{
+    asset::AssetServer,
+    ecs::{
+        component::Component,
+        system::{Commands, Res},
+    },
+    hierarchy::BuildChildren,
+    render::color::Color,
+    time::{Timer, TimerMode},
+    ui::{
+        node_bundles::{ImageBundle, NodeBundle},
+        PositionType, Style, UiRect, Val,
+    },
+};
 use thetawave_interface::states::PauseCleanup;
 
 use crate::{options::PlayingOnArcadeResource, ui::BouncingPromptComponent};

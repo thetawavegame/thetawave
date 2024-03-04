@@ -1,4 +1,3 @@
-use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
 use serde::Deserialize;
 use thetawave_interface::{
@@ -291,7 +290,7 @@ fn deal_damage_to_player_on_impact(
                         damage_dealt_event_writer.send(DamageDealtEvent {
                             damage,
                             target: player_entity_q,
-                        })
+                        });
                     }
                 }
             }

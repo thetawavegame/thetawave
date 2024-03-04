@@ -1,7 +1,15 @@
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use bevy::{
+    prelude::{
+        Commands, Component, Entity, Event, EventReader, EventWriter, Name, Quat, Res, Resource,
+        Sprite, SpriteSheetBundle, Timer, TimerMode, Transform, Vec2, Vec3Swizzles,
+    },
+    render::color::Color,
+};
+use bevy_rapier2d::prelude::{
+    ActiveEvents, Collider, CollisionGroups, Group, LockedAxes, RigidBody, Sensor, Velocity,
+};
 use serde::Deserialize;
-use std::{collections::HashMap, string::ToString};
+use std::collections::HashMap;
 use thetawave_interface::{
     audio::PlaySoundEffectEvent,
     game::options::GameOptions,
@@ -181,8 +189,11 @@ pub fn spawn_projectile_from_weapon(
         projectile
             .insert(LockedAxes::ROTATION_LOCKED)
             .insert(SpriteSheetBundle {
-                texture_atlas: projectile_assets.get_asset(&weapon_projectile_data.ammunition),
-                sprite: TextureAtlasSprite {
+                atlas: projectile_assets
+                    .get_texture_atlas_layout(&weapon_projectile_data.ammunition)
+                    .into(),
+                texture: projectile_assets.get_image(&weapon_projectile_data.ammunition),
+                sprite: Sprite {
                     color: projectile_data
                         .affine_bloom_transformation(game_options.bloom_intensity),
                     ..Default::default()

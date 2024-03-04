@@ -1,6 +1,8 @@
 use crate::collision::{HORIZONTAL_BARRIER_COLLIDER_GROUP, SPAWNABLE_COLLIDER_GROUP};
 use crate::{game::GameParametersResource, spawnable::SpawnEffectEvent};
-use bevy::prelude::*;
+use bevy::prelude::{
+    Commands, Component, EventWriter, Name, Quat, Res, Transform, TransformBundle, Vec2, Vec3,
+};
 use bevy_rapier2d::prelude::*;
 use std::f32::consts::FRAC_PI_2;
 use thetawave_interface::{spawnable::EffectType, states::GameCleanup};
@@ -32,7 +34,7 @@ pub fn spawn_barriers_system(
             scale: Vec3::new(10.0, game_parameters.sprite_scale, 1.0),
             ..Default::default()
         },
-        ..default()
+        ..Default::default()
     });
     spawn_effect.send(SpawnEffectEvent {
         effect_type: EffectType::BarrierGlow,
@@ -41,7 +43,7 @@ pub fn spawn_barriers_system(
             scale: Vec3::new(10.0, game_parameters.sprite_scale, 1.0),
             ..Default::default()
         },
-        ..default()
+        ..Default::default()
     });
     spawn_effect.send(SpawnEffectEvent {
         effect_type: EffectType::BarrierGlow,
@@ -50,7 +52,7 @@ pub fn spawn_barriers_system(
             scale: Vec3::new(7.3, game_parameters.sprite_scale, 1.0),
             rotation: Quat::from_rotation_z(FRAC_PI_2),
         },
-        ..default()
+        ..Default::default()
     });
     spawn_effect.send(SpawnEffectEvent {
         effect_type: EffectType::BarrierGlow,
@@ -59,7 +61,7 @@ pub fn spawn_barriers_system(
             scale: Vec3::new(7.3, game_parameters.sprite_scale, 1.0),
             rotation: Quat::from_rotation_z(FRAC_PI_2),
         },
-        ..default()
+        ..Default::default()
     });
 }
 

@@ -1,6 +1,6 @@
 use bevy::{
     app::{App, Plugin, Update},
-    asset::{Assets, Handle},
+    asset::Assets,
     ecs::{
         component::Component,
         entity::Entity,
@@ -9,7 +9,7 @@ use bevy::{
         system::{Query, Res},
     },
     math::Vec2,
-    sprite::{TextureAtlas, TextureAtlasSprite},
+    sprite::{TextureAtlas, TextureAtlasLayout},
     time::{Time, Timer},
 };
 use serde::Deserialize;
@@ -81,51 +81,48 @@ pub struct AnimationComponent {
 /// Handles animation of sprites
 pub fn animate_sprite_system(
     time: Res<Time>,
-    texture_atlases: Res<Assets<TextureAtlas>>,
+    texture_atlas_layouts: Res<Assets<TextureAtlasLayout>>,
     mut animation_complete_event_writer: EventWriter<AnimationCompletedEvent>,
-    mut query: Query<(
-        Entity,
-        &mut AnimationComponent,
-        &mut TextureAtlasSprite,
-        &Handle<TextureAtlas>,
-    )>,
+    mut query: Query<(Entity, &mut AnimationComponent, &mut TextureAtlas)>,
 ) {
-    for (entity, mut animation, mut sprite, texture_atlas_handle) in query.iter_mut() {
+    for (entity, mut animation, mut texture_atlas) in query.iter_mut() {
         // tick the animation timer
         animation.timer.tick(time.delta());
 
         // check if frame has completed
         if animation.timer.finished() {
             // get the texture atlas
-            let texture_atlas = texture_atlases.get(texture_atlas_handle).unwrap();
+            let texture_atlas_layout = texture_atlas_layouts
+                .get(texture_atlas.layout.id())
+                .unwrap();
 
             // update animation based on the animation direction
             match &animation.direction {
                 AnimationDirection::None => {}
                 AnimationDirection::Forward => {
-                    let new_idx = (sprite.index + 1) % texture_atlas.textures.len();
+                    let new_idx = (texture_atlas.index + 1) % texture_atlas_layout.textures.len();
                     if new_idx == 0 {
-                        animation_complete_event_writer.send(AnimationCompletedEvent(entity))
+                        animation_complete_event_writer.send(AnimationCompletedEvent(entity));
                     }
-                    sprite.index = new_idx;
+                    texture_atlas.index = new_idx;
                 }
                 AnimationDirection::PingPong(direction) => match direction {
                     PingPongDirection::Forward => {
-                        if sprite.index < (texture_atlas.textures.len() - 1) {
-                            sprite.index += 1;
+                        if texture_atlas.index < (texture_atlas_layout.textures.len() - 1) {
+                            texture_atlas.index += 1;
                         }
 
-                        if sprite.index == (texture_atlas.textures.len() - 1) {
+                        if texture_atlas.index == (texture_atlas_layout.textures.len() - 1) {
                             animation.direction =
                                 AnimationDirection::PingPong(PingPongDirection::Backward)
                         }
                     }
                     PingPongDirection::Backward => {
-                        if sprite.index > 0 {
-                            sprite.index -= 1;
+                        if texture_atlas.index > 0 {
+                            texture_atlas.index -= 1;
                         }
 
-                        if sprite.index == 0 {
+                        if texture_atlas.index == 0 {
                             animation.direction =
                                 AnimationDirection::PingPong(PingPongDirection::Forward)
                         }

@@ -212,8 +212,8 @@ mod test {
 
     fn base_app_required_for_counting_metrics() -> App {
         let mut app = App::new();
-        app.add_state::<AppStates>()
-            .add_state::<GameStates>()
+        app.init_state::<AppStates>()
+            .init_state::<GameStates>()
             .add_event::<SortedCollisionEvent>()
             .add_event::<MobDestroyedEvent>()
             .add_event::<FireWeaponEvent>()

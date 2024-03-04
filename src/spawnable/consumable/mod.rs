@@ -1,5 +1,11 @@
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use bevy::{
+    prelude::{
+        Commands, Component, Event, EventReader, Name, Res, Resource, Sprite, SpriteSheetBundle,
+        Timer, TimerMode, Transform, Vec2, Vec3,
+    },
+    render::color::Color,
+};
+use bevy_rapier2d::prelude::{ActiveEvents, Collider, LockedAxes, RigidBody, Sensor, Velocity};
 use serde::Deserialize;
 use std::collections::HashMap;
 use thetawave_interface::{
@@ -151,11 +157,14 @@ pub fn spawn_consumable(
     // spawn the consumable
     consumable
         .insert(SpriteSheetBundle {
-            texture_atlas: consumable_assets.get_asset(consumable_type),
-            sprite: TextureAtlasSprite {
+            atlas: consumable_assets
+                .get_texture_atlas_layout(consumable_type)
+                .into(),
+            sprite: Sprite {
                 color: consumable_data.affine_bloom_transformation(game_options.bloom_intensity),
                 ..Default::default()
             },
+            texture: consumable_assets.get_image(consumable_type),
             ..Default::default()
         })
         .insert(AnimationComponent {

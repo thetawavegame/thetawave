@@ -1,6 +1,6 @@
 use bevy::log::info;
 use directories::ProjectDirs;
-use rusqlite::{self, Connection};
+use rusqlite::Connection;
 use std::env::var_os;
 use std::ffi::OsStr;
 use std::path::PathBuf;

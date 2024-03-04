@@ -1,9 +1,21 @@
-use std::time::Duration;
-
-use bevy::prelude::*;
-use thetawave_interface::run::CyclePhaseEvent;
-
 use crate::run::CurrentRunProgressResource;
+use bevy::{
+    asset::Handle,
+    ecs::{
+        component::Component,
+        event::EventReader,
+        query::With,
+        system::{Query, Res},
+    },
+    hierarchy::ChildBuilder,
+    render::color::Color,
+    text::{Font, JustifyText, Text, TextStyle},
+    time::{Time, Timer, TimerMode},
+    ui::{node_bundles::TextBundle, BackgroundColor, Style},
+    utils::default,
+};
+use std::time::Duration;
+use thetawave_interface::run::CyclePhaseEvent;
 
 const BASE_TEXT_ALPHA: f32 = 1.0;
 const BASE_BACKGROUND_ALPHA: f32 = 0.4;
@@ -41,7 +53,7 @@ pub fn build_center_text_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
                     color: Color::WHITE,
                 },
             )
-            .with_alignment(TextAlignment::Center),
+            .with_justify(JustifyText::Center),
             background_color: Color::BLACK.with_a(0.0).into(),
             ..default()
         })
@@ -83,10 +95,10 @@ pub fn text_fade_out_system(
         fade_out.timer.tick(time.delta());
 
         *bg_color = BACKGROUND_COLOR
-            .with_a(BASE_BACKGROUND_ALPHA * fade_out.timer.percent_left())
+            .with_a(BASE_BACKGROUND_ALPHA * fade_out.timer.fraction_remaining())
             .into();
 
         text.sections[0].style.color =
-            TEXT_COLOR.with_a(BASE_TEXT_ALPHA * fade_out.timer.percent_left());
+            TEXT_COLOR.with_a(BASE_TEXT_ALPHA * fade_out.timer.fraction_remaining());
     }
 }

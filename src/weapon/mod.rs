@@ -79,7 +79,7 @@ pub fn update_weapon_system(
                 source_transform: *transform,
                 source_entity: entity,
                 initial_motion,
-            })
+            });
         }
     }
 }

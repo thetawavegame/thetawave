@@ -2,8 +2,12 @@ use crate::animation::AnimationComponent;
 use crate::assets::EffectAssets;
 use crate::spawnable::effect::{EffectComponent, TextEffectData, TextEffectsResource};
 use crate::spawnable::{EffectsResource, InitialMotion, SpawnEffectEvent, SpawnableComponent};
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use bevy::prelude::{
+    in_state, App, AssetServer, Commands, EventReader, IntoSystemConfigs, Name, Plugin, Res,
+    Sprite, SpriteSheetBundle, Text, Text2dBundle, TextStyle, Timer, TimerMode, Transform, Update,
+    Vec3,
+};
+use bevy_rapier2d::prelude::{LockedAxes, RigidBody, Velocity};
 use rand::Rng;
 use thetawave_interface::game::options::GameOptions;
 use thetawave_interface::spawnable::{EffectType, SpawnableType, TextEffectType};
@@ -112,7 +116,10 @@ fn spawn_text_effect(
 
     // spawn text effect entity
     commands
-        .spawn(Text2dBundle { text, ..default() })
+        .spawn(Text2dBundle {
+            text,
+            ..Default::default()
+        })
         .insert(
             transform
                 .with_translation(
@@ -131,7 +138,7 @@ fn spawn_text_effect(
         )
         .insert(SpawnableComponent {
             spawnable_type: SpawnableType::Effect(EffectType::Text(text_effect_type.clone())),
-            ..default()
+            ..Default::default()
         })
         .insert(EffectComponent::from(effect_data))
         .insert(GameCleanup);
@@ -161,8 +168,12 @@ fn spawn_effect(
 
     effect
         .insert(SpriteSheetBundle {
-            texture_atlas: effect_assets.get_asset(effect_type).unwrap_or_default(),
-            sprite: TextureAtlasSprite {
+            atlas: effect_assets
+                .get_texture_atlas_layout(effect_type)
+                .unwrap_or_default()
+                .into(),
+            texture: effect_assets.get_image(effect_type).unwrap_or_default(),
+            sprite: Sprite {
                 color: effect_data.affine_bloom_transformation(game_options.bloom_intensity),
                 ..Default::default()
             },
@@ -175,7 +186,7 @@ fn spawn_effect(
         .insert(EffectComponent::from(effect_data))
         .insert(SpawnableComponent {
             spawnable_type: SpawnableType::Effect(effect_data.effect_type.clone()),
-            ..default()
+            ..Default::default()
         })
         .insert(LockedAxes::default())
         .insert(RigidBody::KinematicVelocityBased)

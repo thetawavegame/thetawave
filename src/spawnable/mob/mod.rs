@@ -1,11 +1,10 @@
 use bevy::prelude::*;
-use bevy_rapier2d::geometry::Group;
-use bevy_rapier2d::prelude::*;
-use serde::Deserialize;
-use std::{
-    collections::{hash_map::Entry, HashMap},
-    string::ToString,
+use bevy_rapier2d::prelude::{
+    ActiveEvents, CoefficientCombineRule, Collider, CollisionGroups, Friction, Group, LockedAxes,
+    Restitution, RevoluteJointBuilder, RigidBody, Velocity,
 };
+use serde::Deserialize;
+use std::collections::{hash_map::Entry, HashMap};
 
 use crate::{
     animation::{AnimationComponent, AnimationData},
@@ -17,7 +16,7 @@ use crate::{
 
 mod behavior;
 mod mob_segment;
-pub use self::{behavior::*, mob_segment::*};
+pub(crate) use self::{behavior::*, mob_segment::*};
 
 use super::{behavior_sequence::MobBehaviorSequenceType, InitialMotion};
 use crate::collision::{
@@ -117,7 +116,6 @@ impl From<MobSpawnerData> for MobSpawner {
 }
 
 #[derive(Deserialize, Clone)]
-
 pub struct ProjectileSpawner {
     pub projectile_type: ProjectileType,
     pub timer: Timer,
@@ -335,8 +333,13 @@ pub struct MobsResource {
     /// Mob types mapped to mob data
     pub mobs: HashMap<MobType, MobData>,
     /// Mob types mapped to their texture and optional thruster texture
-    pub texture_atlas_handle:
-        HashMap<MobType, (Handle<TextureAtlas>, Option<Handle<TextureAtlas>>)>,
+    pub texture_atlas_handle: HashMap<
+        MobType,
+        (
+            Handle<TextureAtlasLayout>,
+            Option<Handle<TextureAtlasLayout>>,
+        ),
+    >,
 }
 
 /// Spawn a mob entity
@@ -360,7 +363,8 @@ pub fn spawn_mob(
     let mut mob = commands.spawn_empty();
 
     mob.insert(SpriteSheetBundle {
-        texture_atlas: mob_assets.get_mob_asset(mob_type),
+        atlas: mob_assets.get_mob_texture_atlas_layout(mob_type).into(),
+        texture: mob_assets.get_mob_image(mob_type),
         transform: Transform {
             translation: position.extend(mob_data.z_level),
             scale: Vec3::new(
@@ -415,9 +419,13 @@ pub fn spawn_mob(
         mob.with_children(|parent| {
             parent
                 .spawn(SpriteSheetBundle {
-                    texture_atlas: mob_assets.get_thruster_asset(mob_type).unwrap(),
+                    atlas: mob_assets
+                        .get_thruster_texture_atlas_layout(mob_type)
+                        .unwrap()
+                        .into(),
+                    texture: mob_assets.get_thruster_image(mob_type).unwrap().into(),
                     transform: Transform::from_xyz(0.0, thruster.y_offset, -1.0),
-                    sprite: TextureAtlasSprite {
+                    sprite: Sprite {
                         color: thruster.affine_bloom_transformation(game_options.bloom_intensity),
                         ..Default::default()
                     },

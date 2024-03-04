@@ -1,4 +1,18 @@
-use bevy::prelude::*;
+use bevy::{
+    asset::AssetServer,
+    ecs::{
+        component::Component,
+        entity::Entity,
+        system::{Commands, ParamSet, Query},
+    },
+    hierarchy::{BuildChildren, ChildBuilder, DespawnRecursiveExt},
+    render::color::Color,
+    ui::{
+        node_bundles::{ImageBundle, NodeBundle},
+        FlexDirection, Style, UiRect, Val,
+    },
+    utils::default,
+};
 use thetawave_interface::{
     character::CharacterType,
     health::HealthComponent,
@@ -362,15 +376,16 @@ pub fn update_player_ui_system(
             if player_index == ability_value_ui.player_index && ability_value_ui.ability_index == 0
             {
                 style.height =
-                    Val::Percent(100.0 * (1.0 - weapon_component.reload_timer.percent()));
+                    Val::Percent(100.0 * (1.0 - weapon_component.reload_timer.fraction()));
             }
         }
 
         for (mut style, ability_value_ui) in player_ui.p3().iter_mut() {
             if player_index == ability_value_ui.player_index && ability_value_ui.ability_index == 1
             {
-                style.height =
-                    Val::Percent(100.0 * (1.0 - player_component.ability_cooldown_timer.percent()));
+                style.height = Val::Percent(
+                    100.0 * (1.0 - player_component.ability_cooldown_timer.fraction()),
+                );
             }
         }
     }

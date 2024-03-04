@@ -6,9 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy_serialport = {version = "0.5"}
+bevy_serialport = "0.6"
 bytes = "1.4.0"
-bevy = {workspace = true}
-thetawave_interface = {path = "../thetawave_interface"}
-derive_more = {workspace = true}
+bevy = { workspace = true }
+thetawave_interface = { path = "../thetawave_interface" }
+derive_more = { workspace = true }
 serialport = { version = "4" }

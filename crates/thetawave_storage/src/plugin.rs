@@ -110,7 +110,7 @@ mod test {
     use crate::plugin::DBPlugin;
     use crate::user_stats::{get_mob_killed_counts_for_user, get_user_stats};
     use bevy::log::{Level, LogPlugin};
-    use bevy::prelude::{App, NextState, OnEnter, ResMut};
+    use bevy::prelude::{default, App, NextState, OnEnter, ResMut};
     use bevy::MinimalPlugins;
     use std::ffi::{OsStr, OsString};
     use tempdir;
@@ -209,11 +209,12 @@ mod test {
     fn _minimal_app_for_db_plugin_tests() -> App {
         let mut app = App::new();
         app.add_plugins(DBPlugin)
-            .add_state::<AppStates>()
+            .init_state::<AppStates>()
             .add_plugins(MinimalPlugins)
             .add_plugins(LogPlugin {
                 filter: "".to_string(),
                 level: Level::DEBUG,
+                ..default()
             })
             .insert_resource(MobKillsByPlayerForCompletedGames::default())
             .insert_resource(UserStatsByPlayerForCompletedGamesCache::default())

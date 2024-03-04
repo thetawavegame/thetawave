@@ -1,6 +1,5 @@
-use bevy::math::Vec3Swizzles;
 use bevy::prelude::*;
-use bevy_rapier2d::{prelude::*, rapier::prelude::JointAxis};
+use bevy_rapier2d::prelude::{ImpulseJoint, JointAxis};
 use rand::{thread_rng, Rng};
 use serde::Deserialize;
 use thetawave_interface::{
@@ -202,7 +201,7 @@ pub fn mob_segment_execute_behavior_system(
                                 position,
                                 rotation: mob_segment_transform.rotation, // passed rotation of the parent mob
                                 boss: false,
-                            })
+                            });
                         }
                     }
                 }
