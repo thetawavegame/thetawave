@@ -16,17 +16,28 @@ pub struct InputRestrictions {
     pub forbid_main_attack_reason: Option<String>,
     pub forbid_special_attack_reason: Option<String>,
 }
+
+/// Stores all available player slots
 #[derive(Resource, Debug)]
 pub struct PlayersResource {
     pub player_data: Vec<Option<PlayerData>>,
 }
 
+/// Information about a player slot
 #[derive(Debug, Clone)]
 pub struct PlayerData {
     pub character: CharacterType,
     pub input: PlayerInput,
 }
 
+/// Input method for a player
+#[derive(Clone, PartialEq, Debug)]
+pub enum PlayerInput {
+    Keyboard,
+    Gamepad(usize),
+}
+
+/// Defaults to all player slots being empty
 impl Default for PlayersResource {
     fn default() -> Self {
         PlayersResource {
@@ -36,7 +47,7 @@ impl Default for PlayersResource {
 }
 
 impl PlayersResource {
-    // A method to get a vector of all used inputs
+    /// A method to get a vector of all used inputs
     pub fn get_used_inputs(&self) -> Vec<PlayerInput> {
         self.player_data
             .iter()
@@ -45,23 +56,17 @@ impl PlayersResource {
     }
 }
 
-/// Player input
-#[derive(Clone, PartialEq, Debug)]
-pub enum PlayerInput {
-    Keyboard,
-    Gamepad(usize),
-}
-
+/// Component bundle of all player-specific components
 #[derive(Bundle)]
 pub struct PlayerBundle {
-    pub movement_stats: PlayerMovementComponent,
-    pub id: PlayerIDComponent,
-    pub attraction: PlayerAttractionComponent,
-    pub outgoing_damage: PlayerOutgoingDamageComponent,
-    pub incoming_damage: PlayerIncomingDamageComponent,
-    pub inventory: PlayerInventoryComponent,
-    pub abilities: PlayerAbilitiesComponent,
-    pub flag: PlayerComponent,
+    movement_stats: PlayerMovementComponent,
+    id: PlayerIDComponent,
+    attraction: PlayerAttractionComponent,
+    outgoing_damage: PlayerOutgoingDamageComponent,
+    incoming_damage: PlayerIncomingDamageComponent,
+    inventory: PlayerInventoryComponent,
+    abilities: PlayerAbilitiesComponent,
+    flag: PlayerComponent,
 }
 
 impl From<&Character> for PlayerBundle {
@@ -85,12 +90,14 @@ impl PlayerBundle {
     }
 }
 
+/// Identity of a player component, used for syncing UI
 #[derive(Component, Clone, Copy, PartialEq)]
 pub enum PlayerIDComponent {
     One,
     Two,
 }
 
+/// Useful for mapping an index to a PlayerIDComponent
 impl From<usize> for PlayerIDComponent {
     fn from(value: usize) -> Self {
         match value {
@@ -100,6 +107,7 @@ impl From<usize> for PlayerIDComponent {
     }
 }
 
+/// Useful for positioning UI
 impl From<PlayerIDComponent> for usize {
     fn from(value: PlayerIDComponent) -> Self {
         match value {
@@ -109,6 +117,7 @@ impl From<PlayerIDComponent> for usize {
     }
 }
 
+/// Component that stores movement properties of player
 #[derive(Component)]
 pub struct PlayerMovementComponent {
     /// Acceleration of the player
@@ -121,6 +130,8 @@ pub struct PlayerMovementComponent {
     pub movement_enabled: bool,
 }
 
+/// Component that stores attraction stats for player
+/// Used for attracting items and consumables to the player
 #[derive(Component)]
 pub struct PlayerAttractionComponent {
     /// Distance from which to apply acceleration to items and consumables
@@ -129,12 +140,15 @@ pub struct PlayerAttractionComponent {
     pub acceleration: f32,
 }
 
+/// Stores outgoing damage stats for player
+/// TODO: add weapon damage stat that weapon abilities can use for a base damage of projectiles
 #[derive(Component)]
 pub struct PlayerOutgoingDamageComponent {
     /// Amount of damage dealt on contact
     pub collision_damage: usize,
 }
 
+/// Stores stats that effect damage incoming to the player
 #[derive(Component)]
 pub struct PlayerIncomingDamageComponent {
     /// Multiplier for incoming damage
@@ -147,11 +161,15 @@ impl Default for PlayerIncomingDamageComponent {
     }
 }
 
+/// Tracks what the player current has in inventory
+/// TODO: track stats of how many of each consumable has been picked up for the run
 #[derive(Component)]
 pub struct PlayerInventoryComponent {
     pub money: usize,
 }
 
+/// Currently just handles the "top" ability
+/// TODO: Overhaul this component for slotting any abilities in (including weapons)
 #[derive(Component, Debug, Clone)]
 pub struct PlayerAbilitiesComponent {
     /// Timer for ability cooldown
@@ -162,6 +180,7 @@ pub struct PlayerAbilitiesComponent {
     pub ability_type: AbilityType,
 }
 
+/// Flag for Player Entities
 #[derive(Component)]
 pub struct PlayerComponent;
 
@@ -210,6 +229,7 @@ impl From<&Character> for PlayerAbilitiesComponent {
         }
     }
 }
+
 impl PlayerAbilitiesComponent {
     pub fn disable_special_attacks(&mut self) {
         self.ability_cooldown_timer.pause();
