@@ -5,16 +5,22 @@ use bevy::{
 use bevy_rapier2d::dynamics::Velocity;
 use leafwing_input_manager::prelude::ActionState;
 
-use thetawave_interface::{input::PlayerAction, player::PlayerComponent, weapon::WeaponComponent};
+use thetawave_interface::{
+    input::PlayerAction,
+    player::{PlayerComponent, PlayerInventoryComponent},
+    weapon::WeaponComponent,
+};
 
 use crate::spawnable::{FireWeaponEvent, InitialMotion};
 
 const MIN_RELOAD_TIME: f32 = 0.1;
 
-pub fn scale_fire_rate_system(mut player_query: Query<(&PlayerComponent, &mut WeaponComponent)>) {
-    for (player, mut weapon) in player_query.iter_mut() {
+pub fn scale_fire_rate_system(
+    mut player_query: Query<(&PlayerInventoryComponent, &mut WeaponComponent)>,
+) {
+    for (player_inventory, mut weapon) in player_query.iter_mut() {
         let diminishing_factor = 0.08;
-        let adjusted_money = (1.0 + player.money as f32).ln();
+        let adjusted_money = (1.0 + player_inventory.money as f32).ln();
         let new_reload_time =
             weapon.base_reload_time - (adjusted_money * diminishing_factor).max(MIN_RELOAD_TIME);
 

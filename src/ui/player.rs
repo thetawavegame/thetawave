@@ -17,7 +17,7 @@ use bevy::{
 use thetawave_interface::{
     character::CharacterType,
     health::HealthComponent,
-    player::{PlayerComponent, PlayerIDComponent, PlayersResource},
+    player::{PlayerAbilitiesComponent, PlayerIDComponent, PlayersResource},
     weapon::WeaponComponent,
 };
 
@@ -334,12 +334,12 @@ pub fn update_player_ui_system(
         (
             &HealthComponent,
             &PlayerIDComponent,
-            &PlayerComponent,
+            &PlayerAbilitiesComponent,
             &WeaponComponent,
         ),
         (
             Changed<HealthComponent>,
-            Changed<PlayerComponent>,
+            Changed<PlayerAbilitiesComponent>,
             Changed<WeaponComponent>,
         ),
     >,
@@ -350,7 +350,7 @@ pub fn update_player_ui_system(
         Query<(&mut Style, &AbilityValueUI, &PlayerIDComponent)>,
     )>,
 ) {
-    for (player_health, player_id, player_component, weapon_component) in player_query.iter() {
+    for (player_health, player_id, player_abilities, weapon_component) in player_query.iter() {
         // health ui
         for (mut style, health_id) in player_ui.p0().iter_mut() {
             if player_id == health_id {
@@ -390,7 +390,7 @@ pub fn update_player_ui_system(
         for (mut style, ability_value_ui, ability_id) in player_ui.p3().iter_mut() {
             if player_id == ability_id && ability_value_ui.ability_index == 1 {
                 style.height = Val::Percent(
-                    100.0 * (1.0 - player_component.ability_cooldown_timer.fraction()),
+                    100.0 * (1.0 - player_abilities.ability_cooldown_timer.fraction()),
                 );
             }
         }

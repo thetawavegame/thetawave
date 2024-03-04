@@ -59,18 +59,22 @@ pub struct PlayerBundle {
     pub attraction: PlayerAttractionComponent,
     pub outgoing_damage: PlayerOutgoingDamageComponent,
     pub incoming_damage: PlayerIncomingDamageComponent,
-    pub core: PlayerComponent, // TODO: Remove
+    pub inventory: PlayerInventoryComponent,
+    pub abilities: PlayerAbilitiesComponent,
+    pub flag: PlayerComponent,
 }
 
 impl From<&Character> for PlayerBundle {
     fn from(character: &Character) -> Self {
         Self {
             movement_stats: character.into(),
-            core: character.into(),
+            abilities: character.into(),
             attraction: character.into(),
             outgoing_damage: character.into(),
             incoming_damage: PlayerIncomingDamageComponent::default(),
+            inventory: character.into(),
             id: PlayerIDComponent::One,
+            flag: PlayerComponent,
         }
     }
 }
@@ -143,11 +147,13 @@ impl Default for PlayerIncomingDamageComponent {
     }
 }
 
-/// Component for managing core attributes of the player
-#[derive(Component, Debug, Clone)]
-pub struct PlayerComponent {
-    /// Amount of money character has collected
+#[derive(Component)]
+pub struct PlayerInventoryComponent {
     pub money: usize,
+}
+
+#[derive(Component, Debug, Clone)]
+pub struct PlayerAbilitiesComponent {
     /// Timer for ability cooldown
     pub ability_cooldown_timer: Timer,
     /// Timer for ability action
@@ -155,6 +161,9 @@ pub struct PlayerComponent {
     /// Type of ability
     pub ability_type: AbilityType,
 }
+
+#[derive(Component)]
+pub struct PlayerComponent;
 
 impl From<&Character> for PlayerMovementComponent {
     fn from(character: &Character) -> Self {
@@ -184,17 +193,24 @@ impl From<&Character> for PlayerOutgoingDamageComponent {
     }
 }
 
-impl From<&Character> for PlayerComponent {
+impl From<&Character> for PlayerInventoryComponent {
     fn from(character: &Character) -> Self {
-        PlayerComponent {
+        Self {
             money: character.money,
+        }
+    }
+}
+
+impl From<&Character> for PlayerAbilitiesComponent {
+    fn from(character: &Character) -> Self {
+        Self {
             ability_cooldown_timer: Timer::from_seconds(character.ability_period, TimerMode::Once),
             ability_action_timer: None,
             ability_type: character.ability_type.clone(),
         }
     }
 }
-impl PlayerComponent {
+impl PlayerAbilitiesComponent {
     pub fn disable_special_attacks(&mut self) {
         self.ability_cooldown_timer.pause();
     }
@@ -213,7 +229,7 @@ impl PlayerBundle {
     ) -> Self {
         let mut res = Self::from(character);
         if spawn_params.forbid_special_attack_reason.is_some() {
-            res.core.disable_special_attacks();
+            res.abilities.disable_special_attacks();
         }
         res
     }

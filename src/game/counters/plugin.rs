@@ -200,7 +200,7 @@ mod test {
     use thetawave_interface::game::historical_metrics::{
         MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
     };
-    use thetawave_interface::player::PlayerComponent;
+    use thetawave_interface::player::{PlayerBundle, PlayerComponent};
     use thetawave_interface::spawnable::{
         EnemyMobType, Faction, MobDestroyedEvent, MobType, ProjectileType, SpawnPosition,
     };
@@ -260,9 +260,9 @@ mod test {
             .get(&CharacterType::Captain)
             .cloned()
             .unwrap();
-        let player_1: PlayerComponent = PlayerComponent::from(&player_1_character);
+        let player_1: PlayerBundle = PlayerBundle::from(&player_1_character);
 
-        let player_1_entity = app.world.spawn(player_1.clone());
+        let player_1_entity = app.world.spawn(player_1);
         let player_1_projectile_event = FireWeaponEvent {
             weapon_projectile_data: WeaponProjectileData {
                 ammunition: ProjectileType::Bullet(Faction::Ally),
