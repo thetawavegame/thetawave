@@ -145,11 +145,12 @@ pub struct PlayerAttractionComponent {
 }
 
 /// Stores outgoing damage stats for player
-/// TODO: add weapon damage stat that weapon abilities can use for a base damage of projectiles
 #[derive(Component)]
 pub struct PlayerOutgoingDamageComponent {
     /// Amount of damage dealt on contact
     pub collision_damage: usize,
+    /// Base damage dealt through weapon abilities
+    pub weapon_damage: usize,
 }
 
 /// Stores stats that effect damage incoming to the player
@@ -220,6 +221,7 @@ impl From<&Character> for PlayerOutgoingDamageComponent {
     fn from(character: &Character) -> Self {
         Self {
             collision_damage: character.collision_damage,
+            weapon_damage: character.weapon_damage,
         }
     }
 }

@@ -52,6 +52,8 @@ pub struct Character {
     pub ability_type: AbilityType,
     /// Describes the player's weapon
     pub weapon: WeaponData,
+    /// Base damage dealt by player through weapon abilities
+    pub weapon_damage: usize,
 }
 
 impl From<&Character> for HealthComponent {
