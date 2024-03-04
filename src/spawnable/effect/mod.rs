@@ -3,7 +3,12 @@ use self::behavior::EffectBehaviorData;
 use crate::animation::AnimationData;
 use crate::spawnable::effect::behavior::EffectBehaviorPlugin;
 use crate::spawnable::effect::spawn::EffectSpawnPlugin;
-use bevy::prelude::*;
+use bevy::{
+    app::{App, Plugin},
+    ecs::{component::Component, event::Event, system::Resource},
+    render::color::Color,
+    transform::components::Transform,
+};
 use ron::de::from_bytes;
 use serde::Deserialize;
 use std::{collections::HashMap, ops::Range};
@@ -60,6 +65,8 @@ pub struct EffectData {
     pub effect_behaviors_data: Vec<EffectBehaviorData>,
     /// Z level of transform
     pub z_level: f32,
+    /// Color for bloom effect
+    pub bloom_color: Color,
 }
 
 impl From<&EffectData> for EffectComponent {
@@ -73,6 +80,16 @@ impl From<&EffectData> for EffectComponent {
                 .map(|data| data.into())
                 .collect(),
         }
+    }
+}
+
+impl EffectData {
+    pub fn affine_bloom_transformation(&self, bloom_intensity: f32) -> Color {
+        Color::rgb(
+            1.0 + self.bloom_color.r() * bloom_intensity,
+            1.0 + self.bloom_color.g() * bloom_intensity,
+            1.0 + self.bloom_color.b() * bloom_intensity,
+        )
     }
 }
 

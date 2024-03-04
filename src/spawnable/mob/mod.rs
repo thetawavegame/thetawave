@@ -316,8 +316,20 @@ pub struct ThrusterData {
     pub y_offset: f32,
     /// Texture
     pub animation: AnimationData,
+    /// Color for bloom effect
+    pub bloom_color: Color,
 }
 
+impl ThrusterData {
+    /// Color for bloom effect, multiplied by the bloom intensity value
+    pub fn affine_bloom_transformation(&self, bloom_intensity: f32) -> Color {
+        Color::rgb(
+            1.0 + self.bloom_color.r() * bloom_intensity,
+            1.0 + self.bloom_color.g() * bloom_intensity,
+            1.0 + self.bloom_color.b() * bloom_intensity,
+        )
+    }
+}
 /// Stores data about mob entities
 #[derive(Resource)]
 pub struct MobsResource {
@@ -420,8 +432,7 @@ pub fn spawn_mob(
                     texture: mob_assets.get_thruster_image(mob_type).unwrap().into(),
                     transform: Transform::from_xyz(0.0, thruster.y_offset, -1.0),
                     sprite: Sprite {
-                        color: mob_assets
-                            .get_thruster_color(mob_type, game_options.bloom_intensity),
+                        color: thruster.affine_bloom_transformation(game_options.bloom_intensity),
                         ..Default::default()
                     },
                     ..Default::default()

@@ -1,5 +1,5 @@
 use bevy::{
-    prelude::{Color, Handle, Resource, TextureAtlasLayout},
+    prelude::{Handle, Resource, TextureAtlasLayout},
     render::texture::Image,
 };
 use bevy_asset_loader::prelude::AssetCollection;
@@ -52,14 +52,5 @@ impl ConsumableAssets {
             ConsumableType::Armor => self.armor_image.clone(),
             ConsumableType::GainProjectiles => self.gain_projectiles_image.clone(),
         }
-    }
-
-    #[allow(unused)] // Placeholder for if we put this in the item config files
-    pub fn get_color(&self, consumable_type: &ConsumableType, bloom_intensity: f32) -> Color {
-        Color::rgb(
-            1.0 + 0.6 * bloom_intensity,
-            1.0 + 0.6 * bloom_intensity,
-            1.0 + 0.6 * bloom_intensity,
-        )
     }
 }
