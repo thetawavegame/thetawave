@@ -7,6 +7,7 @@ use leafwing_input_manager::prelude::InputManagerPlugin;
 use ron::de::from_bytes;
 
 use thetawave_interface::{
+    abilities::AbilitiesResource,
     input::PlayerAction,
     player::{InputRestrictionsAtSpawn, PlayersResource},
     states::{AppStates, GameStates},
@@ -36,6 +37,11 @@ impl Plugin for PlayerPlugin {
 
         app.insert_resource(
             from_bytes::<CharactersResource>(include_bytes!("../../assets/data/characters.ron"))
+                .unwrap(),
+        );
+
+        app.insert_resource(
+            from_bytes::<AbilitiesResource>(include_bytes!("../../assets/data/abilities.ron"))
                 .unwrap(),
         );
 

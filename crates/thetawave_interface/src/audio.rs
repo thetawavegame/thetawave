@@ -29,7 +29,7 @@ pub enum SoundEffectType {
     PlayerHit,
     BulletDing,
     BulletBounce,
-    MegablastAbility,
+    MegaBlastAbility,
     ObjectiveCompleted,
 }
 

@@ -1,4 +1,5 @@
 use crate::character::{Character, CharacterType};
+use crate::spawnable::SpawnPosition;
 use bevy_ecs::system::Resource;
 use bevy_ecs::{bundle::Bundle, prelude::Component};
 use bevy_math::Vec2;
@@ -151,6 +152,16 @@ pub struct PlayerOutgoingDamageComponent {
     pub collision_damage: usize,
     /// Base damage dealt through weapon abilities
     pub weapon_damage: usize,
+    /// Base speed of spawned weapon ability projectiles
+    pub projectile_speed: f32,
+    /// Spawn position of weapon ability projectiles
+    pub projectile_spawn_position: SpawnPosition,
+    /// Base despawn time for projectiles
+    pub projectile_despawn_time: f32,
+    /// Base size of projectiles
+    pub projectile_size: f32,
+    /// Base projectile count
+    pub projectile_count: usize,
 }
 
 /// Stores stats that effect damage incoming to the player
@@ -222,6 +233,11 @@ impl From<&Character> for PlayerOutgoingDamageComponent {
         Self {
             collision_damage: character.collision_damage,
             weapon_damage: character.weapon_damage,
+            projectile_speed: character.projectile_speed,
+            projectile_spawn_position: character.projectile_spawn_position.clone(),
+            projectile_despawn_time: character.projectile_despawn_time,
+            projectile_size: character.projectile_size,
+            projectile_count: character.projectile_count,
         }
     }
 }

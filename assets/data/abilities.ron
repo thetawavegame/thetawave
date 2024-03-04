@@ -1,0 +1,84 @@
+(
+    charge_ability: (
+        slot: Two,
+        ability: (
+            action_timer: (
+                mode: Once,
+                duration: (
+                    secs: 0,
+                    nanos: 500000000,
+                ),
+                stopwatch: (
+                    elapsed: (
+                        secs: 0,
+                        nanos: 0,
+                    ),
+                    paused: false, 
+                ),
+                finished: false,
+                times_finished_this_tick: 0,
+            ),
+            incoming_damage_multiplier: 0.5,
+            impulse: 12000.0,
+        ),
+    ),
+    mega_blast_ability: (
+        slot: Two,
+        ability: (
+            spread_pattern: Arc((
+                spread_weights: (0.5, 1.0),
+                max_spread: 1.57080,
+                projectile_gap: 3.14159,
+            )),
+            damage_multiplier: 5.0,
+            ammunition: Blast(Ally),
+            speed_multiplier: 250.0,
+            direction: 1.57080,
+            despawn_time_multiplier: 1.0,
+            size_multiplier: 5.0,
+            count_multiplier: 0.5,
+            sound: MegaBlastAbility,
+        ),
+    ),
+    standard_blast_ability: (
+        slot: One,
+        ability: (
+            spread_pattern: Arc((
+                spread_weights: (0.5, 1.0),
+                max_spread: 1.57080,
+                projectile_gap: 3.14159,
+            )),
+            damage_multiplier: 1.0,
+            ammunition: Blast(Ally),
+            speed_multiplier: 1.0,
+            direction: 1.57080,
+            despawn_time_multiplier: 1.0,
+            size_multiplier: 1.0,
+            count_multiplier: 1.0,
+            sound: PlayerFireBlast,
+        ),
+    ),
+    standard_bullet_ability: (
+        slot: One,
+        ability: (
+            spread_pattern: Random((
+                speed_range: (
+                    start: 0.75,
+                    end: 1.25,
+                ),
+                angle_range: (
+                    start: 1.37445,
+                    end: 1.76715,
+                ),
+            )),
+            damage_multiplier: 0.8,
+            ammunition: Bullet(Ally),
+            speed_multiplier: 1.0,
+            direction: 1.57080,
+            despawn_time_multiplier: 1.0,
+            size_multiplier: 1.0,
+            count_multiplier: 1.0,
+            sound: PlayerFireBlast,
+        ),
+    ),
+)

@@ -17,6 +17,11 @@
 			money: 0,
 			ability_period: 5.0,
 			ability_type: MegaBlast(5.0),
+			projectile_speed: 800.0,
+            projectile_spawn_position: Local((0.0, 40.0)),
+            projectile_despawn_time: 1.0,
+            projectile_size: 1.0,
+            projectile_count: 1,
 			weapon: (
 				reload_time: 0.5,
 				initial_time: 0.5,
@@ -57,6 +62,11 @@
 			money: 0,
 			ability_period: 2.0,
 			ability_type: Charge(0.5),
+			projectile_speed: 650.0,
+            projectile_spawn_position: Local((0.0, 45.0)),
+            projectile_despawn_time: 0.4,
+            projectile_size: 1.0,
+            projectile_count: 2,
 			weapon: (
 				reload_time: 0.75,
 				initial_time: 0.75,

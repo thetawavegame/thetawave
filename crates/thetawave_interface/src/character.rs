@@ -4,6 +4,7 @@ use serde::Deserialize;
 use crate::{
     health::HealthComponent,
     player::AbilityType,
+    spawnable::SpawnPosition,
     weapon::{WeaponComponent, WeaponData},
 };
 
@@ -38,8 +39,6 @@ pub struct Character {
     pub shields: usize,
     /// Shields recharging rate
     pub shields_recharge_rate: f32,
-    /// Amount of damage dealt on contact
-    pub collision_damage: usize,
     /// Distance to attract items and consumables
     pub attraction_distance: f32,
     /// Acceleration applied to items and consumables in attraction distance
@@ -52,8 +51,20 @@ pub struct Character {
     pub ability_type: AbilityType,
     /// Describes the player's weapon
     pub weapon: WeaponData,
+    /// Amount of damage dealt on contact
+    pub collision_damage: usize,
     /// Base damage dealt by player through weapon abilities
     pub weapon_damage: usize,
+    /// Base speed of spawned weapon ability projectiles
+    pub projectile_speed: f32,
+    /// Spawn position of weapon ability projectiles
+    pub projectile_spawn_position: SpawnPosition,
+    /// Base despawn time for projectiles
+    pub projectile_despawn_time: f32,
+    /// Base size of projectiles
+    pub projectile_size: f32,
+    /// Base projectile count
+    pub projectile_count: usize,
 }
 
 impl From<&Character> for HealthComponent {

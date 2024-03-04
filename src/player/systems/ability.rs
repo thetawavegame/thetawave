@@ -94,7 +94,7 @@ pub fn player_ability_system(
                             speed: weapon_component.projectile_data.speed + (multiplier * 50.0),
                             count: (weapon_component.projectile_data.count / 2).max(1),
                             size: multiplier,
-                            sound: SoundEffectType::MegablastAbility,
+                            sound: SoundEffectType::MegaBlastAbility,
                             ..weapon_component.projectile_data.clone()
                         },
                         source_transform: *player_trans,
