@@ -52,16 +52,13 @@ pub fn spawnable_execute_behavior_system(
                 SpawnableBehavior::MoveLeft => {
                     move_left(&spawnable_component, &mut rb_vel);
                 }
-                SpawnableBehavior::RotateToTarget(target_position) => {
-                    if let Some(target_position) = target_position {
-                        rotate_to_target(
-                            spawnable_transform,
-                            target_position,
-                            &spawnable_component,
-                            &mut rb_vel,
-                        );
-                    } else {
-                    }
+                SpawnableBehavior::RotateToTarget(Some(target_position)) => {
+                    rotate_to_target(
+                        spawnable_transform,
+                        target_position,
+                        &spawnable_component,
+                        &mut rb_vel,
+                    );
                 }
                 SpawnableBehavior::MoveForward => {
                     move_forward(spawnable_transform, &spawnable_component, &mut rb_vel);
