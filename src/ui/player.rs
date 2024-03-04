@@ -3,6 +3,7 @@ use bevy::{
     ecs::{
         component::Component,
         entity::Entity,
+        query::{Changed, Or, With},
         system::{Commands, ParamSet, Query},
     },
     hierarchy::{BuildChildren, ChildBuilder, DespawnRecursiveExt},
@@ -16,7 +17,7 @@ use bevy::{
 use thetawave_interface::{
     character::CharacterType,
     health::HealthComponent,
-    player::{PlayerComponent, PlayersResource},
+    player::{PlayerAbilitiesComponent, PlayerIDComponent, PlayersResource},
     weapon::WeaponComponent,
 };
 
@@ -25,23 +26,22 @@ use thetawave_interface::{
 pub struct HealthUI;
 
 #[derive(Component)]
-pub struct HealthValueUI(usize);
+pub struct HealthValueUI;
 
 #[derive(Component)]
 pub struct ShieldsUI;
 
 #[derive(Component)]
-pub struct ShieldsValueUI(usize);
+pub struct ShieldsValueUI;
 
 #[derive(Component)]
-pub struct ArmorUI(usize);
+pub struct ArmorUI;
 
 #[derive(Component)]
 pub struct ArmorCounterUI;
 
 #[derive(Component)]
 pub struct AbilitySlotUI {
-    pub player_index: usize,
     pub ability_index: usize,
 }
 
@@ -50,7 +50,6 @@ pub struct AbilityIconUI;
 
 #[derive(Component)]
 pub struct AbilityValueUI {
-    pub player_index: usize,
     pub ability_index: usize,
 }
 
@@ -64,12 +63,12 @@ pub struct PlayerInnerUI;
 pub struct PlayerOuterUI;
 
 pub fn build_player_ui(
-    player_index: usize,
+    player_id: PlayerIDComponent,
     parent: &mut ChildBuilder,
     players_resource: &PlayersResource,
     asset_server: &AssetServer,
 ) {
-    if let Some(player_data) = &players_resource.player_data[player_index] {
+    if let Some(player_data) = &players_resource.player_data[player_id as usize] {
         // parent player ui node
         parent
             .spawn(NodeBundle {
@@ -83,12 +82,12 @@ pub fn build_player_ui(
             })
             .insert(PlayerUI)
             .with_children(|player_ui| {
-                let is_flipped = player_index % 2 == 1;
+                let is_flipped = player_id as usize % 2 == 1;
 
                 if is_flipped {
-                    build_inner_ui(player_index, player_ui);
+                    build_inner_ui(player_id, player_ui);
                     build_outer_ui(
-                        player_index,
+                        player_id,
                         player_ui,
                         asset_server,
                         is_flipped,
@@ -96,20 +95,20 @@ pub fn build_player_ui(
                     );
                 } else {
                     build_outer_ui(
-                        player_index,
+                        player_id,
                         player_ui,
                         asset_server,
                         is_flipped,
                         &player_data.character,
                     );
-                    build_inner_ui(player_index, player_ui);
+                    build_inner_ui(player_id, player_ui);
                 }
             });
     }
 }
 
 fn build_outer_ui(
-    player_index: usize,
+    player_id: PlayerIDComponent,
     parent: &mut ChildBuilder,
     asset_server: &AssetServer,
     is_flipped: bool,
@@ -130,7 +129,7 @@ fn build_outer_ui(
         .with_children(|outer_ui| {
             // first ability slot
             build_player_ability_slot_ui(
-                player_index,
+                player_id,
                 0,
                 outer_ui,
                 asset_server,
@@ -140,7 +139,7 @@ fn build_outer_ui(
 
             // second ability slot
             build_player_ability_slot_ui(
-                player_index,
+                player_id,
                 1,
                 outer_ui,
                 asset_server,
@@ -151,7 +150,7 @@ fn build_outer_ui(
 }
 
 fn build_player_ability_slot_ui(
-    player_index: usize,
+    player_id: PlayerIDComponent,
     ability_index: usize,
     parent: &mut ChildBuilder,
     asset_server: &AssetServer,
@@ -174,10 +173,8 @@ fn build_player_ability_slot_ui(
             },
             ..default()
         })
-        .insert(AbilitySlotUI {
-            player_index,
-            ability_index,
-        })
+        .insert(AbilitySlotUI { ability_index })
+        .insert(player_id)
         .with_children(|ability_slot_ui| {
             ability_slot_ui
                 .spawn(ImageBundle {
@@ -221,15 +218,13 @@ fn build_player_ability_slot_ui(
                             background_color: Color::BLACK.with_a(0.85).into(),
                             ..default()
                         })
-                        .insert(AbilityValueUI {
-                            player_index,
-                            ability_index,
-                        });
+                        .insert(player_id)
+                        .insert(AbilityValueUI { ability_index });
                 });
         });
 }
 
-fn build_inner_ui(player_index: usize, parent: &mut ChildBuilder) {
+fn build_inner_ui(player_id: PlayerIDComponent, parent: &mut ChildBuilder) {
     parent
         .spawn(NodeBundle {
             style: Style {
@@ -266,7 +261,8 @@ fn build_inner_ui(player_index: usize, parent: &mut ChildBuilder) {
                             background_color: Color::CRIMSON.with_a(0.75).into(),
                             ..default()
                         })
-                        .insert(HealthValueUI(player_index));
+                        .insert(HealthValueUI)
+                        .insert(player_id);
                 });
 
             inner_ui
@@ -292,7 +288,8 @@ fn build_inner_ui(player_index: usize, parent: &mut ChildBuilder) {
                             background_color: Color::CYAN.with_a(0.75).into(),
                             ..default()
                         })
-                        .insert(ShieldsValueUI(player_index));
+                        .insert(ShieldsValueUI)
+                        .insert(player_id);
                 });
 
             inner_ui
@@ -311,7 +308,8 @@ fn build_inner_ui(player_index: usize, parent: &mut ChildBuilder) {
                     },
                     ..default()
                 })
-                .insert(ArmorUI(player_index));
+                .insert(ArmorUI)
+                .insert(player_id);
         });
 }
 
@@ -332,34 +330,44 @@ fn build_armor_counter(parent: &mut ChildBuilder) {
 
 pub fn update_player_ui_system(
     mut commands: Commands,
-    player_query: Query<(&HealthComponent, &PlayerComponent, &WeaponComponent)>,
+    player_query: Query<
+        (
+            &HealthComponent,
+            &PlayerIDComponent,
+            &PlayerAbilitiesComponent,
+            &WeaponComponent,
+        ),
+        Or<(
+            Changed<HealthComponent>,
+            Changed<PlayerAbilitiesComponent>,
+            Changed<WeaponComponent>,
+        )>,
+    >,
     mut player_ui: ParamSet<(
-        Query<(&mut Style, &HealthValueUI)>,
-        Query<(&mut Style, &ShieldsValueUI)>,
-        Query<(Entity, &ArmorUI)>,
-        Query<(&mut Style, &AbilityValueUI)>,
+        Query<(&mut Style, &PlayerIDComponent), With<HealthValueUI>>,
+        Query<(&mut Style, &PlayerIDComponent), With<ShieldsValueUI>>,
+        Query<(Entity, &PlayerIDComponent), With<ArmorUI>>,
+        Query<(&mut Style, &AbilityValueUI, &PlayerIDComponent)>,
     )>,
 ) {
-    for (player_health, player_component, weapon_component) in player_query.iter() {
-        let player_index = player_component.player_index;
-
+    for (player_health, player_id, player_abilities, weapon_component) in player_query.iter() {
         // health ui
-        for (mut style, health_value_ui) in player_ui.p0().iter_mut() {
-            if player_index == health_value_ui.0 {
+        for (mut style, health_id) in player_ui.p0().iter_mut() {
+            if player_id == health_id {
                 style.height = Val::Percent(100.0 * player_health.get_health_percentage());
             }
         }
 
         // shields ui
-        for (mut style, shields_value_ui) in player_ui.p1().iter_mut() {
-            if player_index == shields_value_ui.0 {
+        for (mut style, shields_id) in player_ui.p1().iter_mut() {
+            if player_id == shields_id {
                 style.height = Val::Percent(100.0 * player_health.get_shields_percentage());
             }
         }
 
         // armor ui
-        for (entity, armor_value_ui) in player_ui.p2().iter() {
-            if player_index == armor_value_ui.0 {
+        for (entity, armor_id) in player_ui.p2().iter() {
+            if player_id == armor_id {
                 // spawn all of the existing child armor ticks
                 commands.entity(entity).despawn_descendants();
 
@@ -372,19 +380,17 @@ pub fn update_player_ui_system(
             }
         }
 
-        for (mut style, ability_value_ui) in player_ui.p3().iter_mut() {
-            if player_index == ability_value_ui.player_index && ability_value_ui.ability_index == 0
-            {
+        for (mut style, ability_value_ui, ability_id) in player_ui.p3().iter_mut() {
+            if player_id == ability_id && ability_value_ui.ability_index == 0 {
                 style.height =
                     Val::Percent(100.0 * (1.0 - weapon_component.reload_timer.fraction()));
             }
         }
 
-        for (mut style, ability_value_ui) in player_ui.p3().iter_mut() {
-            if player_index == ability_value_ui.player_index && ability_value_ui.ability_index == 1
-            {
+        for (mut style, ability_value_ui, ability_id) in player_ui.p3().iter_mut() {
+            if player_id == ability_id && ability_value_ui.ability_index == 1 {
                 style.height = Val::Percent(
-                    100.0 * (1.0 - player_component.ability_cooldown_timer.fraction()),
+                    100.0 * (1.0 - player_abilities.ability_cooldown_timer.fraction()),
                 );
             }
         }

@@ -6,7 +6,7 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 use thetawave_interface::{
     audio::{CollisionSoundType, PlaySoundEffectEvent, SoundEffectType},
-    player::PlayerComponent,
+    player::PlayerOutgoingDamageComponent,
     spawnable::{Faction, MobSegmentType, MobType, ProjectileType},
 };
 
@@ -17,7 +17,7 @@ use super::{CollidingEntityPair, SortedCollisionEvent};
 pub fn contact_collision_system(
     mut collision_event_writer: EventWriter<SortedCollisionEvent>,
     mut collision_events: EventReader<CollisionEvent>,
-    player_query: Query<(Entity, &PlayerComponent)>,
+    player_query: Query<(Entity, &PlayerOutgoingDamageComponent)>,
     mob_query: Query<(Entity, &MobComponent)>,
     mob_segment_query: Query<(Entity, &MobSegmentComponent)>,
     barrier_query: Query<Entity, With<ArenaBarrierComponent>>,
@@ -47,7 +47,7 @@ pub fn contact_collision_system(
             };
             // Now we pattern match to dynamic dispatch based on component type.
             // check if player was collided with. (will be primary due to sort)
-            if let Ok((_player_entity, player_component)) =
+            if let Ok((_player_entity, player_damage)) =
                 player_query.get(colliding_entities.primary)
             {
                 // check if player collided with a mob
@@ -65,7 +65,7 @@ pub fn contact_collision_system(
                             MobType::Ally(_) => Faction::Ally,
                             MobType::Neutral(_) => Faction::Neutral,
                         },
-                        player_damage: player_component.collision_damage,
+                        player_damage: player_damage.collision_damage,
                         mob_damage: mob_component.collision_damage,
                     });
                     continue 'collision_events;
@@ -93,7 +93,7 @@ pub fn contact_collision_system(
                             MobSegmentType::Neutral(_) => Faction::Neutral,
                             MobSegmentType::Enemy(_) => Faction::Enemy,
                         },
-                        player_damage: player_component.collision_damage,
+                        player_damage: player_damage.collision_damage,
                         mob_segment_damage: mob_segment_component.collision_damage,
                     });
                     continue 'collision_events;
@@ -109,7 +109,7 @@ pub fn contact_collision_system(
                             ProjectileType::Blast(faction) => faction,
                             ProjectileType::Bullet(faction) => faction,
                         },
-                        player_damage: player_component.collision_damage,
+                        player_damage: player_damage.collision_damage,
                         projectile_damage: projectile_component.damage,
                     });
                     continue 'collision_events;

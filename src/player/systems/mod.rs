@@ -6,7 +6,14 @@ mod movement;
 
 use crate::{game::GameParametersResource, spawnable::SpawnEffectEvent};
 
-use bevy::prelude::*;
+use bevy::ecs::entity::Entity;
+use bevy::ecs::event::EventWriter;
+use bevy::ecs::query::With;
+use bevy::ecs::system::{Commands, Query, Res, ResMut};
+use bevy::hierarchy::DespawnRecursiveExt;
+use bevy::math::Vec3;
+use bevy::transform::components::Transform;
+use bevy::utils::default;
 use thetawave_interface::audio::{PlaySoundEffectEvent, SoundEffectType};
 use thetawave_interface::health::HealthComponent;
 use thetawave_interface::player::PlayerComponent;

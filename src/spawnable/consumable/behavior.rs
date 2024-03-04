@@ -6,7 +6,7 @@ use serde::Deserialize;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     health::HealthComponent,
-    player::PlayerComponent,
+    player::PlayerInventoryComponent,
     spawnable::{ConsumableType, EffectType, TextEffectType},
     weapon::WeaponComponent,
 };
@@ -26,7 +26,7 @@ pub fn consumable_execute_behavior_system(
     mut consumable_query: Query<(Entity, &Transform, &mut super::ConsumableComponent)>,
     mut player_query: Query<(
         Entity,
-        &mut PlayerComponent,
+        &mut PlayerInventoryComponent,
         &Transform,
         &mut HealthComponent,
         &mut WeaponComponent,
@@ -75,7 +75,7 @@ fn apply_effects_on_impact(
     collision_events: &[&SortedCollisionEvent],
     player_query: &mut Query<(
         Entity,
-        &mut PlayerComponent,
+        &mut PlayerInventoryComponent,
         &Transform,
         &mut HealthComponent,
         &mut WeaponComponent,
@@ -127,7 +127,7 @@ fn apply_effects_on_impact(
                 //apply effect to player
                 for (
                     player_entity_q,
-                    mut player_component,
+                    mut player_inventory,
                     _,
                     mut health_component,
                     mut weapon_component,
@@ -149,7 +149,7 @@ fn apply_effects_on_impact(
                                     health_component.gain_armor(*armor);
                                 }
                                 ConsumableEffect::GainMoney(money) => {
-                                    player_component.money += *money;
+                                    player_inventory.money += *money;
                                 }
                                 ConsumableEffect::GainProjectiles(projectile) => {
                                     weapon_component.gain_projectiles(*projectile)

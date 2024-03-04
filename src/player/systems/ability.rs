@@ -1,9 +1,16 @@
-use bevy::prelude::*;
+use bevy::ecs::entity::Entity;
+use bevy::ecs::event::EventWriter;
+use bevy::ecs::system::{Query, Res};
+use bevy::math::Vec2;
+use bevy::time::{Time, Timer, TimerMode};
+use bevy::transform::components::Transform;
 use bevy_rapier2d::prelude::{ExternalImpulse, Velocity};
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::audio::SoundEffectType;
 use thetawave_interface::input::PlayerAction;
-use thetawave_interface::player::{AbilityType, PlayerComponent};
+use thetawave_interface::player::{
+    AbilityType, PlayerAbilitiesComponent, PlayerIncomingDamageComponent, PlayerMovementComponent,
+};
 use thetawave_interface::weapon::{WeaponComponent, WeaponProjectileData};
 
 use crate::spawnable::{FireWeaponEvent, InitialMotion};
@@ -11,7 +18,9 @@ use crate::spawnable::{FireWeaponEvent, InitialMotion};
 #[allow(clippy::too_many_arguments)]
 pub fn player_ability_system(
     mut player_query: Query<(
-        &mut PlayerComponent,
+        &mut PlayerAbilitiesComponent,
+        &mut PlayerMovementComponent,
+        &mut PlayerIncomingDamageComponent,
         &mut Velocity,
         &Transform,
         &mut ExternalImpulse,
@@ -23,7 +32,9 @@ pub fn player_ability_system(
     mut fire_weapon: EventWriter<FireWeaponEvent>,
 ) {
     for (
-        mut player_component,
+        mut player_abilities,
+        mut player_movement,
+        mut player_incoming_damage,
         mut player_vel,
         player_trans,
         mut player_ext_impulse,
@@ -40,15 +51,15 @@ pub fn player_ability_system(
         let right = action_state.pressed(&PlayerAction::MoveRight);
 
         // update ability cooldown timer
-        player_component.ability_cooldown_timer.tick(time.delta());
+        player_abilities.ability_cooldown_timer.tick(time.delta());
 
         // start ability if input pressed and available
-        if player_component.ability_cooldown_timer.finished()
+        if player_abilities.ability_cooldown_timer.finished()
             && activate_ability_input
-            && player_component.ability_is_enabled()
+            && player_abilities.ability_is_enabled()
         {
             // perform ability
-            match player_component.ability_type {
+            match player_abilities.ability_type {
                 // TODO: move hardcoded values to player componnet
                 // charge player in direction
                 AbilityType::Charge(ability_duration) => {
@@ -64,9 +75,9 @@ pub fn player_ability_system(
                         player_ext_impulse.impulse = Vec2::new(0.0, 12000.0);
                     }
                     //player_ext_impulse.impulse = Vec2::new(0.0, 12000.0);
-                    player_component.movement_enabled = false;
-                    player_component.incoming_damage_multiplier -= 0.5;
-                    player_component.ability_action_timer =
+                    player_movement.movement_enabled = false;
+                    player_incoming_damage.multiplier -= 0.5;
+                    player_abilities.ability_action_timer =
                         Some(Timer::from_seconds(ability_duration, TimerMode::Once));
                 }
                 // shoot a giant projectile
@@ -92,21 +103,21 @@ pub fn player_ability_system(
                 }
             }
             // reset ability timer
-            player_component.ability_cooldown_timer.reset();
+            player_abilities.ability_cooldown_timer.reset();
         }
 
         // handle ability action timer
-        if let Some(ability_action_timer) = &mut player_component.ability_action_timer {
+        if let Some(ability_action_timer) = &mut player_abilities.ability_action_timer {
             // tick timer
             ability_action_timer.tick(time.delta());
 
             // change values when timer finished
             if ability_action_timer.just_finished() {
-                match player_component.ability_type {
+                match player_abilities.ability_type {
                     AbilityType::Charge(_) => {
                         player_vel.linvel = Vec2::new(0.0, 0.0);
-                        player_component.movement_enabled = true;
-                        player_component.incoming_damage_multiplier += 0.5;
+                        player_movement.movement_enabled = true;
+                        player_incoming_damage.multiplier += 0.5;
                     }
                     AbilityType::MegaBlast(_) => {}
                 }

@@ -7,7 +7,9 @@ use std::ops::Range;
 use thetawave_interface::audio::{PlaySoundEffectEvent, SoundEffectType};
 use thetawave_interface::input::PlayerAction;
 use thetawave_interface::objective::MobReachedBottomGateEvent;
-use thetawave_interface::player::{InputRestrictionsAtSpawn, PlayerComponent};
+use thetawave_interface::player::{
+    InputRestrictionsAtSpawn, PlayerAbilitiesComponent, PlayerComponent,
+};
 use thetawave_interface::spawnable::{
     AllyMobType, MobDestroyedEvent, MobSegmentDestroyedEvent, MobSegmentType, MobType,
     NeutralMobSegmentType, NeutralMobType, SpawnMobEvent,
@@ -15,10 +17,10 @@ use thetawave_interface::spawnable::{
 use thetawave_interface::weapon::WeaponComponent;
 
 fn enable_player_actions_at_end_of_phase(
-    players: &mut Query<(&mut PlayerComponent, &mut WeaponComponent)>,
+    players: &mut Query<(&mut PlayerAbilitiesComponent, &mut WeaponComponent)>,
 ) {
-    for (mut player, mut weapon) in players.iter_mut() {
-        player.enable_special_attacks();
+    for (mut player_abilities, mut weapon) in players.iter_mut() {
+        player_abilities.enable_special_attacks();
         weapon.enable();
     }
 }
@@ -273,7 +275,7 @@ impl TutorialLesson {
         mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
         mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
         play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
-        players: &mut Query<(&mut PlayerComponent, &mut WeaponComponent)>,
+        players: &mut Query<(&mut PlayerAbilitiesComponent, &mut WeaponComponent)>,
     ) -> bool {
         self.disable_player_actions_for_current_phase(players);
         // tutorial will only be run for single player
@@ -308,19 +310,19 @@ impl TutorialLesson {
     }
     pub fn disable_player_actions_for_current_phase(
         &self,
-        players: &mut Query<(&mut PlayerComponent, &mut WeaponComponent)>,
+        players: &mut Query<(&mut PlayerAbilitiesComponent, &mut WeaponComponent)>,
     ) {
-        for (mut player, mut weapon) in players.iter_mut() {
+        for (mut player_abilities, mut weapon) in players.iter_mut() {
             match self {
                 Self::Ability { .. } => {
                     weapon.disable();
                 }
                 Self::Attack { .. } => {
-                    player.disable_special_attacks();
+                    player_abilities.disable_special_attacks();
                 }
                 Self::Movement { .. } => {
                     weapon.disable();
-                    player.disable_special_attacks();
+                    player_abilities.disable_special_attacks();
                 }
             }
         }
