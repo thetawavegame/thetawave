@@ -24,10 +24,13 @@ use std::time::Duration;
 use thetawave_interface::audio::{BGMusicType, ChangeBackgroundMusicEvent};
 use thetawave_interface::states::{AppStates, MainMenuCleanup};
 mod button;
-use self::button::button_interaction_system;
-use self::button::main_menu_button_action_system;
+use self::button::main_menu_button_on_click_system;
+use self::button::main_menu_button_selection_and_click_system;
 use self::button::MainMenuButtonActionEvent;
-use self::button::{MainMenuButtonActionComponent, UiChildBuilderExt};
+use self::button::UiChildBuilderExt;
+/// Renders a button-based UI to transition the app from `AppStates::MainMenu` to
+/// `AppStates::Instructions`, possibly with some digressions. Without this plugin, the game will
+/// never progress past a blank main menu screen and the user cannot start the run.
 pub(super) struct MainMenuUIPlugin;
 impl Plugin for MainMenuUIPlugin {
     fn build(&self, app: &mut App) {
@@ -35,7 +38,10 @@ impl Plugin for MainMenuUIPlugin {
             .add_systems(OnEnter(AppStates::MainMenu), setup_main_menu_system)
             .add_systems(
                 Update,
-                (button_interaction_system, main_menu_button_action_system)
+                (
+                    main_menu_button_selection_and_click_system,
+                    main_menu_button_on_click_system,
+                )
                     .run_if(in_state(AppStates::MainMenu)),
             );
     }
@@ -130,30 +136,7 @@ fn setup_main_menu_system(
                             ..default()
                         })
                         .with_children(|parent| {
-                            parent.spawn_main_menu_button(
-                                &ui_assets,
-                                "Start Game".to_string(),
-                                font.clone(),
-                                MainMenuButtonActionComponent::EnterInstructions,
-                            );
-                            parent.spawn_main_menu_button(
-                                &ui_assets,
-                                "Compendium".to_string(),
-                                font.clone(),
-                                MainMenuButtonActionComponent::EnterCompendium,
-                            );
-                            parent.spawn_main_menu_button(
-                                &ui_assets,
-                                "Options".to_string(),
-                                font.clone(),
-                                MainMenuButtonActionComponent::EnterOptions,
-                            );
-                            parent.spawn_main_menu_button(
-                                &ui_assets,
-                                "Quit".to_string(),
-                                font.clone(),
-                                MainMenuButtonActionComponent::QuitGame,
-                            );
+                            parent.spawn_main_menu_buttons(&ui_assets, font.clone());
                         });
                 });
         });
