@@ -1,6 +1,22 @@
 (
     charge_ability: (
         slot: Two,
+        cooldown: ((
+            mode: Once,
+            duration: (
+                secs: 2,
+                nanos: 0,
+            ),
+            stopwatch: (
+                elapsed: (
+                    secs: 0,
+                    nanos: 0,
+                ),
+                paused: false, 
+            ),
+            finished: false,
+            times_finished_this_tick: 0,
+        )),
         ability: (
             action_timer: (
                 mode: Once,
@@ -24,6 +40,22 @@
     ),
     mega_blast_ability: (
         slot: Two,
+        cooldown: ((
+            mode: Once,
+            duration: (
+                secs: 5,
+                nanos: 0,
+            ),
+            stopwatch: (
+                elapsed: (
+                    secs: 0,
+                    nanos: 0,
+                ),
+                paused: false, 
+            ),
+            finished: false,
+            times_finished_this_tick: 0,
+        )),
         ability: (
             spread_pattern: Arc((
                 spread_weights: (0.5, 1.0),
@@ -42,6 +74,22 @@
     ),
     standard_blast_ability: (
         slot: One,
+        cooldown: ((
+            mode: Once,
+            duration: (
+                secs: 0,
+                nanos: 500000000,
+            ),
+            stopwatch: (
+                elapsed: (
+                    secs: 0,
+                    nanos: 0,
+                ),
+                paused: false, 
+            ),
+            finished: false,
+            times_finished_this_tick: 0,
+        )),
         ability: (
             spread_pattern: Arc((
                 spread_weights: (0.5, 1.0),
@@ -60,6 +108,22 @@
     ),
     standard_bullet_ability: (
         slot: One,
+        cooldown: ((
+            mode: Once,
+            duration: (
+                secs: 0,
+                nanos: 750000000,
+            ),
+            stopwatch: (
+                elapsed: (
+                    secs: 0,
+                    nanos: 0,
+                ),
+                paused: false, 
+            ),
+            finished: false,
+            times_finished_this_tick: 0,
+        )),
         ability: (
             spread_pattern: Random((
                 speed_range: (

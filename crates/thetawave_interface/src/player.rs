@@ -69,7 +69,6 @@ pub struct PlayerBundle {
     incoming_damage: PlayerIncomingDamageComponent,
     inventory: PlayerInventoryComponent,
     flag: PlayerComponent,
-    ability_cooldowns: PlayerAbilityCooldownsComponent,
 }
 
 impl From<&Character> for PlayerBundle {
@@ -82,7 +81,6 @@ impl From<&Character> for PlayerBundle {
             inventory: character.into(),
             id: PlayerIDComponent::One,
             flag: PlayerComponent,
-            ability_cooldowns: PlayerAbilityCooldownsComponent::default(),
         }
     }
 }
@@ -180,14 +178,6 @@ impl Default for PlayerIncomingDamageComponent {
 #[derive(Component)]
 pub struct PlayerInventoryComponent {
     pub money: usize,
-}
-
-/// Tracks cooldowns for player abilities
-#[derive(Component, Default, Debug)]
-pub struct PlayerAbilityCooldownsComponent {
-    // Should have timers equal to the maximum number of abilities that a player can have
-    // If an ability slot is empyty then the value in that slot is none
-    pub cooldowns: [Option<Timer>; MAX_PLAYER_ABILITIES],
 }
 
 /// Flag for Player Entities
