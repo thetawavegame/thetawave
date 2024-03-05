@@ -7,13 +7,13 @@ use bevy::{
     ecs::{
         component::Component,
         event::EventWriter,
-        system::{Commands, Query, Res},
+        system::{Commands, Res},
     },
     hierarchy::BuildChildren,
+    prelude::{in_state, App, IntoSystemConfigs, OnEnter, Plugin, Update},
     render::color::Color,
     text::Font,
-    time::{Time, Timer, TimerMode},
-    transform::components::Transform,
+    time::{Timer, TimerMode},
     ui::{
         node_bundles::{AtlasImageBundle, NodeBundle},
         AlignItems, FlexDirection, JustifyContent, Style, Val,
@@ -22,20 +22,29 @@ use bevy::{
 };
 use std::time::Duration;
 use thetawave_interface::audio::{BGMusicType, ChangeBackgroundMusicEvent};
-use thetawave_interface::states::MainMenuCleanup;
-
-use super::button::{MenuButtonActionComponent, UiChildBuilderExt};
-
-#[derive(Component)]
-pub struct MainMenuUI;
-
-#[derive(Component)]
-pub struct BouncingPromptComponent {
-    pub flash_timer: Timer,
-    pub is_active: bool,
+use thetawave_interface::states::{AppStates, MainMenuCleanup};
+mod button;
+use self::button::button_interaction_system;
+use self::button::main_menu_button_action_system;
+use self::button::MainMenuButtonActionEvent;
+use self::button::{MainMenuButtonActionComponent, UiChildBuilderExt};
+pub(super) struct MainMenuUIPlugin;
+impl Plugin for MainMenuUIPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_event::<MainMenuButtonActionEvent>()
+            .add_systems(OnEnter(AppStates::MainMenu), setup_main_menu_system)
+            .add_systems(
+                Update,
+                (button_interaction_system, main_menu_button_action_system)
+                    .run_if(in_state(AppStates::MainMenu)),
+            );
+    }
 }
 
-pub fn setup_main_menu_system(
+#[derive(Component)]
+struct MainMenuUI;
+
+fn setup_main_menu_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
@@ -121,51 +130,31 @@ pub fn setup_main_menu_system(
                             ..default()
                         })
                         .with_children(|parent| {
-                            parent.spawn_menu_button(
+                            parent.spawn_main_menu_button(
                                 &ui_assets,
                                 "Start Game".to_string(),
                                 font.clone(),
-                                MenuButtonActionComponent::EnterInstructions,
+                                MainMenuButtonActionComponent::EnterInstructions,
                             );
-                            parent.spawn_menu_button(
+                            parent.spawn_main_menu_button(
                                 &ui_assets,
                                 "Compendium".to_string(),
                                 font.clone(),
-                                MenuButtonActionComponent::EnterCompendium,
+                                MainMenuButtonActionComponent::EnterCompendium,
                             );
-                            parent.spawn_menu_button(
+                            parent.spawn_main_menu_button(
                                 &ui_assets,
                                 "Options".to_string(),
                                 font.clone(),
-                                MenuButtonActionComponent::EnterOptions,
+                                MainMenuButtonActionComponent::EnterOptions,
                             );
-                            parent.spawn_menu_button(
+                            parent.spawn_main_menu_button(
                                 &ui_assets,
                                 "Quit".to_string(),
                                 font.clone(),
-                                MenuButtonActionComponent::QuitGame,
+                                MainMenuButtonActionComponent::QuitGame,
                             );
                         });
                 });
         });
-}
-
-pub fn bouncing_prompt_system(
-    mut flashing_prompt_query: Query<(&mut Transform, &mut BouncingPromptComponent)>,
-    time: Res<Time>,
-) {
-    for (mut transform, mut prompt) in flashing_prompt_query.iter_mut() {
-        if !prompt.is_active {
-            transform.scale.x = 1.0;
-            transform.scale.y = 1.0;
-            prompt.flash_timer.reset();
-            continue;
-        }
-        prompt.flash_timer.tick(time.delta());
-
-        let scale: f32 = -0.2 * (prompt.flash_timer.elapsed_secs() - 1.0).powf(2.0) + 1.2;
-
-        transform.scale.x = scale;
-        transform.scale.y = scale;
-    }
 }

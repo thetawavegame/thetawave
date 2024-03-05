@@ -1,6 +1,7 @@
 use bevy::{
     app::{App, Plugin, Update},
     ecs::schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter},
+    prelude::{Component, Query, Res, Time, Timer, Transform},
 };
 pub use thetawave_interface::character_selection::PlayerJoinEvent;
 use thetawave_interface::game::historical_metrics::{MobsKilledByPlayerCacheT, DEFAULT_USER_ID};
@@ -8,7 +9,6 @@ use thetawave_interface::game::historical_metrics::{MobsKilledByPlayerCacheT, DE
 use crate::GameEnterSet;
 use thetawave_interface::states;
 
-mod button;
 mod character_selection;
 mod game;
 mod game_center;
@@ -24,16 +24,12 @@ mod victory;
 pub use self::character_selection::{
     player_join_system, select_character_system, setup_character_selection_system,
 };
-use self::{button::button_action_system, game_center::text_fade_out_system};
-use self::{button::button_interaction_system, character_selection::toggle_tutorial_system};
-use self::{button::MenuButtonActionEvent, player::update_player_ui_system};
-use self::{game_center::update_center_text_ui_system, instructions::setup_instructions_system};
-pub use self::{
-    game_over::setup_game_over_system,
-    main_menu::{bouncing_prompt_system, setup_main_menu_system, BouncingPromptComponent},
-    pause_menu::setup_pause_system,
-    victory::setup_victory_system,
+use self::{
+    character_selection::toggle_tutorial_system, game_center::text_fade_out_system,
+    game_over::setup_game_over_system, main_menu::MainMenuUIPlugin, pause_menu::setup_pause_system,
+    player::update_player_ui_system, victory::setup_victory_system,
 };
+use self::{game_center::update_center_text_ui_system, instructions::setup_instructions_system};
 use self::{level::update_level_ui_system, phase::update_phase_ui_system};
 
 pub struct UiPlugin;
@@ -41,21 +37,13 @@ pub struct UiPlugin;
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<PlayerJoinEvent>();
-        app.add_event::<MenuButtonActionEvent>();
-
-        app.add_systems(
-            Update,
-            (
-                bouncing_prompt_system,
-                button_interaction_system,
-                button_action_system,
-            ),
-        );
 
         app.add_systems(
             OnEnter(states::AppStates::Game),
             (game::setup_game_ui_system.after(GameEnterSet::BuildUi),),
-        );
+        )
+        .add_systems(Update, bouncing_prompt_system)
+        .add_plugins(MainMenuUIPlugin);
 
         app.add_systems(
             Update,
@@ -69,8 +57,6 @@ impl Plugin for UiPlugin {
                 .run_if(in_state(states::AppStates::Game))
                 .run_if(in_state(states::GameStates::Playing)),
         );
-
-        app.add_systems(OnEnter(states::AppStates::MainMenu), setup_main_menu_system);
 
         app.add_systems(
             OnEnter(states::AppStates::Instructions),
@@ -109,5 +95,30 @@ fn pprint_mob_kills_from_data(data: &MobsKilledByPlayerCacheT) -> String {
             .map(|(mobtype, n)| format!("{mobtype}: {n}"))
             .collect::<Vec<String>>()
             .join("\n"),
+    }
+}
+
+#[derive(Component)]
+pub(super) struct BouncingPromptComponent {
+    pub flash_timer: Timer,
+    pub is_active: bool,
+}
+fn bouncing_prompt_system(
+    mut flashing_prompt_query: Query<(&mut Transform, &mut BouncingPromptComponent)>,
+    time: Res<Time>,
+) {
+    for (mut transform, mut prompt) in flashing_prompt_query.iter_mut() {
+        if !prompt.is_active {
+            transform.scale.x = 1.0;
+            transform.scale.y = 1.0;
+            prompt.flash_timer.reset();
+            continue;
+        }
+        prompt.flash_timer.tick(time.delta());
+
+        let scale: f32 = -0.2 * (prompt.flash_timer.elapsed_secs() - 1.0).powf(2.0) + 1.2;
+
+        transform.scale.x = scale;
+        transform.scale.y = scale;
     }
 }

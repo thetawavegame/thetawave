@@ -40,34 +40,34 @@ const BUTTON_TEXTURE_PADDING_HOVERED: UiRect =
 
 /// Event and Component for giving and sending menu buttons actions
 #[derive(Component, Event, Clone)]
-pub enum MenuButtonActionComponent {
+pub(super) enum MainMenuButtonActionComponent {
     EnterInstructions,
     EnterOptions,
     EnterCompendium,
     QuitGame,
 }
 
-pub type MenuButtonActionEvent = MenuButtonActionComponent;
+pub(super) type MainMenuButtonActionEvent = MainMenuButtonActionComponent;
 
 /// Extension trait for spawning customized UI elements for Thetawave
-pub trait UiChildBuilderExt {
-    fn spawn_menu_button(
+pub(super) trait UiChildBuilderExt {
+    fn spawn_main_menu_button(
         &mut self,
         ui_assets: &UiAssets,
         text: String,
         font: Handle<Font>,
-        action: MenuButtonActionComponent,
+        action: MainMenuButtonActionComponent,
     );
 }
 
 impl UiChildBuilderExt for ChildBuilder<'_> {
     /// Spawn a Thetawave-stylized menu button
-    fn spawn_menu_button(
+    fn spawn_main_menu_button(
         &mut self,
         ui_assets: &UiAssets,
         text: String,
         font: Handle<Font>,
-        action: MenuButtonActionComponent,
+        action: MainMenuButtonActionComponent,
     ) {
         // Spawn button bundle entity, with a child entity containing the texture
         self.spawn(ButtonBundle {
@@ -113,14 +113,14 @@ impl UiChildBuilderExt for ChildBuilder<'_> {
 }
 
 /// Handles interactions with the menu buttons (pressed, hovered, none)
-pub fn button_interaction_system(
+pub(super) fn button_interaction_system(
     mut interaction_query: Query<
-        (&MenuButtonActionComponent, &Interaction, &Children),
+        (&MainMenuButtonActionComponent, &Interaction, &Children),
         (Changed<Interaction>, With<Button>),
     >,
     mut button_texture_query: Query<(&mut TextureAtlas, &mut Style)>,
     mut sound_effect: EventWriter<PlaySoundEffectEvent>,
-    mut button_event_writer: EventWriter<MenuButtonActionEvent>,
+    mut button_event_writer: EventWriter<MainMenuButtonActionEvent>,
 ) {
     for (action, interaction, children) in &mut interaction_query {
         let (mut texture_atlas, mut style) = button_texture_query.get_mut(children[0]).unwrap();
@@ -151,19 +151,19 @@ pub fn button_interaction_system(
 }
 
 // Handles actions for menu buttons, changeing states, quitting
-pub fn button_action_system(
-    mut button_event_reader: EventReader<MenuButtonActionEvent>,
+pub(super) fn main_menu_button_action_system(
+    mut button_event_reader: EventReader<MainMenuButtonActionEvent>,
     mut next_app_state: ResMut<NextState<AppStates>>,
     mut exit: EventWriter<AppExit>,
 ) {
     for event in button_event_reader.read() {
         match event {
-            MenuButtonActionComponent::EnterInstructions => {
+            MainMenuButtonActionComponent::EnterInstructions => {
                 next_app_state.set(AppStates::Instructions);
             }
-            MenuButtonActionComponent::EnterOptions => info!("Enter options menu."),
-            MenuButtonActionComponent::EnterCompendium => info!("Enter compendium."),
-            MenuButtonActionComponent::QuitGame => {
+            MainMenuButtonActionComponent::EnterOptions => info!("Enter options menu."),
+            MainMenuButtonActionComponent::EnterCompendium => info!("Enter compendium."),
+            MainMenuButtonActionComponent::QuitGame => {
                 exit.send(AppExit);
             }
         }
