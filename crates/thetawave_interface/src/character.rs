@@ -2,9 +2,9 @@ use bevy_math::Vec2;
 use serde::Deserialize;
 
 use crate::{
+    abilities::{SlotOneAbilityType, SlotTwoAbilityType},
     health::HealthComponent,
     spawnable::SpawnPosition,
-    weapon::{WeaponComponent, WeaponData},
 };
 
 /// The playable character types. To a player, these will have different appearances and abilities.
@@ -58,6 +58,10 @@ pub struct Character {
     pub projectile_size: f32,
     /// Base projectile count
     pub projectile_count: usize,
+    /// Optional ability taking up the first ability slot
+    pub slot_1_ability: Option<SlotOneAbilityType>,
+    /// Optional ability taking up the second ability slot
+    pub slot_2_ability: Option<SlotTwoAbilityType>,
 }
 
 impl From<&Character> for HealthComponent {

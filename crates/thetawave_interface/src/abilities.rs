@@ -4,10 +4,15 @@ use serde::Deserialize;
 
 use crate::{audio::SoundEffectType, spawnable::ProjectileType, weapon::SpreadPattern};
 
-pub enum AbilityType {
-    Charge,
+#[derive(Clone, Deserialize)]
+pub enum SlotOneAbilityType {
     StandardBlast,
     StandardBullet,
+}
+
+#[derive(Clone, Deserialize)]
+pub enum SlotTwoAbilityType {
+    Charge,
     MegaBlast,
 }
 
