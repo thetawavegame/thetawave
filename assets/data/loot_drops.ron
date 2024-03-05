@@ -3,7 +3,7 @@
         Nothing: [],
         Standard: [
             Consumable((
-                rolls: 1,
+                rolls: 20,
                 probability: 0.03,
                 consumable: Armor,
             )),

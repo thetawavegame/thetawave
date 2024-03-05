@@ -3,11 +3,7 @@ use crate::spawnable::SpawnPosition;
 use bevy_ecs::system::Resource;
 use bevy_ecs::{bundle::Bundle, prelude::Component};
 use bevy_math::Vec2;
-use bevy_time::{Timer, TimerMode};
 use derive_more::{Deref, DerefMut};
-use serde::Deserialize;
-
-const MAX_PLAYER_ABILITIES: usize = 2;
 
 /// Parameters for how to spawn new players. By default, the player can do anything.
 #[derive(Resource, Debug, Default, Deref, DerefMut)]
@@ -96,6 +92,15 @@ impl PlayerBundle {
 pub enum PlayerIDComponent {
     One,
     Two,
+}
+
+impl PlayerIDComponent {
+    pub fn has_flipped_ui(&self) -> bool {
+        match self {
+            PlayerIDComponent::One => false,
+            PlayerIDComponent::Two => true,
+        }
+    }
 }
 
 /// Useful for mapping an index to a PlayerIDComponent

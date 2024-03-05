@@ -10,30 +10,24 @@ use thetawave_interface::states;
 
 mod character_selection;
 mod game;
-mod game_center;
 mod game_over;
 mod instructions;
-mod level;
 mod main_menu;
 mod pause_menu;
-mod phase;
-mod player;
 mod victory;
 
-use self::character_selection::toggle_tutorial_system;
 pub use self::character_selection::{
     player_join_system, select_character_system, setup_character_selection_system,
 };
-use self::game_center::text_fade_out_system;
-use self::player::update_player_ui_system;
-use self::{game_center::update_center_text_ui_system, instructions::setup_instructions_system};
+use self::{character_selection::toggle_tutorial_system, game::GameUiPlugin};
+
+use self::instructions::setup_instructions_system;
 pub use self::{
     game_over::setup_game_over_system,
     main_menu::{bouncing_prompt_system, setup_main_menu_system, BouncingPromptComponent},
     pause_menu::setup_pause_system,
     victory::setup_victory_system,
 };
-use self::{level::update_level_ui_system, phase::update_phase_ui_system};
 
 pub struct UiPlugin;
 
@@ -41,25 +35,9 @@ impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<PlayerJoinEvent>();
 
+        app.add_plugins(GameUiPlugin);
+
         app.add_systems(Update, bouncing_prompt_system);
-
-        app.add_systems(
-            OnEnter(states::AppStates::Game),
-            (game::setup_game_ui_system.after(GameEnterSet::BuildUi),),
-        );
-
-        app.add_systems(
-            Update,
-            (
-                update_player_ui_system,
-                update_phase_ui_system,
-                update_level_ui_system,
-                update_center_text_ui_system,
-                text_fade_out_system,
-            )
-                .run_if(in_state(states::AppStates::Game))
-                .run_if(in_state(states::GameStates::Playing)),
-        );
 
         app.add_systems(OnEnter(states::AppStates::MainMenu), setup_main_menu_system);
 
