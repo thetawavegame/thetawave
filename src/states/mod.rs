@@ -114,11 +114,6 @@ impl Plugin for StatesPlugin {
 
         app.add_systems(
             Update,
-            start_instructions_system.run_if(in_state(AppStates::MainMenu)),
-        );
-
-        app.add_systems(
-            Update,
             start_character_selection_system.run_if(in_state(AppStates::Instructions)),
         );
 
