@@ -1,6 +1,6 @@
 use bevy::core::Name;
 use bevy::ecs::system::{Commands, Res};
-use bevy::hierarchy::BuildChildren;
+use bevy::hierarchy::{BuildChildren, ChildBuilder};
 use bevy::input::gamepad::Gamepad;
 use bevy::math::Vec3;
 use bevy::render::color::Color;
@@ -9,9 +9,9 @@ use bevy::transform::components::Transform;
 use bevy_rapier2d::dynamics::{ExternalImpulse, LockedAxes, RigidBody, Velocity};
 use bevy_rapier2d::geometry::{ActiveEvents, Collider, ColliderMassProperties, Restitution};
 use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
+use thetawave_interface::abilities::{AbilitiesResource, SlotOneAbilityType, SlotTwoAbilityType};
 use thetawave_interface::input::{InputsResource, PlayerAction};
 use thetawave_interface::player::{InputRestrictionsAtSpawn, PlayerBundle, PlayerIDComponent};
-use thetawave_interface::weapon::WeaponComponent;
 use thetawave_interface::{health::HealthComponent, player::PlayerInput, states::GameCleanup};
 
 use crate::{
@@ -19,6 +19,54 @@ use crate::{
     game::GameParametersResource,
     player::{CharactersResource, PlayersResource},
 };
+
+trait PlayerAbilityChildBuilderExt {
+    fn spawn_slot_1_ability(
+        &mut self,
+        abilities_res: &AbilitiesResource,
+        ability_type: &Option<SlotOneAbilityType>,
+    );
+
+    fn spawn_slot_2_ability(
+        &mut self,
+        abilities_res: &AbilitiesResource,
+        ability_type: &Option<SlotTwoAbilityType>,
+    );
+}
+
+impl PlayerAbilityChildBuilderExt for ChildBuilder<'_> {
+    fn spawn_slot_1_ability(
+        &mut self,
+        abilities_res: &AbilitiesResource,
+        ability_type: &Option<SlotOneAbilityType>,
+    ) {
+        if let Some(ability_type) = ability_type {
+            match ability_type {
+                SlotOneAbilityType::StandardBlast => {
+                    self.spawn(abilities_res.standard_blast_ability.clone())
+                }
+                SlotOneAbilityType::StandardBullet => {
+                    self.spawn(abilities_res.standard_bullet_ability.clone())
+                }
+            };
+        }
+    }
+
+    fn spawn_slot_2_ability(
+        &mut self,
+        abilities_res: &AbilitiesResource,
+        ability_type: &Option<SlotTwoAbilityType>,
+    ) {
+        if let Some(ability_type) = ability_type {
+            match ability_type {
+                SlotTwoAbilityType::Charge => self.spawn(abilities_res.charge_ability.clone()),
+                SlotTwoAbilityType::MegaBlast => {
+                    self.spawn(abilities_res.mega_blast_ability.clone())
+                }
+            };
+        }
+    }
+}
 
 /// Spawns player into the game
 pub fn spawn_players_system(
@@ -28,6 +76,7 @@ pub fn spawn_players_system(
     player_assets: Res<assets::PlayerAssets>,
     players_resource: Res<PlayersResource>,
     inputs_res: Res<InputsResource>,
+    abilities_res: Res<AbilitiesResource>,
     spawn_params: Res<InputRestrictionsAtSpawn>,
 ) {
     // check if more than one player is playing
@@ -106,7 +155,11 @@ pub fn spawn_players_system(
                 .insert(GameCleanup)
                 .insert(ActiveEvents::COLLISION_EVENTS)
                 .insert(ExternalImpulse::default())
-                .insert(Name::new("Player"));
+                .insert(Name::new("Player"))
+                .with_children(|parent| {
+                    parent.spawn_slot_1_ability(&abilities_res, &character.slot_1_ability);
+                    parent.spawn_slot_2_ability(&abilities_res, &character.slot_2_ability);
+                });
 
             // add colored outline to player if multiplayer
             if is_multiplayer {

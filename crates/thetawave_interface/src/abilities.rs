@@ -24,20 +24,20 @@ pub struct AbilitiesResource {
     pub standard_bullet_ability: StandardWeaponAbilityBundle,
 }
 
-#[derive(Component, Deserialize)]
+#[derive(Component, Deserialize, Clone)]
 pub enum AbilitySlotIDComponent {
     One,
     Two,
 }
 
 /// Charge ability bundle for spawning entity as a child of player component
-#[derive(Bundle, Deserialize)]
+#[derive(Bundle, Deserialize, Clone)]
 pub struct ChargeAbilityBundle {
     slot: AbilitySlotIDComponent,
     ability: ChargeAbilityComponent,
 }
 
-#[derive(Component, Deserialize)]
+#[derive(Component, Deserialize, Clone)]
 pub struct ChargeAbilityComponent {
     pub action_timer: Timer,
     pub incoming_damage_multiplier: f32,
@@ -45,13 +45,13 @@ pub struct ChargeAbilityComponent {
 }
 
 /// Standard weapon bundle for spawning entity as a child of player component
-#[derive(Bundle, Deserialize)]
+#[derive(Bundle, Deserialize, Clone)]
 pub struct StandardWeaponAbilityBundle {
     slot: AbilitySlotIDComponent,
     ability: StandardWeaponAbilityComponent,
 }
 
-#[derive(Component, Deserialize)]
+#[derive(Component, Deserialize, Clone)]
 pub struct StandardWeaponAbilityComponent {
     pub spread_pattern: SpreadPattern,
     pub damage_multiplier: f32,
