@@ -23,6 +23,10 @@ pub struct UiAssets {
     pub standard_blast_ability: Handle<Image>,
     #[asset(key = "ability_icon.standard_bullet")]
     pub standard_bullet_ability: Handle<Image>,
+    #[asset(key = "ability_slot.left")]
+    pub left_ability_slot: Handle<Image>,
+    #[asset(key = "ability_slot.right")]
+    pub right_ability_slot: Handle<Image>,
 }
 
 impl UiAssets {
@@ -37,6 +41,14 @@ impl UiAssets {
         match ability_type {
             SlotTwoAbilityType::MegaBlast => self.mega_blast_ability.clone(),
             SlotTwoAbilityType::Charge => self.charge_ability.clone(),
+        }
+    }
+
+    pub fn get_ability_slot_image(&self, is_flipped: bool) -> Handle<Image> {
+        if is_flipped {
+            self.right_ability_slot.clone()
+        } else {
+            self.left_ability_slot.clone()
         }
     }
 }
