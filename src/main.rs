@@ -270,9 +270,11 @@ mod test {
             // Ideally audio is mostly handled via `thetawave_interface::audio` and events, so that
             // we really only skip testing 1 match statement and external audio deps.
             .disable::<ThetawaveAudioPlugin>()
+            .disable::<AudioPlugin>()
+            // The background plugin & animation plugins require the render pipeline, which I dont
+            // not want in CI.
             .disable::<AnimationPlugin>()
-            .disable::<BackgroundPlugin>()
-            .disable::<AudioPlugin>();
+            .disable::<BackgroundPlugin>();
 
         let mut app = build_app(base_plugins, game_plugins);
         app.add_event::<ChangeBackgroundMusicEvent>()
