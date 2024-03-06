@@ -57,6 +57,7 @@ pub trait PlayerUiChildBuilderExt {
         is_flipped: bool,
         asset_server: &AssetServer,
     );
+    fn spawn_player_armor_counter_ui(&mut self);
 }
 
 /// initializes the game ui hierarchy

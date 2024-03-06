@@ -255,11 +255,9 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
         .insert(player_id)
         .with_children(|ability_slot| {});
     }
-}
 
-fn build_armor_counter(parent: &mut ChildBuilder) {
-    parent
-        .spawn(NodeBundle {
+    fn spawn_player_armor_counter_ui(&mut self) {
+        self.spawn(NodeBundle {
             style: Style {
                 width: Val::Percent(100.0),
                 aspect_ratio: ARMOR_COUNTER_ASPECT_RATIO,
@@ -270,6 +268,7 @@ fn build_armor_counter(parent: &mut ChildBuilder) {
             ..default()
         })
         .insert(ArmorCounterUi);
+    }
 }
 
 pub fn update_player_ui_system(
@@ -306,7 +305,7 @@ pub fn update_player_ui_system(
                 // spawn armor ticks
                 commands.entity(entity).with_children(|armor_ui| {
                     for _ in 0..player_health.get_armor() {
-                        build_armor_counter(armor_ui);
+                        armor_ui.spawn_player_armor_counter_ui();
                     }
                 });
             }
