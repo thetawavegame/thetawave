@@ -21,6 +21,8 @@ pub enum MenuAction {
     ExitPauseMenu,
     PauseGame,
     ToggleTutorial,
+    NavigateUp,
+    NavigateDown,
 }
 
 /// Player actions during the main game/while fighting mobs. Many of these can be simultaneously

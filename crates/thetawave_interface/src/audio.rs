@@ -31,6 +31,9 @@ pub enum SoundEffectType {
     BulletBounce,
     MegaBlastAbility,
     ObjectiveCompleted,
+    ButtonSelect,
+    ButtonRelease,
+    ButtonConfirm,
 }
 
 /// Subtype of sound effect for collisions
