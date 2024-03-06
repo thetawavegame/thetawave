@@ -1,3 +1,5 @@
+//! Exposes a plugin that sets up the 2D/3D perspective/camera and shakes the camera when an event
+//! is emitted.
 use crate::game;
 use bevy::app::{App, Plugin, Startup, Update};
 use bevy::core_pipeline::bloom::BloomPrefilterSettings;
@@ -15,8 +17,11 @@ use thetawave_interface::camera::ScreenShakeEvent;
 
 mod screen_shake;
 
-pub struct CameraPlugin;
+pub(super) struct CameraPlugin;
 
+/// Sets up a 2d perspective/camera of the 3d world. When this plugin is enabled, one can send
+/// `thetawave_interface::camera::ScreenShakeEvent` to jolt the screen, for example, when a player
+/// takes damage.
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<ScreenShakeEvent>();

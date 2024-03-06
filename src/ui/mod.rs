@@ -1,9 +1,10 @@
+//! Exposes a plugin that handles layout, rendering, and styling for each of the major game states.
 use bevy::{
     app::{App, Plugin, Update},
     ecs::schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter},
     prelude::{Component, Query, Res, Time, Timer, Transform},
 };
-pub use thetawave_interface::character_selection::PlayerJoinEvent;
+use thetawave_interface::character_selection::PlayerJoinEvent;
 use thetawave_interface::game::historical_metrics::{MobsKilledByPlayerCacheT, DEFAULT_USER_ID};
 
 use crate::GameEnterSet;
@@ -21,7 +22,7 @@ mod phase;
 mod player;
 mod victory;
 
-pub use self::character_selection::{
+use self::character_selection::{
     player_join_system, select_character_system, setup_character_selection_system,
 };
 use self::{
@@ -32,7 +33,9 @@ use self::{
 use self::{game_center::update_center_text_ui_system, instructions::setup_instructions_system};
 use self::{level::update_level_ui_system, phase::update_phase_ui_system};
 
-pub struct UiPlugin;
+/// Handles layout, styling, and updating the UI state on each frame update. Without this plugin,
+/// we mostly just have a black screen with some images moving across the screen.
+pub(super) struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {

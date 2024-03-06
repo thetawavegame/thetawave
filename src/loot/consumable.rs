@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::prelude::{EventWriter, Vec2};
 use rand::Rng;
 use serde::Deserialize;
 use strum_macros::Display;

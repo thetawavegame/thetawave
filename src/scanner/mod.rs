@@ -1,3 +1,4 @@
+//! Exposes a plugin that logs whenever the user's mouse hovers over a mob.
 use bevy::{
     prelude::{
         in_state, App, Entity, IntoSystemConfigs, Plugin, Query, Res, Transform, Update, Vec2,
@@ -11,7 +12,8 @@ use thetawave_interface::health::HealthComponent;
 use crate::{game::GameParametersResource, spawnable::MobComponent};
 use thetawave_interface::states;
 
-pub struct ScannerPlugin;
+/// Debug logs whenever the cursor is hovering over a mob.
+pub(super) struct ScannerPlugin;
 
 impl Plugin for ScannerPlugin {
     fn build(&self, app: &mut App) {
@@ -23,7 +25,7 @@ impl Plugin for ScannerPlugin {
 }
 
 /// Manages scanning of entities using the cursor
-pub fn scanner_system(
+fn scanner_system(
     //windows: Res<Windows>,
     windows: Query<&Window, With<PrimaryWindow>>,
     game_params: Res<GameParametersResource>,

@@ -1,5 +1,5 @@
-//! `thetawave` background module
-
+//! Exposes a plugin that creates and animates an engine-assisted background that activates a
+//! user's monkey brain with colors and lights.
 use bevy::{
     app::{App, Plugin, Update},
     asset::{AssetServer, Assets, Handle},
@@ -44,7 +44,9 @@ use thiserror::Error;
 
 use crate::GameEnterSet;
 
-pub struct BackgroundPlugin;
+/// Contains systems to spawn and animate the background of a rotating planet + star at the right
+/// `thetawave_interface::states::AppStates`.
+pub(super) struct BackgroundPlugin;
 
 impl Plugin for BackgroundPlugin {
     fn build(&self, app: &mut App) {
@@ -80,7 +82,7 @@ impl Plugin for BackgroundPlugin {
 
 /// Parameters for procedurally generated 3D level backgrounds
 #[derive(Resource, Deserialize)]
-pub struct BackgroundsResource {
+struct BackgroundsResource {
     /// Intensity increase rate for star explosion effect
     pub star_explode_intensity: f32,
     /// Position of the quad with the background image
@@ -117,31 +119,31 @@ pub struct BackgroundsResource {
 
 /// Resource to track if star explosion is happening
 #[derive(Resource, Default)]
-pub struct StarExplodeResource {
+struct StarExplodeResource {
     pub started: bool,
 }
 
 /// Component to manage movement of planets
 #[derive(Reflect, Default, Component)]
 #[reflect(Component)]
-pub struct PlanetComponent {
+struct PlanetComponent {
     /// Speed of rotation about the z axis
     pub rotation_speed: f32,
 }
 
 /// Component to tag star point light
 #[derive(Component)]
-pub struct StarLightComponent;
+struct StarLightComponent;
 
 /// Rotate planets about their z axis
-pub fn rotate_planet_system(mut query: Query<(&mut Transform, &PlanetComponent)>, time: Res<Time>) {
+fn rotate_planet_system(mut query: Query<(&mut Transform, &PlanetComponent)>, time: Res<Time>) {
     for (mut transform, planet) in query.iter_mut() {
         transform.rotation *= Quat::from_rotation_y(planet.rotation_speed * time.delta_seconds());
     }
 }
 
 /// Execute the exploding star effect if the game is lost through defense being destroyed
-pub fn on_defeat_star_explode_system(
+fn on_defeat_star_explode_system(
     mut run_end_event_reader: EventReader<RunEndEvent>,
     mut point_light_query: Query<&mut PointLight, With<StarLightComponent>>,
     mut star_explode_res: ResMut<StarExplodeResource>,
@@ -192,7 +194,7 @@ fn get_random_asset_file(path: String) -> Result<String, OurGetRandomAssetError>
 }
 
 /// Create a procedurally generated 3D background for a level
-pub fn create_background_system(
+fn create_background_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut meshes: ResMut<Assets<Mesh>>,

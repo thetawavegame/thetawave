@@ -1,18 +1,18 @@
+//! Exposes a plugin with systems determining how spawnables (e.x. consumables, items, mobs,
+//! players, etc.) behave.
 use crate::spawnable::effect::EffectPlugin;
-use std::collections::HashMap;
-
 use crate::GameUpdateSet;
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::Velocity;
 use rand::{thread_rng, Rng};
 use ron::de::from_bytes;
 use serde::Deserialize;
+use std::collections::HashMap;
 use thetawave_interface::spawnable::{ConsumableType, MobType, ProjectileType};
 use thetawave_interface::spawnable::{
     MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent, SpawnableType,
 };
 use thetawave_interface::states;
-
 mod behavior;
 mod behavior_sequence;
 mod consumable;
@@ -20,32 +20,30 @@ mod effect;
 mod item;
 mod mob;
 mod projectile;
-
 use self::behavior::attract_to_player_system;
+pub use self::behavior::SpawnableBehavior;
+pub use self::behavior_sequence::{BehaviorSequenceResource, MobBehaviorUpdateEvent};
+pub use self::consumable::{
+    ConsumableComponent, ConsumableData, ConsumableResource, SpawnConsumableEvent,
+};
+pub use self::effect::{EffectsResource, SpawnEffectEvent};
 use self::item::ItemPlugin;
 pub use self::mob::*;
 pub use self::projectile::{
-    projectile_execute_behavior_system, spawn_projectile_system, FireWeaponEvent,
-    ProjectileComponent, ProjectileData, ProjectileResource,
+    FireWeaponEvent, ProjectileComponent, ProjectileData, ProjectileResource,
+};
+use self::{
+    behavior::{spawnable_execute_behavior_system, spawnable_set_target_behavior_system},
+    behavior_sequence::{
+        mob_behavior_sequence_tracker_system, mob_behavior_sequence_update_system,
+    },
+    consumable::{consumable_execute_behavior_system, spawn_consumable_system},
+    projectile::{projectile_execute_behavior_system, spawn_projectile_system},
 };
 
-pub use self::behavior::{
-    spawnable_execute_behavior_system, spawnable_set_target_behavior_system, SpawnableBehavior,
-};
-
-pub use self::behavior_sequence::{
-    mob_behavior_sequence_tracker_system, mob_behavior_sequence_update_system,
-    BehaviorSequenceResource, MobBehaviorUpdateEvent,
-};
-
-pub use self::effect::{EffectsResource, SpawnEffectEvent};
-
-pub use self::consumable::{
-    consumable_execute_behavior_system, spawn_consumable_system, ConsumableComponent,
-    ConsumableData, ConsumableResource, SpawnConsumableEvent,
-};
-
-pub struct SpawnablePlugin;
+/// (de)spawns items, mobs, the player, etc. Also executes many of their behaviors. Without this
+/// plugin, very little with spawn into the game once it begins.
+pub(super) struct SpawnablePlugin;
 
 impl Plugin for SpawnablePlugin {
     fn build(&self, app: &mut App) {
@@ -202,15 +200,14 @@ impl From<InitialMotion> for Velocity {
     }
 }
 
-/// Component that despawns entity after amount of time has passed
-
+/// Component that signals that an entity should be despawned when the timer is expires
 #[derive(Component)]
 pub struct DespawnTimerComponent {
     despawn_timer: Timer,
 }
 
-/// Manages despawn timer components
-pub fn despawn_timer_system(
+/// Despawns entitites when their `DespawnTimerComponent` expires.
+fn despawn_timer_system(
     mut commands: Commands,
     time: Res<Time>,
     mut despawn_timer_query: Query<(Entity, &mut DespawnTimerComponent)>,

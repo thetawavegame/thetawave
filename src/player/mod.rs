@@ -1,34 +1,32 @@
-//! `thetawave` player module
-use bevy::{
-    app::{App, Plugin, Update},
-    ecs::schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter, OnExit},
-};
-use leafwing_input_manager::prelude::InputManagerPlugin;
-use ron::de::from_bytes;
-
-use thetawave_interface::{
-    input::PlayerAction,
-    player::{InputRestrictionsAtSpawn, PlayersResource},
-    states::{AppStates, GameStates},
-};
-
-use crate::{GameEnterSet, GameUpdateSet};
-
+//! Exposes a plugin and resources to deal with player behavior such as spawning, moving, firing,
+//! and dying.
+pub use self::resources::CharactersResource;
 use self::systems::{fire_weapon_system, scale_fire_rate_system};
-pub use self::{
-    resources::CharactersResource,
+use self::{
     spawn::spawn_players_system,
     systems::{
         player_ability_system, player_death_system, player_movement_system, player_tilt_system,
         players_reset_system,
     },
 };
-
+use crate::{GameEnterSet, GameUpdateSet};
+use bevy::{
+    app::{App, Plugin, Update},
+    ecs::schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter, OnExit},
+};
+use leafwing_input_manager::prelude::InputManagerPlugin;
+use ron::de::from_bytes;
+use thetawave_interface::{
+    input::PlayerAction,
+    player::{InputRestrictionsAtSpawn, PlayersResource},
+    states::{AppStates, GameStates},
+};
 mod resources;
 mod spawn;
 mod systems;
 
-pub struct PlayerPlugin;
+/// Contains systems to allow the player to do most (all?) of its required behaviors.
+pub(super) struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {

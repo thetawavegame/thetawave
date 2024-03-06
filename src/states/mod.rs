@@ -1,3 +1,5 @@
+//! Exposes a plugin that manages state transitions and the core behavior that deals with
+//! `thetawave_interface::states::AppStates`.
 use bevy::prelude::{
     in_state, App, Commands, Component, DespawnRecursiveExt, Entity, IntoSystemConfigs,
     IntoSystemSetConfigs, NextState, OnEnter, OnExit, Plugin, Query, ResMut, Update, With,
@@ -32,10 +34,11 @@ use crate::assets::UiAssets;
 use crate::GameEnterSet;
 use crate::GameUpdateSet;
 
-pub use self::game::*;
-pub use self::pause_menu::*;
-
-pub struct StatesPlugin;
+use self::game::{start_character_selection_system, start_game_system};
+use self::pause_menu::{close_pause_menu_system, open_pause_menu_system};
+/// Includes systems that handle state transitions for `AppStates` and `GameStates`. Also includes
+/// an asset loading state.
+pub(super) struct StatesPlugin;
 
 impl Plugin for StatesPlugin {
     fn build(&self, app: &mut App) {
@@ -179,7 +182,7 @@ impl Plugin for StatesPlugin {
 }
 
 // remove entities tagged for the current app state
-pub fn clear_state_system<T: Component>(
+fn clear_state_system<T: Component>(
     mut commands: Commands,
     despawn_entities_query: Query<Entity, With<T>>,
 ) {

@@ -1,3 +1,4 @@
+//! System to draw the game over screen.
 use bevy::{
     asset::AssetServer,
     ecs::{

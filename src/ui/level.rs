@@ -1,3 +1,6 @@
+//! Systems to draw and update UI elements related to the player's level progression and objectives
+//! (e.x. health). The user should know that certain behaviors bring them closer to defeat and know
+//! how far away they are from losing.
 use crate::run::CurrentRunProgressResource;
 use bevy::{
     asset::Handle,
@@ -19,13 +22,13 @@ use bevy::{
 
 /// Used for querying UI for displaying name
 #[derive(Component)]
-pub struct LevelNameUI;
+pub(super) struct LevelNameUI;
 
 /// Used for querying UI for displaying level information
 #[derive(Component)]
-pub struct LevelDataUI;
+pub(super) struct LevelDataUI;
 
-pub fn build_level_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
+pub(super) fn build_level_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
     parent
         .spawn(NodeBundle {
             style: Style {
@@ -85,7 +88,7 @@ pub fn build_level_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
         });
 }
 
-pub fn update_level_ui_system(
+pub(super) fn update_level_ui_system(
     mut commands: Commands,
     level_data_ui_query: Query<Entity, With<LevelDataUI>>,
     mut level_name_ui_query: Query<&mut Text, With<LevelNameUI>>,

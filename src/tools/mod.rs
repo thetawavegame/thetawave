@@ -1,3 +1,4 @@
+//! Helper functions
 use rand::{thread_rng, Rng};
 
 /// Randomly picks index of vector using weights

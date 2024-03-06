@@ -1,3 +1,5 @@
+//! Systems to draw/update the in-game UI compoenents related to the player's stats, health, fire
+//! rate, etc.
 use bevy::{
     asset::AssetServer,
     ecs::{
@@ -328,7 +330,8 @@ fn build_armor_counter(parent: &mut ChildBuilder) {
         .insert(ArmorCounterUI);
 }
 
-pub fn update_player_ui_system(
+/// Resync the HUD/in-game UI to match player stats. This should run every frame for a snappy UI.
+pub(super) fn update_player_ui_system(
     mut commands: Commands,
     player_query: Query<
         (
