@@ -24,10 +24,18 @@ use crate::{run::CurrentRunProgressResource, spawnable::BossComponent};
 use super::parent::PhaseUiChildBuilderExt;
 
 const NODE_WIDTH: Val = Val::Percent(50.0);
-const TEXT_COLOR: Color = Color::WHITE;
+const NORMAL_TEXT_COLOR: Color = Color::WHITE;
+const TUTORIAL_COMPLETED_TEXT_COLOR: Color = Color::GREEN;
+const TUTORIAL_FONT_SIZE: f32 = 24.0;
 const FONT_SIZE: f32 = 48.0;
 const PHASE_DATA_PADDING: UiRect =
     UiRect::new(Val::Vw(1.0), Val::Vw(1.0), Val::Vh(2.0), Val::Vh(2.0));
+const BOSS_HEALTH_WIDTH: Val = Val::Percent(80.0);
+const BOSS_HEALTH_HEIGHT: Val = Val::Percent(60.0);
+const BOSS_HEALTH_COLOR: Color = Color::RED;
+const BOSS_HEALTH_EMPTY_ALPHA: f32 = 0.05;
+const BOSS_HEALTH_FILLED_ALPHA: f32 = 0.75;
+const TUTORIAL_TEXT_SECTION_HEIGHT: Val = Val::Px(30.0);
 
 /// Used for querying UI for displaying name
 #[derive(Component)]
@@ -58,7 +66,7 @@ impl PhaseUiChildBuilderExt for ChildBuilder<'_> {
                     TextStyle {
                         font,
                         font_size: FONT_SIZE,
-                        color: TEXT_COLOR,
+                        color: NORMAL_TEXT_COLOR,
                     },
                 ),
                 ..default()
@@ -121,8 +129,8 @@ pub fn update_phase_ui_system(
                                     format!("{:.0}", phase_timer.remaining_secs()),
                                     TextStyle {
                                         font,
-                                        font_size: 48.0,
-                                        color: Color::WHITE,
+                                        font_size: FONT_SIZE,
+                                        color: NORMAL_TEXT_COLOR,
                                     },
                                 ),
                                 ..default()
@@ -139,8 +147,8 @@ pub fn update_phase_ui_system(
                                     format!("{:.0}", phase_timer.remaining_secs()),
                                     TextStyle {
                                         font,
-                                        font_size: 48.0,
-                                        color: Color::WHITE,
+                                        font_size: FONT_SIZE,
+                                        color: NORMAL_TEXT_COLOR,
                                     },
                                 ),
                                 ..default()
@@ -153,12 +161,14 @@ pub fn update_phase_ui_system(
                                 phase_data_ui
                                     .spawn(NodeBundle {
                                         style: Style {
-                                            width: Val::Percent(80.0),
-                                            height: Val::Percent(60.0),
+                                            width: BOSS_HEALTH_WIDTH,
+                                            height: BOSS_HEALTH_HEIGHT,
                                             flex_direction: FlexDirection::Row,
                                             ..default()
                                         },
-                                        background_color: Color::RED.with_a(0.05).into(),
+                                        background_color: BOSS_HEALTH_COLOR
+                                            .with_a(BOSS_HEALTH_EMPTY_ALPHA)
+                                            .into(),
                                         ..default()
                                     })
                                     .with_children(|boss_health_ui| {
@@ -170,7 +180,9 @@ pub fn update_phase_ui_system(
                                                 height: Val::Percent(100.0),
                                                 ..default()
                                             },
-                                            background_color: Color::RED.with_a(0.75).into(),
+                                            background_color: BOSS_HEALTH_COLOR
+                                                .with_a(BOSS_HEALTH_FILLED_ALPHA)
+                                                .into(),
                                             ..default()
                                         });
                                     });
@@ -194,85 +206,83 @@ pub fn update_phase_ui_system(
                                     },
                                     ..default()
                                 })
-                                .with_children(|phase_data_list_ui| {
-                                    match tutorial_lesson {
-                                        TutorialLesson::Movement { .. } => {
-                                            for (progress_str, completed) in
-                                                tutorial_lesson.get_movement_timer_strs().iter()
-                                            {
-                                                phase_data_list_ui.spawn(TextBundle {
-                                                    style: Style {
-                                                        height: Val::Px(30.0), // Set a fixed height for each text section
-                                                        ..default()
-                                                    },
-                                                    text: Text::from_section(
-                                                        progress_str,
-                                                        TextStyle {
-                                                            font: font.clone(),
-                                                            font_size: 24.0,
-                                                            color: if *completed {
-                                                                Color::GREEN
-                                                            } else {
-                                                                Color::WHITE
-                                                            },
-                                                        },
-                                                    )
-                                                    .with_justify(JustifyText::Left),
+                                .with_children(|phase_data_list_ui| match tutorial_lesson {
+                                    TutorialLesson::Movement { .. } => {
+                                        for (progress_str, completed) in
+                                            tutorial_lesson.get_movement_timer_strs().iter()
+                                        {
+                                            phase_data_list_ui.spawn(TextBundle {
+                                                style: Style {
+                                                    height: TUTORIAL_TEXT_SECTION_HEIGHT,
                                                     ..default()
-                                                });
-                                            }
+                                                },
+                                                text: Text::from_section(
+                                                    progress_str,
+                                                    TextStyle {
+                                                        font: font.clone(),
+                                                        font_size: TUTORIAL_FONT_SIZE,
+                                                        color: if *completed {
+                                                            TUTORIAL_COMPLETED_TEXT_COLOR
+                                                        } else {
+                                                            NORMAL_TEXT_COLOR
+                                                        },
+                                                    },
+                                                )
+                                                .with_justify(JustifyText::Left),
+                                                ..default()
+                                            });
                                         }
-                                        TutorialLesson::Attack { .. } => {
-                                            for (progress_str, completed) in
-                                                tutorial_lesson.get_attack_strs().iter()
-                                            {
-                                                phase_data_list_ui.spawn(TextBundle {
-                                                    style: Style {
-                                                        height: Val::Px(30.0), // Set a fixed height for each text section
-                                                        ..default()
-                                                    },
-                                                    text: Text::from_section(
-                                                        progress_str,
-                                                        TextStyle {
-                                                            font: font.clone(),
-                                                            font_size: 24.0,
-                                                            color: if *completed {
-                                                                Color::GREEN
-                                                            } else {
-                                                                Color::WHITE
-                                                            },
-                                                        },
-                                                    )
-                                                    .with_justify(JustifyText::Left),
+                                    }
+                                    TutorialLesson::Attack { .. } => {
+                                        for (progress_str, completed) in
+                                            tutorial_lesson.get_attack_strs().iter()
+                                        {
+                                            phase_data_list_ui.spawn(TextBundle {
+                                                style: Style {
+                                                    height: TUTORIAL_TEXT_SECTION_HEIGHT,
                                                     ..default()
-                                                });
-                                            }
+                                                },
+                                                text: Text::from_section(
+                                                    progress_str,
+                                                    TextStyle {
+                                                        font: font.clone(),
+                                                        font_size: TUTORIAL_FONT_SIZE,
+                                                        color: if *completed {
+                                                            TUTORIAL_COMPLETED_TEXT_COLOR
+                                                        } else {
+                                                            NORMAL_TEXT_COLOR
+                                                        },
+                                                    },
+                                                )
+                                                .with_justify(JustifyText::Left),
+                                                ..default()
+                                            });
                                         }
-                                        TutorialLesson::Ability { .. } => {
-                                            for (progress_str, completed) in
-                                                tutorial_lesson.get_ability_strs().iter()
-                                            {
-                                                phase_data_list_ui.spawn(TextBundle {
-                                                    style: Style {
-                                                        height: Val::Px(30.0), // Set a fixed height for each text section
-                                                        ..default()
-                                                    },
-                                                    text: Text::from_section(
-                                                        progress_str,
-                                                        TextStyle {
-                                                            font: font.clone(),
-                                                            font_size: 24.0,
-                                                            color: if *completed {
-                                                                Color::GREEN
-                                                            } else {
-                                                                Color::WHITE
-                                                            },
-                                                        },
-                                                    )
-                                                    .with_justify(JustifyText::Left),
+                                    }
+                                    TutorialLesson::Ability { .. } => {
+                                        for (progress_str, completed) in
+                                            tutorial_lesson.get_ability_strs().iter()
+                                        {
+                                            phase_data_list_ui.spawn(TextBundle {
+                                                style: Style {
+                                                    height: TUTORIAL_TEXT_SECTION_HEIGHT,
                                                     ..default()
-                                                });
-                                            }
+                                                },
+                                                text: Text::from_section(
+                                                    progress_str,
+                                                    TextStyle {
+                                                        font: font.clone(),
+                                                        font_size: TUTORIAL_FONT_SIZE,
+                                                        color: if *completed {
+                                                            TUTORIAL_COMPLETED_TEXT_COLOR
+                                                        } else {
+                                                            NORMAL_TEXT_COLOR
+                                                        },
+                                                    },
+                                                )
+                                                .with_justify(JustifyText::Left),
+                                                ..default()
+                                            });
                                         }
                                     }
                                 });
