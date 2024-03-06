@@ -49,23 +49,6 @@ pub enum PingPongDirection {
     Backward,
 }
 
-/// Data describing texture
-#[derive(Deserialize)]
-pub struct TextureData {
-    /// Path to the texture
-    pub path: String,
-    /// Dimensions of the texture (single frame)
-    pub dimensions: Vec2,
-    /// Columns in the spritesheet
-    pub cols: usize,
-    /// Rows in the spritesheet
-    pub rows: usize,
-    /// Duration of a frame of animation
-    pub frame_duration: f32,
-    /// How the animation switches frames
-    pub animation_direction: AnimationDirection,
-}
-
 /// Describes an animation
 #[derive(Deserialize)]
 pub struct AnimationData {
