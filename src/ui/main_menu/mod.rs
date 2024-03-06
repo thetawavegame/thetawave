@@ -1,3 +1,5 @@
+//! Exposes a plugin to handle the layout and behavior of a button-based main menu that mainly
+//! guides the user into the `thetawave_interface::states::AppStates::Instructions` state.
 use crate::{
     animation::{AnimationComponent, AnimationDirection},
     assets::UiAssets,
@@ -5,7 +7,6 @@ use crate::{
 use bevy::{
     asset::{AssetServer, Handle},
     ecs::{
-        component::Component,
         event::EventWriter,
         system::{Commands, Res},
     },
@@ -47,9 +48,9 @@ impl Plugin for MainMenuUIPlugin {
     }
 }
 
-#[derive(Component)]
-struct MainMenuUI;
-
+/// Spawn the intiial components of the main menu UI to be rendered. This only needs to be called
+/// once whenever we want to overlay the main menu. Despawning entities with the`MainMenuCleanup`
+/// component is the main way to undo the side effects of this system.
 fn setup_main_menu_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -76,7 +77,6 @@ fn setup_main_menu_system(
             ..Default::default()
         })
         .insert(MainMenuCleanup)
-        .insert(MainMenuUI)
         .with_children(|parent| {
             parent
                 .spawn(NodeBundle {

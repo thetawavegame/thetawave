@@ -197,10 +197,13 @@ pub(super) fn main_menu_button_selection_and_click_system(
     mut sound_effect: EventWriter<PlaySoundEffectEvent>,
     mut button_event_writer: EventWriter<MainMenuButtonActionEvent>,
 ) {
+    // We do a fair number of linear traversals, but there should only be < 10 buttons, children,
+    // etc. So all of those linear time operations should actually be fast.
     // 1. Compute some facts about the current ui state and compute the next frame's ui state
     // 2. Send out sound effect events.
     // 3. Send out any events for "button clicked" actions
     // 4. Set the styling so that only that one button looks "pressed" while all other are inactive
+    // 5. Update the `ui_state` for the next frame.
     let currently_hovered_on_button: Option<&MainMenuButtonActionComponent> =
         main_menu_button_mouse_movements
             .iter()
