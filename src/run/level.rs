@@ -7,6 +7,7 @@ use std::{
     collections::{HashMap, VecDeque},
     time::Duration,
 };
+use thetawave_interface::input::PlayerAction;
 use thetawave_interface::player::InputRestrictionsAtSpawn;
 use thetawave_interface::{
     audio::{BGMusicType, ChangeBackgroundMusicEvent, PlaySoundEffectEvent},
@@ -15,7 +16,6 @@ use thetawave_interface::{
     run::CyclePhaseEvent,
     spawnable::{MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent},
 };
-use thetawave_interface::{input::PlayerAction, weapon::WeaponComponent};
 
 use crate::spawnable::BossesDestroyedEvent;
 

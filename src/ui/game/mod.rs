@@ -18,7 +18,7 @@ impl Plugin for GameUiPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         app.add_systems(
             OnEnter(states::AppStates::Game),
-            (parent::setup_game_ui_system.after(GameEnterSet::BuildUi)),
+            parent::setup_game_ui_system.after(GameEnterSet::BuildUi),
         );
 
         app.add_systems(

@@ -5,7 +5,6 @@ use bevy::{
 pub use thetawave_interface::character_selection::PlayerJoinEvent;
 use thetawave_interface::game::historical_metrics::{MobsKilledByPlayerCacheT, DEFAULT_USER_ID};
 
-use crate::GameEnterSet;
 use thetawave_interface::states;
 
 mod character_selection;

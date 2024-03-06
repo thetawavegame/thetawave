@@ -3,7 +3,7 @@ use bevy::{
     ecs::{
         component::Component,
         entity::Entity,
-        query::{Changed, Or, With},
+        query::{Changed, With},
         system::{Commands, ParamSet, Query},
     },
     hierarchy::{BuildChildren, ChildBuilder, DespawnRecursiveExt},

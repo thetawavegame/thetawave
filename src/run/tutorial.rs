@@ -13,8 +13,6 @@ use thetawave_interface::spawnable::{
     AllyMobType, MobDestroyedEvent, MobSegmentDestroyedEvent, MobSegmentType, MobType,
     NeutralMobSegmentType, NeutralMobType, SpawnMobEvent,
 };
-use thetawave_interface::weapon::WeaponComponent;
-
 fn enable_player_actions_at_end_of_phase() {
     info!("TODO: Enable player actions");
 }

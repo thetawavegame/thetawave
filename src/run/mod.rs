@@ -6,7 +6,6 @@ use serde::Deserialize;
 use std::collections::{HashMap, VecDeque};
 use thetawave_interface::input::PlayerAction;
 use thetawave_interface::player::InputRestrictionsAtSpawn;
-use thetawave_interface::weapon::WeaponComponent;
 use thetawave_interface::{
     audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent, SoundEffectType},
     objective::{DefenseInteraction, MobReachedBottomGateEvent, Objective},
