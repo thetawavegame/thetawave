@@ -98,11 +98,16 @@ fn pprint_mob_kills_from_data(data: &MobsKilledByPlayerCacheT) -> String {
     }
 }
 
+/// A component that will cause the assocaited entity to bounce up and down at a rate determined by
+/// `Self::flash_timer.duration` while `Self::is_active`.
 #[derive(Component)]
 pub(super) struct BouncingPromptComponent {
     pub flash_timer: Timer,
+    /// Set this to `false` to pause the animation
     pub is_active: bool,
 }
+/// Manipulate the `Transform` to make it look like the component is bouncing. This needs to be run
+/// as frequently as possible for the animation to be smooth.
 fn bouncing_prompt_system(
     mut flashing_prompt_query: Query<(&mut Transform, &mut BouncingPromptComponent)>,
     time: Res<Time>,
