@@ -12,6 +12,7 @@ use bevy::{
 };
 use thetawave_interface::{
     abilities::AbilitySlotIDComponent,
+    character::Character,
     player::{PlayerIDComponent, PlayersResource},
     states::GameCleanup,
 };
@@ -44,14 +45,21 @@ pub trait GameCenterUiChildBuilderExt {
 pub trait PlayerUiChildBuilderExt {
     fn spawn_player_ui(
         &mut self,
+        characters_res: &CharactersResource,
         id: PlayerIDComponent,
         players_res: &PlayersResource,
         asset_server: &AssetServer,
     );
     fn spawn_inner_player_ui(&mut self, id: PlayerIDComponent);
-    fn spawn_outer_player_ui(&mut self, id: PlayerIDComponent, asset_server: &AssetServer);
+    fn spawn_outer_player_ui(
+        &mut self,
+        character: &Character,
+        id: PlayerIDComponent,
+        asset_server: &AssetServer,
+    );
     fn spawn_player_ability_slot_ui(
         &mut self,
+        character: &Character,
         player_id: PlayerIDComponent,
         ability_slot_id: AbilitySlotIDComponent,
         is_flipped: bool,
@@ -159,6 +167,7 @@ pub fn setup_game_ui_system(
                     .with_children(|middle_left| {
                         // Player 1 Ui on the left
                         middle_left.spawn_player_ui(
+                            &characters_resource,
                             PlayerIDComponent::One,
                             &players_resource,
                             &asset_server,
@@ -197,6 +206,7 @@ pub fn setup_game_ui_system(
                     .with_children(|middle_right| {
                         // Player 1 Ui onm the left
                         middle_right.spawn_player_ui(
+                            &characters_resource,
                             PlayerIDComponent::Two,
                             &players_resource,
                             &asset_server,

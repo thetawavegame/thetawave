@@ -16,9 +16,12 @@ use bevy::{
 };
 use thetawave_interface::{
     abilities::AbilitySlotIDComponent,
+    character::Character,
     health::HealthComponent,
     player::{PlayerIDComponent, PlayersResource},
 };
+
+use crate::player::CharactersResource;
 
 use super::parent::PlayerUiChildBuilderExt;
 
@@ -84,12 +87,19 @@ pub struct PlayerOuterUi;
 impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
     fn spawn_player_ui(
         &mut self,
+        characters_res: &CharactersResource,
         id: PlayerIDComponent,
         players_res: &PlayersResource,
         asset_server: &AssetServer,
     ) {
         // Only spawn ui for player with id if its player slot is filled
         if let Some(player_data) = &players_res.player_data[id as usize] {
+            // Get character for the player slot
+            let character = characters_res
+                .characters
+                .get(&player_data.character)
+                .unwrap();
+
             // Parent player ui node
             self.spawn(NodeBundle {
                 style: Style {
@@ -104,9 +114,9 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
             .with_children(|player| {
                 if id.has_flipped_ui() {
                     player.spawn_inner_player_ui(id);
-                    player.spawn_outer_player_ui(id, asset_server);
+                    player.spawn_outer_player_ui(character, id, asset_server);
                 } else {
-                    player.spawn_outer_player_ui(id, asset_server);
+                    player.spawn_outer_player_ui(character, id, asset_server);
                     player.spawn_inner_player_ui(id);
                 }
             });
@@ -197,7 +207,12 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
         });
     }
 
-    fn spawn_outer_player_ui(&mut self, id: PlayerIDComponent, asset_server: &AssetServer) {
+    fn spawn_outer_player_ui(
+        &mut self,
+        character: &Character,
+        id: PlayerIDComponent,
+        asset_server: &AssetServer,
+    ) {
         self.spawn(NodeBundle {
             style: Style {
                 width: OUTER_WIDTH,
@@ -212,6 +227,7 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
         .with_children(|outer| {
             // First and bottom ability slot
             outer.spawn_player_ability_slot_ui(
+                character,
                 id,
                 AbilitySlotIDComponent::One,
                 id.has_flipped_ui(),
@@ -220,6 +236,7 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
 
             // Second and top ability slot
             outer.spawn_player_ability_slot_ui(
+                character,
                 id,
                 AbilitySlotIDComponent::Two,
                 id.has_flipped_ui(),
@@ -230,6 +247,7 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
 
     fn spawn_player_ability_slot_ui(
         &mut self,
+        character: &Character,
         player_id: PlayerIDComponent,
         ability_slot_id: AbilitySlotIDComponent,
         is_flipped: bool,
