@@ -1,6 +1,7 @@
 use bevy::{
     prelude::{Handle, Resource, TextureAtlasLayout},
     render::texture::Image,
+    text::Font,
 };
 use bevy_asset_loader::prelude::AssetCollection;
 use thetawave_interface::abilities::{SlotOneAbilityType, SlotTwoAbilityType};
@@ -27,6 +28,8 @@ pub struct UiAssets {
     pub left_ability_slot: Handle<Image>,
     #[asset(key = "ability_slot.right")]
     pub right_ability_slot: Handle<Image>,
+    #[asset(key = "font.wibletown")]
+    pub wibletown_font: Handle<Font>,
 }
 
 impl UiAssets {

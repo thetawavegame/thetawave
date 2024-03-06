@@ -19,4 +19,5 @@
     "ability_icon.standard_bullet": File ( path: "texture/bullet_ability.png"),
     "ability_slot.left": File ( path: "texture/ability_square_left.png"),
     "ability_slot.right": File ( path: "texture/ability_square_right.png"),
+    "font.wibletown": File (path: "fonts/wibletown-regular.otf"),
 })

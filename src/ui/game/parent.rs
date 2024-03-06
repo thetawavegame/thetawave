@@ -17,7 +17,7 @@ use thetawave_interface::{
     states::GameCleanup,
 };
 
-use crate::player::CharactersResource;
+use crate::{assets::UiAssets, player::CharactersResource};
 
 const TOP_ROW_HEIGHT: Val = Val::Percent(13.0);
 const TOP_CORNER_WIDTH: Val = Val::Percent(10.0);
@@ -48,14 +48,14 @@ pub trait PlayerUiChildBuilderExt {
         characters_res: &CharactersResource,
         id: PlayerIDComponent,
         players_res: &PlayersResource,
-        asset_server: &AssetServer,
+        ui_assets: &UiAssets,
     );
     fn spawn_inner_player_ui(&mut self, id: PlayerIDComponent);
     fn spawn_outer_player_ui(
         &mut self,
         character: &Character,
         id: PlayerIDComponent,
-        asset_server: &AssetServer,
+        ui_assets: &UiAssets,
     );
     fn spawn_player_ability_slot_ui(
         &mut self,
@@ -63,7 +63,7 @@ pub trait PlayerUiChildBuilderExt {
         player_id: PlayerIDComponent,
         ability_slot_id: AbilitySlotIDComponent,
         is_flipped: bool,
-        asset_server: &AssetServer,
+        ui_assets: &UiAssets,
     );
     fn spawn_player_armor_counter_ui(&mut self);
 }
@@ -71,11 +71,11 @@ pub trait PlayerUiChildBuilderExt {
 /// initializes the game ui hierarchy
 pub fn setup_game_ui_system(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
+    ui_assets: Res<UiAssets>,
     players_resource: Res<PlayersResource>,
     characters_resource: Res<CharactersResource>,
 ) {
-    let font: Handle<Font> = asset_server.load("fonts/wibletown-regular.otf");
+    let font: Handle<Font> = ui_assets.wibletown_font.clone();
 
     // Spawn the top level Node for all game ui and all of its child entities
     commands
@@ -170,7 +170,7 @@ pub fn setup_game_ui_system(
                             &characters_resource,
                             PlayerIDComponent::One,
                             &players_resource,
-                            &asset_server,
+                            &ui_assets,
                         );
                     });
 
@@ -209,7 +209,7 @@ pub fn setup_game_ui_system(
                             &characters_resource,
                             PlayerIDComponent::Two,
                             &players_resource,
-                            &asset_server,
+                            &ui_assets,
                         );
                     });
             });

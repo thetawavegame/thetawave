@@ -21,7 +21,7 @@ use thetawave_interface::{
     player::{PlayerIDComponent, PlayersResource},
 };
 
-use crate::player::CharactersResource;
+use crate::{assets::UiAssets, player::CharactersResource};
 
 use super::parent::PlayerUiChildBuilderExt;
 
@@ -90,7 +90,7 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
         characters_res: &CharactersResource,
         id: PlayerIDComponent,
         players_res: &PlayersResource,
-        asset_server: &AssetServer,
+        ui_assets: &UiAssets,
     ) {
         // Only spawn ui for player with id if its player slot is filled
         if let Some(player_data) = &players_res.player_data[id as usize] {
@@ -114,9 +114,9 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
             .with_children(|player| {
                 if id.has_flipped_ui() {
                     player.spawn_inner_player_ui(id);
-                    player.spawn_outer_player_ui(character, id, asset_server);
+                    player.spawn_outer_player_ui(character, id, ui_assets);
                 } else {
-                    player.spawn_outer_player_ui(character, id, asset_server);
+                    player.spawn_outer_player_ui(character, id, ui_assets);
                     player.spawn_inner_player_ui(id);
                 }
             });
@@ -211,7 +211,7 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
         &mut self,
         character: &Character,
         id: PlayerIDComponent,
-        asset_server: &AssetServer,
+        ui_assets: &UiAssets,
     ) {
         self.spawn(NodeBundle {
             style: Style {
@@ -231,7 +231,7 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
                 id,
                 AbilitySlotIDComponent::One,
                 id.has_flipped_ui(),
-                &asset_server,
+                ui_assets,
             );
 
             // Second and top ability slot
@@ -240,7 +240,7 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
                 id,
                 AbilitySlotIDComponent::Two,
                 id.has_flipped_ui(),
-                &asset_server,
+                ui_assets,
             );
         });
     }
@@ -251,13 +251,9 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
         player_id: PlayerIDComponent,
         ability_slot_id: AbilitySlotIDComponent,
         is_flipped: bool,
-        asset_server: &AssetServer,
+        ui_assets: &UiAssets,
     ) {
-        let ability_slot_image = asset_server.load(if is_flipped {
-            "texture/ability_square_right.png"
-        } else {
-            "texture/ability_square_left.png"
-        });
+        let ability_slot_image = ui_assets.get_ability_slot_image(is_flipped).clone();
 
         self.spawn(ImageBundle {
             image: ability_slot_image.into(),
