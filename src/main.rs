@@ -188,7 +188,7 @@ impl PluginGroup for ThetawaveGamePlugins {
             .add(arena::ArenaPlugin)
             .add(collision::CollisionPlugin)
             .add(scanner::ScannerPlugin)
-            .add(animation::AnimationPlugin)
+            .add(animation::SpriteAnimationPlugin)
             .add(states::StatesPlugin)
             .add(game::counters::plugin::CountingMetricsPlugin)
             .add(misc::HealthPlugin)
@@ -215,7 +215,7 @@ impl PluginGroup for ThetawaveGamePlugins {
 
 #[cfg(test)]
 mod test {
-    use crate::animation::AnimationPlugin;
+    use crate::animation::SpriteAnimationPlugin;
     use crate::audio::ThetawaveAudioPlugin;
     use crate::background::BackgroundPlugin;
     use crate::{build_app, options, ui, ThetawaveGamePlugins};
@@ -273,7 +273,7 @@ mod test {
             .disable::<AudioPlugin>()
             // The background plugin & animation plugins require the render pipeline, which I dont
             // not want in CI.
-            .disable::<AnimationPlugin>()
+            .disable::<SpriteAnimationPlugin>()
             .disable::<BackgroundPlugin>();
 
         let mut app = build_app(base_plugins, game_plugins);
