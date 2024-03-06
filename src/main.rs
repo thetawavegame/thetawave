@@ -24,8 +24,8 @@ mod background;
 mod camera;
 mod collision;
 mod game;
+mod health;
 mod loot;
-mod misc;
 mod options;
 mod player;
 mod run;
@@ -193,7 +193,7 @@ impl PluginGroup for ThetawaveGamePlugins {
             .add(animation::SpriteAnimationPlugin)
             .add(states::StatesPlugin)
             .add(game::counters::plugin::CountingMetricsPlugin)
-            .add(misc::HealthPlugin)
+            .add(health::HealthPlugin)
             .add(weapon::WeaponPlugin)
             .add(
                 RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(PHYSICS_PIXELS_PER_METER)
