@@ -10,6 +10,7 @@
         (Reset, KeyR),
         (ExitPauseMenu, Escape),
         (PauseGame, Escape),
+        (OptionsMenu, KeyO),
     ],
     menu_gamepad: [
         (ChangeCharacterGamepad, DPadLeft),
@@ -22,6 +23,7 @@
         (Reset, East),
         (ExitPauseMenu, Start),
         (PauseGame, Start),
+        (OptionsMenu, Select),
     ],
     player_keyboard: [
         (MoveUp, KeyW),
