@@ -24,7 +24,7 @@ pub struct AbilitiesResource {
     pub standard_bullet_ability: StandardWeaponAbilityBundle,
 }
 
-#[derive(Component, Deserialize, Clone, Copy)]
+#[derive(Component, Deserialize, Clone, Copy, PartialEq)]
 pub enum AbilitySlotIDComponent {
     One,
     Two,

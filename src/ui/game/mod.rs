@@ -24,7 +24,8 @@ impl Plugin for GameUiPlugin {
         app.add_systems(
             Update,
             (
-                player::update_player_ui_system,
+                player::update_player_health_ui_system,
+                player::update_player_abilities_ui_system,
                 phase::update_phase_ui_system,
                 level::update_level_ui_system,
                 game_center::update_center_text_ui_system,

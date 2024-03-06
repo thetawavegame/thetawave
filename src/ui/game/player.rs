@@ -6,7 +6,7 @@ use bevy::{
         query::{Changed, With},
         system::{Commands, ParamSet, Query},
     },
-    hierarchy::{BuildChildren, ChildBuilder, DespawnRecursiveExt},
+    hierarchy::{BuildChildren, ChildBuilder, Children, DespawnRecursiveExt},
     render::{color::Color, texture::Image},
     ui::{
         node_bundles::{ImageBundle, NodeBundle},
@@ -15,10 +15,10 @@ use bevy::{
     utils::default,
 };
 use thetawave_interface::{
-    abilities::AbilitySlotIDComponent,
+    abilities::{AbilityCooldownComponent, AbilitySlotIDComponent},
     character::Character,
     health::HealthComponent,
-    player::{self, PlayerIDComponent, PlayersResource},
+    player::{self, PlayerComponent, PlayerIDComponent, PlayersResource},
 };
 
 use crate::{assets::UiAssets, player::CharactersResource};
@@ -344,14 +344,39 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
     }
 }
 
-pub fn update_player_ui_system(
+pub fn update_player_abilities_ui_system(
+    player_query: Query<(&Children, &PlayerIDComponent), With<PlayerComponent>>,
+    player_ability_query: Query<(&AbilityCooldownComponent, &AbilitySlotIDComponent)>,
+    mut ability_ui_query: Query<
+        (&mut Style, &AbilitySlotIDComponent, &PlayerIDComponent),
+        With<AbilityValueUi>,
+    >,
+) {
+    for (mut style, ui_ability_slot_id, ability_slot_player_id) in ability_ui_query.iter_mut() {
+        for (player_children, player_id) in player_query.iter() {
+            if *player_id == *ability_slot_player_id {
+                for child in player_children.iter() {
+                    if let Ok((ability_cooldown, ability_slot_id)) =
+                        player_ability_query.get(*child)
+                    {
+                        if *ability_slot_id == *ui_ability_slot_id {
+                            style.height =
+                                Val::Percent(100.0 * ability_cooldown.0.fraction_remaining());
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+pub fn update_player_health_ui_system(
     mut commands: Commands,
     player_query: Query<(&HealthComponent, &PlayerIDComponent), Changed<HealthComponent>>,
     mut player_ui: ParamSet<(
         Query<(&mut Style, &PlayerIDComponent), With<HealthValueUi>>,
         Query<(&mut Style, &PlayerIDComponent), With<ShieldsValueUi>>,
         Query<(Entity, &PlayerIDComponent), With<ArmorUi>>,
-        Query<(&mut Style, &AbilitySlotIDComponent, &PlayerIDComponent)>,
     )>,
 ) {
     for (player_health, player_id) in player_query.iter() {
