@@ -48,7 +48,7 @@
             projectile_size: 1.0,
             projectile_count: 2,
 			slot_1_ability: Some(StandardBullet),
-			slot_2_ability: Some(MegaBlast),
+			slot_2_ability: Some(Charge),
 		),
 	}
 )

@@ -2,7 +2,7 @@ use bevy::{
     asset::{AssetServer, Handle},
     ecs::system::{Commands, Res},
     hierarchy::BuildChildren,
-    render::color::Color,
+    render::{color::Color, texture::Image},
     text::Font,
     ui::{
         node_bundles::NodeBundle, AlignItems, BackgroundColor, FlexDirection, JustifyContent,
@@ -66,6 +66,12 @@ pub trait PlayerUiChildBuilderExt {
         ui_assets: &UiAssets,
     );
     fn spawn_player_armor_counter_ui(&mut self);
+    fn spawn_player_ability_icon_ui(
+        &mut self,
+        player_id: PlayerIDComponent,
+        ability_slot_id: AbilitySlotIDComponent,
+        icon: Handle<Image>,
+    );
 }
 
 /// initializes the game ui hierarchy

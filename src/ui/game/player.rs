@@ -1,5 +1,5 @@
 use bevy::{
-    asset::AssetServer,
+    asset::{AssetServer, Handle},
     ecs::{
         component::Component,
         entity::Entity,
@@ -7,10 +7,10 @@ use bevy::{
         system::{Commands, ParamSet, Query},
     },
     hierarchy::{BuildChildren, ChildBuilder, DespawnRecursiveExt},
-    render::color::Color,
+    render::{color::Color, texture::Image},
     ui::{
         node_bundles::{ImageBundle, NodeBundle},
-        FlexDirection, Style, UiRect, Val,
+        FlexDirection, Style, UiImage, UiRect, Val,
     },
     utils::default,
 };
@@ -18,7 +18,7 @@ use thetawave_interface::{
     abilities::AbilitySlotIDComponent,
     character::Character,
     health::HealthComponent,
-    player::{PlayerIDComponent, PlayersResource},
+    player::{self, PlayerIDComponent, PlayersResource},
 };
 
 use crate::{assets::UiAssets, player::CharactersResource};
@@ -49,6 +49,7 @@ const ARMOR_COUNTER_MARGIN: UiRect =
     UiRect::new(Val::Px(0.0), Val::Px(0.0), Val::Vh(0.1), Val::Vh(0.1));
 const ARMOR_COUNTER_COLOR: Color = Color::GOLD;
 const ARMOR_COUNTER_ALPHA: f32 = 0.75;
+const ABILITY_VALUE_COLOR: Color = Color::rgba(0.0, 0.0, 0.0, 0.85);
 
 // Player data Uis
 #[derive(Component)]
@@ -74,6 +75,9 @@ pub struct AbilitySlotUi;
 
 #[derive(Component)]
 pub struct AbilityIconUi;
+
+#[derive(Component)]
+pub struct AbilityValueUi;
 
 #[derive(Component)]
 pub struct PlayerUi;
@@ -267,7 +271,62 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
         .insert(AbilitySlotUi)
         .insert(ability_slot_id)
         .insert(player_id)
-        .with_children(|ability_slot| {});
+        .with_children(|ability_slot| match &ability_slot_id {
+            AbilitySlotIDComponent::One => {
+                if let Some(slot_1_ability) = &character.slot_1_ability {
+                    ability_slot.spawn_player_ability_icon_ui(
+                        player_id,
+                        ability_slot_id,
+                        ui_assets.get_slot_1_ability_image(slot_1_ability),
+                    );
+                }
+            }
+            AbilitySlotIDComponent::Two => {
+                if let Some(slot_2_ability) = &character.slot_2_ability {
+                    ability_slot.spawn_player_ability_icon_ui(
+                        player_id,
+                        ability_slot_id,
+                        ui_assets.get_slot_2_ability_image(slot_2_ability),
+                    );
+                }
+            }
+        });
+    }
+
+    fn spawn_player_ability_icon_ui(
+        &mut self,
+        player_id: PlayerIDComponent,
+        ability_slot_id: AbilitySlotIDComponent,
+        image: Handle<Image>,
+    ) {
+        self.spawn(ImageBundle {
+            image: image.into(),
+            style: Style {
+                width: Val::Percent(100.0),
+                aspect_ratio: Some(1.0),
+                flex_direction: FlexDirection::Column,
+                ..default()
+            },
+            ..default()
+        })
+        .insert(AbilityIconUi)
+        .insert(player_id)
+        .insert(ability_slot_id)
+        .with_children(|ability_icon| {
+            ability_icon
+                .spawn(NodeBundle {
+                    style: Style {
+                        width: Val::Percent(100.0),
+                        height: Val::Percent(100.0),
+                        ..default()
+                    },
+                    background_color: ABILITY_VALUE_COLOR.into(),
+                    ..default()
+                })
+                .insert(player_id)
+                .insert(ability_slot_id)
+                .insert(AbilityValueUi);
+        });
     }
 
     fn spawn_player_armor_counter_ui(&mut self) {
