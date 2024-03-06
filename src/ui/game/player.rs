@@ -10,18 +10,42 @@ use bevy::{
     render::color::Color,
     ui::{
         node_bundles::{ImageBundle, NodeBundle},
-        BackgroundColor, FlexDirection, Style, UiRect, Val,
+        FlexDirection, Style, UiRect, Val,
     },
     utils::default,
 };
 use thetawave_interface::{
     abilities::AbilitySlotIDComponent,
-    character::CharacterType,
     health::HealthComponent,
     player::{PlayerIDComponent, PlayersResource},
 };
 
 use super::parent::PlayerUiChildBuilderExt;
+
+const INNER_PADDING: UiRect = UiRect::all(Val::Percent(5.0));
+const INNER_WIDTH: Val = Val::Percent(35.0);
+const OUTER_PADDING: UiRect = UiRect::all(Val::Percent(5.0));
+const OUTER_WIDTH: Val = Val::Percent(65.0);
+const HEALTH_HEIGHT: Val = Val::Percent(55.0);
+const HEALTH_COLOR: Color = Color::CRIMSON;
+const HEALTH_EMPTY_ALPHA: f32 = 0.05;
+const HEALTH_FILLED_ALPHA: f32 = 0.75;
+const SHIELDS_HEIGHT: Val = Val::Percent(25.0);
+const SHIELDS_COLOR: Color = Color::CYAN;
+const SHIELDS_EMPTY_ALPHA: f32 = 0.05;
+const SHIELDS_FILLED_ALPHA: f32 = 0.75;
+const ARMOR_HEIGHT: Val = Val::Percent(20.0);
+const ARMOR_PADDING: UiRect = UiRect {
+    left: Val::Percent(0.0),
+    right: Val::Percent(0.0),
+    top: Val::Vh(0.1),
+    bottom: Val::Vh(0.1),
+};
+const ARMOR_COUNTER_ASPECT_RATIO: Option<f32> = Some(10.0);
+const ARMOR_COUNTER_MARGIN: UiRect =
+    UiRect::new(Val::Px(0.0), Val::Px(0.0), Val::Vh(0.1), Val::Vh(0.1));
+const ARMOR_COUNTER_COLOR: Color = Color::GOLD;
+const ARMOR_COUNTER_ALPHA: f32 = 0.75;
 
 // Player data Uis
 #[derive(Component)]
@@ -86,15 +110,16 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
                     player.spawn_inner_player_ui(id);
                 }
             });
+            ()
         }
     }
 
     fn spawn_inner_player_ui(&mut self, id: PlayerIDComponent) {
         self.spawn(NodeBundle {
             style: Style {
-                width: Val::Percent(35.0),
+                width: INNER_WIDTH,
                 height: Val::Percent(100.0),
-                padding: UiRect::all(Val::Percent(5.0)),
+                padding: INNER_PADDING,
                 flex_direction: FlexDirection::ColumnReverse,
                 ..default()
             },
@@ -106,11 +131,11 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
                 .spawn(NodeBundle {
                     style: Style {
                         width: Val::Percent(100.0),
-                        height: Val::Percent(55.0),
+                        height: HEALTH_HEIGHT,
                         flex_direction: FlexDirection::ColumnReverse,
                         ..default()
                     },
-                    background_color: Color::CRIMSON.with_a(0.05).into(),
+                    background_color: HEALTH_COLOR.with_a(HEALTH_EMPTY_ALPHA).into(),
                     ..default()
                 })
                 .insert(HealthUi)
@@ -122,7 +147,7 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
                                 height: Val::Percent(100.0),
                                 ..default()
                             },
-                            background_color: Color::CRIMSON.with_a(0.75).into(),
+                            background_color: HEALTH_COLOR.with_a(HEALTH_FILLED_ALPHA).into(),
                             ..default()
                         })
                         .insert(HealthValueUi)
@@ -133,11 +158,11 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
                 .spawn(NodeBundle {
                     style: Style {
                         width: Val::Percent(100.0),
-                        height: Val::Percent(25.0),
+                        height: SHIELDS_HEIGHT,
                         flex_direction: FlexDirection::ColumnReverse,
                         ..default()
                     },
-                    background_color: Color::CYAN.with_a(0.05).into(),
+                    background_color: SHIELDS_COLOR.with_a(SHIELDS_EMPTY_ALPHA).into(),
                     ..default()
                 })
                 .insert(ShieldsUi)
@@ -149,7 +174,7 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
                                 height: Val::Percent(100.0),
                                 ..default()
                             },
-                            background_color: Color::CYAN.with_a(0.75).into(),
+                            background_color: SHIELDS_COLOR.with_a(SHIELDS_FILLED_ALPHA).into(),
                             ..default()
                         })
                         .insert(ShieldsValueUi)
@@ -160,13 +185,8 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
                 .spawn(NodeBundle {
                     style: Style {
                         width: Val::Percent(100.0),
-                        height: Val::Percent(20.0),
-                        padding: UiRect::new(
-                            Val::Percent(0.0),
-                            Val::Percent(0.0),
-                            Val::Vh(0.1),
-                            Val::Vh(0.1),
-                        ),
+                        height: ARMOR_HEIGHT,
+                        padding: ARMOR_PADDING,
                         flex_direction: FlexDirection::ColumnReverse,
                         ..default()
                     },
@@ -180,10 +200,10 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
     fn spawn_outer_player_ui(&mut self, id: PlayerIDComponent, asset_server: &AssetServer) {
         self.spawn(NodeBundle {
             style: Style {
-                width: Val::Percent(65.0),
+                width: OUTER_WIDTH,
                 height: Val::Percent(100.0),
                 flex_direction: FlexDirection::ColumnReverse,
-                padding: UiRect::all(Val::Percent(5.0)),
+                padding: OUTER_PADDING,
                 ..default()
             },
             ..default()
@@ -242,11 +262,11 @@ fn build_armor_counter(parent: &mut ChildBuilder) {
         .spawn(NodeBundle {
             style: Style {
                 width: Val::Percent(100.0),
-                aspect_ratio: Some(10.0),
-                margin: UiRect::new(Val::Px(0.0), Val::Px(0.0), Val::Vh(0.1), Val::Vh(0.1)),
+                aspect_ratio: ARMOR_COUNTER_ASPECT_RATIO,
+                margin: ARMOR_COUNTER_MARGIN,
                 ..default()
             },
-            background_color: Color::GOLD.with_a(0.75).into(),
+            background_color: ARMOR_COUNTER_COLOR.with_a(ARMOR_COUNTER_ALPHA).into(),
             ..default()
         })
         .insert(ArmorCounterUi);
