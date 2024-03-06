@@ -1,3 +1,4 @@
+//! Systems that draw things that go in the center of the screen.
 use crate::run::CurrentRunProgressResource;
 use bevy::{
     asset::Handle,
@@ -41,7 +42,8 @@ impl Default for FadeOutUIComponent {
     }
 }
 
-pub fn build_center_text_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
+/// Spawn a `TextBundle` with no text in the center of the screen.
+pub(super) fn build_center_text_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
     parent
         .spawn(TextBundle {
             style: Style::default(),
@@ -61,7 +63,7 @@ pub fn build_center_text_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
         .insert(FadeOutUIComponent::default());
 }
 
-pub fn update_center_text_ui_system(
+pub(super) fn update_center_text_ui_system(
     mut cycle_phase_event_reader: EventReader<CyclePhaseEvent>,
     run_resource: Res<CurrentRunProgressResource>,
     mut center_text_query: Query<
@@ -87,7 +89,8 @@ pub fn update_center_text_ui_system(
     }
 }
 
-pub fn text_fade_out_system(
+/// Gradually fade out text entities with a `FadeOutUIComponent`. This should be run every frame.
+pub(super) fn text_fade_out_system(
     mut background_color_query: Query<(&mut Text, &mut BackgroundColor, &mut FadeOutUIComponent)>,
     time: Res<Time>,
 ) {

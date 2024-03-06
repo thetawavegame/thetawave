@@ -21,7 +21,7 @@ use crate::{
 };
 
 /// Spawns player into the game
-pub fn spawn_players_system(
+pub(super) fn spawn_players_system(
     mut commands: Commands,
     characters: Res<CharactersResource>,
     game_parameters: Res<GameParametersResource>,

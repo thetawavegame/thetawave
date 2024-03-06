@@ -1,3 +1,5 @@
+//! Mainly exposes `Level` for moving between different phases of the same level, and progressing
+//! between levels.
 use crate::run::level_phase::LevelPhaseType;
 use crate::run::tutorial::modify_player_spawn_params_for_lesson_phase;
 use bevy::{prelude::*, time::Stopwatch};
@@ -22,7 +24,7 @@ use crate::spawnable::BossesDestroyedEvent;
 use super::{FormationPoolsResource, SpawnFormationEvent};
 
 #[derive(Resource, Deserialize)]
-pub struct PremadeLevelsResource {
+pub(super) struct PremadeLevelsResource {
     pub levels_data: HashMap<String, LevelData>,
 }
 
@@ -71,7 +73,7 @@ pub struct LevelData {
 
 pub type LevelPhases = VecDeque<LevelPhase>;
 
-/// Struct to manage a level
+/// The state of a full level. This will be mutated while the level is being played.
 #[derive(Clone, Debug)]
 pub struct Level {
     /// Phases that have been completed so far in the run

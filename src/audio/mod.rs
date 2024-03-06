@@ -1,3 +1,4 @@
+//! Exposes a plugin that starts, stops, and modulates in-game audio when events are emitted
 use bevy::prelude::{
     in_state, not, App, EventReader, IntoSystemConfigs, Plugin, Res, Resource, Startup, Update,
 };
@@ -9,7 +10,10 @@ use thetawave_interface::{
 
 use crate::assets::GameAudioAssets;
 
-pub struct ThetawaveAudioPlugin;
+/// Starts, stops, and modulates in-game audio when we receive a
+/// `thetawave_interface::audio::PlaySoundEffectEvent` or
+/// `thetawave_interface::audio::ChangeBackgroundMusicEvent`.
+pub(super) struct ThetawaveAudioPlugin;
 
 impl Plugin for ThetawaveAudioPlugin {
     fn build(&self, app: &mut App) {
@@ -38,8 +42,8 @@ pub struct MenuAudioChannel;
 #[derive(Resource)]
 pub struct SoundEffectsAudioChannel;
 
-/// Sets the volume of the audio channels
-pub fn set_audio_volume_system(
+/// Sets the volume of the audio channels to "sane defaults"
+fn set_audio_volume_system(
     background_audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
     menu_audio_channel: Res<AudioChannel<MenuAudioChannel>>,
     effects_audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
@@ -49,6 +53,7 @@ pub fn set_audio_volume_system(
     effects_audio_channel.set_volume(0.80);
 }
 
+/// Play sound effects when we receive events. This should be called every frame for snappy audio.
 fn play_sound_effect_system(
     mut play_sound_event_reader: EventReader<PlaySoundEffectEvent>,
     audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,

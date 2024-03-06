@@ -1,3 +1,5 @@
+//! Systems to spawn and style the character selection screen, where each player picks a character
+//! from one of a few options, and possibly enables/diables the tutorial.
 use crate::{options::PlayingOnArcadeResource, run::CurrentRunProgressResource};
 
 use super::BouncingPromptComponent;
@@ -32,45 +34,45 @@ use thetawave_interface::{
 };
 
 #[derive(Component)]
-pub struct CharacterSelectionUI;
+pub(super) struct CharacterSelectionUI;
 
 #[derive(Component)]
-pub struct Player1JoinPrompt;
+pub(super) struct Player1JoinPrompt;
 
 #[derive(Component)]
-pub struct Player1CharacterSelection;
+pub(super) struct Player1CharacterSelection;
 
 #[derive(Component)]
-pub struct Player2JoinPrompt;
+pub(super) struct Player2JoinPrompt;
 
 #[derive(Component)]
-pub struct Player2CharacterSelection;
+pub(super) struct Player2CharacterSelection;
 
 #[derive(Component)]
-pub struct CharacterSelectionChoice {
+pub(super) struct CharacterSelectionChoice {
     pub character: CharacterType,
     pub is_active: bool,
 }
 
 #[derive(Component)]
-pub struct CharacterDescription {
+pub(super) struct CharacterDescription {
     pub character: Option<CharacterType>,
 }
 
 #[derive(Component)]
-pub struct Player1Description;
+pub(super) struct Player1Description;
 
 #[derive(Component)]
-pub struct Player2Description;
+pub(super) struct Player2Description;
 
 #[derive(Component)]
-pub struct StartGamePrompt;
+pub(super) struct StartGamePrompt;
 
 #[derive(Component)]
-pub struct ToggleTutorialUI;
+pub(super) struct ToggleTutorialUI;
 
 /// Setup the character selection UI
-pub fn setup_character_selection_system(
+pub(super) fn setup_character_selection_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     playing_on_arcade: Res<PlayingOnArcadeResource>,
@@ -557,7 +559,7 @@ pub fn setup_character_selection_system(
 }
 
 /// Handles players joining the game
-pub fn player_join_system(
+pub(super) fn player_join_system(
     menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
     mut gamepad_events: EventReader<GamepadButtonChangedEvent>,
     mut players_resource: ResMut<PlayersResource>,
@@ -652,8 +654,8 @@ pub fn player_join_system(
     }
 }
 
-// Toggle whether to enable tutorials for the run
-pub fn toggle_tutorial_system(
+/// Toggle whether to enable tutorials for the run
+pub(super) fn toggle_tutorial_system(
     menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
     mut run_resource: ResMut<CurrentRunProgressResource>,
     mut sound_effect_pub: EventWriter<PlaySoundEffectEvent>,
@@ -689,7 +691,7 @@ pub fn toggle_tutorial_system(
 }
 
 // handle the character selection for each player
-pub fn select_character_system(
+pub(super) fn select_character_system(
     menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
     mut gamepad_events: EventReader<GamepadButtonChangedEvent>,
     mut players_resource: ResMut<PlayersResource>,
