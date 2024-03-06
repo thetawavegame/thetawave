@@ -24,6 +24,11 @@ const TEXT_COLOR: Color = Color::WHITE;
 const FONT_SIZE: f32 = 48.0;
 const LEVEL_DATA_PADDING: UiRect =
     UiRect::new(Val::Vw(1.0), Val::Vw(1.0), Val::Vh(2.0), Val::Vh(2.0));
+const DEFENSE_COLOR: Color = Color::BLUE;
+const DEFENSE_COLOR_EMPTY_ALPHA: f32 = 0.05;
+const DEFENSE_COLOR_FILLED_ALPHA: f32 = 0.75;
+const DEFENSE_WIDTH: Val = Val::Percent(80.0);
+const DEFENSE_HEIGHT: Val = Val::Percent(60.0);
 
 /// Used for querying UI for displaying name
 #[derive(Component)]
@@ -108,12 +113,14 @@ pub fn update_level_ui_system(
                             level_data_ui
                                 .spawn(NodeBundle {
                                     style: Style {
-                                        width: Val::Percent(80.0),
-                                        height: Val::Percent(60.0),
+                                        width: DEFENSE_WIDTH,
+                                        height: DEFENSE_HEIGHT,
                                         flex_direction: FlexDirection::Row,
                                         ..default()
                                     },
-                                    background_color: Color::BLUE.with_a(0.05).into(),
+                                    background_color: DEFENSE_COLOR
+                                        .with_a(DEFENSE_COLOR_EMPTY_ALPHA)
+                                        .into(),
                                     ..default()
                                 })
                                 .with_children(|defense_ui| {
@@ -125,7 +132,9 @@ pub fn update_level_ui_system(
                                             height: Val::Percent(100.0),
                                             ..default()
                                         },
-                                        background_color: Color::BLUE.with_a(0.75).into(),
+                                        background_color: DEFENSE_COLOR
+                                            .with_a(DEFENSE_COLOR_FILLED_ALPHA)
+                                            .into(),
                                         ..default()
                                     });
                                 });
