@@ -1,20 +1,31 @@
-use bevy::prelude::*;
+//! Exposes a plugin that changes a player/mob's health and shields based on time and events
+use crate::spawnable::SpawnEffectEvent;
+use bevy::prelude::{
+    App, Entity, EventReader, EventWriter, Plugin, Query, Res, Time, Transform, Update,
+};
 use thetawave_interface::{
     health::{DamageDealtEvent, HealthComponent},
     spawnable::{EffectType, TextEffectType},
 };
+/// Includes systems to decrease a player's health and regenerate their shields over time.
+pub(super) struct HealthPlugin;
 
-use crate::spawnable::SpawnEffectEvent;
+impl Plugin for HealthPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_event::<DamageDealtEvent>()
+            .add_systems(Update, (damage_system, regenerate_shields_system));
+    }
+}
 
 /// Handle player health regeneration
-pub fn regenerate_shields_system(mut health_query: Query<&mut HealthComponent>, time: Res<Time>) {
+fn regenerate_shields_system(mut health_query: Query<&mut HealthComponent>, time: Res<Time>) {
     for mut health in health_query.iter_mut() {
         health.regenerate_shields(time.delta());
     }
 }
 
 /// Receive damage dealt events, apply damage, and spawn effects
-pub fn damage_system(
+fn damage_system(
     mut damage_dealt_events: EventReader<DamageDealtEvent>,
     mut health_query: Query<(Entity, &Transform, &mut HealthComponent)>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
@@ -33,7 +44,7 @@ pub fn damage_system(
                     ..Default::default()
                 },
                 text: Some(event.damage.to_string()),
-                ..default()
+                ..Default::default()
             });
         }
     }
