@@ -44,9 +44,9 @@ pub fn set_audio_volume_system(
     menu_audio_channel: Res<AudioChannel<MenuAudioChannel>>,
     effects_audio_channel: Res<AudioChannel<SoundEffectsAudioChannel>>,
 ) {
-    background_audio_channel.set_volume(0.70);
+    background_audio_channel.set_volume(0.20);
     menu_audio_channel.set_volume(0.05);
-    effects_audio_channel.set_volume(0.60);
+    effects_audio_channel.set_volume(0.80);
 }
 
 fn play_sound_effect_system(

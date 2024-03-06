@@ -28,6 +28,7 @@ use crate::assets::ItemAssets;
 use crate::assets::MobAssets;
 use crate::assets::PlayerAssets;
 use crate::assets::ProjectileAssets;
+use crate::assets::UiAssets;
 use crate::GameEnterSet;
 use crate::GameUpdateSet;
 
@@ -60,13 +61,15 @@ impl Plugin for StatesPlugin {
                 .with_dynamic_assets_file::<StandardDynamicAssetCollection>(
                     "game_audio_assets.assets.ron",
                 )
+                .with_dynamic_assets_file::<StandardDynamicAssetCollection>("ui_assets.assets.ron")
                 .load_collection::<PlayerAssets>()
                 .load_collection::<ProjectileAssets>()
                 .load_collection::<MobAssets>()
                 .load_collection::<ItemAssets>()
                 .load_collection::<ConsumableAssets>()
                 .load_collection::<EffectAssets>()
-                .load_collection::<GameAudioAssets>(),
+                .load_collection::<GameAudioAssets>()
+                .load_collection::<UiAssets>(),
         );
 
         app.edit_schedule(OnEnter(AppStates::Game), |schedule| {
@@ -107,11 +110,6 @@ impl Plugin for StatesPlugin {
             open_pause_menu_system
                 .run_if(in_state(AppStates::Game))
                 .run_if(in_state(GameStates::Playing)),
-        );
-
-        app.add_systems(
-            Update,
-            start_instructions_system.run_if(in_state(AppStates::MainMenu)),
         );
 
         app.add_systems(

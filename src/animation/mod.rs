@@ -24,6 +24,10 @@ impl Plugin for AnimationPlugin {
             animate_sprite_system
                 .run_if(in_state(states::AppStates::Game))
                 .run_if(in_state(states::GameStates::Playing)),
+        )
+        .add_systems(
+            Update,
+            animate_sprite_system.run_if(in_state(states::AppStates::MainMenu)),
         );
 
         app.add_event::<AnimationCompletedEvent>();
