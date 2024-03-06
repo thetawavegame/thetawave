@@ -2,7 +2,6 @@
 use bevy::{
     asset::AssetServer,
     ecs::{
-        component::Component,
         event::EventWriter,
         system::{Commands, Res},
     },
@@ -27,10 +26,8 @@ use thetawave_interface::{
 
 use crate::{options::PlayingOnArcadeResource, ui::BouncingPromptComponent};
 
-#[derive(Component)]
-pub struct GameOverUI;
-
-pub fn setup_game_over_system(
+/// Spawn the styled UI elements for the game over screen. It should tell the player how they did.
+pub(super) fn setup_game_over_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
@@ -66,7 +63,6 @@ pub fn setup_game_over_system(
             ..Default::default()
         })
         .insert(GameOverCleanup)
-        .insert(GameOverUI)
         .with_children(|parent| {
             parent
                 .spawn(ImageBundle {
