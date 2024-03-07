@@ -22,7 +22,7 @@ use thetawave_interface::spawnable::EffectType;
 
 pub use self::abilities::*;
 pub use self::movement::{player_movement_system, player_tilt_system};
-pub use self::upgrades::scale_fire_rate_system;
+pub use self::upgrades::scale_ability_cooldowns_system;
 
 use super::PlayersResource;
 
