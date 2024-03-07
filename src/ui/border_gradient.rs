@@ -12,7 +12,7 @@ use bevy::{
     time::{Time, Timer, TimerMode},
     ui::{
         node_bundles::{ImageBundle, NodeBundle},
-        BackgroundColor, FlexDirection, Style, Val, ZIndex,
+        BackgroundColor, FlexDirection, Style, Val,
     },
     utils::default,
 };
@@ -20,8 +20,9 @@ use thetawave_interface::objective::{DefenseInteraction, MobReachedBottomGateEve
 
 use crate::assets::UiAssets;
 
-const BG_DURATION: f32 = 0.4;
-const BG_MAX_ALPHA: f32 = 0.5;
+const DURATION: f32 = 0.4;
+const MAX_ALPHA: f32 = 0.5;
+const HEIGHT: Val = Val::Percent(15.0);
 
 #[derive(Event, PartialEq)]
 pub(super) enum BorderGradientType {
@@ -50,7 +51,6 @@ impl UiCommandsExt for Commands<'_, '_> {
                 flex_direction: FlexDirection::ColumnReverse,
                 ..default()
             },
-            z_index: ZIndex::Local(1),
             ..default()
         })
         .with_children(|parent| {
@@ -58,7 +58,7 @@ impl UiCommandsExt for Commands<'_, '_> {
                 .spawn(ImageBundle {
                     style: Style {
                         width: Val::Percent(100.0),
-                        height: Val::Percent(5.0),
+                        height: HEIGHT,
                         ..default()
                     },
                     image: match bg_type {
@@ -72,8 +72,8 @@ impl UiCommandsExt for Commands<'_, '_> {
                 .insert(BorderGradientComponent {
                     bg_type,
                     timer: {
-                        let mut timer = Timer::from_seconds(BG_DURATION, TimerMode::Once);
-                        timer.set_elapsed(Duration::from_secs_f32(BG_DURATION));
+                        let mut timer = Timer::from_seconds(DURATION, TimerMode::Once);
+                        timer.set_elapsed(Duration::from_secs_f32(DURATION));
                         timer
                     },
                 });
@@ -82,13 +82,12 @@ impl UiCommandsExt for Commands<'_, '_> {
 }
 
 pub(super) fn border_gradient_start_system(
-    mut bg_query: Query<(&mut BorderGradientComponent, &mut BackgroundColor)>,
+    mut bg_query: Query<&mut BorderGradientComponent>,
     mut bg_event_reader: EventReader<BorderGradientEvent>,
 ) {
     for event in bg_event_reader.read() {
-        for (mut bg_component, mut background_color) in bg_query.iter_mut() {
+        for mut bg_component in bg_query.iter_mut() {
             if bg_component.bg_type == *event {
-                background_color.0.set_a(1.0);
                 bg_component.timer.reset();
             }
         }
@@ -103,7 +102,7 @@ pub(super) fn border_gradient_update_system(
         bg_component.timer.tick(time.delta());
         background_color
             .0
-            .set_a(BG_MAX_ALPHA * f32::sin(PI * bg_component.timer.fraction()));
+            .set_a(MAX_ALPHA * f32::sin(PI * bg_component.timer.fraction()));
     }
 }
 
