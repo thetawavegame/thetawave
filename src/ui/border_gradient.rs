@@ -23,20 +23,20 @@ const BG_DURATION: f32 = 0.4;
 const BG_MAX_ALPHA: f32 = 0.5;
 
 #[derive(Event, PartialEq)]
-pub enum BorderGradientType {
+pub(super) enum BorderGradientType {
     Warning,
     Defense,
 }
 
-pub type BorderGradientEvent = BorderGradientType;
+pub(super) type BorderGradientEvent = BorderGradientType;
 
 #[derive(Component)]
-pub struct BorderGradientComponent {
+pub(super) struct BorderGradientComponent {
     pub bg_type: BorderGradientType,
     pub timer: Timer,
 }
 
-pub trait UiCommandsExt {
+pub(super) trait UiCommandsExt {
     fn spawn_border_gradient(&mut self, asset_server: &AssetServer, bg_type: BorderGradientType);
 }
 
@@ -81,7 +81,7 @@ impl UiCommandsExt for Commands<'_, '_> {
     }
 }
 
-pub fn border_gradient_start_system(
+pub(super) fn border_gradient_start_system(
     mut bg_query: Query<(&mut BorderGradientComponent, &mut BackgroundColor)>,
     mut bg_event_reader: EventReader<BorderGradientEvent>,
 ) {
@@ -95,7 +95,7 @@ pub fn border_gradient_start_system(
     }
 }
 
-pub fn border_gradient_update_system(
+pub(super) fn border_gradient_update_system(
     mut bg_query: Query<(&mut BorderGradientComponent, &mut BackgroundColor)>,
     time: Res<Time>,
 ) {
@@ -108,7 +108,7 @@ pub fn border_gradient_update_system(
 }
 
 /// Trigger a border gradient event mobs reach the bottom gate
-pub fn border_gradient_on_gate_interaction(
+pub(super) fn border_gradient_on_gate_interaction(
     mut gate_events: EventReader<MobReachedBottomGateEvent>,
     mut bg_event_writer: EventWriter<BorderGradientEvent>,
 ) {
