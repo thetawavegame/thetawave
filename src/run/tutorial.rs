@@ -28,11 +28,12 @@ pub(super) fn modify_player_spawn_params_for_lesson_phase(
             (*spawn_params).forbid_main_attack_reason = Some("In movement tutorial".into());
             (*spawn_params).forbid_special_attack_reason = Some("In movement tutorial".into());
         }
-        TutorialLesson::Attack { .. } => {
-            (*spawn_params).forbid_special_attack_reason = Some("In attack tutorial".into());
+        TutorialLesson::AbilitySlotOne { .. } => {
+            (*spawn_params).forbid_special_attack_reason =
+                Some("In ability slot one tutorial".into());
         }
-        TutorialLesson::Ability { .. } => {
-            (*spawn_params).forbid_main_attack_reason = Some("In ability tutorial".into());
+        TutorialLesson::AbilitySlotTwo { .. } => {
+            (*spawn_params).forbid_main_attack_reason = Some("In ability slot two tutorial".into());
         }
     }
 }
@@ -51,14 +52,14 @@ pub enum TutorialLesson {
         down_left_timer: Timer,
         down_right_timer: Timer,
     },
-    Attack {
+    AbilitySlotOne {
         mobs_to_destroy: usize,
         mobs_to_protect: usize,
         initial_spawn_timer: Timer,
         spawn_range_x: Range<f32>,
         spawn_y: f32,
     },
-    Ability {
+    AbilitySlotTwo {
         mobs_to_destroy: usize,
         initial_spawn_timer: Timer,
         spawn_range_x: Range<f32>,
@@ -70,13 +71,13 @@ impl TutorialLesson {
     pub fn get_name(&self) -> String {
         match self {
             TutorialLesson::Movement { .. } => "Movement".to_string(),
-            TutorialLesson::Attack { .. } => "Attack".to_string(),
-            TutorialLesson::Ability { .. } => "Ability".to_string(),
+            TutorialLesson::AbilitySlotOne { .. } => "Ability Slot One".to_string(),
+            TutorialLesson::AbilitySlotTwo { .. } => "Ability Slot Two".to_string(),
         }
     }
 
     pub fn get_ability_strs(&self) -> Vec<(String, bool)> {
-        vec![if let Self::Ability {
+        vec![if let Self::AbilitySlotTwo {
             mobs_to_destroy, ..
         } = self
         {
@@ -97,7 +98,7 @@ impl TutorialLesson {
     }
 
     fn get_mobs_to_destroy_str(&self) -> (String, bool) {
-        if let Self::Attack {
+        if let Self::AbilitySlotOne {
             mobs_to_destroy, ..
         } = self
         {
@@ -111,7 +112,7 @@ impl TutorialLesson {
     }
 
     fn get_mobs_to_protect_str(&self) -> (String, bool) {
-        if let Self::Attack {
+        if let Self::AbilitySlotOne {
             mobs_to_protect, ..
         } = self
         {
@@ -277,7 +278,7 @@ impl TutorialLesson {
         // tutorial will only be run for single player
         if let Ok(action_state) = player_query.get_single() {
             let finished_tutorial_phase = match self {
-                TutorialLesson::Attack { .. } => self.attack_tutorial(
+                TutorialLesson::AbilitySlotOne { .. } => self.attack_tutorial(
                     mob_destroyed_event,
                     time,
                     spawn_mob_event_writer,
@@ -285,7 +286,7 @@ impl TutorialLesson {
                     mob_segment_destroyed_event,
                     play_sound_effect_event_writer,
                 ),
-                TutorialLesson::Ability { .. } => self.ability_tutorial(
+                TutorialLesson::AbilitySlotTwo { .. } => self.ability_tutorial(
                     mob_destroyed_event,
                     time,
                     spawn_mob_event_writer,
@@ -318,7 +319,7 @@ impl TutorialLesson {
         mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
         play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
     ) -> bool {
-        if let TutorialLesson::Attack {
+        if let TutorialLesson::AbilitySlotOne {
             mobs_to_destroy,
             mobs_to_protect,
             initial_spawn_timer,
@@ -438,7 +439,7 @@ impl TutorialLesson {
         mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
         play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
     ) -> bool {
-        if let TutorialLesson::Ability {
+        if let TutorialLesson::AbilitySlotTwo {
             mobs_to_destroy,
             initial_spawn_timer,
             spawn_range_x,

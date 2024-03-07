@@ -233,7 +233,7 @@ pub fn update_phase_ui_system(
                                             });
                                         }
                                     }
-                                    TutorialLesson::Attack { .. } => {
+                                    TutorialLesson::AbilitySlotOne { .. } => {
                                         for (progress_str, completed) in
                                             tutorial_lesson.get_attack_strs().iter()
                                         {
@@ -259,7 +259,7 @@ pub fn update_phase_ui_system(
                                             });
                                         }
                                     }
-                                    TutorialLesson::Ability { .. } => {
+                                    TutorialLesson::AbilitySlotTwo { .. } => {
                                         for (progress_str, completed) in
                                             tutorial_lesson.get_ability_strs().iter()
                                         {
