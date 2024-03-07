@@ -359,8 +359,9 @@ pub fn update_player_abilities_ui_system(
                         player_ability_query.get(*child)
                     {
                         if *ability_slot_id == *ui_ability_slot_id {
-                            style.height =
-                                Val::Percent(100.0 * ability_cooldown.0.fraction_remaining());
+                            style.height = Val::Percent(
+                                100.0 * ability_cooldown.cooldown_timer.fraction_remaining(),
+                            );
                         }
                     }
                 }

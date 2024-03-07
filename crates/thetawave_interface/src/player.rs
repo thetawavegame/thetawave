@@ -163,6 +163,19 @@ pub struct PlayerOutgoingDamageComponent {
     pub projectile_size: f32,
     /// Base projectile count
     pub projectile_count: usize,
+    /// Starting cooldown multiplier of the player. Used in calculating the the `cooldown_multiplier`
+    base_cooldown_multiplier: f32,
+    /// Multiplier for how long abilities take to be ready for use again
+    pub cooldown_multiplier: f32,
+}
+
+impl PlayerOutgoingDamageComponent {
+    /// Updates the `cooldown_multilier` using the `base_cooldown_multiplier` and a money parameter
+    /// along an exponential decay curve
+    pub fn update_cooldown_multiplier_from_collected_money(&mut self, money: usize) {
+        self.cooldown_multiplier =
+            1.0 + (self.base_cooldown_multiplier - 1.0) * f32::exp(-0.1 * money as f32);
+    }
 }
 
 /// Stores stats that effect damage incoming to the player
@@ -215,10 +228,12 @@ impl From<&Character> for PlayerOutgoingDamageComponent {
             collision_damage: character.collision_damage,
             weapon_damage: character.weapon_damage,
             projectile_speed: character.projectile_speed,
-            projectile_spawn_position: character.projectile_spawn_position.clone(),
+            projectile_spawn_position: character.projectile_spawn_position,
             projectile_despawn_time: character.projectile_despawn_time,
             projectile_size: character.projectile_size,
             projectile_count: character.projectile_count,
+            cooldown_multiplier: character.cooldown_multiplier,
+            base_cooldown_multiplier: character.cooldown_multiplier,
         }
     }
 }

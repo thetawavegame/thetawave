@@ -62,6 +62,8 @@ pub struct Character {
     pub slot_1_ability: Option<SlotOneAbilityType>,
     /// Optional ability taking up the second ability slot
     pub slot_2_ability: Option<SlotTwoAbilityType>,
+    /// Multiplier for how long abilities take to be ready for use again
+    pub cooldown_multiplier: f32,
 }
 
 impl From<&Character> for HealthComponent {

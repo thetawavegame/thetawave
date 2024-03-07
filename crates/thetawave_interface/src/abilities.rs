@@ -49,7 +49,10 @@ pub enum AbilitySlotIDComponent {
 }
 
 #[derive(Component, Deserialize, Clone)]
-pub struct AbilityCooldownComponent(pub Timer);
+pub struct AbilityCooldownComponent {
+    pub base_cooldown_time: f32,
+    pub cooldown_timer: Timer,
+}
 
 /// Charge ability bundle for spawning entity as a child of player component
 #[derive(Bundle, Deserialize, Clone)]

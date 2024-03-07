@@ -2,6 +2,7 @@
 
 mod abilities;
 mod movement;
+mod upgrades;
 
 use crate::{game::GameParametersResource, spawnable::SpawnEffectEvent};
 
@@ -21,6 +22,7 @@ use thetawave_interface::spawnable::EffectType;
 
 pub use self::abilities::*;
 pub use self::movement::{player_movement_system, player_tilt_system};
+pub use self::upgrades::scale_fire_rate_system;
 
 use super::PlayersResource;
 
