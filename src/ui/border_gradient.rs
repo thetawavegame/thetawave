@@ -1,7 +1,6 @@
 use std::{f32::consts::PI, time::Duration};
 
 use bevy::{
-    asset::AssetServer,
     ecs::{
         component::Component,
         event::{Event, EventReader, EventWriter},
