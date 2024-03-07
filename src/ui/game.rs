@@ -6,7 +6,10 @@ use bevy::{
     ui::{node_bundles::NodeBundle, AlignItems, FlexDirection, JustifyContent, Style, Val},
     utils::default,
 };
-use thetawave_interface::{player::PlayersResource, states::GameCleanup};
+use thetawave_interface::{
+    player::{PlayerIDComponent, PlayersResource},
+    states::GameCleanup,
+};
 
 use super::{
     border_gradient::{BorderGradientType, UiCommandsExt},
@@ -118,7 +121,12 @@ pub fn setup_game_ui_system(
                         })
                         .with_children(|left_ui| {
                             // build player 1 ui
-                            build_player_ui(0, left_ui, &players_resource, &asset_server);
+                            build_player_ui(
+                                PlayerIDComponent::One,
+                                left_ui,
+                                &players_resource,
+                                &asset_server,
+                            );
                         });
 
                     // middle column of ui at the center of the window (over the top of the arena)
@@ -149,7 +157,12 @@ pub fn setup_game_ui_system(
                         })
                         .with_children(|right_ui| {
                             // build player 2 ui
-                            build_player_ui(1, right_ui, &players_resource, &asset_server);
+                            build_player_ui(
+                                PlayerIDComponent::Two,
+                                right_ui,
+                                &players_resource,
+                                &asset_server,
+                            );
                         });
                 });
 

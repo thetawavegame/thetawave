@@ -1,5 +1,5 @@
 use crate::core::{get_db, OurDBError, ENEMY_KILL_HISTORY_TABLE_NAME, USERSTAT};
-use bevy::utils::tracing::{error, info};
+use bevy::log::{error, info};
 use rusqlite::{params, Result};
 use thetawave_interface::spawnable::EnemyMobType;
 

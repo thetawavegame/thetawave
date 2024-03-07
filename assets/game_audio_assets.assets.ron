@@ -62,4 +62,31 @@
     "sounds.objective_completed": File (
         path: "sounds/objective_completed.wav",
     ),
+    "sounds.button_select_1": File (
+        path: "sounds/button_select_1.wav",
+    ),
+    "sounds.button_select_2": File (
+        path: "sounds/button_select_2.wav",
+    ),
+    "sounds.button_select_3": File (
+        path: "sounds/button_select_3.wav",
+    ),
+    "sounds.button_select_4": File (
+        path: "sounds/button_select_4.wav",
+    ),
+    "sounds.button_select_5": File (
+        path: "sounds/button_select_5.wav",
+    ),
+    "sounds.button_release_1": File (
+        path: "sounds/button_release_1.wav",
+    ),
+    "sounds.button_release_2": File (
+        path: "sounds/button_release_2.wav",
+    ),
+    "sounds.button_release_3": File (
+        path: "sounds/button_release_3.wav",
+    ),
+    "sounds.button_confirm": File (
+        path: "sounds/button_confirm.wav",
+    ),
 })

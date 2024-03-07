@@ -2,18 +2,15 @@
 use crate::collision::SortedCollisionEvent;
 use crate::spawnable::FireWeaponEvent;
 use bevy::prelude::{debug, App, Entity, EventReader, OnEnter, Plugin, Query, ResMut, Update};
+use thetawave_interface::player::PlayerIDComponent;
 
 use std::collections::HashMap;
+use thetawave_interface::game::historical_metrics::{
+    MobKillsByPlayerForCompletedGames, MobKillsByPlayerForCurrentGame, UserStat,
+    UserStatsByPlayerForCompletedGamesCache, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
+};
 use thetawave_interface::spawnable::{MobDestroyedEvent, MobType};
 use thetawave_interface::states::AppStates;
-use thetawave_interface::{
-    game::historical_metrics::{
-        MobKillsByPlayerForCompletedGames, MobKillsByPlayerForCurrentGame, UserStat,
-        UserStatsByPlayerForCompletedGamesCache, UserStatsByPlayerForCurrentGameCache,
-        DEFAULT_USER_ID,
-    },
-    player::PlayerComponent,
-};
 
 /// Maintains/mutates singleton resources that keep track of metrics for the current game. Mostly
 /// incrementing a reseting counters.
@@ -77,11 +74,11 @@ fn inc_in_memory_mob_destroyed_for_current_game_cache(
     }
 }
 fn find_player_1<'a, 'b: 'a>(
-    player_query: &'a Query<(Entity, &'b PlayerComponent)>,
+    player_query: &'a Query<(Entity, &'b PlayerIDComponent)>,
 ) -> Option<Entity> {
     player_query
         .iter()
-        .find(|(_, pc)| pc.player_index == 0)
+        .find(|(_, id)| matches!(id, PlayerIDComponent::One))
         .map(|(entity, _)| entity)
 }
 fn mob_projectile_collision_originates_from_entity(
@@ -104,7 +101,7 @@ fn mob_projectile_collision_originates_from_entity(
 fn inc_in_memory_projectile_hits_counter_system(
     mut current_game_user_stats: ResMut<UserStatsByPlayerForCurrentGameCache>,
     mut collision_event_reader: EventReader<SortedCollisionEvent>,
-    player_query: Query<(Entity, &PlayerComponent)>,
+    player_query: Query<(Entity, &PlayerIDComponent)>,
 ) {
     if let Some(player_1_entity_id) = find_player_1(&player_query) {
         let n_player_1_hit_shots = collision_event_reader
@@ -122,11 +119,11 @@ fn inc_in_memory_projectile_hits_counter_system(
 fn count_shots_fired_by_player_1_system(
     mut current_game_user_stats: ResMut<UserStatsByPlayerForCurrentGameCache>,
     mut fire_weapon_event_reader: EventReader<FireWeaponEvent>,
-    query: Query<(Entity, &PlayerComponent)>,
+    query: Query<(Entity, &PlayerIDComponent)>,
 ) {
     let maybe_player_1_entity_id = query
         .iter()
-        .find(|(_, pc)| pc.player_index == 0)
+        .find(|(_, id)| matches!(id, PlayerIDComponent::One))
         .map(|(x, _)| x);
     let n_p1_shots_fired = match maybe_player_1_entity_id {
         Some(player_1) => fire_weapon_event_reader
@@ -203,7 +200,7 @@ mod test {
     use thetawave_interface::game::historical_metrics::{
         MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
     };
-    use thetawave_interface::player::PlayerComponent;
+    use thetawave_interface::player::{PlayerBundle, PlayerComponent};
     use thetawave_interface::spawnable::{
         EnemyMobType, Faction, MobDestroyedEvent, MobType, ProjectileType, SpawnPosition,
     };
@@ -263,9 +260,9 @@ mod test {
             .get(&CharacterType::Captain)
             .cloned()
             .unwrap();
-        let player_1: PlayerComponent = PlayerComponent::from(&player_1_character);
+        let player_1: PlayerBundle = PlayerBundle::from(&player_1_character);
 
-        let player_1_entity = app.world.spawn(player_1.clone());
+        let player_1_entity = app.world.spawn(player_1);
         let player_1_projectile_event = FireWeaponEvent {
             weapon_projectile_data: WeaponProjectileData {
                 ammunition: ProjectileType::Bullet(Faction::Ally),

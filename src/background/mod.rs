@@ -38,7 +38,7 @@ use std::ops::Range;
 use thetawave_interface::{
     game::options::GameOptions,
     run::{RunDefeatType, RunEndEvent, RunOutcomeType},
-    states::{self, GameCleanup},
+    states::{self, GameCleanup, MainMenuCleanup},
 };
 use thiserror::Error;
 
@@ -57,6 +57,16 @@ impl Plugin for BackgroundPlugin {
         app.add_systems(
             OnEnter(states::AppStates::Game),
             create_background_system.in_set(GameEnterSet::BuildLevel),
+        );
+
+        app.add_systems(
+            OnEnter(states::AppStates::MainMenu),
+            create_background_system,
+        );
+
+        app.add_systems(
+            Update,
+            rotate_planet_system.run_if(in_state(states::AppStates::MainMenu)),
         );
 
         app.add_systems(
@@ -197,7 +207,8 @@ pub fn create_background_system(
     let mut rng = rand::thread_rng();
 
     // Choose random positions for the bodies
-    let background_transform = Transform::from_translation(backgrounds_res.background_transation);
+    let background_transform = Transform::from_translation(backgrounds_res.background_transation)
+        .with_scale(Vec3::new(1.5, 1.5, 1.0));
     let star_transform = Transform::from_xyz(
         rng.gen_range(backgrounds_res.star_position_x_range.clone()),
         0.0,
@@ -213,6 +224,7 @@ pub fn create_background_system(
                 rotation_speed: rng.gen_range(backgrounds_res.rotation_speed_range.clone()),
             })
             .insert(GameCleanup)
+            .insert(MainMenuCleanup)
             .insert(Visibility::default())
             .insert(InheritedVisibility::default())
             .insert(Name::new("Planet"));
@@ -266,6 +278,7 @@ pub fn create_background_system(
     let mut background_commands = commands.spawn_empty();
     background_commands
         .insert(GameCleanup)
+        .insert(MainMenuCleanup)
         .insert(Visibility::default())
         .insert(InheritedVisibility::default())
         .insert(Name::new("Space Background"))
@@ -338,6 +351,7 @@ pub fn create_background_system(
                     ..default()
                 },))
                 .insert(GameCleanup)
+                .insert(MainMenuCleanup)
                 .insert(Visibility::default())
                 .insert(InheritedVisibility::default())
                 .insert(Name::new("Star"))

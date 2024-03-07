@@ -5,5 +5,8 @@ mod item;
 mod mob;
 mod player;
 mod projectile;
+mod ui;
 
-pub use self::{audio::*, consumable::*, effect::*, item::*, mob::*, player::*, projectile::*};
+pub use self::{
+    audio::*, consumable::*, effect::*, item::*, mob::*, player::*, projectile::*, ui::*,
+};

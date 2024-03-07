@@ -1,5 +1,8 @@
 //! `thetawave` player module
-use bevy::prelude::*;
+use bevy::{
+    app::{App, Plugin, Update},
+    ecs::schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter, OnExit},
+};
 use leafwing_input_manager::prelude::InputManagerPlugin;
 use ron::de::from_bytes;
 

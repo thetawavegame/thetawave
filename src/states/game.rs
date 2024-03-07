@@ -33,27 +33,6 @@ pub fn start_game_system(
     }
 }
 
-// Start the game by entering the Game state
-pub fn start_instructions_system(
-    menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
-    mut next_app_state: ResMut<NextState<AppStates>>,
-    mut sound_effect_pub: EventWriter<PlaySoundEffectEvent>,
-) {
-    // read menu input action
-    if let Ok(action_state) = menu_input_query.get_single() {
-        // if input read enter the game state
-        if action_state.just_released(&MenuAction::Confirm) {
-            // set the state to game
-            next_app_state.set(AppStates::Instructions);
-
-            // play sound effect
-            sound_effect_pub.send(PlaySoundEffectEvent {
-                sound_effect_type: SoundEffectType::MenuInputSuccess,
-            });
-        }
-    }
-}
-
 pub fn start_character_selection_system(
     menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
     mut next_app_state: ResMut<NextState<AppStates>>,
