@@ -9,7 +9,10 @@ use bevy::transform::components::Transform;
 use bevy_rapier2d::dynamics::{ExternalImpulse, LockedAxes, RigidBody, Velocity};
 use bevy_rapier2d::geometry::{ActiveEvents, Collider, ColliderMassProperties, Restitution};
 use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
-use thetawave_interface::abilities::{AbilitiesResource, SlotOneAbilityType, SlotTwoAbilityType};
+use thetawave_interface::abilities::{
+    AbilitiesResource, ChargeAbilityBundle, SlotOneAbilityType, SlotTwoAbilityType,
+    StandardWeaponAbilityBundle,
+};
 use thetawave_interface::input::{InputsResource, PlayerAction};
 use thetawave_interface::player::{PlayerBundle, PlayerIDComponent};
 use thetawave_interface::{health::HealthComponent, player::PlayerInput, states::GameCleanup};
@@ -42,12 +45,12 @@ impl PlayerAbilityChildBuilderExt for ChildBuilder<'_> {
     ) {
         if let Some(ability_type) = ability_type {
             match ability_type {
-                SlotOneAbilityType::StandardBlast => {
-                    self.spawn(abilities_res.standard_blast_ability.clone())
-                }
-                SlotOneAbilityType::StandardBullet => {
-                    self.spawn(abilities_res.standard_bullet_ability.clone())
-                }
+                SlotOneAbilityType::StandardBlast => self.spawn(StandardWeaponAbilityBundle::from(
+                    &abilities_res.standard_blast_ability,
+                )),
+                SlotOneAbilityType::StandardBullet => self.spawn(
+                    StandardWeaponAbilityBundle::from(&abilities_res.standard_bullet_ability),
+                ),
             };
         }
     }
@@ -59,10 +62,12 @@ impl PlayerAbilityChildBuilderExt for ChildBuilder<'_> {
     ) {
         if let Some(ability_type) = ability_type {
             match ability_type {
-                SlotTwoAbilityType::Charge => self.spawn(abilities_res.charge_ability.clone()),
-                SlotTwoAbilityType::MegaBlast => {
-                    self.spawn(abilities_res.mega_blast_ability.clone())
+                SlotTwoAbilityType::Charge => {
+                    self.spawn(ChargeAbilityBundle::from(&abilities_res.charge_ability))
                 }
+                SlotTwoAbilityType::MegaBlast => self.spawn(StandardWeaponAbilityBundle::from(
+                    &abilities_res.mega_blast_ability,
+                )),
             };
         }
     }
