@@ -14,4 +14,8 @@ pub struct UiAssets {
     pub thetawave_menu_button_layout: Handle<TextureAtlasLayout>,
     #[asset(key = "thetawave_menu_button.image")]
     pub thetawave_menu_button_image: Handle<Image>,
+    #[asset(key = "warning_gradient")]
+    pub warning_gradient: Handle<Image>,
+    #[asset(key = "defense_gradient")]
+    pub defense_gradient: Handle<Image>,
 }

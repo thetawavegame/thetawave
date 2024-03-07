@@ -19,6 +19,8 @@ use bevy::{
 };
 use thetawave_interface::objective::{DefenseInteraction, MobReachedBottomGateEvent};
 
+use crate::assets::UiAssets;
+
 const BG_DURATION: f32 = 0.4;
 const BG_MAX_ALPHA: f32 = 0.5;
 
@@ -37,11 +39,11 @@ pub(super) struct BorderGradientComponent {
 }
 
 pub(super) trait UiCommandsExt {
-    fn spawn_border_gradient(&mut self, asset_server: &AssetServer, bg_type: BorderGradientType);
+    fn spawn_border_gradient(&mut self, ui_assets: &UiAssets, bg_type: BorderGradientType);
 }
 
 impl UiCommandsExt for Commands<'_, '_> {
-    fn spawn_border_gradient(&mut self, asset_server: &AssetServer, bg_type: BorderGradientType) {
+    fn spawn_border_gradient(&mut self, ui_assets: &UiAssets, bg_type: BorderGradientType) {
         self.spawn(NodeBundle {
             style: Style {
                 width: Val::Percent(100.0),
@@ -60,12 +62,11 @@ impl UiCommandsExt for Commands<'_, '_> {
                         height: Val::Percent(5.0),
                         ..default()
                     },
-                    image: asset_server
-                        .load(match bg_type {
-                            BorderGradientType::Warning => "texture/warning_gradient.png",
-                            BorderGradientType::Defense => "texture/defense_gradient.png",
-                        })
-                        .into(),
+                    image: match bg_type {
+                        BorderGradientType::Warning => ui_assets.warning_gradient.clone(),
+                        BorderGradientType::Defense => ui_assets.defense_gradient.clone(),
+                    }
+                    .into(),
                     background_color: Color::WHITE.with_a(0.0).into(),
                     ..default()
                 })

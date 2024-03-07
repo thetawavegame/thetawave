@@ -11,6 +11,8 @@ use thetawave_interface::{
     states::GameCleanup,
 };
 
+use crate::assets::UiAssets;
+
 use super::{
     border_gradient::{BorderGradientType, UiCommandsExt},
     game_center::build_center_text_ui,
@@ -23,12 +25,13 @@ use super::{
 pub fn setup_game_ui_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
+    ui_assets: Res<UiAssets>,
     players_resource: Res<PlayersResource>,
 ) {
     let font = asset_server.load("fonts/wibletown-regular.otf");
 
-    commands.spawn_border_gradient(&asset_server, BorderGradientType::Defense);
-    commands.spawn_border_gradient(&asset_server, BorderGradientType::Warning);
+    commands.spawn_border_gradient(&ui_assets, BorderGradientType::Defense);
+    commands.spawn_border_gradient(&ui_assets, BorderGradientType::Warning);
 
     // top level node of all game UI
     commands
