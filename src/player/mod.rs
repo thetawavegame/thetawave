@@ -15,7 +15,9 @@ use thetawave_interface::{
 
 use crate::{GameEnterSet, GameUpdateSet};
 
-use self::systems::{player_ability_cooldown_system, player_ability_input_system};
+use self::systems::{
+    player_ability_cooldown_system, player_ability_input_system, standard_weapon_ability_system,
+};
 pub use self::{
     resources::CharactersResource,
     spawn::spawn_players_system,
@@ -61,6 +63,7 @@ impl Plugin for PlayerPlugin {
                 player_tilt_system.in_set(GameUpdateSet::Movement),
                 player_ability_cooldown_system,
                 player_ability_input_system,
+                standard_weapon_ability_system,
             )
                 .run_if(in_state(AppStates::Game))
                 .run_if(in_state(GameStates::Playing)),

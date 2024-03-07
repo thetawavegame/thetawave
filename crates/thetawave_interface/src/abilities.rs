@@ -19,7 +19,7 @@ pub enum SlotTwoAbilityType {
     MegaBlast,
 }
 
-#[derive(Event)]
+#[derive(Event, Debug)]
 pub struct ActivateAbilityEvent {
     pub player_id: PlayerIDComponent,
     pub ability_slot_id: AbilitySlotIDComponent,

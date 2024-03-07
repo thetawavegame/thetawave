@@ -64,7 +64,7 @@
             )),
             damage_multiplier: 5.0,
             ammunition: Blast(Ally),
-            speed_multiplier: 250.0,
+            speed_multiplier: 2.0,
             direction: 1.57080,
             despawn_time_multiplier: 1.0,
             size_multiplier: 5.0,
