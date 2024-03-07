@@ -1,4 +1,5 @@
-//! `thetawave` arena module
+//! Exposes a plugin that renders a rectangular boundary that the player cannot cross, but mobs
+//! can. Also handles sending events when mobs reach the botton of the screen.
 
 use bevy::prelude::*;
 use thetawave_interface::{objective::MobReachedBottomGateEvent, states};
@@ -7,9 +8,12 @@ mod gate;
 
 use crate::GameEnterSet;
 
-pub use self::{barrier::*, gate::*};
+pub use self::barrier::*;
+use self::gate::{despawn_gates_system, spawn_despawn_gates_system};
 
-pub struct ArenaPlugin;
+/// Plugin that spawns a rectangular boundary for the main game play area and fires off
+/// `MobReachedBottomGateEvent` at the right times
+pub(super) struct ArenaPlugin;
 
 impl Plugin for ArenaPlugin {
     fn build(&self, app: &mut App) {

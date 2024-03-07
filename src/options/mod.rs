@@ -1,4 +1,4 @@
-//! `thetawave` player module
+//! Exposes a plugin and CLI to congigure a small number of settings for the game.
 use bevy::{
     app::{App, Plugin, Startup, Update},
     core_pipeline::{core_2d::Camera2d, core_3d::Camera3d, tonemapping::Tonemapping},
@@ -18,7 +18,7 @@ use thetawave_interface::{
     states,
 };
 
-mod display;
+pub(super) mod display;
 mod input;
 
 use input::get_input_bindings;
@@ -28,9 +28,8 @@ use std::fs::{DirBuilder, File};
 use std::io::Write;
 use std::path::PathBuf;
 
-pub use self::display::{
-    set_window_icon, toggle_fullscreen_system, toggle_zoom_system, DisplayConfig,
-};
+use self::display::{set_window_icon, toggle_fullscreen_system, toggle_zoom_system};
+
 use self::input::spawn_menu_explorer_system;
 
 #[cfg_attr(
@@ -64,7 +63,7 @@ impl GameInitCLIOptions {
     }
 }
 
-pub fn apply_game_options_system(
+fn apply_game_options_system(
     mut game_options: ResMut<GameOptions>,
     mut camera_2d_query: Query<
         (&mut Camera, &mut Tonemapping),
@@ -101,8 +100,9 @@ pub fn apply_game_options_system(
 #[derive(Resource, Debug, Clone, Copy, PartialEq, Eq, Deref)]
 pub struct PlayingOnArcadeResource(bool);
 
+/// Includes systems to change configuration settings about the game.
 #[derive(Default)]
-pub struct OptionsPlugin {
+pub(super) struct OptionsPlugin {
     pub arcade: bool,
 }
 
@@ -159,7 +159,7 @@ macro_rules! confgen {
 }
 
 /// Generates the display config file
-pub fn generate_config_files() {
+pub(super) fn generate_config_files() {
     confgen!("display.ron");
     confgen!("input.ron");
 }

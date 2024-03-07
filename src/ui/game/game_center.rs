@@ -1,3 +1,4 @@
+//! Systems that draw things that go in the center of the screen.
 use crate::run::CurrentRunProgressResource;
 use bevy::{
     asset::Handle,
@@ -64,7 +65,7 @@ impl GameCenterUiChildBuilderExt for ChildBuilder<'_> {
     }
 }
 
-pub fn update_center_text_ui_system(
+pub(super) fn update_center_text_ui_system(
     mut cycle_phase_event_reader: EventReader<CyclePhaseEvent>,
     run_resource: Res<CurrentRunProgressResource>,
     mut center_text_query: Query<
@@ -90,7 +91,8 @@ pub fn update_center_text_ui_system(
     }
 }
 
-pub fn text_fade_out_system(
+/// Gradually fade out text entities with a `FadeOutUIComponent`. This should be run every frame.
+pub(super) fn text_fade_out_system(
     mut background_color_query: Query<(&mut Text, &mut BackgroundColor, &mut FadeOutUiComponent)>,
     time: Res<Time>,
 ) {

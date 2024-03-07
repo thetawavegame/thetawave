@@ -1,5 +1,5 @@
 use bevy::{
-    asset::{AssetServer, Handle},
+    asset::Handle,
     ecs::system::{Commands, Res},
     hierarchy::BuildChildren,
     render::{color::Color, texture::Image},

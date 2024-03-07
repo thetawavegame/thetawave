@@ -1,9 +1,10 @@
+//! Exposes a plugin that handles layout, rendering, and styling for each of the major game states.
 use bevy::{
     app::{App, Plugin, Update},
     ecs::schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter},
     prelude::{Component, Query, Res, Time, Timer, Transform},
 };
-pub use thetawave_interface::character_selection::PlayerJoinEvent;
+use thetawave_interface::character_selection::PlayerJoinEvent;
 use thetawave_interface::game::historical_metrics::{MobsKilledByPlayerCacheT, DEFAULT_USER_ID};
 
 use thetawave_interface::states;
@@ -29,7 +30,9 @@ use self::{
     victory::setup_victory_system,
 };
 
-pub struct UiPlugin;
+/// Handles layout, styling, and updating the UI state on each frame update. Without this plugin,
+/// we mostly just have a black screen with some images moving across the screen.
+pub(super) struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {

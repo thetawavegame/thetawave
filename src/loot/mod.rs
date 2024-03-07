@@ -1,4 +1,5 @@
-use bevy::prelude::*;
+//! Exposes resources with methods to compute loot drops from killed mobs.
+use bevy::prelude::{App, EventWriter, Plugin, Resource, Vec2};
 use ron::de::from_bytes;
 use serde::Deserialize;
 use std::collections::HashMap;
@@ -10,7 +11,7 @@ use crate::spawnable::SpawnConsumableEvent;
 
 pub use self::consumable::*;
 
-pub struct LootPlugin;
+pub(super) struct LootPlugin;
 
 impl Plugin for LootPlugin {
     fn build(&self, app: &mut App) {
@@ -35,7 +36,7 @@ pub enum LootDrop {
 }
 
 impl LootDropsResource {
-    /// Roll for consumables from drop list
+    /// Roll for consumables from drop list and emit events when those rolls succeed.
     pub fn spawn_loot_drops(
         &self,
         drop_list_type: &DropListType,

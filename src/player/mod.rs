@@ -1,4 +1,5 @@
-//! `thetawave` player module
+//! Exposes a plugin and resources to deal with player behavior such as spawning, moving, firing,
+//! and dying.
 use bevy::{
     app::{App, Plugin, Update},
     ecs::schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter, OnExit},
@@ -15,15 +16,13 @@ use thetawave_interface::{
 
 use crate::{GameEnterSet, GameUpdateSet};
 
-use self::systems::{
-    player_ability_cooldown_system, player_ability_input_system, standard_weapon_ability_system,
-    start_charge_ability_system, update_charge_ability_system,
-};
-pub use self::{
-    resources::CharactersResource,
+pub use self::resources::CharactersResource;
+use self::{
     spawn::spawn_players_system,
     systems::{
-        player_death_system, player_movement_system, player_tilt_system, players_reset_system,
+        player_ability_cooldown_system, player_ability_input_system, player_death_system,
+        player_movement_system, player_tilt_system, players_reset_system,
+        standard_weapon_ability_system, start_charge_ability_system, update_charge_ability_system,
     },
 };
 
@@ -31,7 +30,8 @@ mod resources;
 mod spawn;
 mod systems;
 
-pub struct PlayerPlugin;
+/// Contains systems to allow the player to do most (all?) of its required behaviors.
+pub(super) struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {

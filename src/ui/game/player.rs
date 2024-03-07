@@ -1,5 +1,5 @@
 use bevy::{
-    asset::{AssetServer, Handle},
+    asset::Handle,
     ecs::{
         component::Component,
         entity::Entity,
@@ -10,7 +10,7 @@ use bevy::{
     render::{color::Color, texture::Image},
     ui::{
         node_bundles::{ImageBundle, NodeBundle},
-        FlexDirection, Style, UiImage, UiRect, Val,
+        FlexDirection, Style, UiRect, Val,
     },
     utils::default,
 };
@@ -18,7 +18,7 @@ use thetawave_interface::{
     abilities::{AbilityCooldownComponent, AbilitySlotIDComponent},
     character::Character,
     health::HealthComponent,
-    player::{self, PlayerComponent, PlayerIDComponent, PlayersResource},
+    player::{PlayerComponent, PlayerIDComponent, PlayersResource},
 };
 
 use crate::{assets::UiAssets, player::CharactersResource};
@@ -124,7 +124,6 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
                     player.spawn_inner_player_ui(id);
                 }
             });
-            ()
         }
     }
 

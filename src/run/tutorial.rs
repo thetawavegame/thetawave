@@ -1,3 +1,6 @@
+//! The logic for the tutorial level. Generally, a `TutorialLesson` is added to a collection of
+//! levels to invoke some behavior each tick, until all objectives/milestones are met (a sentinel
+//! in the tick/update function is returned).
 use bevy::log::info;
 use bevy::math::Quat;
 use bevy::prelude::{EventReader, EventWriter, Query, Time, Timer, With};
@@ -34,6 +37,8 @@ pub(super) fn modify_player_spawn_params_for_lesson_phase(
     }
 }
 
+/// The state of the player's tutorial. Methods update this (and transition to different tutorial
+/// state variants) for each game tick until the tutorial is complete.
 #[derive(Deserialize, Clone, Debug)]
 pub enum TutorialLesson {
     Movement {
@@ -91,7 +96,7 @@ impl TutorialLesson {
         ]
     }
 
-    pub fn get_mobs_to_destroy_str(&self) -> (String, bool) {
+    fn get_mobs_to_destroy_str(&self) -> (String, bool) {
         if let Self::Attack {
             mobs_to_destroy, ..
         } = self
@@ -105,7 +110,7 @@ impl TutorialLesson {
         }
     }
 
-    pub fn get_mobs_to_protect_str(&self) -> (String, bool) {
+    fn get_mobs_to_protect_str(&self) -> (String, bool) {
         if let Self::Attack {
             mobs_to_protect, ..
         } = self
@@ -132,7 +137,7 @@ impl TutorialLesson {
         ]
     }
 
-    pub fn get_up_timer_progress_str(&self) -> (String, bool) {
+    fn get_up_timer_progress_str(&self) -> (String, bool) {
         if let Self::Movement { up_timer, .. } = self {
             (
                 format!(
@@ -147,7 +152,7 @@ impl TutorialLesson {
         }
     }
 
-    pub fn get_down_timer_progress_str(&self) -> (String, bool) {
+    fn get_down_timer_progress_str(&self) -> (String, bool) {
         if let Self::Movement { down_timer, .. } = self {
             (
                 format!(
@@ -162,7 +167,7 @@ impl TutorialLesson {
         }
     }
 
-    pub fn get_left_timer_progress_str(&self) -> (String, bool) {
+    fn get_left_timer_progress_str(&self) -> (String, bool) {
         if let Self::Movement { left_timer, .. } = self {
             (
                 format!(
@@ -177,7 +182,7 @@ impl TutorialLesson {
         }
     }
 
-    pub fn get_right_timer_progress_str(&self) -> (String, bool) {
+    fn get_right_timer_progress_str(&self) -> (String, bool) {
         if let Self::Movement { right_timer, .. } = self {
             (
                 format!(
@@ -192,7 +197,7 @@ impl TutorialLesson {
         }
     }
 
-    pub fn get_up_left_timer_progress_str(&self) -> (String, bool) {
+    fn get_up_left_timer_progress_str(&self) -> (String, bool) {
         if let Self::Movement { up_left_timer, .. } = self {
             (
                 format!(
@@ -207,7 +212,7 @@ impl TutorialLesson {
         }
     }
 
-    pub fn get_up_right_timer_progress_str(&self) -> (String, bool) {
+    fn get_up_right_timer_progress_str(&self) -> (String, bool) {
         if let Self::Movement { up_right_timer, .. } = self {
             (
                 format!(
@@ -222,7 +227,7 @@ impl TutorialLesson {
         }
     }
 
-    pub fn get_down_left_timer_progress_str(&self) -> (String, bool) {
+    fn get_down_left_timer_progress_str(&self) -> (String, bool) {
         if let Self::Movement {
             down_left_timer, ..
         } = self
@@ -240,7 +245,7 @@ impl TutorialLesson {
         }
     }
 
-    pub fn get_down_right_timer_progress_str(&self) -> (String, bool) {
+    fn get_down_right_timer_progress_str(&self) -> (String, bool) {
         if let Self::Movement {
             down_right_timer, ..
         } = self
@@ -299,7 +304,8 @@ impl TutorialLesson {
             false
         }
     }
-    pub fn disable_player_actions_for_current_phase(&self) {
+
+    fn disable_player_actions_for_current_phase(&self) {
         info!("TODO: disable player actions");
     }
 

@@ -1,5 +1,5 @@
-use bevy::prelude::*;
-use bevy_asset_loader::prelude::*;
+use bevy::prelude::{Handle, Image, Resource, TextureAtlasLayout};
+use bevy_asset_loader::prelude::AssetCollection;
 
 use thetawave_interface::spawnable::EffectType;
 

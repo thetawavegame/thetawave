@@ -1,3 +1,4 @@
+//! Exposes a plugin that handles automatic fire, especially for mobs.
 use bevy::{
     app::{App, Plugin, Update},
     ecs::{
@@ -20,7 +21,8 @@ use thetawave_interface::{
 use crate::spawnable::{FireWeaponEvent, InitialMotion};
 use rand::{thread_rng, Rng};
 
-pub struct WeaponPlugin;
+/// Emits `FireWeaponEvent`s at the proper times.
+pub(super) struct WeaponPlugin;
 
 impl Plugin for WeaponPlugin {
     fn build(&self, app: &mut App) {
@@ -61,7 +63,7 @@ impl WeaponExt for WeaponComponent {
 }
 
 /// Update all weapons, and fire weapons with the automatic fire mode
-pub fn update_weapon_system(
+fn update_weapon_system(
     mut weapon_query: Query<(Entity, &mut WeaponComponent, &Transform, &Velocity)>,
     time: Res<Time>,
     mut fire_weapon: EventWriter<FireWeaponEvent>,

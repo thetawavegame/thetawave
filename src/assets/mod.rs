@@ -1,3 +1,5 @@
+//! Exposes `AssetCollection`s with handles to files in the `assets/` directory at the base of the
+//! repo. These are typically all loaded into memory when the game launches.
 mod audio;
 mod consumable;
 mod effect;
