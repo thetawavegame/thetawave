@@ -11,7 +11,7 @@ use bevy_rapier2d::geometry::{ActiveEvents, Collider, ColliderMassProperties, Re
 use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
 use thetawave_interface::abilities::{AbilitiesResource, SlotOneAbilityType, SlotTwoAbilityType};
 use thetawave_interface::input::{InputsResource, PlayerAction};
-use thetawave_interface::player::{InputRestrictionsAtSpawn, PlayerBundle, PlayerIDComponent};
+use thetawave_interface::player::{PlayerBundle, PlayerIDComponent};
 use thetawave_interface::{health::HealthComponent, player::PlayerInput, states::GameCleanup};
 
 use crate::{
@@ -77,7 +77,6 @@ pub(super) fn spawn_players_system(
     players_resource: Res<PlayersResource>,
     inputs_res: Res<InputsResource>,
     abilities_res: Res<AbilitiesResource>,
-    spawn_params: Res<InputRestrictionsAtSpawn>,
 ) {
     // check if more than one player is playing
     let is_multiplayer = players_resource.player_data[1].is_some();
