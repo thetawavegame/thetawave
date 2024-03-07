@@ -10,16 +10,27 @@
         (Reset, KeyR),
         (ExitPauseMenu, Escape),
         (PauseGame, Escape),
+<<<<<<< HEAD
         (OptionsMenu, KeyO),
+||||||| 7ae41ec
+=======
+        (NavigateUp, KeyW),
+        (NavigateDown, KeyS),
+        (NavigateUp, ArrowUp),
+        (NavigateDown, ArrowDown),
+>>>>>>> 4f9a52c092c7fa19debcaf7d96cdd5a8841f82aa
     ],
     menu_gamepad: [
         (ChangeCharacterGamepad, DPadLeft),
         (ChangeCharacterGamepad, DPadRight),
         (ToggleTutorial, DPadUp),
         (ToggleTutorial, DPadDown),
+        (NavigateUp, DPadUp),
+        (NavigateDown, DPadDown),
         (JoinGamepad, South),
         (Back, East),
         (Confirm, Start),
+        (Confirm, South),
         (Reset, East),
         (ExitPauseMenu, Start),
         (PauseGame, Start),

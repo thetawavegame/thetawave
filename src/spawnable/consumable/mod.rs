@@ -1,6 +1,9 @@
-use bevy::prelude::{
-    Commands, Component, Event, EventReader, Name, Res, Resource, Sprite, SpriteSheetBundle, Timer,
-    TimerMode, Transform, Vec2, Vec3,
+use bevy::{
+    prelude::{
+        Commands, Component, Event, EventReader, Name, Res, Resource, Sprite, SpriteSheetBundle,
+        Timer, TimerMode, Transform, Vec2, Vec3,
+    },
+    render::color::Color,
 };
 use bevy_rapier2d::prelude::{ActiveEvents, Collider, LockedAxes, RigidBody, Sensor, Velocity};
 use serde::Deserialize;
@@ -102,6 +105,19 @@ pub struct ConsumableData {
     pub deceleration: Vec2,
     /// z value of the transform
     pub z_level: f32,
+    /// Color for bloom effect
+    pub bloom_color: Color,
+}
+
+impl ConsumableData {
+    /// Color for bloom effect, multiplied by the bloom intensity value
+    pub fn affine_bloom_transformation(&self, bloom_intensity: f32) -> Color {
+        Color::rgb(
+            1.0 + self.bloom_color.r() * bloom_intensity,
+            1.0 + self.bloom_color.g() * bloom_intensity,
+            1.0 + self.bloom_color.b() * bloom_intensity,
+        )
+    }
 }
 
 /// Consumable resource stores data about all consumables
@@ -145,7 +161,7 @@ pub fn spawn_consumable(
                 .get_texture_atlas_layout(consumable_type)
                 .into(),
             sprite: Sprite {
-                color: consumable_assets.get_color(consumable_type, game_options.bloom_intensity),
+                color: consumable_data.affine_bloom_transformation(game_options.bloom_intensity),
                 ..Default::default()
             },
             texture: consumable_assets.get_image(consumable_type),

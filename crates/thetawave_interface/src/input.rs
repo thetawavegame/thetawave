@@ -21,6 +21,8 @@ pub enum MenuAction {
     ExitPauseMenu,
     PauseGame,
     ToggleTutorial,
+    NavigateUp,
+    NavigateDown,
     /// When pressed, show a form for the user to edit game options.
     OptionsMenu,
 }

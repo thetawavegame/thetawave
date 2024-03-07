@@ -174,7 +174,7 @@ fn spawn_effect(
                 .into(),
             texture: effect_assets.get_image(effect_type).unwrap_or_default(),
             sprite: Sprite {
-                color: effect_assets.get_color(effect_type, game_options.bloom_intensity),
+                color: effect_data.affine_bloom_transformation(game_options.bloom_intensity),
                 ..Default::default()
             },
             ..Default::default()

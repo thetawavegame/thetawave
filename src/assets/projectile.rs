@@ -1,5 +1,5 @@
 use bevy::{
-    prelude::{Color, Handle, Resource, TextureAtlasLayout},
+    prelude::{Handle, Resource, TextureAtlasLayout},
     render::texture::Image,
 };
 use bevy_asset_loader::prelude::AssetCollection;
@@ -60,21 +60,6 @@ impl ProjectileAssets {
                 Faction::Enemy => self.enemy_bullet_image.clone(),
                 Faction::Neutral => todo!(),
             },
-        }
-    }
-
-    pub fn get_color(&self, projectile_type: &ProjectileType, bloom_intensity: f32) -> Color {
-        match projectile_type {
-            ProjectileType::Blast(_) => Color::rgb(
-                1.0 + 2.0 * bloom_intensity,
-                1.0 + 2.0 * bloom_intensity,
-                1.0 + 2.0 * bloom_intensity,
-            ),
-            ProjectileType::Bullet(_) => Color::rgb(
-                1.0 + 1.0 * bloom_intensity,
-                1.0 + 1.0 * bloom_intensity,
-                1.0 + 1.0 * bloom_intensity,
-            ),
         }
     }
 }

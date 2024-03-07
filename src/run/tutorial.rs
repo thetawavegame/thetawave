@@ -1,3 +1,6 @@
+//! The logic for the tutorial level. Generally, a `TutorialLesson` is added to a collection of
+//! levels to invoke some behavior each tick, until all objectives/milestones are met (a sentinel
+//! in the tick/update function is returned).
 use bevy::math::Quat;
 use bevy::prelude::{EventReader, EventWriter, Query, Time, Timer, With};
 use leafwing_input_manager::action_state::ActionState;
@@ -7,7 +10,9 @@ use std::ops::Range;
 use thetawave_interface::audio::{PlaySoundEffectEvent, SoundEffectType};
 use thetawave_interface::input::PlayerAction;
 use thetawave_interface::objective::MobReachedBottomGateEvent;
-use thetawave_interface::player::{InputRestrictionsAtSpawn, PlayerComponent};
+use thetawave_interface::player::{
+    InputRestrictionsAtSpawn, PlayerAbilitiesComponent, PlayerComponent,
+};
 use thetawave_interface::spawnable::{
     AllyMobType, MobDestroyedEvent, MobSegmentDestroyedEvent, MobSegmentType, MobType,
     NeutralMobSegmentType, NeutralMobType, SpawnMobEvent,
@@ -15,10 +20,10 @@ use thetawave_interface::spawnable::{
 use thetawave_interface::weapon::WeaponComponent;
 
 fn enable_player_actions_at_end_of_phase(
-    players: &mut Query<(&mut PlayerComponent, &mut WeaponComponent)>,
+    players: &mut Query<(&mut PlayerAbilitiesComponent, &mut WeaponComponent)>,
 ) {
-    for (mut player, mut weapon) in players.iter_mut() {
-        player.enable_special_attacks();
+    for (mut player_abilities, mut weapon) in players.iter_mut() {
+        player_abilities.enable_special_attacks();
         weapon.enable();
     }
 }
@@ -40,6 +45,8 @@ pub(super) fn modify_player_spawn_params_for_lesson_phase(
     }
 }
 
+/// The state of the player's tutorial. Methods update this (and transition to different tutorial
+/// state variants) for each game tick until the tutorial is complete.
 #[derive(Deserialize, Clone, Debug)]
 pub enum TutorialLesson {
     Movement {
@@ -97,7 +104,7 @@ impl TutorialLesson {
         ]
     }
 
-    pub fn get_mobs_to_destroy_str(&self) -> (String, bool) {
+    fn get_mobs_to_destroy_str(&self) -> (String, bool) {
         if let Self::Attack {
             mobs_to_destroy, ..
         } = self
@@ -111,7 +118,7 @@ impl TutorialLesson {
         }
     }
 
-    pub fn get_mobs_to_protect_str(&self) -> (String, bool) {
+    fn get_mobs_to_protect_str(&self) -> (String, bool) {
         if let Self::Attack {
             mobs_to_protect, ..
         } = self
@@ -138,7 +145,7 @@ impl TutorialLesson {
         ]
     }
 
-    pub fn get_up_timer_progress_str(&self) -> (String, bool) {
+    fn get_up_timer_progress_str(&self) -> (String, bool) {
         if let Self::Movement { up_timer, .. } = self {
             (
                 format!(
@@ -153,7 +160,7 @@ impl TutorialLesson {
         }
     }
 
-    pub fn get_down_timer_progress_str(&self) -> (String, bool) {
+    fn get_down_timer_progress_str(&self) -> (String, bool) {
         if let Self::Movement { down_timer, .. } = self {
             (
                 format!(
@@ -168,7 +175,7 @@ impl TutorialLesson {
         }
     }
 
-    pub fn get_left_timer_progress_str(&self) -> (String, bool) {
+    fn get_left_timer_progress_str(&self) -> (String, bool) {
         if let Self::Movement { left_timer, .. } = self {
             (
                 format!(
@@ -183,7 +190,7 @@ impl TutorialLesson {
         }
     }
 
-    pub fn get_right_timer_progress_str(&self) -> (String, bool) {
+    fn get_right_timer_progress_str(&self) -> (String, bool) {
         if let Self::Movement { right_timer, .. } = self {
             (
                 format!(
@@ -198,7 +205,7 @@ impl TutorialLesson {
         }
     }
 
-    pub fn get_up_left_timer_progress_str(&self) -> (String, bool) {
+    fn get_up_left_timer_progress_str(&self) -> (String, bool) {
         if let Self::Movement { up_left_timer, .. } = self {
             (
                 format!(
@@ -213,7 +220,7 @@ impl TutorialLesson {
         }
     }
 
-    pub fn get_up_right_timer_progress_str(&self) -> (String, bool) {
+    fn get_up_right_timer_progress_str(&self) -> (String, bool) {
         if let Self::Movement { up_right_timer, .. } = self {
             (
                 format!(
@@ -228,7 +235,7 @@ impl TutorialLesson {
         }
     }
 
-    pub fn get_down_left_timer_progress_str(&self) -> (String, bool) {
+    fn get_down_left_timer_progress_str(&self) -> (String, bool) {
         if let Self::Movement {
             down_left_timer, ..
         } = self
@@ -246,7 +253,7 @@ impl TutorialLesson {
         }
     }
 
-    pub fn get_down_right_timer_progress_str(&self) -> (String, bool) {
+    fn get_down_right_timer_progress_str(&self) -> (String, bool) {
         if let Self::Movement {
             down_right_timer, ..
         } = self
@@ -273,7 +280,7 @@ impl TutorialLesson {
         mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
         mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
         play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
-        players: &mut Query<(&mut PlayerComponent, &mut WeaponComponent)>,
+        players: &mut Query<(&mut PlayerAbilitiesComponent, &mut WeaponComponent)>,
     ) -> bool {
         self.disable_player_actions_for_current_phase(players);
         // tutorial will only be run for single player
@@ -306,21 +313,21 @@ impl TutorialLesson {
             false
         }
     }
-    pub fn disable_player_actions_for_current_phase(
+    fn disable_player_actions_for_current_phase(
         &self,
-        players: &mut Query<(&mut PlayerComponent, &mut WeaponComponent)>,
+        players: &mut Query<(&mut PlayerAbilitiesComponent, &mut WeaponComponent)>,
     ) {
-        for (mut player, mut weapon) in players.iter_mut() {
+        for (mut player_abilities, mut weapon) in players.iter_mut() {
             match self {
                 Self::Ability { .. } => {
                     weapon.disable();
                 }
                 Self::Attack { .. } => {
-                    player.disable_special_attacks();
+                    player_abilities.disable_special_attacks();
                 }
                 Self::Movement { .. } => {
                     weapon.disable();
-                    player.disable_special_attacks();
+                    player_abilities.disable_special_attacks();
                 }
             }
         }

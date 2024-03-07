@@ -1,3 +1,4 @@
+//! Systems to configure minor display settings.
 use crate::game::GameParametersResource;
 use bevy::{
     prelude::*,
@@ -23,7 +24,7 @@ impl From<DisplayConfig> for Window {
         Window {
             title: "Thetawave".to_string(),
             resolution: (display_config.width, display_config.height).into(),
-            resizable: false,
+            resizable: true,
             mode: if display_config.fullscreen {
                 WindowMode::SizedFullscreen
             } else {
@@ -36,7 +37,7 @@ impl From<DisplayConfig> for Window {
 
 // TODO: fix this function, doesn't toggle back to windowed correctly
 /// Toggles the window between full screen and windowed on key press
-pub fn toggle_fullscreen_system(
+pub(super) fn toggle_fullscreen_system(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut window_query: Query<&mut Window, With<PrimaryWindow>>,
 ) {
@@ -65,7 +66,7 @@ pub fn toggle_fullscreen_system(
 }
 
 /// Toggles a zoomed out camera perspective on key press
-pub fn toggle_zoom_system(
+pub(super) fn toggle_zoom_system(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut camera_query: Query<&mut OrthographicProjection, With<Camera2d>>,
     game_parameters: Res<GameParametersResource>,
@@ -85,8 +86,8 @@ pub fn toggle_zoom_system(
     }
 }
 
-// set the window icon
-pub fn set_window_icon(
+/// set the window icon. This needs to be run once, near app start up.
+pub(super) fn set_window_icon(
     windows: NonSend<WinitWindows>,
     window_query: Query<Entity, With<PrimaryWindow>>,
 ) {

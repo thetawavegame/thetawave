@@ -1,3 +1,5 @@
+//! Mainly exposes `Level` for moving between different phases of the same level, and progressing
+//! between levels.
 use crate::run::level_phase::LevelPhaseType;
 use crate::run::tutorial::modify_player_spawn_params_for_lesson_phase;
 use bevy::{prelude::*, time::Stopwatch};
@@ -7,7 +9,7 @@ use std::{
     collections::{HashMap, VecDeque},
     time::Duration,
 };
-use thetawave_interface::player::InputRestrictionsAtSpawn;
+use thetawave_interface::player::{InputRestrictionsAtSpawn, PlayerAbilitiesComponent};
 use thetawave_interface::{
     audio::{BGMusicType, ChangeBackgroundMusicEvent, PlaySoundEffectEvent},
     objective::{MobReachedBottomGateEvent, Objective},
@@ -22,7 +24,7 @@ use crate::spawnable::BossesDestroyedEvent;
 use super::{FormationPoolsResource, SpawnFormationEvent};
 
 #[derive(Resource, Deserialize)]
-pub struct PremadeLevelsResource {
+pub(super) struct PremadeLevelsResource {
     pub levels_data: HashMap<String, LevelData>,
 }
 
@@ -71,7 +73,7 @@ pub struct LevelData {
 
 pub type LevelPhases = VecDeque<LevelPhase>;
 
-/// Struct to manage a level
+/// The state of a full level. This will be mutated while the level is being played.
 #[derive(Clone, Debug)]
 pub struct Level {
     /// Phases that have been completed so far in the run
@@ -161,7 +163,7 @@ impl Level {
         mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
         mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
         play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
-        player_component_query: &mut Query<(&mut PlayerComponent, &mut WeaponComponent)>,
+        player_component_query: &mut Query<(&mut PlayerAbilitiesComponent, &mut WeaponComponent)>,
         mut player_spawn_params: ResMut<InputRestrictionsAtSpawn>,
     ) -> bool {
         self.level_time.tick(time.delta());

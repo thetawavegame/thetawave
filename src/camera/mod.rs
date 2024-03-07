@@ -1,5 +1,7 @@
+//! Exposes a plugin that sets up the 2D/3D perspective/camera and shakes the camera when an event
+//! is emitted.
 use crate::game;
-use bevy::app::{App, Plugin, Startup};
+use bevy::app::{App, Plugin, Startup, Update};
 use bevy::core_pipeline::bloom::BloomPrefilterSettings;
 use bevy::core_pipeline::core_2d::{Camera2d, Camera2dBundle};
 use bevy::core_pipeline::core_3d::Camera3dBundle;
@@ -10,15 +12,28 @@ use bevy::render::camera::{Camera, ClearColorConfig, PerspectiveProjection, Proj
 use bevy::transform::components::Transform;
 use bevy::utils::default;
 
-pub struct CameraPlugin;
+use self::screen_shake::{add_trauma, shake_screen, shake_screen_on_player_damage};
+use thetawave_interface::camera::ScreenShakeEvent;
 
+mod screen_shake;
+
+pub(super) struct CameraPlugin;
+
+/// Sets up a 2d perspective/camera of the 3d world. When this plugin is enabled, one can send
+/// `thetawave_interface::camera::ScreenShakeEvent` to jolt the screen, for example, when a player
+/// takes damage.
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
+        app.add_event::<ScreenShakeEvent>();
         app.add_systems(Startup, setup_cameras_system);
+        app.add_systems(
+            Update,
+            (shake_screen, add_trauma, shake_screen_on_player_damage),
+        );
     }
 }
 
-pub fn setup_cameras_system(
+fn setup_cameras_system(
     mut commands: Commands,
     game_parameters: Res<game::GameParametersResource>,
 ) {
@@ -46,6 +61,15 @@ pub fn setup_cameras_system(
                 threshold_softness: 0.2,
             },
             ..BloomSettings::OLD_SCHOOL
+        },
+        screen_shake::ScreenShakeComponent {
+            trauma: 0.0,
+            trauma_decay: 1.,
+            shake_intensity: Vec3 {
+                x: 60.,
+                y: 60.,
+                z: 0.1,
+            },
         },
     ));
 

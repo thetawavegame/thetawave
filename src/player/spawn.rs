@@ -1,14 +1,18 @@
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use bevy::core::Name;
+use bevy::ecs::system::{Commands, Res};
+use bevy::hierarchy::BuildChildren;
+use bevy::input::gamepad::Gamepad;
+use bevy::math::Vec3;
+use bevy::render::color::Color;
+use bevy::sprite::{Sprite, SpriteBundle};
+use bevy::transform::components::Transform;
+use bevy_rapier2d::dynamics::{ExternalImpulse, LockedAxes, RigidBody, Velocity};
+use bevy_rapier2d::geometry::{ActiveEvents, Collider, ColliderMassProperties, Restitution};
 use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
 use thetawave_interface::input::{InputsResource, PlayerAction};
-use thetawave_interface::player::InputRestrictionsAtSpawn;
+use thetawave_interface::player::{InputRestrictionsAtSpawn, PlayerBundle, PlayerIDComponent};
 use thetawave_interface::weapon::WeaponComponent;
-use thetawave_interface::{
-    health::HealthComponent,
-    player::{PlayerComponent, PlayerInput},
-    states::GameCleanup,
-};
+use thetawave_interface::{health::HealthComponent, player::PlayerInput, states::GameCleanup};
 
 use crate::{
     assets,
@@ -17,7 +21,7 @@ use crate::{
 };
 
 /// Spawns player into the game
-pub fn spawn_players_system(
+pub(super) fn spawn_players_system(
     mut commands: Commands,
     characters: Res<CharactersResource>,
     game_parameters: Res<GameParametersResource>,
@@ -29,7 +33,12 @@ pub fn spawn_players_system(
     // check if more than one player is playing
     let is_multiplayer = players_resource.player_data[1].is_some();
 
-    for (player_index, maybe_player_data) in players_resource.player_data.iter().enumerate() {
+    for (player_id, maybe_player_data) in players_resource
+        .player_data
+        .iter()
+        .enumerate()
+        .map(|(id, pd)| (PlayerIDComponent::from(id), pd))
+    {
         if let Some(player_data) = maybe_player_data {
             // choose a character
             let character = &characters.characters[&player_data.character];
@@ -41,9 +50,8 @@ pub fn spawn_players_system(
                 character.collider_dimensions.y * game_parameters.sprite_scale / 2.0;
 
             // create player component from character
-            let mut player_component =
-                PlayerComponent::from_character_with_params(character, &spawn_params);
-            player_component.player_index = player_index;
+            let player_bundle = PlayerBundle::from_character_with_params(character, &spawn_params)
+                .with_id(player_id);
 
             // spawn the player
             let mut player_entity = commands.spawn_empty();
@@ -57,13 +65,17 @@ pub fn spawn_players_system(
                 .insert(Transform {
                     translation: if is_multiplayer {
                         Vec3::new(
-                            if player_index == 0 {
+                            if matches!(player_id, PlayerIDComponent::One) {
                                 -game_parameters.player_spawn_distance
                             } else {
                                 game_parameters.player_spawn_distance
                             },
                             0.0,
-                            if player_index == 0 { 0.0 } else { 0.2 },
+                            if matches!(player_id, PlayerIDComponent::One) {
+                                0.0
+                            } else {
+                                0.2
+                            },
                         )
                     } else {
                         Vec3::ZERO
@@ -90,7 +102,7 @@ pub fn spawn_players_system(
                 .insert(Velocity::default())
                 .insert(Restitution::new(1.0))
                 .insert(ColliderMassProperties::Density(character.collider_density))
-                .insert(player_component)
+                .insert(player_bundle)
                 .insert(HealthComponent::from(character))
                 .insert(GameCleanup)
                 .insert(ActiveEvents::COLLISION_EVENTS)
@@ -105,7 +117,7 @@ pub fn spawn_players_system(
                         .spawn(SpriteBundle {
                             texture: player_assets.get_outline_asset(&character.character_type),
                             sprite: Sprite {
-                                color: if player_index == 0 {
+                                color: if matches!(player_id, PlayerIDComponent::One) {
                                     Color::rgb(0.7, 0.0, 0.0)
                                 } else {
                                     Color::rgb(0.0, 0.0, 1.0)

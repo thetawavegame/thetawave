@@ -7,12 +7,13 @@ use bevy_rapier2d::prelude::*;
 use std::f32::consts::FRAC_PI_2;
 use thetawave_interface::{spawnable::EffectType, states::GameCleanup};
 
-/// Tag component for arena barriers
+/// Tag component for arena barriers. During the main game, there should be exactly 4 entities with
+/// this component, one for each side of a rectangle.
 #[derive(Component)]
 pub struct ArenaBarrierComponent;
 
-/// Spawns arena barriers
-pub fn spawn_barriers_system(
+/// Spawns arena barriers arranged in a centered rectangle
+pub(super) fn spawn_barriers_system(
     mut commands: Commands,
     mut spawn_effect: EventWriter<SpawnEffectEvent>,
     game_parameters: Res<GameParametersResource>,

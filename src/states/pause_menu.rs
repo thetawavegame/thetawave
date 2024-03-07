@@ -1,3 +1,4 @@
+//! Systems to (set the game states to) open and close the pause menu.
 use crate::audio;
 use bevy::prelude::{AssetServer, NextState, Query, Res, ResMut, With};
 use bevy_kira_audio::prelude::{AudioChannel, AudioControl};
@@ -6,7 +7,7 @@ use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::input::{MenuAction, MenuExplorer};
 use thetawave_interface::states::GameStates;
 
-pub fn open_pause_menu_system(
+pub(super) fn open_pause_menu_system(
     menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
     mut next_game_state: ResMut<NextState<GameStates>>,
     mut rapier_config: ResMut<RapierConfiguration>,
@@ -29,7 +30,7 @@ pub fn open_pause_menu_system(
 }
 
 // close pause menu if input given
-pub fn close_pause_menu_system(
+pub(super) fn close_pause_menu_system(
     menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
     mut next_game_state: ResMut<NextState<GameStates>>,
     mut rapier_config: ResMut<RapierConfiguration>,

@@ -1,6 +1,9 @@
-use bevy::prelude::{
-    Commands, Component, Entity, Event, EventReader, EventWriter, Name, Quat, Res, Resource,
-    Sprite, SpriteSheetBundle, Timer, TimerMode, Transform, Vec2, Vec3Swizzles,
+use bevy::{
+    prelude::{
+        Commands, Component, Entity, Event, EventReader, EventWriter, Name, Quat, Res, Resource,
+        Sprite, SpriteSheetBundle, Timer, TimerMode, Transform, Vec2, Vec3Swizzles,
+    },
+    render::color::Color,
 };
 use bevy_rapier2d::prelude::{
     ActiveEvents, Collider, CollisionGroups, Group, LockedAxes, RigidBody, Sensor, Velocity,
@@ -73,6 +76,18 @@ pub struct ProjectileData {
     pub collider: ColliderData,
     /// If it has a contact collider
     pub is_solid: bool,
+    /// Color for bloom effect
+    pub bloom_color: Color,
+}
+
+impl ProjectileData {
+    pub fn affine_bloom_transformation(&self, bloom_intensity: f32) -> Color {
+        Color::rgb(
+            1.0 + self.bloom_color.r() * bloom_intensity,
+            1.0 + self.bloom_color.g() * bloom_intensity,
+            1.0 + self.bloom_color.b() * bloom_intensity,
+        )
+    }
 }
 
 /// Stores data about mob entities
@@ -179,10 +194,8 @@ pub fn spawn_projectile_from_weapon(
                     .into(),
                 texture: projectile_assets.get_image(&weapon_projectile_data.ammunition),
                 sprite: Sprite {
-                    color: projectile_assets.get_color(
-                        &weapon_projectile_data.ammunition,
-                        game_options.bloom_intensity,
-                    ),
+                    color: projectile_data
+                        .affine_bloom_transformation(game_options.bloom_intensity),
                     ..Default::default()
                 },
                 ..Default::default()

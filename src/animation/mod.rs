@@ -1,3 +1,5 @@
+//! Exposes a component to tag animatable sprite sheets, along with the plugin with associated
+//! systems to animate + clean up 2D sprite-based animations.
 use bevy::{
     app::{App, Plugin, Update},
     asset::Assets,
@@ -8,22 +10,27 @@ use bevy::{
         schedule::{common_conditions::in_state, IntoSystemConfigs},
         system::{Query, Res},
     },
-    math::Vec2,
     sprite::{TextureAtlas, TextureAtlasLayout},
     time::{Time, Timer},
 };
 use serde::Deserialize;
 use thetawave_interface::{animation::AnimationCompletedEvent, states};
 
-pub struct AnimationPlugin;
+/// The main behavior to animate sprite sheets while the game is not paused. Without this plugin,
+/// sprite animations will stay on their first frame.
+pub(super) struct SpriteAnimationPlugin;
 
-impl Plugin for AnimationPlugin {
+impl Plugin for SpriteAnimationPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
             animate_sprite_system
                 .run_if(in_state(states::AppStates::Game))
                 .run_if(in_state(states::GameStates::Playing)),
+        )
+        .add_systems(
+            Update,
+            animate_sprite_system.run_if(in_state(states::AppStates::MainMenu)),
         );
 
         app.add_event::<AnimationCompletedEvent>();
@@ -45,23 +52,6 @@ pub enum PingPongDirection {
     Backward,
 }
 
-/// Data describing texture
-#[derive(Deserialize)]
-pub struct TextureData {
-    /// Path to the texture
-    pub path: String,
-    /// Dimensions of the texture (single frame)
-    pub dimensions: Vec2,
-    /// Columns in the spritesheet
-    pub cols: usize,
-    /// Rows in the spritesheet
-    pub rows: usize,
-    /// Duration of a frame of animation
-    pub frame_duration: f32,
-    /// How the animation switches frames
-    pub animation_direction: AnimationDirection,
-}
-
 /// Describes an animation
 #[derive(Deserialize)]
 pub struct AnimationData {
@@ -69,7 +59,7 @@ pub struct AnimationData {
     pub frame_duration: f32,
 }
 
-/// Component for managing animation
+/// A tag on entities that need to be animated
 #[derive(Component)]
 pub struct AnimationComponent {
     /// Timer to track frame duration,
@@ -78,8 +68,9 @@ pub struct AnimationComponent {
     pub direction: AnimationDirection,
 }
 
-/// Handles animation of sprites
-pub fn animate_sprite_system(
+/// Increments (or decrements) the indexes of all sprite atlases on every frame. Ticks timers
+/// within the components to keep track of when animations are completed.
+fn animate_sprite_system(
     time: Res<Time>,
     texture_atlas_layouts: Res<Assets<TextureAtlasLayout>>,
     mut animation_complete_event_writer: EventWriter<AnimationCompletedEvent>,

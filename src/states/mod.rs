@@ -1,3 +1,5 @@
+//! Exposes a plugin that manages state transitions and the core behavior that deals with
+//! `thetawave_interface::states::AppStates`.
 use bevy::prelude::{
     in_state, App, Commands, Component, DespawnRecursiveExt, Entity, IntoSystemConfigs,
     IntoSystemSetConfigs, NextState, OnEnter, OnExit, Plugin, Query, ResMut, Update, With,
@@ -28,13 +30,15 @@ use crate::assets::ItemAssets;
 use crate::assets::MobAssets;
 use crate::assets::PlayerAssets;
 use crate::assets::ProjectileAssets;
+use crate::assets::UiAssets;
 use crate::GameEnterSet;
 use crate::GameUpdateSet;
 
-pub use self::game::*;
-pub use self::pause_menu::*;
-
-pub struct StatesPlugin;
+use self::game::{start_character_selection_system, start_game_system};
+use self::pause_menu::{close_pause_menu_system, open_pause_menu_system};
+/// Includes systems that handle state transitions for `AppStates` and `GameStates`. Also includes
+/// an asset loading state.
+pub(super) struct StatesPlugin;
 
 impl Plugin for StatesPlugin {
     fn build(&self, app: &mut App) {
@@ -60,13 +64,15 @@ impl Plugin for StatesPlugin {
                 .with_dynamic_assets_file::<StandardDynamicAssetCollection>(
                     "game_audio_assets.assets.ron",
                 )
+                .with_dynamic_assets_file::<StandardDynamicAssetCollection>("ui_assets.assets.ron")
                 .load_collection::<PlayerAssets>()
                 .load_collection::<ProjectileAssets>()
                 .load_collection::<MobAssets>()
                 .load_collection::<ItemAssets>()
                 .load_collection::<ConsumableAssets>()
                 .load_collection::<EffectAssets>()
-                .load_collection::<GameAudioAssets>(),
+                .load_collection::<GameAudioAssets>()
+                .load_collection::<UiAssets>(),
         );
 
         app.edit_schedule(OnEnter(AppStates::Game), |schedule| {
@@ -107,11 +113,6 @@ impl Plugin for StatesPlugin {
             open_pause_menu_system
                 .run_if(in_state(AppStates::Game))
                 .run_if(in_state(GameStates::Playing)),
-        );
-
-        app.add_systems(
-            Update,
-            start_instructions_system.run_if(in_state(AppStates::MainMenu)),
         );
 
         app.add_systems(
@@ -181,7 +182,7 @@ impl Plugin for StatesPlugin {
 }
 
 // remove entities tagged for the current app state
-pub fn clear_state_system<T: Component>(
+fn clear_state_system<T: Component>(
     mut commands: Commands,
     despawn_entities_query: Query<Entity, With<T>>,
 ) {

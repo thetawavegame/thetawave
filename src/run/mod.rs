@@ -1,3 +1,5 @@
+//! Exposes a plugin and resources that deal with level progression and the player's progress
+//! towards "winning."
 use bevy::prelude::*;
 
 use leafwing_input_manager::prelude::ActionState;
@@ -5,7 +7,7 @@ use ron::de::from_bytes;
 use serde::Deserialize;
 use std::collections::{HashMap, VecDeque};
 use thetawave_interface::input::PlayerAction;
-use thetawave_interface::player::InputRestrictionsAtSpawn;
+use thetawave_interface::player::{InputRestrictionsAtSpawn, PlayerAbilitiesComponent};
 use thetawave_interface::weapon::WeaponComponent;
 use thetawave_interface::{
     audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent, SoundEffectType},
@@ -23,13 +25,14 @@ mod level;
 pub(crate) mod level_phase;
 pub(crate) mod tutorial;
 
-use self::level::Level;
-pub use self::{
+use self::{
     formation::{spawn_formation_system, FormationPoolsResource, SpawnFormationEvent},
-    level::PremadeLevelsResource,
+    level::{Level, PremadeLevelsResource},
 };
 
-pub struct RunPlugin;
+/// Contains systems that deal with level progression and transitions of `AppStates`. This includes
+/// keeping track of when the run ends/the player loses.
+pub(super) struct RunPlugin;
 
 impl Plugin for RunPlugin {
     fn build(&self, app: &mut App) {
@@ -81,10 +84,12 @@ impl Plugin for RunPlugin {
 }
 
 #[derive(Resource, Deserialize)]
-pub struct PremadeRunsResource {
+pub(super) struct PremadeRunsResource {
     pub runs: HashMap<String, Vec<String>>,
 }
 
+/// The most up to date information on how close the player is to winning. This also keeps the
+/// state required to transition to new sections of the level.
 #[derive(Resource, Debug)]
 pub struct CurrentRunProgressResource {
     /// List of string level keys that are matched to values in the levelsresource
@@ -109,7 +114,7 @@ impl Default for CurrentRunProgressResource {
 
 impl CurrentRunProgressResource {
     /// Generate a premade level using a String run key
-    pub fn generate_premade(
+    fn generate_premade(
         &mut self,
         run_key: String,
         premade_runs_res: &PremadeRunsResource,
@@ -137,7 +142,7 @@ impl CurrentRunProgressResource {
         info!("Generated premade level");
     }
 
-    pub fn cycle_level(&mut self) {
+    fn cycle_level(&mut self) {
         // clone the current level (if it exists) into the back of the completed levels queue
         if let Some(current_level) = &self.current_level {
             self.completed_levels.push_back(current_level.clone());
@@ -150,7 +155,7 @@ impl CurrentRunProgressResource {
         info!("Level cycled");
     }
 
-    pub fn init_current_level(
+    fn init_current_level(
         &mut self,
         change_bg_music_event_writer: &mut EventWriter<ChangeBackgroundMusicEvent>,
         cycle_phase_event_writer: &mut EventWriter<CyclePhaseEvent>,
@@ -166,7 +171,7 @@ impl CurrentRunProgressResource {
         }
     }
 
-    pub fn tick(
+    fn tick(
         &mut self,
         time: &Time,
         player_query: &Query<&ActionState<PlayerAction>, With<PlayerComponent>>,
@@ -181,7 +186,7 @@ impl CurrentRunProgressResource {
         mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
         mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
         play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
-        player_component_query: &mut Query<(&mut PlayerComponent, &mut WeaponComponent)>,
+        player_component_query: &mut Query<(&mut PlayerAbilitiesComponent, &mut WeaponComponent)>,
         player_spawn_params: ResMut<InputRestrictionsAtSpawn>,
     ) {
         if let Some(current_level) = &mut self.current_level {
@@ -249,6 +254,8 @@ fn init_run_system(
     info!("Run initialized");
 }
 
+/// A major system that updates the level progression state and fires off events based on what is
+/// happening in the level, for other systems to consume.
 fn tick_run_system(
     mut run_res: ResMut<CurrentRunProgressResource>,
     time: Res<Time>,
@@ -264,7 +271,7 @@ fn tick_run_system(
     mut mob_reached_bottom_event_reader: EventReader<MobReachedBottomGateEvent>,
     mut mob_segment_destroyed_event_reader: EventReader<MobSegmentDestroyedEvent>,
     mut play_sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
-    mut player_component_query: Query<(&mut PlayerComponent, &mut WeaponComponent)>,
+    mut player_component_query: Query<(&mut PlayerAbilitiesComponent, &mut WeaponComponent)>,
     player_spawn_params: ResMut<InputRestrictionsAtSpawn>,
 ) {
     run_res.tick(

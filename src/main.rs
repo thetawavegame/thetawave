@@ -1,3 +1,4 @@
+#![doc = include_str!("../README.md")]
 use bevy::app::PluginGroupBuilder;
 use bevy::prelude::{
     AmbientLight, App, AssetPlugin, ClearColor, Color, DefaultPlugins, ImagePlugin,
@@ -5,13 +6,15 @@ use bevy::prelude::{
 };
 use bevy_kira_audio::prelude::AudioPlugin;
 
+use crate::options::display::DisplayConfig;
 use bevy_rapier2d::prelude::{
     NoUserData, RapierConfiguration, RapierDebugRenderPlugin, RapierPhysicsPlugin, TimestepMode,
 };
 use options::{generate_config_files, GameInitCLIOptions};
 use thetawave_interface::states::{AppStates, GameStates};
 
-pub const PHYSICS_SCALE: f32 = 10.0;
+/// Used by a physics engine to translate physics calculations to graphics
+const PHYSICS_PIXELS_PER_METER: f32 = 10.0;
 
 mod animation;
 mod arena;
@@ -21,8 +24,8 @@ mod background;
 mod camera;
 mod collision;
 mod game;
+mod health;
 mod loot;
-mod misc;
 mod options;
 mod player;
 mod run;
@@ -60,20 +63,17 @@ pub enum GameUpdateSet {
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-fn get_display_config() -> options::DisplayConfig {
+fn get_display_config() -> DisplayConfig {
     use ron::de::from_str;
     use std::{env::current_dir, fs::read_to_string};
 
     let config_path = current_dir().unwrap().join("config");
 
-    from_str::<options::DisplayConfig>(&read_to_string(config_path.join("display.ron")).unwrap())
-        .unwrap()
+    from_str::<DisplayConfig>(&read_to_string(config_path.join("display.ron")).unwrap()).unwrap()
 }
 
 #[cfg(target_arch = "wasm32")]
-fn get_display_config() -> options::DisplayConfig {
-    use options::DisplayConfig;
-
+fn get_display_config() -> DisplayConfig {
     DisplayConfig {
         width: 1280.0,
         height: 1024.0,
@@ -81,8 +81,10 @@ fn get_display_config() -> options::DisplayConfig {
     }
 }
 
+/// The plugins we need that are "taken for granted" from the engine and basic rendering systems.
+/// Using a different `PluginGroupBuilder` is basically a different runtime for the game.
 fn our_default_plugins(
-    display_config: options::DisplayConfig,
+    display_config: DisplayConfig,
     opts: &options::GameInitCLIOptions,
 ) -> PluginGroupBuilder {
     let res = DefaultPlugins
@@ -188,13 +190,13 @@ impl PluginGroup for ThetawaveGamePlugins {
             .add(arena::ArenaPlugin)
             .add(collision::CollisionPlugin)
             .add(scanner::ScannerPlugin)
-            .add(animation::AnimationPlugin)
+            .add(animation::SpriteAnimationPlugin)
             .add(states::StatesPlugin)
             .add(game::counters::plugin::CountingMetricsPlugin)
-            .add(misc::HealthPlugin)
+            .add(health::HealthPlugin)
             .add(weapon::WeaponPlugin)
             .add(
-                RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(PHYSICS_SCALE)
+                RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(PHYSICS_PIXELS_PER_METER)
                     .in_fixed_schedule(),
             )
             .add(ui::UiPlugin)
@@ -215,7 +217,9 @@ impl PluginGroup for ThetawaveGamePlugins {
 
 #[cfg(test)]
 mod test {
+    use crate::animation::SpriteAnimationPlugin;
     use crate::audio::ThetawaveAudioPlugin;
+    use crate::background::BackgroundPlugin;
     use crate::{build_app, options, ui, ThetawaveGamePlugins};
     use bevy::app::{App, PluginGroup};
     use bevy::asset::AssetPlugin;
@@ -268,7 +272,11 @@ mod test {
             // Ideally audio is mostly handled via `thetawave_interface::audio` and events, so that
             // we really only skip testing 1 match statement and external audio deps.
             .disable::<ThetawaveAudioPlugin>()
-            .disable::<AudioPlugin>();
+            .disable::<AudioPlugin>()
+            // The background plugin & animation plugins require the render pipeline, which I dont
+            // not want in CI.
+            .disable::<SpriteAnimationPlugin>()
+            .disable::<BackgroundPlugin>();
 
         let mut app = build_app(base_plugins, game_plugins);
         app.add_event::<ChangeBackgroundMusicEvent>()
