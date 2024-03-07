@@ -88,7 +88,7 @@ impl PlayerBundle {
 }
 
 /// Identity of a player component, used for syncing UI
-#[derive(Component, Clone, Copy, PartialEq)]
+#[derive(Component, Clone, Copy, PartialEq, Debug)]
 pub enum PlayerIDComponent {
     One,
     Two,

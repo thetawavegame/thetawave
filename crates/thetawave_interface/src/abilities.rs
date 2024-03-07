@@ -1,8 +1,11 @@
-use bevy_ecs::{bundle::Bundle, component::Component, system::Resource};
+use bevy_ecs::{bundle::Bundle, component::Component, event::Event, system::Resource};
 use bevy_time::Timer;
 use serde::Deserialize;
 
-use crate::{audio::SoundEffectType, spawnable::ProjectileType, weapon::SpreadPattern};
+use crate::{
+    audio::SoundEffectType, player::PlayerIDComponent, spawnable::ProjectileType,
+    weapon::SpreadPattern,
+};
 
 #[derive(Clone, Deserialize)]
 pub enum SlotOneAbilityType {
@@ -16,6 +19,21 @@ pub enum SlotTwoAbilityType {
     MegaBlast,
 }
 
+#[derive(Event)]
+pub struct ActivateAbilityEvent {
+    pub player_id: PlayerIDComponent,
+    pub ability_slot_id: AbilitySlotIDComponent,
+}
+
+impl ActivateAbilityEvent {
+    pub fn new(player_id: PlayerIDComponent, ability_slot_id: AbilitySlotIDComponent) -> Self {
+        Self {
+            player_id,
+            ability_slot_id,
+        }
+    }
+}
+
 #[derive(Resource, Deserialize)]
 pub struct AbilitiesResource {
     pub charge_ability: ChargeAbilityBundle,
@@ -24,7 +42,7 @@ pub struct AbilitiesResource {
     pub standard_bullet_ability: StandardWeaponAbilityBundle,
 }
 
-#[derive(Component, Deserialize, Clone, Copy, PartialEq)]
+#[derive(Component, Deserialize, Clone, Copy, PartialEq, Debug)]
 pub enum AbilitySlotIDComponent {
     One,
     Two,

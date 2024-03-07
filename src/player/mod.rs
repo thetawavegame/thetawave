@@ -7,7 +7,7 @@ use leafwing_input_manager::prelude::InputManagerPlugin;
 use ron::de::from_bytes;
 
 use thetawave_interface::{
-    abilities::AbilitiesResource,
+    abilities::{AbilitiesResource, ActivateAbilityEvent},
     input::PlayerAction,
     player::{InputRestrictionsAtSpawn, PlayersResource},
     states::{AppStates, GameStates},
@@ -15,7 +15,7 @@ use thetawave_interface::{
 
 use crate::{GameEnterSet, GameUpdateSet};
 
-use self::systems::player_ability_cooldown_system;
+use self::systems::{player_ability_cooldown_system, player_ability_input_system};
 pub use self::{
     resources::CharactersResource,
     spawn::spawn_players_system,
@@ -33,6 +33,7 @@ pub struct PlayerPlugin;
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(InputManagerPlugin::<PlayerAction>::default());
+        app.add_event::<ActivateAbilityEvent>();
 
         app.insert_resource(
             from_bytes::<CharactersResource>(include_bytes!("../../assets/data/characters.ron"))
@@ -59,6 +60,7 @@ impl Plugin for PlayerPlugin {
                 player_movement_system.in_set(GameUpdateSet::Movement),
                 player_tilt_system.in_set(GameUpdateSet::Movement),
                 player_ability_cooldown_system,
+                player_ability_input_system,
             )
                 .run_if(in_state(AppStates::Game))
                 .run_if(in_state(GameStates::Playing)),
