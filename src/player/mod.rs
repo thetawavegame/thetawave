@@ -17,6 +17,7 @@ use crate::{GameEnterSet, GameUpdateSet};
 
 use self::systems::{
     player_ability_cooldown_system, player_ability_input_system, standard_weapon_ability_system,
+    start_charge_ability_system, update_charge_ability_system,
 };
 pub use self::{
     resources::CharactersResource,
@@ -64,6 +65,8 @@ impl Plugin for PlayerPlugin {
                 player_ability_cooldown_system,
                 player_ability_input_system,
                 standard_weapon_ability_system,
+                start_charge_ability_system,
+                update_charge_ability_system,
             )
                 .run_if(in_state(AppStates::Game))
                 .run_if(in_state(GameStates::Playing)),

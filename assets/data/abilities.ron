@@ -31,7 +31,7 @@
                     ),
                     paused: false, 
                 ),
-                finished: false,
+                finished: true,
                 times_finished_this_tick: 0,
             ),
             incoming_damage_multiplier: 0.5,
