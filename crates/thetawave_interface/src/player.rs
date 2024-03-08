@@ -19,17 +19,21 @@ pub struct InputRestrictions {
 /// Stores all available player slots
 #[derive(Resource, Debug)]
 pub struct PlayersResource {
+    /// Vec of Optional players, an index is Some if a player has joined for that slot
     pub player_data: Vec<Option<PlayerData>>,
 }
 
 /// Information about a player slot
 #[derive(Debug, Clone)]
 pub struct PlayerData {
+    /// The character that a joined player has chosen
     pub character: CharacterType,
+    /// Input method of a joined player
     pub input: PlayerInput,
 }
 
 /// Input method for a player
+/// Gamepad has a usize identifier
 #[derive(Clone, PartialEq, Debug)]
 pub enum PlayerInput {
     Keyboard,
@@ -55,7 +59,7 @@ impl PlayersResource {
     }
 }
 
-/// Component bundle of all player-specific components
+/// Bundle of all player-specific components
 #[derive(Bundle)]
 pub struct PlayerBundle {
     movement_stats: PlayerMovementComponent,
