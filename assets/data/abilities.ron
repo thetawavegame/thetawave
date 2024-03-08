@@ -4,7 +4,7 @@
         base_cooldown_time: 0.8,
         ability: (
             action_time: 0.5,
-            incoming_damage_multiplier: 0.5,
+            incoming_damage_multiplier: 0.75,
             impulse: 12000.0,
         )
     ),
