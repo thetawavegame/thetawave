@@ -13,4 +13,6 @@
         rows: 2,
     ),
     "thetawave_menu_button.image": File( path: "texture/menu_button_spritesheet.png"),
+    "warning_gradient": File( path: "texture/warning_gradient.png"),
+    "defense_gradient": File( path: "texture/defense_gradient.png"),
 })

@@ -10,6 +10,7 @@ use thetawave_interface::game::historical_metrics::{MobsKilledByPlayerCacheT, DE
 use crate::GameEnterSet;
 use thetawave_interface::states;
 
+mod border_gradient;
 mod character_selection;
 mod game;
 mod game_center;
@@ -26,11 +27,16 @@ use self::character_selection::{
     player_join_system, select_character_system, setup_character_selection_system,
 };
 use self::{
-    character_selection::toggle_tutorial_system, game_center::text_fade_out_system,
-    game_over::setup_game_over_system, main_menu::MainMenuUIPlugin, pause_menu::setup_pause_system,
+    border_gradient::border_gradient_on_gate_interaction, pause_menu::setup_pause_system,
     player::update_player_ui_system, victory::setup_victory_system,
 };
+use self::{border_gradient::BorderGradientEvent, game_center::text_fade_out_system};
+use self::{
+    border_gradient::{border_gradient_start_system, border_gradient_update_system},
+    character_selection::toggle_tutorial_system,
+};
 use self::{game_center::update_center_text_ui_system, instructions::setup_instructions_system};
+use self::{game_over::setup_game_over_system, main_menu::MainMenuUIPlugin};
 use self::{level::update_level_ui_system, phase::update_phase_ui_system};
 
 /// Handles layout, styling, and updating the UI state on each frame update. Without this plugin,
@@ -40,6 +46,7 @@ pub(super) struct UiPlugin;
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<PlayerJoinEvent>();
+        app.add_event::<BorderGradientEvent>();
 
         app.add_systems(
             OnEnter(states::AppStates::Game),
@@ -56,6 +63,9 @@ impl Plugin for UiPlugin {
                 update_level_ui_system,
                 update_center_text_ui_system,
                 text_fade_out_system,
+                border_gradient_start_system,
+                border_gradient_update_system,
+                border_gradient_on_gate_interaction,
             )
                 .run_if(in_state(states::AppStates::Game))
                 .run_if(in_state(states::GameStates::Playing)),
