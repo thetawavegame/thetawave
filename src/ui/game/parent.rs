@@ -19,6 +19,8 @@ use thetawave_interface::{
 
 use crate::{assets::UiAssets, player::CharactersResource};
 
+use super::border_gradient::BorderGradientType;
+
 const TOP_ROW_HEIGHT: Val = Val::Percent(13.0);
 const TOP_CORNER_WIDTH: Val = Val::Percent(10.0);
 const TOP_CENTER_WIDTH: Val = Val::Percent(80.0);
@@ -29,6 +31,10 @@ const OUTSIDE_BORDER_BG_COLOR: BackgroundColor = BackgroundColor(Color::rgba(0.0
 const MIDDLE_ROW_HEIGHT: Val = Val::Percent(74.0);
 const MIDDLE_SIDE_WIDTH: Val = Val::Percent(10.0);
 const MIDDLE_CENTER_WIDTH: Val = Val::Percent(80.0);
+
+pub trait BorderGradientCommandsExt {
+    fn spawn_border_gradient(&mut self, ui_assets: &UiAssets, bg_type: BorderGradientType);
+}
 
 pub trait PhaseUiChildBuilderExt {
     fn spawn_phase_ui(&mut self, font: Handle<Font>);
@@ -82,6 +88,9 @@ pub fn setup_game_ui_system(
     characters_resource: Res<CharactersResource>,
 ) {
     let font: Handle<Font> = ui_assets.wibletown_font.clone();
+
+    commands.spawn_border_gradient(&ui_assets, BorderGradientType::Defense);
+    commands.spawn_border_gradient(&ui_assets, BorderGradientType::Warning);
 
     // Spawn the top level Node for all game ui and all of its child entities
     commands
