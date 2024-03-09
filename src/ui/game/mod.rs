@@ -13,7 +13,7 @@ mod parent;
 mod phase;
 mod player;
 
-pub struct GameUiPlugin;
+pub(super) struct GameUiPlugin;
 
 impl Plugin for GameUiPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
@@ -28,6 +28,8 @@ impl Plugin for GameUiPlugin {
             Update,
             (
                 player::update_player_health_ui_system,
+                player::update_player_shields_ui_system,
+                player::update_player_armor_ui_system,
                 player::update_player_abilities_ui_system,
                 phase::update_phase_ui_system,
                 level::update_level_ui_system,
@@ -35,7 +37,7 @@ impl Plugin for GameUiPlugin {
                 game_center::text_fade_out_system,
                 border_gradient::border_gradient_start_system,
                 border_gradient::border_gradient_update_system,
-                border_gradient::border_gradient_on_gate_interaction,
+                border_gradient::border_gradient_on_gate_interaction_system,
             )
                 .run_if(in_state(states::AppStates::Game))
                 .run_if(in_state(states::GameStates::Playing)),

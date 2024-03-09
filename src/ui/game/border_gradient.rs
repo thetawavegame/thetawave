@@ -79,6 +79,7 @@ impl BorderGradientCommandsExt for Commands<'_, '_> {
     }
 }
 
+/// Starts a border gradient effect by reseting its timer when an event is read
 pub(super) fn border_gradient_start_system(
     mut bg_query: Query<&mut BorderGradientComponent>,
     mut bg_event_reader: EventReader<BorderGradientEvent>,
@@ -92,6 +93,8 @@ pub(super) fn border_gradient_start_system(
     }
 }
 
+/// Sets the alpha of a border gradient's background color based on the time reamining
+/// in the border gradient component's timer
 pub(super) fn border_gradient_update_system(
     mut bg_query: Query<(&mut BorderGradientComponent, &mut BackgroundColor)>,
     time: Res<Time>,
@@ -105,7 +108,7 @@ pub(super) fn border_gradient_update_system(
 }
 
 /// Trigger a border gradient event mobs reach the bottom gate
-pub(super) fn border_gradient_on_gate_interaction(
+pub(super) fn border_gradient_on_gate_interaction_system(
     mut gate_events: EventReader<MobReachedBottomGateEvent>,
     mut bg_event_writer: EventWriter<BorderGradientEvent>,
 ) {

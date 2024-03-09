@@ -32,23 +32,23 @@ const MIDDLE_ROW_HEIGHT: Val = Val::Percent(74.0);
 const MIDDLE_SIDE_WIDTH: Val = Val::Percent(10.0);
 const MIDDLE_CENTER_WIDTH: Val = Val::Percent(80.0);
 
-pub trait BorderGradientCommandsExt {
+pub(super) trait BorderGradientCommandsExt {
     fn spawn_border_gradient(&mut self, ui_assets: &UiAssets, bg_type: BorderGradientType);
 }
 
-pub trait PhaseUiChildBuilderExt {
+pub(super) trait PhaseUiChildBuilderExt {
     fn spawn_phase_ui(&mut self, font: Handle<Font>);
 }
 
-pub trait LevelUiChildBuilderExt {
+pub(super) trait LevelUiChildBuilderExt {
     fn spawn_level_ui(&mut self, font: Handle<Font>);
 }
 
-pub trait GameCenterUiChildBuilderExt {
+pub(super) trait GameCenterUiChildBuilderExt {
     fn spawn_game_center_ui(&mut self, font: Handle<Font>);
 }
 
-pub trait PlayerUiChildBuilderExt {
+pub(super) trait PlayerUiChildBuilderExt {
     fn spawn_player_ui(
         &mut self,
         characters_res: &CharactersResource,
@@ -81,7 +81,7 @@ pub trait PlayerUiChildBuilderExt {
 }
 
 /// initializes the game ui hierarchy
-pub fn setup_game_ui_system(
+pub(super) fn setup_game_ui_system(
     mut commands: Commands,
     ui_assets: Res<UiAssets>,
     players_resource: Res<PlayersResource>,

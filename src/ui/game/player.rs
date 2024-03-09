@@ -4,7 +4,7 @@ use bevy::{
         component::Component,
         entity::Entity,
         query::{Changed, With},
-        system::{Commands, ParamSet, Query},
+        system::{Commands, Query},
     },
     hierarchy::{BuildChildren, ChildBuilder, Children, DespawnRecursiveExt},
     render::{color::Color, texture::Image},
@@ -53,40 +53,40 @@ const ABILITY_VALUE_COLOR: Color = Color::rgba(0.0, 0.0, 0.0, 0.85);
 
 // Player data Uis
 #[derive(Component)]
-pub struct HealthUi;
+pub(super) struct HealthUi;
 
 #[derive(Component)]
-pub struct HealthValueUi;
+pub(super) struct HealthValueUi;
 
 #[derive(Component)]
-pub struct ShieldsUi;
+pub(super) struct ShieldsUi;
 
 #[derive(Component)]
-pub struct ShieldsValueUi;
+pub(super) struct ShieldsValueUi;
 
 #[derive(Component)]
-pub struct ArmorUi;
+pub(super) struct ArmorUi;
 
 #[derive(Component)]
-pub struct ArmorCounterUi;
+pub(super) struct ArmorCounterUi;
 
 #[derive(Component)]
-pub struct AbilitySlotUi;
+pub(super) struct AbilitySlotUi;
 
 #[derive(Component)]
-pub struct AbilityIconUi;
+pub(super) struct AbilityIconUi;
 
 #[derive(Component)]
-pub struct AbilityValueUi;
+pub(super) struct AbilityValueUi;
 
 #[derive(Component)]
-pub struct PlayerUi;
+pub(super) struct PlayerUi;
 
 #[derive(Component)]
-pub struct PlayerInnerUi;
+pub(super) struct PlayerInnerUi;
 
 #[derive(Component)]
-pub struct PlayerOuterUi;
+pub(super) struct PlayerOuterUi;
 
 impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
     fn spawn_player_ui(
@@ -343,7 +343,7 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
     }
 }
 
-pub fn update_player_abilities_ui_system(
+pub(super) fn update_player_abilities_ui_system(
     player_query: Query<(&Children, &PlayerIDComponent), With<PlayerComponent>>,
     player_ability_query: Query<(&AbilityCooldownComponent, &AbilitySlotIDComponent)>,
     mut ability_ui_query: Query<
@@ -370,32 +370,42 @@ pub fn update_player_abilities_ui_system(
     }
 }
 
-pub fn update_player_health_ui_system(
-    mut commands: Commands,
+/// Updates each player's health bar ui
+pub(super) fn update_player_health_ui_system(
     player_query: Query<(&HealthComponent, &PlayerIDComponent), Changed<HealthComponent>>,
-    mut player_ui: ParamSet<(
-        Query<(&mut Style, &PlayerIDComponent), With<HealthValueUi>>,
-        Query<(&mut Style, &PlayerIDComponent), With<ShieldsValueUi>>,
-        Query<(Entity, &PlayerIDComponent), With<ArmorUi>>,
-    )>,
+    mut health_ui: Query<(&mut Style, &PlayerIDComponent), With<HealthValueUi>>,
 ) {
     for (player_health, player_id) in player_query.iter() {
-        // health ui
-        for (mut style, health_id) in player_ui.p0().iter_mut() {
+        for (mut style, health_id) in health_ui.iter_mut() {
             if player_id == health_id {
                 style.height = Val::Percent(100.0 * player_health.get_health_percentage());
             }
         }
+    }
+}
 
-        // shields ui
-        for (mut style, shields_id) in player_ui.p1().iter_mut() {
+/// Updates each player's shields bar ui
+pub(super) fn update_player_shields_ui_system(
+    player_query: Query<(&HealthComponent, &PlayerIDComponent), Changed<HealthComponent>>,
+    mut shields_ui: Query<(&mut Style, &PlayerIDComponent), With<ShieldsValueUi>>,
+) {
+    for (player_health, player_id) in player_query.iter() {
+        for (mut style, shields_id) in shields_ui.iter_mut() {
             if player_id == shields_id {
                 style.height = Val::Percent(100.0 * player_health.get_shields_percentage());
             }
         }
+    }
+}
 
-        // armor ui
-        for (entity, armor_id) in player_ui.p2().iter() {
+/// Updates each player's armor ui
+pub(super) fn update_player_armor_ui_system(
+    mut commands: Commands,
+    player_query: Query<(&HealthComponent, &PlayerIDComponent), Changed<HealthComponent>>,
+    armor_ui: Query<(Entity, &PlayerIDComponent), With<ArmorUi>>,
+) {
+    for (player_health, player_id) in player_query.iter() {
+        for (entity, armor_id) in armor_ui.iter() {
             if player_id == armor_id {
                 // spawn all of the existing child armor ticks
                 commands.entity(entity).despawn_descendants();

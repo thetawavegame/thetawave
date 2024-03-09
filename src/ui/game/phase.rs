@@ -39,11 +39,11 @@ const TUTORIAL_TEXT_SECTION_HEIGHT: Val = Val::Px(30.0);
 
 /// Used for querying UI for displaying name
 #[derive(Component)]
-pub struct PhaseNameUi;
+pub(super) struct PhaseNameUi;
 
 /// Used for querying UI for displaying phase information
 #[derive(Component)]
-pub struct PhaseDataUi;
+pub(super) struct PhaseDataUi;
 
 impl PhaseUiChildBuilderExt for ChildBuilder<'_> {
     // Phase name UI
@@ -101,7 +101,7 @@ impl PhaseUiChildBuilderExt for ChildBuilder<'_> {
     }
 }
 
-pub fn update_phase_ui_system(
+pub(super) fn update_phase_ui_system(
     asset_server: ResMut<AssetServer>,
     mut commands: Commands,
     mut phase_name_ui_query: Query<&mut Text, With<PhaseNameUi>>,

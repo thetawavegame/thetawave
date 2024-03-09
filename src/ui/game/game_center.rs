@@ -28,10 +28,10 @@ const BACKGROUND_COLOR: Color = Color::BLACK;
 const DEFAULT_FADE_TIME: f32 = 5.0;
 
 #[derive(Component)]
-pub struct CenterTextUi;
+pub(super) struct CenterTextUi;
 
 #[derive(Component)]
-pub struct FadeOutUiComponent {
+pub(super) struct FadeOutUiComponent {
     pub timer: Timer,
 }
 
@@ -65,6 +65,7 @@ impl GameCenterUiChildBuilderExt for ChildBuilder<'_> {
     }
 }
 
+/// Updates the alpha color of the background color for the text ui
 pub(super) fn update_center_text_ui_system(
     mut cycle_phase_event_reader: EventReader<CyclePhaseEvent>,
     run_resource: Res<CurrentRunProgressResource>,
