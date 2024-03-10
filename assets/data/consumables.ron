@@ -7,7 +7,7 @@
         consumable_behaviors: [ApplyEffectsOnImpact],
         acceleration: (0.0, 3.0),
         deceleration: (0.5, 1.0),
-        speed: (0.0, 50.0),
+        speed: (0.0, 100.0),
         z_level: 15.0,
         initial_motion: (
             random_linvel: Some(((-100, 50), (100, 100))),
@@ -32,7 +32,7 @@
         consumable_behaviors: [ApplyEffectsOnImpact],
         acceleration: (0.0, 3.0),
         deceleration: (0.5, 1.0),
-        speed: (0.0, 50.0),
+        speed: (0.0, 100.0),
         z_level: 15.0,
         initial_motion: (
             random_linvel: Some(((-100, 50), (100, 100))),
@@ -57,7 +57,7 @@
         consumable_behaviors: [ApplyEffectsOnImpact],
         acceleration: (0.0, 3.0),
         deceleration: (0.5, 1.0),
-        speed: (0.0, 50.0),
+        speed: (0.0, 100.0),
         z_level: 15.0,
         initial_motion: (
             random_linvel: Some(((-120, 50), (120, 120))),
@@ -82,7 +82,7 @@
         consumable_behaviors: [ApplyEffectsOnImpact],
         acceleration: (0.0, 3.0),
         deceleration: (0.5, 1.0),
-        speed: (0.0, 50.0),
+        speed: (0.0, 100.0),
         z_level: 15.0,
         initial_motion: (
             random_linvel: Some(((-100, 50), (100, 100))),
@@ -107,7 +107,7 @@
         consumable_behaviors: [ApplyEffectsOnImpact],
         acceleration: (0.0, 3.0),
         deceleration: (0.5, 1.0),
-        speed: (0.0, 50.0),
+        speed: (0.0, 100.0),
         z_level: 15.0,
         initial_motion: (
             random_linvel: Some(((-100, 50), (100, 100))),
