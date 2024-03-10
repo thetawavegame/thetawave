@@ -95,6 +95,7 @@ impl LevelUiChildBuilderExt for ChildBuilder<'_> {
     }
 }
 
+/// Updates the all of the level ui at the bottom of the window
 pub(super) fn update_level_ui_system(
     mut commands: Commands,
     level_data_ui_query: Query<Entity, With<LevelDataUi>>,

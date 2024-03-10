@@ -30,6 +30,10 @@ pub struct UiAssets {
     pub right_ability_slot: Handle<Image>,
     #[asset(key = "font.wibletown")]
     pub wibletown_font: Handle<Font>,
+    #[asset(key = "warning_gradient")]
+    pub warning_gradient: Handle<Image>,
+    #[asset(key = "defense_gradient")]
+    pub defense_gradient: Handle<Image>,
 }
 
 impl UiAssets {
