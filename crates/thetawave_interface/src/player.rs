@@ -232,7 +232,7 @@ impl From<&Character> for PlayerOutgoingDamageComponent {
             collision_damage: character.collision_damage,
             weapon_damage: character.weapon_damage,
             projectile_speed: character.projectile_speed,
-            projectile_spawn_position: character.projectile_spawn_position,
+            projectile_spawn_position: character.projectile_spawn_position.clone(),
             projectile_despawn_time: character.projectile_despawn_time,
             projectile_size: character.projectile_size,
             projectile_count: character.projectile_count,

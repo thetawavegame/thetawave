@@ -241,7 +241,7 @@ pub struct SpawnItemEvent {
 #[derive(Component)]
 pub struct AttractToClosestPlayerComponent;
 
-#[derive(Deserialize, Clone, Debug, Copy)]
+#[derive(Deserialize, Clone, Debug)]
 pub enum SpawnPosition {
     Global(Vec2),
     Local(Vec2),
