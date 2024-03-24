@@ -116,7 +116,7 @@ pub(in crate::player) fn standard_weapon_ability_system(
                                 damage: (weapon.damage_multiplier
                                     * player_damage.weapon_damage as f32)
                                     .round() as usize,
-                                position: player_damage.projectile_spawn_position,
+                                position: player_damage.projectile_spawn_position.clone(),
                                 speed: weapon.speed_multiplier * player_damage.projectile_speed,
                                 direction: weapon.direction,
                                 despawn_time: weapon.despawn_time_multiplier
