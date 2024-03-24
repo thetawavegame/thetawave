@@ -20,10 +20,14 @@ pub use self::resources::CharactersResource;
 use self::{
     spawn::spawn_players_system,
     systems::{
-        player_ability_cooldown_system, player_ability_input_system, player_death_system,
-        player_movement_system, player_tilt_system, players_reset_system,
-        scale_ability_cooldowns_system, standard_weapon_ability_system,
-        start_charge_ability_system, update_charge_ability_system,
+        abilities::{
+            player_ability_cooldown_system, player_ability_input_system,
+            standard_weapon_ability_system, start_charge_ability_system,
+            update_charge_ability_system,
+        },
+        movement::{player_movement_system, player_tilt_system},
+        player_death_system, players_reset_system,
+        upgrades::scale_ability_cooldowns_system,
     },
 };
 

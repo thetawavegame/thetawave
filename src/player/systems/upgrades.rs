@@ -2,7 +2,7 @@ use bevy::ecs::{query::Changed, system::Query};
 use thetawave_interface::player::{PlayerInventoryComponent, PlayerOutgoingDamageComponent};
 
 /// Updates the player's cooldown multiplier everytime the money in the `PlayerInventoryComponent` changes
-pub fn scale_ability_cooldowns_system(
+pub(in crate::player) fn scale_ability_cooldowns_system(
     mut player_query: Query<
         (
             &mut PlayerOutgoingDamageComponent,

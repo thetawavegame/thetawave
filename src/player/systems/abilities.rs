@@ -22,7 +22,7 @@ use thetawave_interface::weapon::WeaponProjectileData;
 use crate::spawnable::{FireWeaponEvent, InitialMotion};
 
 /// Tick ability cooldown timers for each player
-pub fn player_ability_cooldown_system(
+pub(in crate::player) fn player_ability_cooldown_system(
     mut ability_query: Query<&mut AbilityCooldownComponent>,
     time: Res<Time>,
 ) {
@@ -34,7 +34,7 @@ pub fn player_ability_cooldown_system(
 /// Checks all abilities for if their cooldown timers (in `AbilityCooldownComponent`) are finished, if they are,
 /// and the player has the ability's respective input pressed, sends an ActivateAbilityEvent
 /// and resets the ability's cooldown timer
-pub fn player_ability_input_system(
+pub(in crate::player) fn player_ability_input_system(
     player_input_query: Query<(
         &ActionState<PlayerAction>,
         &PlayerOutgoingDamageComponent,
@@ -84,7 +84,7 @@ pub fn player_ability_input_system(
 /// for a player for corresponding ActivateAbilityEvents.
 /// Combines the stats in the player's `PlayerOutgoingDamageComponent` of the player with
 /// the stats in `StandardWeaponAbilityComponent`.
-pub fn standard_weapon_ability_system(
+pub(in crate::player) fn standard_weapon_ability_system(
     player_query: Query<(
         Entity,
         &Transform,
@@ -146,7 +146,7 @@ pub fn standard_weapon_ability_system(
 /// Activates a charge ability (abilities with `ChargeAbilityComponent`)
 /// for a player for corresponding ActivateAbilityEvents.
 /// Applies damage reduction and an external impulse to the player
-pub fn start_charge_ability_system(
+pub(in crate::player) fn start_charge_ability_system(
     mut player_query: Query<(
         &ActionState<PlayerAction>,
         &mut ExternalImpulse,
@@ -207,7 +207,7 @@ pub fn start_charge_ability_system(
 
 /// Updates the charge ability (`ChargeAbilityComponent`)
 /// Ticks the action timer, when completed enables movment and resets the incoming damage multiplier
-pub fn update_charge_ability_system(
+pub(in crate::player) fn update_charge_ability_system(
     mut player_query: Query<(
         &mut Velocity,
         &mut PlayerMovementComponent,
