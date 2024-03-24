@@ -159,18 +159,9 @@ pub struct PlayerOutgoingDamageComponent {
     /// Base projectile count
     pub projectile_count: usize,
     /// Starting cooldown multiplier of the player. Used in calculating the the `cooldown_multiplier`
-    base_cooldown_multiplier: f32,
+    pub base_cooldown_multiplier: f32,
     /// Multiplier for how long abilities take to be ready for use again
     pub cooldown_multiplier: f32,
-}
-
-impl PlayerOutgoingDamageComponent {
-    /// Updates the `cooldown_multilier` using the `base_cooldown_multiplier` and a money parameter
-    /// along an exponential decay curve
-    pub fn update_cooldown_multiplier_from_collected_money(&mut self, money: usize) {
-        self.cooldown_multiplier =
-            1.0 + (self.base_cooldown_multiplier - 1.0) * f32::exp(-0.1 * money as f32);
-    }
 }
 
 /// Stores stats that effect damage incoming to the player
