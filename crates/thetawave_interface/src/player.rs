@@ -98,15 +98,6 @@ pub enum PlayerIDComponent {
     Two,
 }
 
-impl PlayerIDComponent {
-    pub fn has_flipped_ui(&self) -> bool {
-        match self {
-            PlayerIDComponent::One => false,
-            PlayerIDComponent::Two => true,
-        }
-    }
-}
-
 /// Useful for mapping an index to a PlayerIDComponent
 impl From<usize> for PlayerIDComponent {
     fn from(value: usize) -> Self {

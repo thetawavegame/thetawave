@@ -88,6 +88,20 @@ pub(super) struct PlayerInnerUi;
 #[derive(Component)]
 pub(super) struct PlayerOuterUi;
 
+trait PlayerIDComponentExt {
+    fn has_flipped_ui(&self) -> bool;
+}
+
+impl PlayerIDComponentExt for PlayerIDComponent {
+    /// Determines whether ui should be flipped based on the player ID
+    fn has_flipped_ui(&self) -> bool {
+        match self {
+            PlayerIDComponent::One => false,
+            PlayerIDComponent::Two => true,
+        }
+    }
+}
+
 impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
     fn spawn_player_ui(
         &mut self,
