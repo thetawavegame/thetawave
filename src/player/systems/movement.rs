@@ -12,7 +12,7 @@ use thetawave_interface::player::{PlayerComponent, PlayerMovementComponent};
 use crate::game::GameParametersResource;
 
 /// Move player by modifying velocity with input
-pub fn player_movement_system(
+pub(in crate::player) fn player_movement_system(
     game_parameters: Res<GameParametersResource>,
     mut player_info: Query<(
         &PlayerMovementComponent,
@@ -64,7 +64,7 @@ pub fn player_movement_system(
 }
 
 /// Tilt facing direction of player based on its velocity
-pub fn player_tilt_system(
+pub(in crate::player) fn player_tilt_system(
     mut player_info: Query<(&Velocity, &mut Transform), With<PlayerComponent>>,
 ) {
     for (vel, mut player_trans) in player_info.iter_mut() {

@@ -60,11 +60,6 @@ pub fn contact_collision_system(
                     collision_event_writer.send(SortedCollisionEvent::PlayerToMobContact {
                         player_entity: colliding_entities.primary,
                         mob_entity: colliding_entities.secondary,
-                        mob_faction: match mob_component.mob_type.clone() {
-                            MobType::Enemy(_) => Faction::Enemy,
-                            MobType::Ally(_) => Faction::Ally,
-                            MobType::Neutral(_) => Faction::Neutral,
-                        },
                         player_damage: player_damage.collision_damage,
                         mob_damage: mob_component.collision_damage,
                     });
@@ -89,10 +84,6 @@ pub fn contact_collision_system(
                     collision_event_writer.send(SortedCollisionEvent::PlayerToMobSegmentContact {
                         player_entity: colliding_entities.primary,
                         mob_segment_entity: colliding_entities.secondary,
-                        mob_segment_faction: match mob_segment_component.mob_segment_type.clone() {
-                            MobSegmentType::Neutral(_) => Faction::Neutral,
-                            MobSegmentType::Enemy(_) => Faction::Enemy,
-                        },
                         player_damage: player_damage.collision_damage,
                         mob_segment_damage: mob_segment_component.collision_damage,
                     });
@@ -109,7 +100,6 @@ pub fn contact_collision_system(
                             ProjectileType::Blast(faction) => faction,
                             ProjectileType::Bullet(faction) => faction,
                         },
-                        player_damage: player_damage.collision_damage,
                         projectile_damage: projectile_component.damage,
                     });
                     continue 'collision_events;
@@ -140,43 +130,19 @@ pub fn contact_collision_system(
                     // send two sorted collision events, swapping the position of the mobs in the struct
                     collision_event_writer.send(SortedCollisionEvent::MobToMobContact {
                         mob_entity_1: colliding_entities.primary,
-                        mob_faction_1: match mob_component_1.mob_type {
-                            MobType::Enemy(_) => Faction::Enemy,
-                            MobType::Ally(_) => Faction::Ally,
-                            MobType::Neutral(_) => Faction::Neutral,
-                        },
-                        mob_damage_1: mob_component_1.collision_damage,
-                        mob_entity_2: colliding_entities.secondary,
-                        mob_faction_2: match mob_component_2.mob_type {
-                            MobType::Enemy(_) => Faction::Enemy,
-                            MobType::Ally(_) => Faction::Ally,
-                            MobType::Neutral(_) => Faction::Neutral,
-                        },
                         mob_damage_2: mob_component_2.collision_damage,
                     });
                     collision_event_writer.send(SortedCollisionEvent::MobToMobContact {
                         mob_entity_1: colliding_entities.secondary,
-                        mob_faction_1: match mob_component_2.mob_type {
-                            MobType::Enemy(_) => Faction::Enemy,
-                            MobType::Ally(_) => Faction::Ally,
-                            MobType::Neutral(_) => Faction::Neutral,
-                        },
-                        mob_damage_1: mob_component_2.collision_damage,
-                        mob_entity_2: colliding_entities.primary,
-                        mob_faction_2: match mob_component_1.mob_type {
-                            MobType::Enemy(_) => Faction::Enemy,
-                            MobType::Ally(_) => Faction::Ally,
-                            MobType::Neutral(_) => Faction::Neutral,
-                        },
                         mob_damage_2: mob_component_1.collision_damage,
                     });
                     continue 'collision_events;
                 }
                 // check if mob collided with barrier
-                else if let Ok(barrier_entity) = barrier_query.get(colliding_entities.secondary) {
+                else if let Ok(_barrier_entity) = barrier_query.get(colliding_entities.secondary)
+                {
                     collision_event_writer.send(SortedCollisionEvent::MobToBarrierContact {
                         mob_entity: colliding_entities.primary,
-                        barrier_entity,
                     });
                     sound_effect_event_writer.send(PlaySoundEffectEvent {
                         sound_effect_type: SoundEffectType::BarrierBounce,
@@ -203,17 +169,8 @@ pub fn contact_collision_system(
 
                     collision_event_writer.send(SortedCollisionEvent::MobToMobSegmentContact {
                         mob_entity: colliding_entities.primary,
-                        mob_faction: match mob_component_1.mob_type {
-                            MobType::Enemy(_) => Faction::Enemy,
-                            MobType::Ally(_) => Faction::Ally,
-                            MobType::Neutral(_) => Faction::Neutral,
-                        },
                         mob_damage: mob_component_1.collision_damage,
                         mob_segment_entity: colliding_entities.secondary,
-                        mob_segment_faction: match mob_segment_component.mob_segment_type {
-                            MobSegmentType::Neutral(_) => Faction::Neutral,
-                            MobSegmentType::Enemy(_) => Faction::Enemy,
-                        },
                         mob_segment_damage: mob_segment_component.collision_damage,
                     });
                     continue 'collision_events;
@@ -268,32 +225,12 @@ pub fn contact_collision_system(
                     collision_event_writer.send(
                         SortedCollisionEvent::MobSegmentToMobSegmentContact {
                             mob_segment_entity_1: colliding_entities.primary,
-                            mob_segment_faction_1: match mob_segment_component_1.mob_segment_type {
-                                MobSegmentType::Neutral(_) => Faction::Neutral,
-                                MobSegmentType::Enemy(_) => Faction::Enemy,
-                            },
-                            mob_segment_damage_1: mob_segment_component_1.collision_damage,
-                            mob_segment_entity_2: colliding_entities.secondary,
-                            mob_segment_faction_2: match mob_segment_component_2.mob_segment_type {
-                                MobSegmentType::Neutral(_) => Faction::Neutral,
-                                MobSegmentType::Enemy(_) => Faction::Enemy,
-                            },
                             mob_segment_damage_2: mob_segment_component_2.collision_damage,
                         },
                     );
                     collision_event_writer.send(
                         SortedCollisionEvent::MobSegmentToMobSegmentContact {
                             mob_segment_entity_1: colliding_entities.secondary,
-                            mob_segment_faction_1: match mob_segment_component_2.mob_segment_type {
-                                MobSegmentType::Neutral(_) => Faction::Neutral,
-                                MobSegmentType::Enemy(_) => Faction::Enemy,
-                            },
-                            mob_segment_damage_1: mob_segment_component_2.collision_damage,
-                            mob_segment_entity_2: colliding_entities.primary,
-                            mob_segment_faction_2: match mob_segment_component_1.mob_segment_type {
-                                MobSegmentType::Neutral(_) => Faction::Neutral,
-                                MobSegmentType::Enemy(_) => Faction::Enemy,
-                            },
                             mob_segment_damage_2: mob_segment_component_1.collision_damage,
                         },
                     );
@@ -355,24 +292,12 @@ pub fn contact_collision_system(
                                     ProjectileType::Blast(faction) => faction.clone(),
                                     ProjectileType::Bullet(faction) => faction.clone(),
                                 },
-                                projectile_entity_2,
-                                projectile_faction_2: match &projectile_component_1.projectile_type
-                                {
-                                    ProjectileType::Blast(faction) => faction.clone(),
-                                    ProjectileType::Bullet(faction) => faction.clone(),
-                                },
                             },
                         );
                         collision_event_writer.send(
                             SortedCollisionEvent::ProjectileToProjectileContact {
                                 projectile_entity_1: projectile_entity_2,
                                 projectile_faction_1: match &projectile_component_2.projectile_type
-                                {
-                                    ProjectileType::Blast(faction) => faction.clone(),
-                                    ProjectileType::Bullet(faction) => faction.clone(),
-                                },
-                                projectile_entity_2: projectile_entity_1,
-                                projectile_faction_2: match &projectile_component_1.projectile_type
                                 {
                                     ProjectileType::Blast(faction) => faction.clone(),
                                     ProjectileType::Bullet(faction) => faction.clone(),

@@ -6,9 +6,8 @@ use serde::Deserialize;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     health::HealthComponent,
-    player::PlayerInventoryComponent,
+    player::{PlayerComponent, PlayerInventoryComponent, PlayerOutgoingDamageComponent},
     spawnable::{ConsumableType, EffectType, TextEffectType},
-    weapon::WeaponComponent,
 };
 
 use super::ConsumableEffect;
@@ -24,13 +23,16 @@ pub enum ConsumableBehavior {
 pub fn consumable_execute_behavior_system(
     mut commands: Commands,
     mut consumable_query: Query<(Entity, &Transform, &mut super::ConsumableComponent)>,
-    mut player_query: Query<(
-        Entity,
-        &mut PlayerInventoryComponent,
-        &Transform,
-        &mut HealthComponent,
-        &mut WeaponComponent,
-    )>,
+    mut player_query: Query<
+        (
+            Entity,
+            &mut PlayerInventoryComponent,
+            &Transform,
+            &mut HealthComponent,
+            &mut PlayerOutgoingDamageComponent,
+        ),
+        With<PlayerComponent>,
+    >,
     mut collision_events: EventReader<SortedCollisionEvent>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     mut sound_effect_event_writer: EventWriter<PlaySoundEffectEvent>,
@@ -73,13 +75,16 @@ fn apply_effects_on_impact(
     entity: Entity,
     transform: &Transform,
     collision_events: &[&SortedCollisionEvent],
-    player_query: &mut Query<(
-        Entity,
-        &mut PlayerInventoryComponent,
-        &Transform,
-        &mut HealthComponent,
-        &mut WeaponComponent,
-    )>,
+    player_query: &mut Query<
+        (
+            Entity,
+            &mut PlayerInventoryComponent,
+            &Transform,
+            &mut HealthComponent,
+            &mut PlayerOutgoingDamageComponent,
+        ),
+        With<PlayerComponent>,
+    >,
     consumable_effects: &Vec<ConsumableEffect>,
     spawn_effect_event_writer: &mut EventWriter<SpawnEffectEvent>,
     game_parameters_res: &GameParametersResource,
@@ -130,7 +135,7 @@ fn apply_effects_on_impact(
                     mut player_inventory,
                     _,
                     mut health_component,
-                    mut weapon_component,
+                    mut player_damage,
                 ) in player_query.iter_mut()
                 {
                     if *player_entity == player_entity_q {
@@ -152,7 +157,7 @@ fn apply_effects_on_impact(
                                     player_inventory.money += *money;
                                 }
                                 ConsumableEffect::GainProjectiles(projectile) => {
-                                    weapon_component.gain_projectiles(*projectile)
+                                    player_damage.projectile_count += *projectile;
                                 }
                             }
                         }

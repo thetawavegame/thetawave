@@ -1,8 +1,8 @@
 //! Systems for managing players
 
-mod ability;
-mod attacks;
-mod movement;
+pub mod abilities;
+pub mod movement;
+pub mod upgrades;
 
 use crate::{game::GameParametersResource, spawnable::SpawnEffectEvent};
 
@@ -20,14 +20,10 @@ use thetawave_interface::player::PlayerComponent;
 use thetawave_interface::run::{RunDefeatType, RunEndEvent, RunOutcomeType};
 use thetawave_interface::spawnable::EffectType;
 
-pub use self::ability::*;
-pub use self::attacks::{fire_weapon_system, scale_fire_rate_system};
-pub use self::movement::{player_movement_system, player_tilt_system};
-
 use super::PlayersResource;
 
 /// Handle player reaching zero health
-pub fn player_death_system(
+pub(super) fn player_death_system(
     mut commands: Commands,
     mut effect_event_writer: EventWriter<SpawnEffectEvent>,
     player_query: Query<(Entity, &Transform, &HealthComponent), With<PlayerComponent>>,
@@ -71,6 +67,6 @@ pub fn player_death_system(
     }
 }
 
-pub fn players_reset_system(mut players_resource: ResMut<PlayersResource>) {
+pub(super) fn players_reset_system(mut players_resource: ResMut<PlayersResource>) {
     *players_resource = PlayersResource::default();
 }

@@ -790,7 +790,7 @@
 				(
 					intro_text: Some("Destroy enemies and protect your ally using your basic attack"),
 					phase_type: Tutorial(
-						tutorial_lesson: Attack(
+						tutorial_lesson: AbilitySlotOne(
 							mobs_to_destroy: 3,
 							mobs_to_protect: 1,
 							spawn_range_x: (
@@ -820,7 +820,7 @@
 				(
 					intro_text: Some("Destroy enemies using your special ability"),
 					phase_type: Tutorial(
-						tutorial_lesson: Ability(
+						tutorial_lesson: AbilitySlotTwo(
 							mobs_to_destroy: 3,
 							spawn_range_x: (
 								start: -300.0,

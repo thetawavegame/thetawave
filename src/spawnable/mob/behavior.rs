@@ -4,10 +4,7 @@ use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     health::{DamageDealtEvent, HealthComponent},
     player::PlayerIncomingDamageComponent,
-    spawnable::{
-        EffectType, MobDestroyedEvent, MobType, ProjectileType, SpawnItemEvent, SpawnMobEvent,
-        SpawnPosition,
-    },
+    spawnable::{EffectType, MobDestroyedEvent, SpawnItemEvent, SpawnMobEvent, SpawnPosition},
 };
 
 use super::{BossComponent, MobComponent};
@@ -15,7 +12,7 @@ use crate::{
     collision::SortedCollisionEvent,
     game::GameParametersResource,
     loot::LootDropsResource,
-    spawnable::{InitialMotion, SpawnConsumableEvent, SpawnEffectEvent},
+    spawnable::{SpawnConsumableEvent, SpawnEffectEvent},
 };
 
 /// Types of behaviors that can be performed by mobs
@@ -32,32 +29,6 @@ pub enum MobBehavior {
 pub enum MobSegmentControlBehavior {
     RepeaterProtectHead,
     RepeaterAttack,
-}
-
-/// Data used to periodically spawn mobs
-#[derive(Deserialize, Clone)]
-pub struct SpawnMobBehaviorData {
-    /// Type of mob to spawn
-    pub mob_type: MobType,
-    /// Offset from center of source entity
-    pub offset_position: Vec2,
-    /// Period between spawnings
-    pub period: f32,
-}
-
-/// Data used to periodically spawn mobs
-#[derive(Deserialize, Clone)]
-pub struct PeriodicFireBehaviorData {
-    /// Type of mob to spawn
-    pub projectile_type: ProjectileType,
-    /// Offset from center of source entity
-    pub offset_position: Vec2,
-    /// Initial motion of soawned projectile
-    pub initial_motion: InitialMotion,
-    /// Time until projectile despawns
-    pub despawn_time: f32,
-    /// Period between spawnings
-    pub period: f32,
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -214,7 +185,6 @@ fn receive_damage_on_impact(
             SortedCollisionEvent::PlayerToMobContact {
                 player_entity,
                 mob_entity,
-                mob_faction: _,
                 player_damage,
                 mob_damage: _,
             } => {
@@ -231,10 +201,6 @@ fn receive_damage_on_impact(
             }
             SortedCollisionEvent::MobToMobContact {
                 mob_entity_1,
-                mob_faction_1: _,
-                mob_damage_1: _,
-                mob_entity_2: _,
-                mob_faction_2: _,
                 mob_damage_2,
             } => {
                 if entity == *mob_entity_1 && *mob_damage_2 > 0 {
@@ -246,10 +212,8 @@ fn receive_damage_on_impact(
             }
             SortedCollisionEvent::MobToMobSegmentContact {
                 mob_entity,
-                mob_faction: _,
                 mob_damage: _,
                 mob_segment_entity: _,
-                mob_segment_faction: _,
                 mob_segment_damage,
             } => {
                 if entity == *mob_entity && *mob_segment_damage > 0 {
@@ -276,7 +240,6 @@ fn deal_damage_to_player_on_impact(
         if let SortedCollisionEvent::PlayerToMobContact {
             player_entity,
             mob_entity,
-            mob_faction: _,
             player_damage: _,
             mob_damage,
         } = collision_event
@@ -314,7 +277,6 @@ fn explode_on_impact(
             SortedCollisionEvent::PlayerToMobContact {
                 player_entity: _,
                 mob_entity,
-                mob_faction: _,
                 player_damage: _,
                 mob_damage: _,
             } => {
@@ -344,10 +306,6 @@ fn explode_on_impact(
             }
             SortedCollisionEvent::MobToMobContact {
                 mob_entity_1,
-                mob_faction_1: _,
-                mob_damage_1: _,
-                mob_entity_2: _,
-                mob_faction_2: _,
                 mob_damage_2: _,
             } => {
                 sound_effect_event_writer.send(PlaySoundEffectEvent {
@@ -375,10 +333,8 @@ fn explode_on_impact(
             }
             SortedCollisionEvent::MobToMobSegmentContact {
                 mob_entity,
-                mob_faction: _,
                 mob_damage: _,
                 mob_segment_entity: _,
-                mob_segment_faction: _,
                 mob_segment_damage: _,
             } => {
                 sound_effect_event_writer.send(PlaySoundEffectEvent {

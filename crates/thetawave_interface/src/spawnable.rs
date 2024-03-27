@@ -40,7 +40,7 @@ impl Default for SpawnableType {
 }
 
 /// Type that encompasses all weapon projectiles
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display, Copy)]
 pub enum ProjectileType {
     Blast(Faction),
     Bullet(Faction),
@@ -56,7 +56,7 @@ impl ProjectileType {
 }
 
 /// Factions
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display, Copy)]
 pub enum Faction {
     Ally,
     Enemy,

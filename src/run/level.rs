@@ -9,7 +9,8 @@ use std::{
     collections::{HashMap, VecDeque},
     time::Duration,
 };
-use thetawave_interface::player::{InputRestrictionsAtSpawn, PlayerAbilitiesComponent};
+use thetawave_interface::input::PlayerAction;
+use thetawave_interface::player::InputRestrictionsAtSpawn;
 use thetawave_interface::{
     audio::{BGMusicType, ChangeBackgroundMusicEvent, PlaySoundEffectEvent},
     objective::{MobReachedBottomGateEvent, Objective},
@@ -17,7 +18,6 @@ use thetawave_interface::{
     run::CyclePhaseEvent,
     spawnable::{MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent},
 };
-use thetawave_interface::{input::PlayerAction, weapon::WeaponComponent};
 
 use crate::spawnable::BossesDestroyedEvent;
 
@@ -35,8 +35,6 @@ pub struct LevelPhase {
     pub phase_type: LevelPhaseType,
     /// music to play during phase
     pub bg_music_transition: Option<BGMusicTransition>,
-    #[serde(default)]
-    pub phase_time: Stopwatch,
     pub intro_text: Option<String>,
 }
 
@@ -163,7 +161,6 @@ impl Level {
         mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
         mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
         play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
-        player_component_query: &mut Query<(&mut PlayerAbilitiesComponent, &mut WeaponComponent)>,
         mut player_spawn_params: ResMut<InputRestrictionsAtSpawn>,
     ) -> bool {
         self.level_time.tick(time.delta());
@@ -232,7 +229,6 @@ impl Level {
                         mob_reached_bottom_event,
                         mob_segment_destroyed_event,
                         play_sound_effect_event_writer,
-                        player_component_query,
                     );
                     if finished_tutorial_section {
                         *player_spawn_params = InputRestrictionsAtSpawn::default();

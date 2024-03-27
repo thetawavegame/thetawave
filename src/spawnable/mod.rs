@@ -58,7 +58,6 @@ impl Plugin for SpawnablePlugin {
                 "../../assets/data/mobs.ron"
             ))
             .expect("Failed to parse MobsResource from 'mobs.ron'"),
-            texture_atlas_handle: HashMap::new(),
         })
         .insert_resource(
             from_bytes::<MobSegmentsResource>(include_bytes!("../../assets/data/mob_segments.ron"))
@@ -126,8 +125,6 @@ pub struct SpawnableComponent {
     pub speed: Vec2,
     /// Angular acceleration stat
     pub angular_acceleration: f32,
-    /// Angular deceleration stat
-    pub angular_deceleration: f32,
     /// Maximum angular speed stat
     pub angular_speed: f32,
     /// List of behaviors that are performed
@@ -142,7 +139,6 @@ impl From<&MobData> for SpawnableComponent {
             deceleration: mob_data.deceleration,
             speed: mob_data.speed,
             angular_acceleration: mob_data.angular_acceleration,
-            angular_deceleration: mob_data.angular_deceleration,
             angular_speed: mob_data.angular_speed,
             behaviors: mob_data.spawnable_behaviors.clone(),
         }
@@ -157,7 +153,6 @@ impl SpawnableComponent {
             deceleration: Vec2::ZERO,
             speed: Vec2::ZERO,
             angular_acceleration: 0.0,
-            angular_deceleration: 0.0,
             angular_speed: 0.0,
             behaviors: vec![],
         }

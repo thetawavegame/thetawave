@@ -97,7 +97,7 @@ impl GameAudioAssets {
             SoundEffectType::PlayerHit => self.player_hit.clone(),
             SoundEffectType::BulletDing => self.bullet_ding.clone(),
             SoundEffectType::BulletBounce => self.bullet_bounce.clone(),
-            SoundEffectType::MegablastAbility => self.megablast_ability.clone(),
+            SoundEffectType::MegaBlastAbility => self.megablast_ability.clone(),
             SoundEffectType::ObjectiveCompleted => self.objective_completed.clone(),
             SoundEffectType::ButtonRelease => {
                 let idx: u8 = rand::thread_rng().gen_range(1..=3);
