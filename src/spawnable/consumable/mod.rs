@@ -199,7 +199,6 @@ pub fn spawn_consumable(
             deceleration: consumable_data.deceleration,
             speed: consumable_data.speed,
             angular_acceleration: 0.0,
-            angular_deceleration: 0.0,
             angular_speed: 0.0,
             behaviors: consumable_data.spawnable_behaviors.clone(),
         })

@@ -35,8 +35,6 @@ pub struct LevelPhase {
     pub phase_type: LevelPhaseType,
     /// music to play during phase
     pub bg_music_transition: Option<BGMusicTransition>,
-    #[serde(default)]
-    pub phase_time: Stopwatch,
     pub intro_text: Option<String>,
 }
 
