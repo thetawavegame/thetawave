@@ -20,19 +20,32 @@ use bevy::{
     utils::default,
 };
 
+use super::parent::LevelUiChildBuilderExt;
+
+const NODE_WIDTH: Val = Val::Percent(50.0);
+const TEXT_COLOR: Color = Color::WHITE;
+const FONT_SIZE: f32 = 48.0;
+const LEVEL_DATA_PADDING: UiRect =
+    UiRect::new(Val::Vw(1.0), Val::Vw(1.0), Val::Vh(2.0), Val::Vh(2.0));
+const DEFENSE_COLOR: Color = Color::BLUE;
+const DEFENSE_COLOR_EMPTY_ALPHA: f32 = 0.05;
+const DEFENSE_COLOR_FILLED_ALPHA: f32 = 0.75;
+const DEFENSE_WIDTH: Val = Val::Percent(80.0);
+const DEFENSE_HEIGHT: Val = Val::Percent(60.0);
+
 /// Used for querying UI for displaying name
 #[derive(Component)]
-pub(super) struct LevelNameUI;
+pub(super) struct LevelNameUi;
 
 /// Used for querying UI for displaying level information
 #[derive(Component)]
-pub(super) struct LevelDataUI;
+pub(super) struct LevelDataUi;
 
-pub(super) fn build_level_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
-    parent
-        .spawn(NodeBundle {
+impl LevelUiChildBuilderExt for ChildBuilder<'_> {
+    fn spawn_level_ui(&mut self, font: Handle<Font>) {
+        self.spawn(NodeBundle {
             style: Style {
-                width: Val::Percent(50.0),
+                width: NODE_WIDTH,
                 height: Val::Percent(100.0),
                 align_items: AlignItems::Center,
                 justify_content: JustifyContent::Center,
@@ -40,58 +53,53 @@ pub(super) fn build_level_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
             },
             ..default()
         })
-        .with_children(|bottom_middle_left_ui| {
-            bottom_middle_left_ui
-                .spawn(TextBundle {
-                    style: Style::default(),
-                    text: Text::from_section(
-                        "",
-                        TextStyle {
-                            font: font.clone(),
-                            font_size: 48.0,
-                            color: Color::WHITE,
-                        },
-                    ),
-                    ..default()
-                })
-                .insert(LevelNameUI);
+        .with_children(|left| {
+            left.spawn(TextBundle {
+                style: Style::default(),
+                text: Text::from_section(
+                    "",
+                    TextStyle {
+                        font: font.clone(),
+                        font_size: FONT_SIZE,
+                        color: TEXT_COLOR,
+                    },
+                ),
+                ..default()
+            })
+            .insert(LevelNameUi);
         });
 
-    parent
-        .spawn(NodeBundle {
+        self.spawn(NodeBundle {
             style: Style {
-                width: Val::Percent(50.0),
+                width: NODE_WIDTH,
                 height: Val::Percent(100.0),
                 ..default()
             },
             ..default()
         })
-        .with_children(|bottom_middle_right_ui| {
-            bottom_middle_right_ui
+        .with_children(|right| {
+            right
                 .spawn(NodeBundle {
                     style: Style {
                         width: Val::Percent(100.0),
                         height: Val::Percent(100.0),
-                        padding: UiRect::new(
-                            Val::Vw(1.0),
-                            Val::Vw(1.0),
-                            Val::Vh(2.0),
-                            Val::Vh(2.0),
-                        ),
+                        padding: LEVEL_DATA_PADDING,
                         align_items: AlignItems::Center,
                         justify_content: JustifyContent::Center,
                         ..default()
                     },
                     ..default()
                 })
-                .insert(LevelDataUI);
+                .insert(LevelDataUi);
         });
+    }
 }
 
+/// Updates the all of the level ui at the bottom of the window
 pub(super) fn update_level_ui_system(
     mut commands: Commands,
-    level_data_ui_query: Query<Entity, With<LevelDataUI>>,
-    mut level_name_ui_query: Query<&mut Text, With<LevelNameUI>>,
+    level_data_ui_query: Query<Entity, With<LevelDataUi>>,
+    mut level_name_ui_query: Query<&mut Text, With<LevelNameUi>>,
     run_resource: Res<CurrentRunProgressResource>,
 ) {
     if let Some(current_level) = &run_resource.current_level {
@@ -109,12 +117,14 @@ pub(super) fn update_level_ui_system(
                             level_data_ui
                                 .spawn(NodeBundle {
                                     style: Style {
-                                        width: Val::Percent(80.0),
-                                        height: Val::Percent(60.0),
+                                        width: DEFENSE_WIDTH,
+                                        height: DEFENSE_HEIGHT,
                                         flex_direction: FlexDirection::Row,
                                         ..default()
                                     },
-                                    background_color: Color::BLUE.with_a(0.05).into(),
+                                    background_color: DEFENSE_COLOR
+                                        .with_a(DEFENSE_COLOR_EMPTY_ALPHA)
+                                        .into(),
                                     ..default()
                                 })
                                 .with_children(|defense_ui| {
@@ -126,7 +136,9 @@ pub(super) fn update_level_ui_system(
                                             height: Val::Percent(100.0),
                                             ..default()
                                         },
-                                        background_color: Color::BLUE.with_a(0.75).into(),
+                                        background_color: DEFENSE_COLOR
+                                            .with_a(DEFENSE_COLOR_FILLED_ALPHA)
+                                            .into(),
                                         ..default()
                                     });
                                 });

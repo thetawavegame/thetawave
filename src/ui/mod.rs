@@ -7,37 +7,28 @@ use bevy::{
 use thetawave_interface::character_selection::PlayerJoinEvent;
 use thetawave_interface::game::historical_metrics::{MobsKilledByPlayerCacheT, DEFAULT_USER_ID};
 
-use crate::GameEnterSet;
 use thetawave_interface::states;
 
-mod border_gradient;
 mod character_selection;
 mod game;
-mod game_center;
 mod game_over;
 mod instructions;
-mod level;
 mod main_menu;
 mod pause_menu;
-mod phase;
-mod player;
 mod victory;
 
-use self::character_selection::{
-    player_join_system, select_character_system, setup_character_selection_system,
-};
 use self::{
-    border_gradient::border_gradient_on_gate_interaction, pause_menu::setup_pause_system,
-    player::update_player_ui_system, victory::setup_victory_system,
+    character_selection::{
+        player_join_system, select_character_system, setup_character_selection_system,
+        toggle_tutorial_system,
+    },
+    game::GameUiPlugin,
+    game_over::setup_game_over_system,
+    instructions::setup_instructions_system,
+    main_menu::MainMenuUIPlugin,
+    pause_menu::setup_pause_system,
+    victory::setup_victory_system,
 };
-use self::{border_gradient::BorderGradientEvent, game_center::text_fade_out_system};
-use self::{
-    border_gradient::{border_gradient_start_system, border_gradient_update_system},
-    character_selection::toggle_tutorial_system,
-};
-use self::{game_center::update_center_text_ui_system, instructions::setup_instructions_system};
-use self::{game_over::setup_game_over_system, main_menu::MainMenuUIPlugin};
-use self::{level::update_level_ui_system, phase::update_phase_ui_system};
 
 /// Handles layout, styling, and updating the UI state on each frame update. Without this plugin,
 /// we mostly just have a black screen with some images moving across the screen.
@@ -46,30 +37,9 @@ pub(super) struct UiPlugin;
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<PlayerJoinEvent>();
-        app.add_event::<BorderGradientEvent>();
-
-        app.add_systems(
-            OnEnter(states::AppStates::Game),
-            (game::setup_game_ui_system.after(GameEnterSet::BuildUi),),
-        )
-        .add_systems(Update, bouncing_prompt_system)
-        .add_plugins(MainMenuUIPlugin);
-
-        app.add_systems(
-            Update,
-            (
-                update_player_ui_system,
-                update_phase_ui_system,
-                update_level_ui_system,
-                update_center_text_ui_system,
-                text_fade_out_system,
-                border_gradient_start_system,
-                border_gradient_update_system,
-                border_gradient_on_gate_interaction,
-            )
-                .run_if(in_state(states::AppStates::Game))
-                .run_if(in_state(states::GameStates::Playing)),
-        );
+        app.add_plugins(GameUiPlugin);
+        app.add_plugins(MainMenuUIPlugin);
+        app.add_systems(Update, bouncing_prompt_system);
 
         app.add_systems(
             OnEnter(states::AppStates::Instructions),

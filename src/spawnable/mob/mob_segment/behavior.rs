@@ -295,7 +295,6 @@ fn deal_damage_to_player_on_impact(
         if let SortedCollisionEvent::PlayerToMobSegmentContact {
             player_entity,
             mob_segment_entity,
-            mob_segment_faction: _,
             player_damage: _,
             mob_segment_damage,
         } = collision_event
@@ -329,7 +328,6 @@ fn receive_damage_on_impact(
             SortedCollisionEvent::PlayerToMobSegmentContact {
                 player_entity,
                 mob_segment_entity,
-                mob_segment_faction: _,
                 player_damage,
                 mob_segment_damage: _,
             } => {
@@ -346,10 +344,8 @@ fn receive_damage_on_impact(
             }
             SortedCollisionEvent::MobToMobSegmentContact {
                 mob_segment_entity,
-                mob_segment_faction: _,
                 mob_segment_damage: _,
                 mob_entity: _,
-                mob_faction: _,
                 mob_damage,
             } => {
                 if entity == *mob_segment_entity && *mob_damage > 0 {
@@ -361,10 +357,6 @@ fn receive_damage_on_impact(
             }
             SortedCollisionEvent::MobSegmentToMobSegmentContact {
                 mob_segment_entity_1,
-                mob_segment_faction_1: _,
-                mob_segment_damage_1: _,
-                mob_segment_entity_2: _,
-                mob_segment_faction_2: _,
                 mob_segment_damage_2,
             } => {
                 if entity == *mob_segment_entity_1 && *mob_segment_damage_2 > 0 {

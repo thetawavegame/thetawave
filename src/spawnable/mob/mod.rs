@@ -27,9 +27,7 @@ use thetawave_interface::{
     game::options::GameOptions,
     health::HealthComponent,
     objective::DefenseInteraction,
-    spawnable::{
-        MobDestroyedEvent, MobSegmentType, MobType, ProjectileType, SpawnMobEvent, SpawnPosition,
-    },
+    spawnable::{MobDestroyedEvent, MobSegmentType, MobType, SpawnMobEvent, SpawnPosition},
     states::GameCleanup,
     weapon::{WeaponComponent, WeaponData},
 };
@@ -113,42 +111,6 @@ impl From<MobSpawnerData> for MobSpawner {
             timer: Timer::from_seconds(value.period, TimerMode::Repeating),
         }
     }
-}
-
-#[derive(Deserialize, Clone)]
-pub struct ProjectileSpawner {
-    pub projectile_type: ProjectileType,
-    pub timer: Timer,
-    pub position: SpawnPosition,
-    pub speed: f32,
-    pub direction: f32,
-    pub despawn_time: f32,
-    pub count: usize,
-}
-
-impl From<ProjectileSpawnerData> for ProjectileSpawner {
-    fn from(value: ProjectileSpawnerData) -> Self {
-        ProjectileSpawner {
-            projectile_type: value.projectile_type.clone(),
-            timer: Timer::from_seconds(value.period, TimerMode::Repeating),
-            position: value.position.clone(),
-            speed: value.speed,
-            direction: value.direction,
-            despawn_time: value.despawn_time,
-            count: value.count,
-        }
-    }
-}
-
-#[derive(Deserialize, Clone)]
-pub struct ProjectileSpawnerData {
-    pub projectile_type: ProjectileType,
-    pub period: f32,
-    pub position: SpawnPosition,
-    pub despawn_time: f32,
-    pub speed: f32,
-    pub direction: f32,
-    pub count: usize,
 }
 
 #[derive(Deserialize, Clone)]
@@ -335,14 +297,6 @@ impl ThrusterData {
 pub struct MobsResource {
     /// Mob types mapped to mob data
     pub mobs: HashMap<MobType, MobData>,
-    /// Mob types mapped to their texture and optional thruster texture
-    pub texture_atlas_handle: HashMap<
-        MobType,
-        (
-            Handle<TextureAtlasLayout>,
-            Option<Handle<TextureAtlasLayout>>,
-        ),
-    >,
 }
 
 /// Spawn a mob entity

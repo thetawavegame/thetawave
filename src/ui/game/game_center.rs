@@ -18,6 +18,8 @@ use bevy::{
 use std::time::Duration;
 use thetawave_interface::run::CyclePhaseEvent;
 
+use super::parent::GameCenterUiChildBuilderExt;
+
 const BASE_TEXT_ALPHA: f32 = 1.0;
 const BASE_BACKGROUND_ALPHA: f32 = 0.4;
 const FONT_SIZE: f32 = 90.0;
@@ -26,14 +28,14 @@ const BACKGROUND_COLOR: Color = Color::BLACK;
 const DEFAULT_FADE_TIME: f32 = 5.0;
 
 #[derive(Component)]
-pub struct CenterTextUI;
+pub(super) struct CenterTextUi;
 
 #[derive(Component)]
-pub struct FadeOutUIComponent {
+pub(super) struct FadeOutUiComponent {
     pub timer: Timer,
 }
 
-impl Default for FadeOutUIComponent {
+impl Default for FadeOutUiComponent {
     fn default() -> Self {
         let mut timer = Timer::from_seconds(DEFAULT_FADE_TIME, TimerMode::Once);
         timer.set_elapsed(Duration::from_secs_f32(DEFAULT_FADE_TIME));
@@ -42,33 +44,34 @@ impl Default for FadeOutUIComponent {
     }
 }
 
-/// Spawn a `TextBundle` with no text in the center of the screen.
-pub(super) fn build_center_text_ui(parent: &mut ChildBuilder, font: Handle<Font>) {
-    parent
-        .spawn(TextBundle {
+impl GameCenterUiChildBuilderExt for ChildBuilder<'_> {
+    fn spawn_game_center_ui(&mut self, font: Handle<Font>) {
+        self.spawn(TextBundle {
             style: Style::default(),
             text: Text::from_section(
                 "",
                 TextStyle {
                     font: font.clone(),
                     font_size: FONT_SIZE,
-                    color: Color::WHITE,
+                    color: TEXT_COLOR,
                 },
             )
             .with_justify(JustifyText::Center),
-            background_color: Color::BLACK.with_a(0.0).into(),
+            background_color: BACKGROUND_COLOR.with_a(0.0).into(),
             ..default()
         })
-        .insert(CenterTextUI)
-        .insert(FadeOutUIComponent::default());
+        .insert(CenterTextUi)
+        .insert(FadeOutUiComponent::default());
+    }
 }
 
+/// Updates the alpha color of the background color for the text ui
 pub(super) fn update_center_text_ui_system(
     mut cycle_phase_event_reader: EventReader<CyclePhaseEvent>,
     run_resource: Res<CurrentRunProgressResource>,
     mut center_text_query: Query<
-        (&mut Text, &mut BackgroundColor, &mut FadeOutUIComponent),
-        With<CenterTextUI>,
+        (&mut Text, &mut BackgroundColor, &mut FadeOutUiComponent),
+        With<CenterTextUi>,
     >,
 ) {
     // if phase has been cycled update the text
@@ -80,7 +83,7 @@ pub(super) fn update_center_text_ui_system(
                 {
                     if let Some(intro_text) = phase.intro_text.clone() {
                         text.sections[0].value = intro_text;
-                        *bg_color = Color::BLACK.with_a(BASE_BACKGROUND_ALPHA).into();
+                        *bg_color = BACKGROUND_COLOR.with_a(BASE_BACKGROUND_ALPHA).into();
                         fade_out.timer.reset();
                     }
                 }
@@ -91,7 +94,7 @@ pub(super) fn update_center_text_ui_system(
 
 /// Gradually fade out text entities with a `FadeOutUIComponent`. This should be run every frame.
 pub(super) fn text_fade_out_system(
-    mut background_color_query: Query<(&mut Text, &mut BackgroundColor, &mut FadeOutUIComponent)>,
+    mut background_color_query: Query<(&mut Text, &mut BackgroundColor, &mut FadeOutUiComponent)>,
     time: Res<Time>,
 ) {
     for (mut text, mut bg_color, mut fade_out) in background_color_query.iter_mut() {

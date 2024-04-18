@@ -227,7 +227,6 @@ pub fn spawn_projectile_from_weapon(
                 deceleration: Vec2::ZERO,
                 speed: [game_parameters.max_speed, game_parameters.max_speed].into(), // highest possible speed
                 angular_acceleration: 0.0,
-                angular_deceleration: 0.0,
                 angular_speed: game_parameters.max_speed,
                 behaviors: projectile_data.spawnable_behaviors.clone(),
             })
