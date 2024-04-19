@@ -25,7 +25,6 @@
         (JoinGamepad, South),
         (Back, East),
         (Confirm, Start),
-        (Confirm, South),
         (Reset, East),
         (ExitPauseMenu, Start),
         (PauseGame, Start),
