@@ -50,6 +50,9 @@ jobs:
       - name: Check that the game compiles and is minimally sensible rust (no warnings)
         run: cargo rustc --all-features -- -D warnings
 
+      - name: Check that the game compiles and is minimally sensible rust (no warnings) with just the arcade feature
+        run: cargo rustc --features arcade -- -D warnings
+
   test:
     name: ${{ matrix.name }}
     needs: [style]
