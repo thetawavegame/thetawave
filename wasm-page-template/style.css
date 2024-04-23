@@ -7,7 +7,18 @@
   --primaryColor: #fd145a;
   --primaryGradient: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, var(--primaryColor) 50%, rgba(0, 0, 0, 0) 100%);
 }
-
+#chrome-warning {
+  background-color: var(--bg-color); /* Light red */
+  border: 1px solid #ff3333; /* Red border */
+  color: #ff3333; /* Red text */
+  padding: 10px;
+  margin-bottom: 10px;
+  text-align: center;
+  width: 80%;
+  margin-left: 10%; /* Add margin on the left */
+  margin-right: 10%;
+  font-size: 16pt;
+}
 ::selection {
   background-color: var(--primaryColor);
   color: var(--bgColor);
@@ -34,6 +45,11 @@ body {
   ) center;
   animation: glow 4s ease-in-out infinite alternate;
   font-family: 'VT323', serif;
+  display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    justify-content: space-between; /* Centers the content along the vertical axis */
+    align-items: center; /* Centers the content along the horizontal axis */
 }
 
 canvas {
