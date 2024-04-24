@@ -56,6 +56,50 @@ Thetawave is a physics-based space shooter with procedurally generated levels, d
 **Special Mechanics:**
 - Letting cargo hauler mobs reach the bottom of the arena heals the defense bar.
 
+## Building and Playing Locally
+
+While you can play [in the browser](https://thetawave.metalmancy.tech) (works best on Google Chrome...for now), you can
+play offline in a few ways. The simplest way to play a native build of the game offline is to download the latest
+[Github release](https://github.com/thetawavegame/thetawave/releases) for Windows or Linux. Then run the executable.
+
+To run the game after compiling locally, do the following.
+
+0. Clone the repository `git clone https://github.com/thetawavegame/thetawave.git`
+0. Download our assets.
+
+   One way is to download a recent Linux `.tar.gz` release, and extract the `assets/` directory in the tarball into your
+   local `assets/` directory. We do so in the following Bash command. In Windows, just copy the files manually. Replace
+   the link with that of a build from the [latest release](https://github.com/thetawavegame/thetawave/releases),
+   especially if you are running off of the `main` branch.
+
+   ```bash
+
+   curl -Ls https://github.com/thetawavegame/thetawave/releases/download/v0.2.0/thetawave-0.2.0-x86_64-unknown-linux-gnu.tar.gz  \
+       | tar -xz -C assets/ --strip-components=2 --wildcards "*/assets/*"
+   ```
+
+   If when running the `main` branch you still have missing assets, it means that we are using assets that are not yet
+   published in a release. In that case, you might checkout the latest tag. Find it by running `git tag` and then
+   execute, for example, `git checkout v0.2.0`.
+
+0. Compile/run using [Cargo](https://github.com/rust-lang/cargo) as follows.
+
+   ```bash
+   cargo run --release
+   ```
+
+0. Enable the install features you want. Our install features are as follows.
+
+   - `cli` - Enables start up parameters on the built `thetawave` executable.
+   - `storage` - Enables writing user stats to a local [SQLite](https://www.sqlite.org/) database.
+   - `arcade` - Enables arcade-specific features, namely through serial communication to a microcontroller.
+
+   One can run using install features as follows.
+
+   ```bash
+   cargo run --release --features "storage,cli,arcade"
+   ```
+
 ## How to Contribute
 
 We welcome contributions from all community members. Your insights and improvements help us grow.
