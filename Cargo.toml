@@ -4,6 +4,7 @@ version = "0.1.1"
 edition = "2021"
 
 [workspace]
+resolver = "2"
 members = [
     "crates/thetawave_interface",
     "crates/thetawave_storage",
@@ -111,6 +112,8 @@ opt-level = 1
 codegen-units = 1
 
 [features]
+default = ["fast-compile", "storage"]
 arcade = ["thetawave_arcade"]
 storage = ["thetawave_storage"]
 cli = ["argh"]
+fast-compile = ["bevy/dynamic_linking"]
