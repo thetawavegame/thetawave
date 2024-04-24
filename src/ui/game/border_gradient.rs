@@ -16,7 +16,10 @@ use bevy::{
     },
     utils::default,
 };
-use thetawave_interface::{objective::{DefenseInteraction, MobReachedBottomGateEvent}, states::GameCleanup};
+use thetawave_interface::{
+    objective::{DefenseInteraction, MobReachedBottomGateEvent},
+    states::GameCleanup,
+};
 
 use crate::assets::UiAssets;
 
@@ -50,7 +53,8 @@ impl BorderGradientCommandsExt for Commands<'_, '_> {
                 ..default()
             },
             ..default()
-        }).insert(GameCleanup)
+        })
+        .insert(GameCleanup)
         .with_children(|parent| {
             parent
                 .spawn(ImageBundle {
