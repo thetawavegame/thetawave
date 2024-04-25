@@ -14,7 +14,6 @@ use thetawave_interface::input::MenuExplorer;
 use thetawave_interface::states::CharacterSelectionCleanup;
 use thetawave_interface::states::GameCleanup;
 use thetawave_interface::states::GameOverCleanup;
-use thetawave_interface::states::InstructionsCleanup;
 use thetawave_interface::states::MainMenuCleanup;
 use thetawave_interface::states::PauseCleanup;
 use thetawave_interface::states::VictoryCleanup;
@@ -34,7 +33,7 @@ use crate::assets::UiAssets;
 use crate::GameEnterSet;
 use crate::GameUpdateSet;
 
-use self::game::{start_character_selection_system, start_game_system};
+use self::game::start_game_system;
 use self::pause_menu::{close_pause_menu_system, open_pause_menu_system};
 /// Includes systems that handle state transitions for `AppStates` and `GameStates`. Also includes
 /// an asset loading state.
@@ -117,11 +116,6 @@ impl Plugin for StatesPlugin {
 
         app.add_systems(
             Update,
-            start_character_selection_system.run_if(in_state(AppStates::Instructions)),
-        );
-
-        app.add_systems(
-            Update,
             start_game_system.run_if(in_state(AppStates::CharacterSelection)),
         );
 
@@ -150,11 +144,6 @@ impl Plugin for StatesPlugin {
         app.add_systems(
             OnExit(GameStates::Paused),
             clear_state_system::<PauseCleanup>,
-        );
-
-        app.add_systems(
-            OnExit(AppStates::Instructions),
-            clear_state_system::<InstructionsCleanup>,
         );
 
         app.add_systems(

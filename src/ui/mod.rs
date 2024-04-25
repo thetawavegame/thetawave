@@ -12,7 +12,6 @@ use thetawave_interface::states;
 mod character_selection;
 mod game;
 mod game_over;
-mod instructions;
 mod main_menu;
 mod pause_menu;
 mod victory;
@@ -24,7 +23,6 @@ use self::{
     },
     game::GameUiPlugin,
     game_over::setup_game_over_system,
-    instructions::setup_instructions_system,
     main_menu::MainMenuUIPlugin,
     pause_menu::setup_pause_system,
     victory::setup_victory_system,
@@ -40,11 +38,6 @@ impl Plugin for UiPlugin {
         app.add_plugins(GameUiPlugin);
         app.add_plugins(MainMenuUIPlugin);
         app.add_systems(Update, bouncing_prompt_system);
-
-        app.add_systems(
-            OnEnter(states::AppStates::Instructions),
-            setup_instructions_system,
-        );
 
         app.add_systems(
             OnEnter(states::AppStates::CharacterSelection),
