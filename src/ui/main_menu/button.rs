@@ -92,13 +92,7 @@ pub(super) trait UiChildBuilderExt {
 
 impl UiChildBuilderExt for ChildBuilder<'_> {
     fn spawn_main_menu_buttons(&mut self, ui_assets: &UiAssets, font: Handle<Font>) -> &mut Self {
-        let buttons = if cfg!(feature = "arcade") {
-            vec![MainMenuButtonActionComponent::EnterInstructions]
-        } else {
-            Vec::from(MAIN_MENU_BUTTON_ORDER)
-        };
-
-        for action in buttons.iter() {
+        for action in MAIN_MENU_BUTTON_ORDER.iter() {
             self.spawn_main_menu_button(
                 ui_assets,
                 action.in_game_text().into(),
