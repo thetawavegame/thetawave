@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Download and upload Thetawave assets to our S3 bucket. This CLI basically wraps the `aws s3 sync` command. See the
 CONTRIBUTING.md for more information on executing this script, including properly setting up credentials."""
+from __future__ import annotations
 from argparse import (
     ArgumentParser,
     Namespace,
@@ -31,8 +32,8 @@ class S3Location(str, Enum):
 
 
 class TWAssetCLIArgs(Namespace):
-    profile: str
     command: S3Action
+    profile: str | None
     s3_location: S3Location
     dryrun: bool
 
@@ -50,8 +51,9 @@ def get_parser() -> ArgumentParser:
         help="""The name of the AWS profile that can access a role for manipulating the thetawave bucket. This profile
         must be permissioned to use the AWS IAM role arn:aws:iam::656454124102:role/ThetawaveDeveloperRole . Your
         default profile _probably_ doesnt/shouldn't correspond to your thetawave developer IAM user account, so you
-        probably need to set this.""",
-        required=True,
+        probably need to set this. If this is nor provided, AWS specified waterfall logic determines the credentials
+        used to access the S3 bucket. https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html""",
+        required=False,
     )
     res.add_argument(
         "--dryrun",
@@ -79,8 +81,7 @@ def run(args: TWAssetCLIArgs) -> None:
     src_dest = [s3_loc, "assets/"] if args.command == S3Action.DOWNLOAD else ["assets/", s3_loc]
     action_args = [
         "aws",
-        "--profile",
-        args.profile,
+        *(["--profile", args.profile] if args.profile else []),
         "s3",
         "sync",
         *("--exclude", "*.ron", "--exclude", "*.gif"),
@@ -92,7 +93,7 @@ def run(args: TWAssetCLIArgs) -> None:
     if args.dryrun:
         LOGGER.warning(
             """The asset manager was executed with the --dryrun flag. No action was taken. Rerun with
-                       --no-dryrun if the desired files will be (down|up)loaded."""
+           --no-dryrun if the desired files will be (down|up)loaded."""
         )
 
 

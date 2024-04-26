@@ -161,7 +161,6 @@ fn deal_damage_on_contact(
                 player_entity,
                 projectile_entity,
                 projectile_faction,
-                player_damage: _,
                 projectile_damage,
             } => {
                 if projectile == *projectile_entity
@@ -480,7 +479,6 @@ fn explode_on_contact(
                 projectile_entity,
                 projectile_faction,
                 projectile_damage: _,
-                player_damage: _,
             } => {
                 if projectile == *projectile_entity
                     && matches!(
@@ -600,8 +598,6 @@ fn explode_on_contact(
             SortedCollisionEvent::ProjectileToProjectileContact {
                 projectile_entity_1,
                 projectile_faction_1,
-                projectile_entity_2: _,
-                projectile_faction_2: _,
             } => {
                 if projectile == *projectile_entity_1 {
                     //audio_channel.play(audio_assets.mob_hit.clone());

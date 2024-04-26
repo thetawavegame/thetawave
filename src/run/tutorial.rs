@@ -1,6 +1,7 @@
 //! The logic for the tutorial level. Generally, a `TutorialLesson` is added to a collection of
 //! levels to invoke some behavior each tick, until all objectives/milestones are met (a sentinel
 //! in the tick/update function is returned).
+use bevy::log::info;
 use bevy::math::Quat;
 use bevy::prelude::{EventReader, EventWriter, Query, Time, Timer, With};
 use leafwing_input_manager::action_state::ActionState;
@@ -10,22 +11,13 @@ use std::ops::Range;
 use thetawave_interface::audio::{PlaySoundEffectEvent, SoundEffectType};
 use thetawave_interface::input::PlayerAction;
 use thetawave_interface::objective::MobReachedBottomGateEvent;
-use thetawave_interface::player::{
-    InputRestrictionsAtSpawn, PlayerAbilitiesComponent, PlayerComponent,
-};
+use thetawave_interface::player::{InputRestrictionsAtSpawn, PlayerComponent};
 use thetawave_interface::spawnable::{
     AllyMobType, MobDestroyedEvent, MobSegmentDestroyedEvent, MobSegmentType, MobType,
     NeutralMobSegmentType, NeutralMobType, SpawnMobEvent,
 };
-use thetawave_interface::weapon::WeaponComponent;
-
-fn enable_player_actions_at_end_of_phase(
-    players: &mut Query<(&mut PlayerAbilitiesComponent, &mut WeaponComponent)>,
-) {
-    for (mut player_abilities, mut weapon) in players.iter_mut() {
-        player_abilities.enable_special_attacks();
-        weapon.enable();
-    }
+fn enable_player_actions_at_end_of_phase() {
+    info!("TODO: Enable player actions");
 }
 pub(super) fn modify_player_spawn_params_for_lesson_phase(
     spawn_params: &mut InputRestrictionsAtSpawn,
@@ -36,11 +28,12 @@ pub(super) fn modify_player_spawn_params_for_lesson_phase(
             (*spawn_params).forbid_main_attack_reason = Some("In movement tutorial".into());
             (*spawn_params).forbid_special_attack_reason = Some("In movement tutorial".into());
         }
-        TutorialLesson::Attack { .. } => {
-            (*spawn_params).forbid_special_attack_reason = Some("In attack tutorial".into());
+        TutorialLesson::AbilitySlotOne { .. } => {
+            (*spawn_params).forbid_special_attack_reason =
+                Some("In ability slot one tutorial".into());
         }
-        TutorialLesson::Ability { .. } => {
-            (*spawn_params).forbid_main_attack_reason = Some("In ability tutorial".into());
+        TutorialLesson::AbilitySlotTwo { .. } => {
+            (*spawn_params).forbid_main_attack_reason = Some("In ability slot two tutorial".into());
         }
     }
 }
@@ -59,14 +52,14 @@ pub enum TutorialLesson {
         down_left_timer: Timer,
         down_right_timer: Timer,
     },
-    Attack {
+    AbilitySlotOne {
         mobs_to_destroy: usize,
         mobs_to_protect: usize,
         initial_spawn_timer: Timer,
         spawn_range_x: Range<f32>,
         spawn_y: f32,
     },
-    Ability {
+    AbilitySlotTwo {
         mobs_to_destroy: usize,
         initial_spawn_timer: Timer,
         spawn_range_x: Range<f32>,
@@ -78,13 +71,13 @@ impl TutorialLesson {
     pub fn get_name(&self) -> String {
         match self {
             TutorialLesson::Movement { .. } => "Movement".to_string(),
-            TutorialLesson::Attack { .. } => "Attack".to_string(),
-            TutorialLesson::Ability { .. } => "Ability".to_string(),
+            TutorialLesson::AbilitySlotOne { .. } => "Ability Slot One".to_string(),
+            TutorialLesson::AbilitySlotTwo { .. } => "Ability Slot Two".to_string(),
         }
     }
 
     pub fn get_ability_strs(&self) -> Vec<(String, bool)> {
-        vec![if let Self::Ability {
+        vec![if let Self::AbilitySlotTwo {
             mobs_to_destroy, ..
         } = self
         {
@@ -105,7 +98,7 @@ impl TutorialLesson {
     }
 
     fn get_mobs_to_destroy_str(&self) -> (String, bool) {
-        if let Self::Attack {
+        if let Self::AbilitySlotOne {
             mobs_to_destroy, ..
         } = self
         {
@@ -119,7 +112,7 @@ impl TutorialLesson {
     }
 
     fn get_mobs_to_protect_str(&self) -> (String, bool) {
-        if let Self::Attack {
+        if let Self::AbilitySlotOne {
             mobs_to_protect, ..
         } = self
         {
@@ -280,13 +273,12 @@ impl TutorialLesson {
         mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
         mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
         play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
-        players: &mut Query<(&mut PlayerAbilitiesComponent, &mut WeaponComponent)>,
     ) -> bool {
-        self.disable_player_actions_for_current_phase(players);
+        self.disable_player_actions_for_current_phase();
         // tutorial will only be run for single player
         if let Ok(action_state) = player_query.get_single() {
             let finished_tutorial_phase = match self {
-                TutorialLesson::Attack { .. } => self.attack_tutorial(
+                TutorialLesson::AbilitySlotOne { .. } => self.attack_tutorial(
                     mob_destroyed_event,
                     time,
                     spawn_mob_event_writer,
@@ -294,7 +286,7 @@ impl TutorialLesson {
                     mob_segment_destroyed_event,
                     play_sound_effect_event_writer,
                 ),
-                TutorialLesson::Ability { .. } => self.ability_tutorial(
+                TutorialLesson::AbilitySlotTwo { .. } => self.ability_tutorial(
                     mob_destroyed_event,
                     time,
                     spawn_mob_event_writer,
@@ -306,31 +298,16 @@ impl TutorialLesson {
                 }
             };
             if finished_tutorial_phase {
-                enable_player_actions_at_end_of_phase(players);
+                enable_player_actions_at_end_of_phase();
             }
             finished_tutorial_phase
         } else {
             false
         }
     }
-    fn disable_player_actions_for_current_phase(
-        &self,
-        players: &mut Query<(&mut PlayerAbilitiesComponent, &mut WeaponComponent)>,
-    ) {
-        for (mut player_abilities, mut weapon) in players.iter_mut() {
-            match self {
-                Self::Ability { .. } => {
-                    weapon.disable();
-                }
-                Self::Attack { .. } => {
-                    player_abilities.disable_special_attacks();
-                }
-                Self::Movement { .. } => {
-                    weapon.disable();
-                    player_abilities.disable_special_attacks();
-                }
-            }
-        }
+
+    fn disable_player_actions_for_current_phase(&self) {
+        info!("TODO: disable player actions");
     }
 
     fn attack_tutorial(
@@ -342,7 +319,7 @@ impl TutorialLesson {
         mob_segment_destroyed_event: &mut EventReader<MobSegmentDestroyedEvent>,
         play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
     ) -> bool {
-        if let TutorialLesson::Attack {
+        if let TutorialLesson::AbilitySlotOne {
             mobs_to_destroy,
             mobs_to_protect,
             initial_spawn_timer,
@@ -462,7 +439,7 @@ impl TutorialLesson {
         mob_reached_bottom_event: &mut EventReader<MobReachedBottomGateEvent>,
         play_sound_effect_event_writer: &mut EventWriter<PlaySoundEffectEvent>,
     ) -> bool {
-        if let TutorialLesson::Ability {
+        if let TutorialLesson::AbilitySlotTwo {
             mobs_to_destroy,
             initial_spawn_timer,
             spawn_range_x,

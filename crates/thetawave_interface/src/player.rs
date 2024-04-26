@@ -1,10 +1,9 @@
 use crate::character::{Character, CharacterType};
+use crate::spawnable::SpawnPosition;
 use bevy_ecs::system::Resource;
 use bevy_ecs::{bundle::Bundle, prelude::Component};
 use bevy_math::Vec2;
-use bevy_time::{Timer, TimerMode};
 use derive_more::{Deref, DerefMut};
-use serde::Deserialize;
 
 /// Parameters for how to spawn new players. By default, the player can do anything.
 #[derive(Resource, Debug, Default, Deref, DerefMut)]
@@ -20,17 +19,21 @@ pub struct InputRestrictions {
 /// Stores all available player slots
 #[derive(Resource, Debug)]
 pub struct PlayersResource {
+    /// Vec of Optional players, an index is Some if a player has joined for that slot
     pub player_data: Vec<Option<PlayerData>>,
 }
 
 /// Information about a player slot
 #[derive(Debug, Clone)]
 pub struct PlayerData {
+    /// The character that a joined player has chosen
     pub character: CharacterType,
+    /// Input method of a joined player
     pub input: PlayerInput,
 }
 
 /// Input method for a player
+/// Gamepad has a usize identifier
 #[derive(Clone, PartialEq, Debug)]
 pub enum PlayerInput {
     Keyboard,
@@ -56,7 +59,7 @@ impl PlayersResource {
     }
 }
 
-/// Component bundle of all player-specific components
+/// Bundle of all player-specific components
 #[derive(Bundle)]
 pub struct PlayerBundle {
     movement_stats: PlayerMovementComponent,
@@ -65,7 +68,6 @@ pub struct PlayerBundle {
     outgoing_damage: PlayerOutgoingDamageComponent,
     incoming_damage: PlayerIncomingDamageComponent,
     inventory: PlayerInventoryComponent,
-    abilities: PlayerAbilitiesComponent,
     flag: PlayerComponent,
 }
 
@@ -73,7 +75,6 @@ impl From<&Character> for PlayerBundle {
     fn from(character: &Character) -> Self {
         Self {
             movement_stats: character.into(),
-            abilities: character.into(),
             attraction: character.into(),
             outgoing_damage: character.into(),
             incoming_damage: PlayerIncomingDamageComponent::default(),
@@ -91,7 +92,7 @@ impl PlayerBundle {
 }
 
 /// Identity of a player component, used for syncing UI
-#[derive(Component, Clone, Copy, PartialEq)]
+#[derive(Component, Clone, Copy, PartialEq, Debug)]
 pub enum PlayerIDComponent {
     One,
     Two,
@@ -141,11 +142,26 @@ pub struct PlayerAttractionComponent {
 }
 
 /// Stores outgoing damage stats for player
-/// TODO: add weapon damage stat that weapon abilities can use for a base damage of projectiles
 #[derive(Component)]
 pub struct PlayerOutgoingDamageComponent {
     /// Amount of damage dealt on contact
     pub collision_damage: usize,
+    /// Base damage dealt through weapon abilities
+    pub weapon_damage: usize,
+    /// Base speed of spawned weapon ability projectiles
+    pub projectile_speed: f32,
+    /// Spawn position of weapon ability projectiles
+    pub projectile_spawn_position: SpawnPosition,
+    /// Base despawn time for projectiles
+    pub projectile_despawn_time: f32,
+    /// Base size of projectiles
+    pub projectile_size: f32,
+    /// Base projectile count
+    pub projectile_count: usize,
+    /// Starting cooldown multiplier of the player. Used in calculating the the `cooldown_multiplier`
+    pub base_cooldown_multiplier: f32,
+    /// Multiplier for how long abilities take to be ready for use again
+    pub cooldown_multiplier: f32,
 }
 
 /// Stores stats that effect damage incoming to the player
@@ -166,18 +182,6 @@ impl Default for PlayerIncomingDamageComponent {
 #[derive(Component)]
 pub struct PlayerInventoryComponent {
     pub money: usize,
-}
-
-/// Currently just handles the "top" ability
-/// TODO: Overhaul this component for slotting any abilities in (including weapons)
-#[derive(Component, Debug, Clone)]
-pub struct PlayerAbilitiesComponent {
-    /// Timer for ability cooldown
-    pub ability_cooldown_timer: Timer,
-    /// Timer for ability action
-    pub ability_action_timer: Option<Timer>,
-    /// Type of ability
-    pub ability_type: AbilityType,
 }
 
 /// Flag for Player Entities
@@ -208,6 +212,14 @@ impl From<&Character> for PlayerOutgoingDamageComponent {
     fn from(character: &Character) -> Self {
         Self {
             collision_damage: character.collision_damage,
+            weapon_damage: character.weapon_damage,
+            projectile_speed: character.projectile_speed,
+            projectile_spawn_position: character.projectile_spawn_position.clone(),
+            projectile_despawn_time: character.projectile_despawn_time,
+            projectile_size: character.projectile_size,
+            projectile_count: character.projectile_count,
+            cooldown_multiplier: character.cooldown_multiplier,
+            base_cooldown_multiplier: character.cooldown_multiplier,
         }
     }
 }
@@ -218,45 +230,4 @@ impl From<&Character> for PlayerInventoryComponent {
             money: character.money,
         }
     }
-}
-
-impl From<&Character> for PlayerAbilitiesComponent {
-    fn from(character: &Character) -> Self {
-        Self {
-            ability_cooldown_timer: Timer::from_seconds(character.ability_period, TimerMode::Once),
-            ability_action_timer: None,
-            ability_type: character.ability_type.clone(),
-        }
-    }
-}
-
-impl PlayerAbilitiesComponent {
-    pub fn disable_special_attacks(&mut self) {
-        self.ability_cooldown_timer.pause();
-    }
-    pub fn ability_is_enabled(&self) -> bool {
-        !self.ability_cooldown_timer.paused()
-    }
-    pub fn enable_special_attacks(&mut self) {
-        self.ability_cooldown_timer.unpause();
-    }
-}
-
-impl PlayerBundle {
-    pub fn from_character_with_params(
-        character: &Character,
-        spawn_params: &InputRestrictionsAtSpawn,
-    ) -> Self {
-        let mut res = Self::from(character);
-        if spawn_params.forbid_special_attack_reason.is_some() {
-            res.abilities.disable_special_attacks();
-        }
-        res
-    }
-}
-
-#[derive(Deserialize, Clone, Debug)]
-pub enum AbilityType {
-    Charge(f32),    // ability duration
-    MegaBlast(f32), // scale and damage multiplier
 }

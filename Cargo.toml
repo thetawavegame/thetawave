@@ -21,7 +21,7 @@ bevy_ecs = "0.13"
 bevy_reflect = "0.13"
 bevy_input = "0.13"
 bevy_kira_audio = { version = "0.19", features = ["mp3", "wav"] }
-leafwing-input-manager = "0.13"
+leafwing-input-manager = {git = "https://github.com/Leafwing-Studios/leafwing-input-manager", rev = "29a9458"}
 ron = "0.8.0"
 bevy_time = "0.13"
 bevy_math = "0.13"

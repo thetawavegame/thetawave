@@ -48,8 +48,6 @@ impl Plugin for EffectPlugin {
 /// Core component of effect
 #[derive(Component)]
 pub struct EffectComponent {
-    /// Type of the effect
-    pub effect_type: EffectType,
     /// Behaviors specific to effects
     pub behaviors: Vec<behavior::EffectBehavior>,
 }
@@ -72,7 +70,6 @@ pub struct EffectData {
 impl From<&EffectData> for EffectComponent {
     fn from(value: &EffectData) -> Self {
         EffectComponent {
-            effect_type: value.effect_type.clone(),
             behaviors: value
                 .effect_behaviors_data
                 .clone()

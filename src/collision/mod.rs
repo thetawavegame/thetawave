@@ -57,14 +57,12 @@ pub enum SortedCollisionEvent {
     PlayerToMobContact {
         player_entity: Entity,
         mob_entity: Entity,
-        mob_faction: Faction,
         player_damage: usize,
         mob_damage: usize,
     },
     PlayerToMobSegmentContact {
         player_entity: Entity,
         mob_segment_entity: Entity,
-        mob_segment_faction: Faction,
         player_damage: usize,
         mob_segment_damage: usize,
     },
@@ -72,7 +70,6 @@ pub enum SortedCollisionEvent {
         player_entity: Entity,
         projectile_entity: Entity,
         projectile_faction: Faction,
-        player_damage: usize,
         projectile_damage: usize,
     },
 
@@ -113,28 +110,18 @@ pub enum SortedCollisionEvent {
     // Mob to mob
     MobToMobContact {
         mob_entity_1: Entity,
-        mob_faction_1: Faction,
-        mob_damage_1: usize,
-        mob_entity_2: Entity,
-        mob_faction_2: Faction,
         mob_damage_2: usize,
     },
     MobToMobSegmentContact {
         mob_entity: Entity,
-        mob_faction: Faction,
         mob_damage: usize,
         mob_segment_entity: Entity,
-        mob_segment_faction: Faction,
         mob_segment_damage: usize,
     },
 
     // Mob segment to mob segment
     MobSegmentToMobSegmentContact {
         mob_segment_entity_1: Entity,
-        mob_segment_faction_1: Faction,
-        mob_segment_damage_1: usize,
-        mob_segment_entity_2: Entity,
-        mob_segment_faction_2: Faction,
         mob_segment_damage_2: usize,
     },
 
@@ -142,14 +129,11 @@ pub enum SortedCollisionEvent {
     ProjectileToProjectileContact {
         projectile_entity_1: Entity,
         projectile_faction_1: Faction,
-        projectile_entity_2: Entity,
-        projectile_faction_2: Faction,
     },
 
     // Mob to barrier
     MobToBarrierContact {
         mob_entity: Entity,
-        barrier_entity: Entity,
     },
 }
 

@@ -13,7 +13,7 @@ pub enum BGMusicType {
     Main,
 }
 
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display, Copy)]
 pub enum SoundEffectType {
     Collision(CollisionSoundType),
     BarrierBounce,
@@ -29,7 +29,7 @@ pub enum SoundEffectType {
     PlayerHit,
     BulletDing,
     BulletBounce,
-    MegablastAbility,
+    MegaBlastAbility,
     ObjectiveCompleted,
     ButtonSelect,
     ButtonRelease,
@@ -37,7 +37,7 @@ pub enum SoundEffectType {
 }
 
 /// Subtype of sound effect for collisions
-#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display, Default)]
+#[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone, Display, Default, Copy)]
 pub enum CollisionSoundType {
     Squishy,
     #[default]

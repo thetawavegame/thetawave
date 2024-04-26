@@ -80,7 +80,6 @@ impl From<&ItemData> for SpawnableComponent {
             deceleration: item_data.deceleration,
             speed: item_data.speed,
             angular_acceleration: 0.0,
-            angular_deceleration: 0.0,
             angular_speed: 0.0,
             behaviors: item_data.spawnable_behaviors.clone(),
         }

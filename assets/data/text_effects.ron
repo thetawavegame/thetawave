@@ -14,7 +14,7 @@
         scale: 0.4,
     ),
     ConsumableCollected(Money1): (
-        text: "Fire Rate +",
+        text: "Cooldowns -",
         text_color: Rgba(red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0),
         font_size: 60.0,
         translation_x: (
@@ -28,7 +28,7 @@
         scale: 0.4,
     ),
     ConsumableCollected(Money3): (
-        text: "Fire Rate +++",
+        text: "Cooldowns ---",
         text_color: Rgba(red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0),
         font_size: 60.0,
         translation_x: (

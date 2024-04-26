@@ -33,8 +33,8 @@ pub enum PlayerAction {
     MoveDown,
     MoveLeft,
     MoveRight,
-    BasicAttack,
-    SpecialAttack,
+    SlotOneAbility,
+    SlotTwoAbility,
 }
 
 /// The parsed input/key bindings used for the life of the  entire game. This is read from files/
