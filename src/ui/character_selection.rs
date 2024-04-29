@@ -83,7 +83,7 @@ pub(super) fn setup_character_selection_system(
         .spawn(NodeBundle {
             style: Style {
                 width: Val::Percent(100.0),              // Adjusted to 90% of window width
-                height: Val::Percent(90.0),              // Adjusted to 90% of window height
+                height: Val::Percent(100.0),             // Adjusted to 90% of window height
                 justify_content: JustifyContent::Center, // Center content horizontally
                 align_items: AlignItems::Center,         // Center content vertically
                 ..Default::default()
@@ -94,10 +94,7 @@ pub(super) fn setup_character_selection_system(
         .insert(CharacterSelectionUI)
         .with_children(|parent| {
             parent
-                .spawn(ImageBundle {
-                    image: asset_server
-                        .load("texture/character_selection_54.png")
-                        .into(),
+                .spawn(NodeBundle {
                     style: Style {
                         width: Val::Percent(100.0),
                         height: Val::Percent(100.0),
