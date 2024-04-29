@@ -1,7 +1,7 @@
 //! Provides the layout (trait on `bevy::hierarchy::ChildBUilder`) and behavior (systems) to put 4
 //! vertically layed out on the main menu, and change the state from
 //! `thetawave_interface::states::AppStates::MainMenu` to
-//! `thetawave_interface::states::AppStates::Instructions`
+//! `thetawave_interface::states::AppStates::CharacterSelection`
 use crate::assets::UiAssets;
 use bevy::{
     app::AppExit,
@@ -44,11 +44,11 @@ const BUTTON_TEXTURE_PADDING_HOVERED: UiRect =
     UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(10.5), Val::ZERO);
 
 /// Event and Component for giving and sending menu buttons actions to move the user from
-/// `AppStates::MainMenu` to `AppStates::Instructions`, plus possibly a few digressions and
+/// `AppStates::MainMenu` to `AppStates::CharacterSelection`, plus possibly a few digressions and
 /// sprinkles.
 #[derive(Component, Event, Clone, PartialEq, Eq, Copy, Debug)]
 pub(super) enum MainMenuButtonActionComponent {
-    EnterInstructions,
+    EnterCharacterSelection,
     EnterOptions,
     EnterCompendium,
     QuitGame,
@@ -59,7 +59,7 @@ impl MainMenuButtonActionComponent {
     /// option/action
     fn in_game_text(&self) -> &'static str {
         match self {
-            Self::EnterInstructions => "Start Game",
+            Self::EnterCharacterSelection => "Start Game",
             Self::EnterOptions => "Options",
             Self::EnterCompendium => "Compendium",
             Self::QuitGame => "Exit Game",
@@ -68,7 +68,7 @@ impl MainMenuButtonActionComponent {
 }
 /// This is the order (vertical, going down) of the buttons shown on the main menu UI.
 const MAIN_MENU_BUTTON_ORDER: [MainMenuButtonActionComponent; 4] = [
-    MainMenuButtonActionComponent::EnterInstructions,
+    MainMenuButtonActionComponent::EnterCharacterSelection,
     MainMenuButtonActionComponent::EnterOptions,
     MainMenuButtonActionComponent::EnterCompendium,
     MainMenuButtonActionComponent::QuitGame,
@@ -368,8 +368,8 @@ pub(super) fn main_menu_button_on_click_system(
 ) {
     for event in button_event_reader.read() {
         match event {
-            MainMenuButtonActionComponent::EnterInstructions => {
-                next_app_state.set(AppStates::Instructions);
+            MainMenuButtonActionComponent::EnterCharacterSelection => {
+                next_app_state.set(AppStates::CharacterSelection);
             }
             MainMenuButtonActionComponent::EnterOptions => info!("Enter options menu."),
             MainMenuButtonActionComponent::EnterCompendium => info!("Enter compendium."),

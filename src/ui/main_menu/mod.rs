@@ -1,5 +1,5 @@
 //! Exposes a plugin to handle the layout and behavior of a button-based main menu that mainly
-//! guides the user into the `thetawave_interface::states::AppStates::Instructions` state.
+//! guides the user into the `thetawave_interface::states::AppStates::CharacterSelection` state.
 use crate::{
     animation::{AnimationComponent, AnimationDirection},
     assets::UiAssets,
@@ -30,7 +30,7 @@ use self::button::main_menu_button_selection_and_click_system;
 use self::button::MainMenuButtonActionEvent;
 use self::button::UiChildBuilderExt;
 /// Renders a button-based UI to transition the app from `AppStates::MainMenu` to
-/// `AppStates::Instructions`, possibly with some digressions. Without this plugin, the game will
+/// `AppStates::CharacterSelection`, possibly with some digressions. Without this plugin, the game will
 /// never progress past a blank main menu screen and the user cannot start the run.
 pub(super) struct MainMenuUIPlugin;
 impl Plugin for MainMenuUIPlugin {
