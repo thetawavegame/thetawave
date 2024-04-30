@@ -8,7 +8,7 @@ fn _get_game_options(options_profile_id: usize) -> Result<Option<GameOptions>, O
     let conn = get_db()?;
     let stmt_raw = format!(
         "
-    SELECT bloomEnabled, bloomIntensity FROM {OPTIONS_TABLE_NAME}
+    SELECT bloomEnabled, bloomIntensity, tutorialsEnabled FROM {OPTIONS_TABLE_NAME}
     WHERE optionsProfileId=?1
         "
     );
@@ -18,9 +18,11 @@ fn _get_game_options(options_profile_id: usize) -> Result<Option<GameOptions>, O
         Some(r) => {
             let bloom_enabled = r.get(0)?;
             let bloom_intensity = r.get(1)?;
+            let tutorials_enabled = r.get(2)?;
             Ok(Some(GameOptions {
                 bloom_enabled,
                 bloom_intensity,
+                tutorials_enabled,
             }))
         }
 
