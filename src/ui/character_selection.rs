@@ -1,6 +1,6 @@
 //! Systems to spawn and style the character selection screen, where each player picks a character
 //! from one of a few options, and possibly enables/diables the tutorial.
-use crate::{options::PlayingOnArcadeResource, run::CurrentRunProgressResource};
+use crate::options::PlayingOnArcadeResource;
 
 use super::BouncingPromptComponent;
 use bevy::{
@@ -14,19 +14,15 @@ use bevy::{
     hierarchy::{BuildChildren, Children},
     input::gamepad::GamepadButtonChangedEvent,
     render::{color::Color, view::Visibility},
-    text::{JustifyText, Text, TextStyle},
     time::{Timer, TimerMode},
     ui::{
-        node_bundles::{ImageBundle, NodeBundle, TextBundle},
-        AlignItems, AlignSelf, BackgroundColor, Display, FlexDirection, JustifyContent,
-        JustifySelf, Style, UiRect, Val,
+        node_bundles::{ImageBundle, NodeBundle},
+        AlignItems, BackgroundColor, Display, FlexDirection, JustifyContent, Style, UiRect, Val,
     },
-    utils::default,
 };
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::input::{MenuAction, MenuExplorer};
 use thetawave_interface::{
-    audio::{PlaySoundEffectEvent, SoundEffectType},
     character::CharacterType,
     character_selection::PlayerJoinEvent,
     player::{PlayerData, PlayerInput, PlayersResource},
@@ -68,17 +64,12 @@ pub(super) struct Player2Description;
 #[derive(Component)]
 pub(super) struct StartGamePrompt;
 
-#[derive(Component)]
-pub(super) struct ToggleTutorialUI;
-
 /// Setup the character selection UI
 pub(super) fn setup_character_selection_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     playing_on_arcade: Res<PlayingOnArcadeResource>,
 ) {
-    let font = asset_server.load("fonts/wibletown-regular.otf");
-
     commands
         .spawn(NodeBundle {
             style: Style {
@@ -530,26 +521,6 @@ pub(super) fn setup_character_selection_system(
                                     is_active: true,
                                 })
                                 .insert(StartGamePrompt);
-
-                            parent
-                                .spawn(TextBundle {
-                                    style: Style {
-                                        justify_self: JustifySelf::Center,
-                                        align_self: AlignSelf::Center,
-                                        ..default()
-                                    },
-                                    text: Text::from_section(
-                                        "Tutorials On",
-                                        TextStyle {
-                                            font,
-                                            font_size: 30.0,
-                                            color: Color::WHITE,
-                                        },
-                                    )
-                                    .with_justify(JustifyText::Center),
-                                    ..default()
-                                })
-                                .insert(ToggleTutorialUI);
                         });
                 });
         });
@@ -566,7 +537,6 @@ pub(super) fn player_join_system(
         Query<&mut Style, With<Player1CharacterSelection>>,
         Query<&mut Style, With<Player2CharacterSelection>>,
         Query<&mut Visibility, With<StartGamePrompt>>,
-        Query<&mut Visibility, With<ToggleTutorialUI>>,
     )>,
     mut player_join_event: EventWriter<PlayerJoinEvent>,
 ) {
@@ -641,49 +611,6 @@ pub(super) fn player_join_system(
         *ui_queries.p4().single_mut() = Visibility::Inherited;
     } else {
         *ui_queries.p4().single_mut() = Visibility::Hidden;
-    }
-
-    // Hide the player join ui element if they already joined
-    if players_resource.player_data[1].is_some() {
-        if let Ok(mut vis) = ui_queries.p5().get_single_mut() {
-            *vis = Visibility::Hidden;
-        }
-    }
-}
-
-/// Toggle whether to enable tutorials for the run
-pub(super) fn toggle_tutorial_system(
-    menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
-    mut run_resource: ResMut<CurrentRunProgressResource>,
-    mut sound_effect_pub: EventWriter<PlaySoundEffectEvent>,
-    mut tutorial_text_query: Query<&mut Text, With<ToggleTutorialUI>>,
-) {
-    // read menu input action
-    let action_state = menu_input_query.single();
-
-    // if input read enter the game state
-    if action_state.just_released(&MenuAction::ToggleTutorial) {
-        // set the state to game
-        run_resource.tutorials_on = !run_resource.tutorials_on;
-
-        if let Ok(mut text) = tutorial_text_query.get_single_mut() {
-            text.sections[0].value = if run_resource.tutorials_on {
-                "Tutorials On".to_string()
-            } else {
-                "Tutorials Off".to_string()
-            };
-
-            text.sections[0].style.color = if run_resource.tutorials_on {
-                Color::WHITE
-            } else {
-                Color::GRAY
-            };
-        }
-
-        // play sound effect
-        sound_effect_pub.send(PlaySoundEffectEvent {
-            sound_effect_type: SoundEffectType::MenuInputSuccess,
-        });
     }
 }
 
