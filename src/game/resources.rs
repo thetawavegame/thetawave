@@ -4,6 +4,7 @@ use bevy::prelude::*;
 use serde::Deserialize;
 
 /// Values used globally throughout the game
+/// Put global values here that should not be able to be modified by the user
 #[derive(Resource, Deserialize)]
 pub struct GameParametersResource {
     /// Standard z coordinate of camera
@@ -23,4 +24,12 @@ pub struct GameParametersResource {
     pub stop_threshold: f32,
     /// Range of mouse scanning
     pub scan_range: f32,
+    /// Maximum amount of player inputs to the game
+    max_players: u8,
+}
+
+impl GameParametersResource {
+    pub fn get_max_players(&self) -> u8 {
+        self.max_players
+    }
 }
