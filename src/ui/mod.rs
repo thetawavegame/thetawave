@@ -9,6 +9,7 @@ use thetawave_interface::game::historical_metrics::{MobsKilledByPlayerCacheT, DE
 
 use thetawave_interface::states;
 
+mod button;
 mod character_selection;
 mod game;
 mod game_over;

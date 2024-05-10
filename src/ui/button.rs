@@ -1,0 +1,176 @@
+use bevy::{
+    app::AppExit,
+    asset::Handle,
+    ecs::{
+        component::Component,
+        event::{Event, EventReader, EventWriter},
+        schedule::NextState,
+        system::ResMut,
+    },
+    hierarchy::{BuildChildren, ChildBuilder},
+    log::info,
+    render::color::Color,
+    text::{Font, TextStyle},
+    ui::{
+        node_bundles::{AtlasImageBundle, ButtonBundle, TextBundle},
+        AlignItems, BackgroundColor, JustifyContent, Style, UiRect, Val,
+    },
+    utils::default,
+};
+use thetawave_interface::states::AppStates;
+
+use crate::assets::UiAssets;
+
+const BUTTON_WIDTH: Val = Val::Percent(25.0);
+const BUTTON_MAX_WIDTH: Val = Val::Px(500.0);
+const BUTTON_MIN_WIDTH: Val = Val::Px(200.0);
+const BUTTON_MARGIN: UiRect =
+    UiRect::new(Val::Auto, Val::Auto, Val::Percent(1.0), Val::Percent(1.0));
+const BUTTON_ASPECT_RATIO: Option<f32> = Some(160.0 / 34.0);
+const BUTTON_TEXTURE_PADDING: UiRect =
+    UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(9.0), Val::ZERO);
+const BUTTON_TEXTURE_PADDING_HOVERED: UiRect =
+    UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(10.5), Val::ZERO);
+
+/// Event and Component for giving and sending menu buttons actions to move the user from
+/// `AppStates::MainMenu` to `AppStates::CharacterSelection`, plus possibly a few digressions and
+/// sprinkles.
+#[derive(Component, Event, Clone, PartialEq, Eq, Copy, Debug)]
+pub enum ButtonActionComponent {
+    CharacterSelectRight,
+    CharacterSelectLeft,
+    EnterCharacterSelection,
+    EnterOptions,
+    EnterCompendium,
+    QuitGame,
+}
+
+pub type ButtonActionEvent = ButtonActionComponent;
+
+impl ButtonActionComponent {
+    /// The label that will show on the main menu screen for the button representing this
+    /// option/action
+    pub fn in_game_text(&self) -> Option<&'static str> {
+        match self {
+            Self::EnterCharacterSelection => Some("Start Game"),
+            Self::EnterOptions => Some("Options"),
+            Self::EnterCompendium => Some("Compendium"),
+            Self::QuitGame => Some("Exit Game"),
+            Self::CharacterSelectLeft => None,
+            Self::CharacterSelectRight => None,
+        }
+    }
+
+    fn button_external_style(&self) -> Style {
+        match self {
+            Self::EnterCharacterSelection
+            | Self::EnterOptions
+            | Self::EnterCompendium
+            | Self::QuitGame => Style {
+                max_width: BUTTON_MAX_WIDTH,
+                width: BUTTON_WIDTH,
+                min_width: BUTTON_MIN_WIDTH,
+                aspect_ratio: BUTTON_ASPECT_RATIO,
+                margin: BUTTON_MARGIN,
+                ..default()
+            },
+            Self::CharacterSelectLeft | Self::CharacterSelectRight => Style { ..default() },
+        }
+    }
+
+    fn button_internal_style(&self) -> Style {
+        match self {
+            Self::EnterCharacterSelection
+            | Self::EnterOptions
+            | Self::EnterCompendium
+            | Self::QuitGame => Style {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::FlexStart,
+                padding: BUTTON_TEXTURE_PADDING,
+                ..default()
+            },
+            Self::CharacterSelectLeft | Self::CharacterSelectRight => Style {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                padding: BUTTON_TEXTURE_PADDING,
+                ..default()
+            },
+        }
+    }
+}
+
+// Handles actions for menu buttons, changeing states, quitting. This runs when a user actually
+// clicks/whacks enter on a button in the main menu
+pub fn button_on_click_system(
+    mut button_event_reader: EventReader<ButtonActionEvent>,
+    mut next_app_state: ResMut<NextState<AppStates>>,
+    mut exit: EventWriter<AppExit>,
+) {
+    for event in button_event_reader.read() {
+        match event {
+            ButtonActionComponent::EnterCharacterSelection => {
+                next_app_state.set(AppStates::CharacterSelection);
+            }
+            ButtonActionComponent::EnterOptions => info!("Enter options menu."),
+            ButtonActionComponent::EnterCompendium => info!("Enter compendium."),
+            ButtonActionComponent::QuitGame => {
+                exit.send(AppExit);
+            }
+            ButtonActionComponent::CharacterSelectRight => info!("Character selection right."),
+            ButtonActionComponent::CharacterSelectLeft => info!("Character selection left."),
+        }
+    }
+}
+
+/// Extension trait for spawning customized UI elements for Thetawave
+pub trait UiButtonChildBuilderExt {
+    /// Spawn a Thetawave-stylized menu button
+    fn spawn_button(
+        &mut self,
+        ui_assets: &UiAssets,
+        text: Option<String>,
+        font: Handle<Font>,
+        action: ButtonActionComponent,
+    );
+}
+
+impl UiButtonChildBuilderExt for ChildBuilder<'_> {
+    fn spawn_button(
+        &mut self,
+        ui_assets: &UiAssets,
+        text: Option<String>,
+        font: Handle<Font>,
+        action: ButtonActionComponent,
+    ) {
+        // Spawn button bundle entity, with a child entity containing the texture
+        self.spawn(ButtonBundle {
+            style: action.button_external_style(),
+            background_color: BackgroundColor(Color::NONE),
+            ..default()
+        })
+        .insert(action)
+        .with_children(|parent| {
+            parent
+                .spawn(AtlasImageBundle {
+                    image: ui_assets.thetawave_menu_button_image.clone().into(),
+                    texture_atlas: ui_assets.thetawave_menu_button_layout.clone().into(),
+                    style: action.button_internal_style(),
+                    ..default()
+                })
+                .with_children(|parent| {
+                    if let Some(text) = text {
+                        parent.spawn(TextBundle::from_section(
+                            text,
+                            TextStyle {
+                                font: font.clone(),
+                                font_size: 30.0,
+                                color: Color::BLACK,
+                            },
+                        ));
+                    }
+                });
+        });
+    }
+}

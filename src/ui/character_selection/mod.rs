@@ -19,6 +19,7 @@ use bevy::{
         node_bundles::{ImageBundle, NodeBundle},
         AlignItems, BackgroundColor, Display, FlexDirection, JustifyContent, Style, UiRect, Val,
     },
+    utils::default,
 };
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::input::{MenuAction, MenuExplorer};
@@ -114,25 +115,64 @@ pub(super) fn setup_character_selection_system(
                             ..Default::default()
                         })
                         .with_children(|parent| {
-                            parent.spawn(NodeBundle {
-                                style: Style {
-                                    max_width: Val::Percent(50.0),
-                                    min_width: Val::Percent(48.0),
-                                    max_height: Val::Percent(100.0),
-                                    min_height: Val::Percent(90.0),
-                                    justify_content: JustifyContent::Center,
-                                    align_items: AlignItems::Center,
-                                    margin: UiRect {
-                                        left: Val::Vw(0.0),
-                                        right: Val::Vw(2.0),
-                                        top: Val::Vh(0.0),
-                                        bottom: Val::Vh(2.0),
+                            parent
+                                .spawn(NodeBundle {
+                                    style: Style {
+                                        max_width: Val::Percent(50.0),
+                                        min_width: Val::Percent(48.0),
+                                        max_height: Val::Percent(100.0),
+                                        min_height: Val::Percent(90.0),
+                                        justify_content: JustifyContent::Center,
+                                        align_items: AlignItems::Center,
+                                        flex_direction: FlexDirection::Row,
+                                        margin: UiRect {
+                                            left: Val::Vw(0.0),
+                                            right: Val::Vw(2.0),
+                                            top: Val::Vh(0.0),
+                                            bottom: Val::Vh(2.0),
+                                        },
+                                        ..Default::default()
                                     },
+                                    background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
                                     ..Default::default()
-                                },
-                                background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
-                                ..Default::default()
-                            });
+                                })
+                                .with_children(|parent| {
+                                    parent.spawn(NodeBundle {
+                                        style: Style {
+                                            width: Val::Percent(20.0),
+                                            height: Val::Percent(100.0),
+                                            justify_content: JustifyContent::Center,
+                                            align_items: AlignItems::Center,
+                                            ..default()
+                                        },
+                                        background_color: Color::rgba(1.0, 0.0, 0.0, 0.5).into(),
+                                        ..default()
+                                    });
+
+                                    parent.spawn(NodeBundle {
+                                        style: Style {
+                                            width: Val::Percent(60.0),
+                                            height: Val::Percent(100.0),
+                                            justify_content: JustifyContent::Center,
+                                            align_items: AlignItems::Center,
+                                            ..default()
+                                        },
+                                        background_color: Color::rgba(1.0, 1.0, 0.0, 0.5).into(),
+                                        ..default()
+                                    });
+
+                                    parent.spawn(NodeBundle {
+                                        style: Style {
+                                            width: Val::Percent(20.0),
+                                            height: Val::Percent(100.0),
+                                            justify_content: JustifyContent::Center,
+                                            align_items: AlignItems::Center,
+                                            ..default()
+                                        },
+                                        background_color: Color::rgba(1.0, 0.0, 0.0, 0.5).into(),
+                                        ..default()
+                                    });
+                                });
                             if game_params_res.get_max_players() > 1 {
                                 parent.spawn(NodeBundle {
                                     style: Style {
