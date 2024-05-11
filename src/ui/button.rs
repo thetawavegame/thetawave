@@ -9,7 +9,8 @@ use bevy::{
     },
     hierarchy::{BuildChildren, ChildBuilder},
     log::info,
-    render::color::Color,
+    render::{color::Color, texture::Image},
+    sprite::TextureAtlasLayout,
     text::{Font, TextStyle},
     ui::{
         node_bundles::{AtlasImageBundle, ButtonBundle, TextBundle},
@@ -61,7 +62,7 @@ impl ButtonActionComponent {
         }
     }
 
-    fn button_external_style(&self) -> Style {
+    fn external_style(&self) -> Style {
         match self {
             Self::EnterCharacterSelection
             | Self::EnterOptions
@@ -78,7 +79,7 @@ impl ButtonActionComponent {
         }
     }
 
-    fn button_internal_style(&self) -> Style {
+    fn internal_style(&self) -> Style {
         match self {
             Self::EnterCharacterSelection
             | Self::EnterOptions
@@ -97,6 +98,22 @@ impl ButtonActionComponent {
                 padding: BUTTON_TEXTURE_PADDING,
                 ..default()
             },
+        }
+    }
+
+    fn asset(&self, ui_assets: &UiAssets) -> (Handle<Image>, Handle<TextureAtlasLayout>) {
+        match self {
+            Self::EnterCharacterSelection
+            | Self::EnterOptions
+            | Self::EnterCompendium
+            | Self::QuitGame => (
+                ui_assets.thetawave_menu_button_image.clone(),
+                ui_assets.thetawave_menu_button_layout.clone(),
+            ),
+            Self::CharacterSelectLeft | Self::CharacterSelectRight => (
+                ui_assets.thetawave_menu_button_image.clone(),
+                ui_assets.thetawave_menu_button_layout.clone(),
+            ),
         }
     }
 }
@@ -146,17 +163,19 @@ impl UiButtonChildBuilderExt for ChildBuilder<'_> {
     ) {
         // Spawn button bundle entity, with a child entity containing the texture
         self.spawn(ButtonBundle {
-            style: action.button_external_style(),
+            style: action.external_style(),
             background_color: BackgroundColor(Color::NONE),
             ..default()
         })
         .insert(action)
         .with_children(|parent| {
+            let button_asset = action.asset(ui_assets);
+
             parent
                 .spawn(AtlasImageBundle {
-                    image: ui_assets.thetawave_menu_button_image.clone().into(),
-                    texture_atlas: ui_assets.thetawave_menu_button_layout.clone().into(),
-                    style: action.button_internal_style(),
+                    image: button_asset.0.into(),
+                    texture_atlas: button_asset.1.into(),
+                    style: action.internal_style(),
                     ..default()
                 })
                 .with_children(|parent| {

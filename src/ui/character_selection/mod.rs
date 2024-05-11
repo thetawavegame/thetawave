@@ -80,192 +80,168 @@ pub(super) fn setup_character_selection_system(
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 flex_direction: FlexDirection::Column,
+                padding: UiRect {
+                    left: Val::Vw(2.0),
+                    right: Val::Vw(2.0),
+                    top: Val::Vh(2.0),
+                    bottom: Val::Vh(2.0),
+                },
                 ..Default::default()
             },
             ..Default::default()
         })
         .insert(CharacterSelectionCleanup)
         .with_children(|parent| {
-            // Player selection ui
             parent
                 .spawn(NodeBundle {
                     style: Style {
                         width: Val::Percent(100.0),
-                        height: Val::Percent(85.0),
+                        height: Val::Percent(50.0),
                         justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        flex_direction: FlexDirection::Column,
-                        padding: UiRect::all(Val::Percent(5.0)),
+                        flex_direction: FlexDirection::Row,
                         ..Default::default()
                     },
-                    background_color: Color::rgba(0.0, 0.0, 1.0, 0.05).into(), // TODO: remove
+                    background_color: Color::rgba(1.0, 0.0, 0.0, 0.05).into(), // TODO: remove
                     ..Default::default()
                 })
                 .with_children(|parent| {
                     parent
                         .spawn(NodeBundle {
                             style: Style {
-                                width: Val::Percent(100.0),
-                                height: Val::Percent(50.0),
+                                max_width: Val::Percent(50.0),
+                                min_width: Val::Percent(48.0),
+                                max_height: Val::Percent(100.0),
+                                min_height: Val::Percent(90.0),
                                 justify_content: JustifyContent::Center,
+                                align_items: AlignItems::Center,
                                 flex_direction: FlexDirection::Row,
+                                margin: UiRect {
+                                    left: Val::Vw(0.0),
+                                    right: Val::Vw(2.0),
+                                    top: Val::Vh(0.0),
+                                    bottom: Val::Vh(2.0),
+                                },
                                 ..Default::default()
                             },
-                            background_color: Color::rgba(1.0, 0.0, 0.0, 0.05).into(), // TODO: remove
+                            background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
                             ..Default::default()
                         })
                         .with_children(|parent| {
-                            parent
-                                .spawn(NodeBundle {
-                                    style: Style {
-                                        max_width: Val::Percent(50.0),
-                                        min_width: Val::Percent(48.0),
-                                        max_height: Val::Percent(100.0),
-                                        min_height: Val::Percent(90.0),
-                                        justify_content: JustifyContent::Center,
-                                        align_items: AlignItems::Center,
-                                        flex_direction: FlexDirection::Row,
-                                        margin: UiRect {
-                                            left: Val::Vw(0.0),
-                                            right: Val::Vw(2.0),
-                                            top: Val::Vh(0.0),
-                                            bottom: Val::Vh(2.0),
-                                        },
-                                        ..Default::default()
-                                    },
-                                    background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
-                                    ..Default::default()
-                                })
-                                .with_children(|parent| {
-                                    parent.spawn(NodeBundle {
-                                        style: Style {
-                                            width: Val::Percent(20.0),
-                                            height: Val::Percent(100.0),
-                                            justify_content: JustifyContent::Center,
-                                            align_items: AlignItems::Center,
-                                            ..default()
-                                        },
-                                        background_color: Color::rgba(1.0, 0.0, 0.0, 0.5).into(),
-                                        ..default()
-                                    });
-
-                                    parent.spawn(NodeBundle {
-                                        style: Style {
-                                            width: Val::Percent(60.0),
-                                            height: Val::Percent(100.0),
-                                            justify_content: JustifyContent::Center,
-                                            align_items: AlignItems::Center,
-                                            ..default()
-                                        },
-                                        background_color: Color::rgba(1.0, 1.0, 0.0, 0.5).into(),
-                                        ..default()
-                                    });
-
-                                    parent.spawn(NodeBundle {
-                                        style: Style {
-                                            width: Val::Percent(20.0),
-                                            height: Val::Percent(100.0),
-                                            justify_content: JustifyContent::Center,
-                                            align_items: AlignItems::Center,
-                                            ..default()
-                                        },
-                                        background_color: Color::rgba(1.0, 0.0, 0.0, 0.5).into(),
-                                        ..default()
-                                    });
-                                });
-                            if game_params_res.get_max_players() > 1 {
-                                parent.spawn(NodeBundle {
-                                    style: Style {
-                                        max_width: Val::Percent(50.0),
-                                        min_width: Val::Percent(48.0),
-                                        max_height: Val::Percent(100.0),
-                                        min_height: Val::Percent(90.0),
-                                        justify_content: JustifyContent::Center,
-                                        align_items: AlignItems::Center,
-                                        margin: UiRect {
-                                            left: Val::Vw(2.0),
-                                            right: Val::Vw(0.0),
-                                            top: Val::Vh(0.0),
-                                            bottom: Val::Vh(2.0),
-                                        },
-                                        ..Default::default()
-                                    },
-                                    background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
-                                    ..Default::default()
-                                });
-                            }
-                        });
-                    // spawn 2 rows if there are 3 or 4 players
-
-                    if game_params_res.get_max_players() > 2 {
-                        parent
-                            .spawn(NodeBundle {
+                            parent.spawn(NodeBundle {
                                 style: Style {
-                                    width: Val::Percent(100.0),
-                                    height: Val::Percent(50.0),
+                                    width: Val::Percent(20.0),
+                                    height: Val::Percent(100.0),
                                     justify_content: JustifyContent::Center,
-                                    ..Default::default()
+                                    align_items: AlignItems::Center,
+                                    ..default()
                                 },
-                                background_color: Color::rgba(1.0, 0.0, 0.0, 0.05).into(), // TODO: remove
-                                ..Default::default()
-                            })
-                            .with_children(|parent| {
-                                parent.spawn(NodeBundle {
-                                    style: Style {
-                                        max_width: Val::Percent(50.0),
-                                        min_width: Val::Percent(48.0),
-                                        max_height: Val::Percent(100.0),
-                                        min_height: Val::Percent(90.0),
-                                        justify_content: JustifyContent::Center,
-                                        align_items: AlignItems::Center,
-                                        margin: UiRect {
-                                            left: Val::Vw(0.0),
-                                            right: Val::Vw(2.0),
-                                            top: Val::Vh(2.0),
-                                            bottom: Val::Vh(0.0),
-                                        },
-                                        ..Default::default()
-                                    },
-                                    background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
-                                    ..Default::default()
-                                });
-                                if game_params_res.get_max_players() > 3 {
-                                    parent.spawn(NodeBundle {
-                                        style: Style {
-                                            max_width: Val::Percent(50.0),
-                                            min_width: Val::Percent(48.0),
-                                            max_height: Val::Percent(100.0),
-                                            min_height: Val::Percent(90.0),
-                                            justify_content: JustifyContent::Center,
-                                            align_items: AlignItems::Center,
-                                            margin: UiRect {
-                                                left: Val::Vw(2.0),
-                                                right: Val::Vw(0.0),
-                                                top: Val::Vh(2.0),
-                                                bottom: Val::Vh(0.0),
-                                            },
-                                            ..Default::default()
-                                        },
-                                        background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
-                                        ..Default::default()
-                                    });
-                                }
+                                background_color: Color::rgba(1.0, 0.0, 0.0, 0.5).into(),
+                                ..default()
                             });
+
+                            parent.spawn(NodeBundle {
+                                style: Style {
+                                    width: Val::Percent(60.0),
+                                    height: Val::Percent(100.0),
+                                    justify_content: JustifyContent::Center,
+                                    align_items: AlignItems::Center,
+                                    ..default()
+                                },
+                                background_color: Color::rgba(1.0, 1.0, 0.0, 0.5).into(),
+                                ..default()
+                            });
+
+                            parent.spawn(NodeBundle {
+                                style: Style {
+                                    width: Val::Percent(20.0),
+                                    height: Val::Percent(100.0),
+                                    justify_content: JustifyContent::Center,
+                                    align_items: AlignItems::Center,
+                                    ..default()
+                                },
+                                background_color: Color::rgba(1.0, 0.0, 0.0, 0.5).into(),
+                                ..default()
+                            });
+                        });
+                    if game_params_res.get_max_players() > 1 {
+                        parent.spawn(NodeBundle {
+                            style: Style {
+                                max_width: Val::Percent(50.0),
+                                min_width: Val::Percent(48.0),
+                                max_height: Val::Percent(100.0),
+                                min_height: Val::Percent(90.0),
+                                justify_content: JustifyContent::Center,
+                                align_items: AlignItems::Center,
+                                margin: UiRect {
+                                    left: Val::Vw(2.0),
+                                    right: Val::Vw(0.0),
+                                    top: Val::Vh(0.0),
+                                    bottom: Val::Vh(2.0),
+                                },
+                                ..Default::default()
+                            },
+                            background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
+                            ..Default::default()
+                        });
                     }
                 });
+            // spawn 2 rows if there are 3 or 4 players
 
-            // ui to place button to start the game
-            parent.spawn(NodeBundle {
-                style: Style {
-                    width: Val::Percent(100.0),
-                    height: Val::Percent(15.0),
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    ..Default::default()
-                },
-                background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
-                ..Default::default()
-            });
+            if game_params_res.get_max_players() > 2 {
+                parent
+                    .spawn(NodeBundle {
+                        style: Style {
+                            width: Val::Percent(100.0),
+                            height: Val::Percent(50.0),
+                            justify_content: JustifyContent::Center,
+                            ..Default::default()
+                        },
+                        background_color: Color::rgba(1.0, 0.0, 0.0, 0.05).into(), // TODO: remove
+                        ..Default::default()
+                    })
+                    .with_children(|parent| {
+                        parent.spawn(NodeBundle {
+                            style: Style {
+                                max_width: Val::Percent(50.0),
+                                min_width: Val::Percent(48.0),
+                                max_height: Val::Percent(100.0),
+                                min_height: Val::Percent(90.0),
+                                justify_content: JustifyContent::Center,
+                                align_items: AlignItems::Center,
+                                margin: UiRect {
+                                    left: Val::Vw(0.0),
+                                    right: Val::Vw(2.0),
+                                    top: Val::Vh(2.0),
+                                    bottom: Val::Vh(0.0),
+                                },
+                                ..Default::default()
+                            },
+                            background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
+                            ..Default::default()
+                        });
+                        if game_params_res.get_max_players() > 3 {
+                            parent.spawn(NodeBundle {
+                                style: Style {
+                                    max_width: Val::Percent(50.0),
+                                    min_width: Val::Percent(48.0),
+                                    max_height: Val::Percent(100.0),
+                                    min_height: Val::Percent(90.0),
+                                    justify_content: JustifyContent::Center,
+                                    align_items: AlignItems::Center,
+                                    margin: UiRect {
+                                        left: Val::Vw(2.0),
+                                        right: Val::Vw(0.0),
+                                        top: Val::Vh(2.0),
+                                        bottom: Val::Vh(0.0),
+                                    },
+                                    ..Default::default()
+                                },
+                                background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
+                                ..Default::default()
+                            });
+                        }
+                    });
+            }
         });
 }
 
