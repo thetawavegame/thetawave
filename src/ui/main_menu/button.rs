@@ -42,9 +42,9 @@ const BUTTON_MARGIN: UiRect =
     UiRect::new(Val::Auto, Val::Auto, Val::Percent(1.0), Val::Percent(1.0));
 const BUTTON_ASPECT_RATIO: Option<f32> = Some(160.0 / 34.0);
 const BUTTON_TEXTURE_PADDING: UiRect =
-    UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(9.0), Val::ZERO);
+    UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(5.0), Val::ZERO);
 const BUTTON_TEXTURE_PADDING_HOVERED: UiRect =
-    UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(10.5), Val::ZERO);
+    UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(8.5), Val::ZERO);
 
 /// This is the order (vertical, going down) of the buttons shown on the main menu UI.
 const MAIN_MENU_BUTTON_ORDER: [ButtonActionComponent; 4] = [

@@ -20,6 +20,14 @@ pub struct UiAssets {
     pub large_menu_button_layout: Handle<TextureAtlasLayout>,
     #[asset(key = "large_menu_button.image")]
     pub large_menu_button_image: Handle<Image>,
+    #[asset(key = "gamepad_button_a.layout")]
+    pub gamepad_button_a_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "gamepad_button_a.image")]
+    pub gamepad_button_a_image: Handle<Image>,
+    #[asset(key = "keyboard_key_return.layout")]
+    pub keyboard_key_return_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "keyboard_key_return.image")]
+    pub keyboard_key_return_image: Handle<Image>,
     #[asset(key = "arrow.layout")]
     pub arrow_layout: Handle<TextureAtlasLayout>,
     #[asset(key = "arrow.image")]

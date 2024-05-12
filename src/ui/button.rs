@@ -13,8 +13,8 @@ use bevy::{
     sprite::TextureAtlasLayout,
     text::{Font, JustifyText, TextStyle},
     ui::{
-        node_bundles::{AtlasImageBundle, ButtonBundle, TextBundle},
-        AlignItems, BackgroundColor, JustifyContent, Style, UiRect, Val,
+        node_bundles::{AtlasImageBundle, ButtonBundle, NodeBundle, TextBundle},
+        AlignItems, BackgroundColor, FlexDirection, JustifyContent, Style, UiRect, Val,
     },
     utils::default,
 };
@@ -29,9 +29,9 @@ const BUTTON_MARGIN: UiRect =
     UiRect::new(Val::Auto, Val::Auto, Val::Percent(1.0), Val::Percent(1.0));
 const BUTTON_ASPECT_RATIO: Option<f32> = Some(160.0 / 34.0);
 const BUTTON_TEXTURE_PADDING: UiRect =
-    UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(9.0), Val::ZERO);
+    UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(5.0), Val::ZERO);
 const BUTTON_TEXTURE_PADDING_HOVERED: UiRect =
-    UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(10.5), Val::ZERO);
+    UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(8.5), Val::ZERO);
 
 /// Event and Component for giving and sending menu buttons actions to move the user from
 /// `AppStates::MainMenu` to `AppStates::CharacterSelection`, plus possibly a few digressions and
@@ -61,6 +61,25 @@ impl ButtonActionComponent {
             Self::CharacterSelectLeft => None,
             Self::CharacterSelectRight => None,
             Self::CharacterSelectJoin => Some("Press to\njoin"),
+        }
+    }
+
+    pub fn inputs(
+        &self,
+        ui_assets: &UiAssets,
+    ) -> Option<Vec<(Handle<Image>, Handle<TextureAtlasLayout>)>> {
+        match self {
+            Self::CharacterSelectJoin => Some(vec![
+                (
+                    ui_assets.gamepad_button_a_image.clone(),
+                    ui_assets.gamepad_button_a_layout.clone(),
+                ),
+                (
+                    ui_assets.keyboard_key_return_image.clone(),
+                    ui_assets.keyboard_key_return_layout.clone(),
+                ),
+            ]),
+            _ => None,
         }
     }
 
@@ -99,7 +118,8 @@ impl ButtonActionComponent {
                 width: Val::Percent(100.0),
                 height: Val::Percent(100.0),
                 justify_content: JustifyContent::Center,
-                align_items: AlignItems::FlexStart,
+                align_items: AlignItems::Center,
+                flex_direction: FlexDirection::Column,
                 padding: BUTTON_TEXTURE_PADDING,
                 ..default()
             },
@@ -206,6 +226,39 @@ impl UiButtonChildBuilderExt for ChildBuilder<'_> {
                             .with_text_justify(JustifyText::Center)
                             .with_background_color(Color::BLUE.with_a(0.3)), // TODO: remove after testing
                         );
+                    }
+
+                    if let Some(inputs) = action.inputs(ui_assets) {
+                        // Row for all button inputs
+                        parent
+                            .spawn(NodeBundle {
+                                style: Style {
+                                    justify_content: JustifyContent::Center,
+                                    flex_direction: FlexDirection::Row,
+                                    height: Val::Percent(35.0),
+                                    margin: UiRect::top(Val::Vh(1.0)),
+                                    ..default()
+                                },
+                                background_color: Color::GREEN.with_a(0.3).into(),
+                                ..default()
+                            })
+                            .with_children(|parent| {
+                                for (image, layout) in inputs {
+                                    parent.spawn(AtlasImageBundle {
+                                        image: image.into(),
+                                        texture_atlas: layout.into(),
+                                        style: Style {
+                                            margin: UiRect {
+                                                left: Val::Vw(0.5),
+                                                right: Val::Vw(0.5),
+                                                ..default()
+                                            },
+                                            ..default()
+                                        },
+                                        ..default()
+                                    });
+                                }
+                            });
                     }
                 });
         });

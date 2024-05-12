@@ -36,4 +36,18 @@
         rows: 2,
     ),
     "large_menu_button.image": File(path: "texture/large_menu_button_spritesheet.png"),
+    "gamepad_button_a.layout": TextureAtlasLayout (
+        tile_size_x: 20.,
+        tile_size_y: 25.,
+        columns: 1,
+        rows: 2,
+    ),
+    "gamepad_button_a.image": File(path: "texture/gamepad_button_a.png"),
+    "keyboard_key_return.layout": TextureAtlasLayout (
+        tile_size_x: 34.,
+        tile_size_y: 33.,
+        columns: 1,
+        rows: 2,
+    ),
+    "keyboard_key_return.image": File(path: "texture/keyboard_key_return.png"),
 })
