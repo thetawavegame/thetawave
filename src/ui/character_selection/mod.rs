@@ -1,10 +1,13 @@
 //! Systems to spawn and style the character selection screen, where each player picks a character
 //! from one of a few options, and possibly enables/diables the tutorial.
-use crate::{game::GameParametersResource, options::PlayingOnArcadeResource};
+use crate::{assets::UiAssets, game::GameParametersResource, options::PlayingOnArcadeResource};
 
-use super::BouncingPromptComponent;
+use super::{
+    button::{ButtonActionComponent, UiButtonChildBuilderExt},
+    BouncingPromptComponent,
+};
 use bevy::{
-    asset::AssetServer,
+    asset::{AssetServer, Handle},
     ecs::{
         component::Component,
         event::{EventReader, EventWriter},
@@ -14,6 +17,7 @@ use bevy::{
     hierarchy::{BuildChildren, Children},
     input::gamepad::GamepadButtonChangedEvent,
     render::{color::Color, view::Visibility},
+    text::Font,
     time::{Timer, TimerMode},
     ui::{
         node_bundles::{ImageBundle, NodeBundle},
@@ -70,7 +74,10 @@ pub(super) fn setup_character_selection_system(
     asset_server: Res<AssetServer>,
     game_params_res: Res<GameParametersResource>,
     playing_on_arcade: Res<PlayingOnArcadeResource>,
+    ui_assets: Res<UiAssets>,
 ) {
+    let font: Handle<Font> = asset_server.load("fonts/Lunchds.ttf");
+
     // Main node containing all character selection ui
     commands
         .spawn(NodeBundle {
@@ -92,6 +99,7 @@ pub(super) fn setup_character_selection_system(
         })
         .insert(CharacterSelectionCleanup)
         .with_children(|parent| {
+            // Top row of player joins
             parent
                 .spawn(NodeBundle {
                     style: Style {
@@ -105,6 +113,7 @@ pub(super) fn setup_character_selection_system(
                     ..Default::default()
                 })
                 .with_children(|parent| {
+                    // Top left player join
                     parent
                         .spawn(NodeBundle {
                             style: Style {
@@ -127,6 +136,7 @@ pub(super) fn setup_character_selection_system(
                             ..Default::default()
                         })
                         .with_children(|parent| {
+                            // Left side of player join
                             parent.spawn(NodeBundle {
                                 style: Style {
                                     width: Val::Percent(20.0),
@@ -139,18 +149,28 @@ pub(super) fn setup_character_selection_system(
                                 ..default()
                             });
 
-                            parent.spawn(NodeBundle {
-                                style: Style {
-                                    width: Val::Percent(60.0),
-                                    height: Val::Percent(100.0),
-                                    justify_content: JustifyContent::Center,
-                                    align_items: AlignItems::Center,
+                            // Center of player join
+                            parent
+                                .spawn(NodeBundle {
+                                    style: Style {
+                                        width: Val::Percent(60.0),
+                                        height: Val::Percent(100.0),
+                                        justify_content: JustifyContent::Center,
+                                        align_items: AlignItems::Center,
+                                        ..default()
+                                    },
+                                    background_color: Color::rgba(1.0, 1.0, 0.0, 0.5).into(),
                                     ..default()
-                                },
-                                background_color: Color::rgba(1.0, 1.0, 0.0, 0.5).into(),
-                                ..default()
-                            });
+                                })
+                                .with_children(|parent| {
+                                    parent.spawn_button(
+                                        &ui_assets,
+                                        font,
+                                        ButtonActionComponent::CharacterSelectJoin,
+                                    );
+                                });
 
+                            // Right side of player join
                             parent.spawn(NodeBundle {
                                 style: Style {
                                     width: Val::Percent(20.0),
@@ -163,6 +183,8 @@ pub(super) fn setup_character_selection_system(
                                 ..default()
                             });
                         });
+
+                    // Spawn second player join on the right side if there are at least 2 players
                     if game_params_res.get_max_players() > 1 {
                         parent.spawn(NodeBundle {
                             style: Style {
@@ -185,8 +207,8 @@ pub(super) fn setup_character_selection_system(
                         });
                     }
                 });
-            // spawn 2 rows if there are 3 or 4 players
 
+            // spawn 2 rows if there are 3 or 4 players
             if game_params_res.get_max_players() > 2 {
                 parent
                     .spawn(NodeBundle {

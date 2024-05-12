@@ -11,7 +11,7 @@ use bevy::{
     log::info,
     render::{color::Color, texture::Image},
     sprite::TextureAtlasLayout,
-    text::{Font, TextStyle},
+    text::{Font, JustifyText, TextStyle},
     ui::{
         node_bundles::{AtlasImageBundle, ButtonBundle, TextBundle},
         AlignItems, BackgroundColor, JustifyContent, Style, UiRect, Val,
@@ -60,7 +60,7 @@ impl ButtonActionComponent {
             Self::QuitGame => Some("Exit Game"),
             Self::CharacterSelectLeft => None,
             Self::CharacterSelectRight => None,
-            Self::CharacterSelectJoin => Some("Join"),
+            Self::CharacterSelectJoin => Some("Press to\njoin"),
         }
     }
 
@@ -69,13 +69,20 @@ impl ButtonActionComponent {
             Self::EnterCharacterSelection
             | Self::EnterOptions
             | Self::EnterCompendium
-            | Self::QuitGame
-            | Self::CharacterSelectJoin => Style {
+            | Self::QuitGame => Style {
                 max_width: BUTTON_MAX_WIDTH,
                 width: BUTTON_WIDTH,
                 min_width: BUTTON_MIN_WIDTH,
                 aspect_ratio: BUTTON_ASPECT_RATIO,
                 margin: BUTTON_MARGIN,
+                ..default()
+            },
+            Self::CharacterSelectJoin => Style {
+                max_width: Val::Px(500.0),
+                width: Val::Percent(100.0),
+                min_width: Val::Px(200.0),
+                aspect_ratio: Some(2.0779221),
+                margin: UiRect::new(Val::Auto, Val::Auto, Val::Percent(1.0), Val::Percent(1.0)),
                 ..default()
             },
             Self::CharacterSelectLeft | Self::CharacterSelectRight => Style { ..default() },
@@ -156,7 +163,6 @@ pub trait UiButtonChildBuilderExt {
     fn spawn_button(
         &mut self,
         ui_assets: &UiAssets,
-        text: Option<String>,
         font: Handle<Font>,
         action: ButtonActionComponent,
     );
@@ -166,7 +172,6 @@ impl UiButtonChildBuilderExt for ChildBuilder<'_> {
     fn spawn_button(
         &mut self,
         ui_assets: &UiAssets,
-        text: Option<String>,
         font: Handle<Font>,
         action: ButtonActionComponent,
     ) {
@@ -188,15 +193,19 @@ impl UiButtonChildBuilderExt for ChildBuilder<'_> {
                     ..default()
                 })
                 .with_children(|parent| {
-                    if let Some(text) = text {
-                        parent.spawn(TextBundle::from_section(
-                            text,
-                            TextStyle {
-                                font: font.clone(),
-                                font_size: 30.0,
-                                color: Color::BLACK,
-                            },
-                        ));
+                    if let Some(text) = action.in_game_text() {
+                        parent.spawn(
+                            TextBundle::from_section(
+                                text,
+                                TextStyle {
+                                    font: font.clone(),
+                                    font_size: 30.0,
+                                    color: Color::BLACK,
+                                },
+                            )
+                            .with_text_justify(JustifyText::Center)
+                            .with_background_color(Color::BLUE.with_a(0.3)), // TODO: remove after testing
+                        );
                     }
                 });
         });
