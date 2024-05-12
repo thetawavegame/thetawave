@@ -38,6 +38,7 @@ const BUTTON_TEXTURE_PADDING_HOVERED: UiRect =
 /// sprinkles.
 #[derive(Component, Event, Clone, PartialEq, Eq, Copy, Debug)]
 pub enum ButtonActionComponent {
+    CharacterSelectJoin,
     CharacterSelectRight,
     CharacterSelectLeft,
     EnterCharacterSelection,
@@ -59,6 +60,7 @@ impl ButtonActionComponent {
             Self::QuitGame => Some("Exit Game"),
             Self::CharacterSelectLeft => None,
             Self::CharacterSelectRight => None,
+            Self::CharacterSelectJoin => Some("Join"),
         }
     }
 
@@ -67,7 +69,8 @@ impl ButtonActionComponent {
             Self::EnterCharacterSelection
             | Self::EnterOptions
             | Self::EnterCompendium
-            | Self::QuitGame => Style {
+            | Self::QuitGame
+            | Self::CharacterSelectJoin => Style {
                 max_width: BUTTON_MAX_WIDTH,
                 width: BUTTON_WIDTH,
                 min_width: BUTTON_MIN_WIDTH,
@@ -84,7 +87,8 @@ impl ButtonActionComponent {
             Self::EnterCharacterSelection
             | Self::EnterOptions
             | Self::EnterCompendium
-            | Self::QuitGame => Style {
+            | Self::QuitGame
+            | Self::CharacterSelectJoin => Style {
                 width: Val::Percent(100.0),
                 height: Val::Percent(100.0),
                 justify_content: JustifyContent::Center,
@@ -106,13 +110,14 @@ impl ButtonActionComponent {
             Self::EnterCharacterSelection
             | Self::EnterOptions
             | Self::EnterCompendium
-            | Self::QuitGame => (
+            | Self::QuitGame
+            | Self::CharacterSelectJoin => (
                 ui_assets.thetawave_menu_button_image.clone(),
                 ui_assets.thetawave_menu_button_layout.clone(),
             ),
             Self::CharacterSelectLeft | Self::CharacterSelectRight => (
-                ui_assets.thetawave_menu_button_image.clone(),
-                ui_assets.thetawave_menu_button_layout.clone(),
+                ui_assets.arrow_image.clone(),
+                ui_assets.arrow_layout.clone(),
             ),
         }
     }
@@ -137,6 +142,7 @@ pub fn button_on_click_system(
             }
             ButtonActionComponent::CharacterSelectRight => info!("Character selection right."),
             ButtonActionComponent::CharacterSelectLeft => info!("Character selection left."),
+            ButtonActionComponent::CharacterSelectJoin => info!("Character selection join."),
         }
     }
 }

@@ -22,4 +22,11 @@
     "font.wibletown": File (path: "fonts/wibletown-regular.otf"),
     "warning_gradient": File( path: "texture/warning_gradient.png"),
     "defense_gradient": File( path: "texture/defense_gradient.png"),
+    "arrow.layout": TextureAtlasLayout (
+        tile_size_x: 37.,
+        tile_size_y: 16.,
+        columns: 1,
+        rows: 6,
+    ),
+    "arrow.image": File(path: "texture/arrow.png"),
 })

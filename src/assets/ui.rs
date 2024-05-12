@@ -16,6 +16,10 @@ pub struct UiAssets {
     pub thetawave_menu_button_layout: Handle<TextureAtlasLayout>,
     #[asset(key = "thetawave_menu_button.image")]
     pub thetawave_menu_button_image: Handle<Image>,
+    #[asset(key = "arrow.layout")]
+    pub arrow_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "arrow.image")]
+    pub arrow_image: Handle<Image>,
     #[asset(key = "ability_icon.mega_blast")]
     pub mega_blast_ability: Handle<Image>,
     #[asset(key = "ability_icon.charge")]
