@@ -110,14 +110,17 @@ impl ButtonActionComponent {
             Self::EnterCharacterSelection
             | Self::EnterOptions
             | Self::EnterCompendium
-            | Self::QuitGame
-            | Self::CharacterSelectJoin => (
+            | Self::QuitGame => (
                 ui_assets.thetawave_menu_button_image.clone(),
                 ui_assets.thetawave_menu_button_layout.clone(),
             ),
             Self::CharacterSelectLeft | Self::CharacterSelectRight => (
                 ui_assets.arrow_image.clone(),
                 ui_assets.arrow_layout.clone(),
+            ),
+            Self::CharacterSelectJoin => (
+                ui_assets.large_menu_button_image.clone(),
+                ui_assets.large_menu_button_layout.clone(),
             ),
         }
     }

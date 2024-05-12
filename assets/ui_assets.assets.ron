@@ -28,5 +28,12 @@
         columns: 1,
         rows: 6,
     ),
-    "arrow.image": File(path: "texture/arrow.png"),
+    "arrow.image": File(path: "texture/arrow_spritesheet.png"),
+    "large_menu_button.layout": TextureAtlasLayout (
+        tile_size_x: 160.,
+        tile_size_y: 77.,
+        columns: 1,
+        rows: 2,
+    ),
+    "large_menu_button.image": File(path: "texture/large_menu_button_spritesheet.png"),
 })

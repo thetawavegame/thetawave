@@ -16,6 +16,10 @@ pub struct UiAssets {
     pub thetawave_menu_button_layout: Handle<TextureAtlasLayout>,
     #[asset(key = "thetawave_menu_button.image")]
     pub thetawave_menu_button_image: Handle<Image>,
+    #[asset(key = "large_menu_button.layout")]
+    pub large_menu_button_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "large_menu_button.image")]
+    pub large_menu_button_image: Handle<Image>,
     #[asset(key = "arrow.layout")]
     pub arrow_layout: Handle<TextureAtlasLayout>,
     #[asset(key = "arrow.image")]
