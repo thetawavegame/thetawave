@@ -3,30 +3,40 @@
 use crate::{assets::UiAssets, game::GameParametersResource, options::PlayingOnArcadeResource};
 
 use super::{
-    button::{ButtonActionComponent, UiButtonChildBuilderExt},
+    button::{ButtonActionComponent, ButtonActionEvent, UiButtonChildBuilderExt},
     BouncingPromptComponent,
 };
 use bevy::{
+    app::{App, Plugin, Update},
     asset::{AssetServer, Handle},
     ecs::{
         component::Component,
         event::{EventReader, EventWriter},
-        query::With,
+        query::{Changed, With},
+        schedule::OnEnter,
         system::{Commands, ParamSet, Query, Res, ResMut},
     },
     hierarchy::{BuildChildren, Children},
     input::gamepad::GamepadButtonChangedEvent,
     render::{color::Color, view::Visibility},
+    sprite::TextureAtlas,
     text::Font,
     time::{Timer, TimerMode},
     ui::{
         node_bundles::{ImageBundle, NodeBundle},
-        AlignItems, BackgroundColor, Display, FlexDirection, JustifyContent, Style, UiRect, Val,
+        widget::Button,
+        AlignItems, BackgroundColor, Display, FlexDirection, Interaction, JustifyContent, Style,
+        UiRect, Val,
     },
     utils::default,
 };
 use leafwing_input_manager::prelude::ActionState;
-use thetawave_interface::input::{MenuAction, MenuExplorer};
+use thetawave_interface::{
+    audio::PlaySoundEffectEvent,
+    character,
+    input::{MenuAction, MenuExplorer},
+    states,
+};
 use thetawave_interface::{
     character::CharacterType,
     character_selection::PlayerJoinEvent,
@@ -35,6 +45,23 @@ use thetawave_interface::{
 };
 
 mod player_join;
+
+pub(super) struct CharacterSelectionPlugin;
+impl Plugin for CharacterSelectionPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_event::<PlayerJoinEvent>();
+
+        app.add_systems(
+            Update,
+            character_selection_button_selection_and_click_system,
+        );
+
+        app.add_systems(
+            OnEnter(states::AppStates::CharacterSelection),
+            setup_character_selection_system,
+        );
+    }
+}
 
 #[derive(Component)]
 pub(super) struct Player1JoinPrompt;
@@ -300,5 +327,19 @@ pub(super) fn select_character_system(
         &mut BouncingPromptComponent,
         &mut BackgroundColor,
     )>,
+) {
+}
+
+fn character_selection_button_selection_and_click_system(
+    join_buttons: Query<(&ButtonActionComponent, &Children), With<Button>>,
+    main_menu_button_mouse_movements: Query<(&ButtonActionComponent, &Interaction), With<Button>>,
+    main_menu_button_mouse_changed_movements: Query<
+        (&ButtonActionComponent, &Interaction),
+        (Changed<Interaction>, With<Button>),
+    >,
+    menu_explorer_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
+    mut button_texture_query: Query<(&mut TextureAtlas, &mut Style)>,
+    mut sound_effect: EventWriter<PlaySoundEffectEvent>,
+    mut button_event_writer: EventWriter<ButtonActionEvent>,
 ) {
 }

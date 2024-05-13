@@ -18,8 +18,10 @@ mod pause_menu;
 mod victory;
 
 use self::{
+    button::ButtonActionEvent,
     character_selection::{
         player_join_system, select_character_system, setup_character_selection_system,
+        CharacterSelectionPlugin,
     },
     game::GameUiPlugin,
     game_over::setup_game_over_system,
@@ -34,21 +36,11 @@ pub(super) struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<PlayerJoinEvent>();
+        app.add_event::<ButtonActionEvent>();
         app.add_plugins(GameUiPlugin);
         app.add_plugins(MainMenuUIPlugin);
+        app.add_plugins(CharacterSelectionPlugin);
         app.add_systems(Update, bouncing_prompt_system);
-
-        app.add_systems(
-            OnEnter(states::AppStates::CharacterSelection),
-            setup_character_selection_system,
-        );
-
-        app.add_systems(
-            Update,
-            (player_join_system, select_character_system)
-                .run_if(in_state(states::AppStates::CharacterSelection)),
-        );
 
         app.add_systems(OnEnter(states::AppStates::GameOver), setup_game_over_system);
 

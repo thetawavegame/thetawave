@@ -35,8 +35,7 @@ use super::button::ButtonActionEvent;
 pub(super) struct MainMenuUIPlugin;
 impl Plugin for MainMenuUIPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<ButtonActionEvent>()
-            .add_systems(OnEnter(AppStates::MainMenu), setup_main_menu_system)
+        app.add_systems(OnEnter(AppStates::MainMenu), setup_main_menu_system)
             .add_systems(
                 Update,
                 (
