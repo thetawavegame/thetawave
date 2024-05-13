@@ -40,7 +40,7 @@ jobs:
       - name: Install bevy deps and binaryen for wasm optimization
         run: |
           set -euxo pipefail
-          sudo apt update && sudo apt upgrade && sudo apt install -y lld g++ pkg-config libx11-dev libasound2-dev libudev-dev binaryen
+          sudo apt update && sudo apt upgrade && sudo apt install -y mold g++ pkg-config libx11-dev libasound2-dev libudev-dev binaryen
       - name: Build wasm assets
         run: ./build_wasm.sh
       - name: Publish deployment to netlify website

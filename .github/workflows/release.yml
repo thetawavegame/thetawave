@@ -35,7 +35,7 @@ jobs:
         if: matrix.config.os == 'ubuntu-latest'
         run: |
           set -euxo pipefail
-          sudo apt update && sudo apt upgrade && sudo apt install -y lld g++ pkg-config libx11-dev libasound2-dev libudev-dev
+          sudo apt update && sudo apt upgrade && sudo apt install -y mold g++ pkg-config libx11-dev libasound2-dev libudev-dev
 
       - name: 🦀 Setup Rust
         uses: actions-rs/toolchain@v1
@@ -48,7 +48,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --release --target ${{ matrix.config.target }} --features storage --features cli --features arcade
+          args: --release --target ${{ matrix.config.target }} --no-default-features --features storage --features cli --features arcade
 
       - name: Assume AWS IAM role
         uses: aws-actions/configure-aws-credentials@v4
