@@ -18,7 +18,7 @@ mod pause_menu;
 mod victory;
 
 use self::{
-    button::ButtonActionEvent,
+    button::{button_on_click_system, ButtonActionEvent},
     character_selection::{
         player_join_system, select_character_system, setup_character_selection_system,
         CharacterSelectionPlugin,
@@ -40,7 +40,7 @@ impl Plugin for UiPlugin {
         app.add_plugins(GameUiPlugin);
         app.add_plugins(MainMenuUIPlugin);
         app.add_plugins(CharacterSelectionPlugin);
-        app.add_systems(Update, bouncing_prompt_system);
+        app.add_systems(Update, (bouncing_prompt_system, button_on_click_system));
 
         app.add_systems(OnEnter(states::AppStates::GameOver), setup_game_over_system);
 

@@ -38,10 +38,7 @@ impl Plugin for MainMenuUIPlugin {
         app.add_systems(OnEnter(AppStates::MainMenu), setup_main_menu_system)
             .add_systems(
                 Update,
-                (
-                    main_menu_button_selection_and_click_system,
-                    button_on_click_system,
-                )
+                (main_menu_button_selection_and_click_system,)
                     .run_if(in_state(AppStates::MainMenu)),
             );
     }

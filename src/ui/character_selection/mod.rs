@@ -332,8 +332,8 @@ pub(super) fn select_character_system(
 
 fn character_selection_button_selection_and_click_system(
     join_buttons: Query<(&ButtonActionComponent, &Children), With<Button>>,
-    main_menu_button_mouse_movements: Query<(&ButtonActionComponent, &Interaction), With<Button>>,
-    main_menu_button_mouse_changed_movements: Query<
+    button_mouse_movements: Query<(&ButtonActionComponent, &Interaction), With<Button>>,
+    button_mouse_changed_movements: Query<
         (&ButtonActionComponent, &Interaction),
         (Changed<Interaction>, With<Button>),
     >,
@@ -342,4 +342,43 @@ fn character_selection_button_selection_and_click_system(
     mut sound_effect: EventWriter<PlaySoundEffectEvent>,
     mut button_event_writer: EventWriter<ButtonActionEvent>,
 ) {
+    // detect if button is clicked
+    let button_clicked = button_mouse_movements
+        .iter()
+        .find(|(_, x)| match x {
+            Interaction::Pressed => true,
+            _ => false,
+        })
+        .is_some();
+
+    // detect if join button on keyboard
+    let join_input_keyboard = match menu_explorer_query.get_single() {
+        Err(_) => false,
+        Ok(x) => x
+            .get_just_released()
+            .iter()
+            .find(|action_| match action_ {
+                MenuAction::JoinKeyboard => true,
+                _ => false,
+            })
+            .is_some(),
+    };
+
+    // detect if join button on gamepad is pressed
+    let join_input_gamepad = match menu_explorer_query.get_single() {
+        Err(_) => false,
+        Ok(x) => x
+            .get_just_released()
+            .iter()
+            .find(|action_| match action_ {
+                MenuAction::JoinGamepad => true,
+                _ => false,
+            })
+            .is_some(),
+    };
+
+    // send event if any join input was detected
+    if button_clicked || join_input_keyboard || join_input_gamepad {
+        button_event_writer.send(ButtonActionEvent::CharacterSelectJoin);
+    }
 }
