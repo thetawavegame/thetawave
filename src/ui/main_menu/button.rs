@@ -63,7 +63,7 @@ pub(super) trait UiChildBuilderExt {
 impl UiChildBuilderExt for ChildBuilder<'_> {
     fn spawn_main_menu_buttons(&mut self, ui_assets: &UiAssets, font: Handle<Font>) -> &mut Self {
         for action in MAIN_MENU_BUTTON_ORDER.iter() {
-            self.spawn_button(ui_assets, font.clone(), action.clone())
+            self.spawn_button(ui_assets, font.clone(), action.clone());
         }
 
         self

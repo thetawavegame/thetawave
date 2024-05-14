@@ -14,7 +14,7 @@ use bevy::{
         event::{EventReader, EventWriter},
         query::{Changed, With},
         schedule::OnEnter,
-        system::{Commands, ParamSet, Query, Res, ResMut},
+        system::{Commands, Local, ParamSet, Query, Res, ResMut},
     },
     hierarchy::{BuildChildren, Children},
     input::gamepad::GamepadButtonChangedEvent,
@@ -64,10 +64,10 @@ impl Plugin for CharacterSelectionPlugin {
 }
 
 #[derive(Component)]
-pub(super) struct Player1JoinPrompt;
+pub(super) struct PlayerJoinPrompt;
 
 #[derive(Component)]
-pub(super) struct Player1CharacterSelection;
+pub(super) struct PlayerCharacterSelection(usize);
 
 #[derive(Component)]
 pub(super) struct Player2JoinPrompt;
@@ -192,10 +192,11 @@ pub(super) fn setup_character_selection_system(
                                 .with_children(|parent| {
                                     parent.spawn_button(
                                         &ui_assets,
-                                        font,
+                                        font.clone(),
                                         ButtonActionComponent::CharacterSelectJoin,
                                     );
-                                });
+                                })
+                                .insert(PlayerCharacterSelection(0));
 
                             // Right side of player join
                             parent.spawn(NodeBundle {
@@ -213,25 +214,68 @@ pub(super) fn setup_character_selection_system(
 
                     // Spawn second player join on the right side if there are at least 2 players
                     if game_params_res.get_max_players() > 1 {
-                        parent.spawn(NodeBundle {
-                            style: Style {
-                                max_width: Val::Percent(50.0),
-                                min_width: Val::Percent(48.0),
-                                max_height: Val::Percent(100.0),
-                                min_height: Val::Percent(90.0),
-                                justify_content: JustifyContent::Center,
-                                align_items: AlignItems::Center,
-                                margin: UiRect {
-                                    left: Val::Vw(2.0),
-                                    right: Val::Vw(0.0),
-                                    top: Val::Vh(0.0),
-                                    bottom: Val::Vh(2.0),
+                        parent
+                            .spawn(NodeBundle {
+                                style: Style {
+                                    max_width: Val::Percent(50.0),
+                                    min_width: Val::Percent(48.0),
+                                    max_height: Val::Percent(100.0),
+                                    min_height: Val::Percent(90.0),
+                                    justify_content: JustifyContent::Center,
+                                    align_items: AlignItems::Center,
+                                    margin: UiRect {
+                                        left: Val::Vw(2.0),
+                                        right: Val::Vw(0.0),
+                                        top: Val::Vh(0.0),
+                                        bottom: Val::Vh(2.0),
+                                    },
+                                    ..Default::default()
                                 },
+                                background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
                                 ..Default::default()
-                            },
-                            background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
-                            ..Default::default()
-                        });
+                            })
+                            .with_children(|parent| {
+                                // Left side of player join
+                                parent.spawn(NodeBundle {
+                                    style: Style {
+                                        width: Val::Percent(20.0),
+                                        height: Val::Percent(100.0),
+                                        justify_content: JustifyContent::Center,
+                                        align_items: AlignItems::Center,
+                                        ..default()
+                                    },
+                                    background_color: Color::rgba(1.0, 0.0, 0.0, 0.5).into(),
+                                    ..default()
+                                });
+
+                                // Center of player join
+                                parent
+                                    .spawn(NodeBundle {
+                                        style: Style {
+                                            width: Val::Percent(60.0),
+                                            height: Val::Percent(100.0),
+                                            justify_content: JustifyContent::Center,
+                                            align_items: AlignItems::Center,
+                                            ..default()
+                                        },
+                                        background_color: Color::rgba(1.0, 1.0, 0.0, 0.5).into(),
+                                        ..default()
+                                    })
+                                    .insert(PlayerCharacterSelection(1));
+
+                                // Right side of player join
+                                parent.spawn(NodeBundle {
+                                    style: Style {
+                                        width: Val::Percent(20.0),
+                                        height: Val::Percent(100.0),
+                                        justify_content: JustifyContent::Center,
+                                        align_items: AlignItems::Center,
+                                        ..default()
+                                    },
+                                    background_color: Color::rgba(1.0, 0.0, 0.0, 0.5).into(),
+                                    ..default()
+                                });
+                            });
                     }
                 });
 
@@ -249,27 +293,8 @@ pub(super) fn setup_character_selection_system(
                         ..Default::default()
                     })
                     .with_children(|parent| {
-                        parent.spawn(NodeBundle {
-                            style: Style {
-                                max_width: Val::Percent(50.0),
-                                min_width: Val::Percent(48.0),
-                                max_height: Val::Percent(100.0),
-                                min_height: Val::Percent(90.0),
-                                justify_content: JustifyContent::Center,
-                                align_items: AlignItems::Center,
-                                margin: UiRect {
-                                    left: Val::Vw(0.0),
-                                    right: Val::Vw(2.0),
-                                    top: Val::Vh(2.0),
-                                    bottom: Val::Vh(0.0),
-                                },
-                                ..Default::default()
-                            },
-                            background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
-                            ..Default::default()
-                        });
-                        if game_params_res.get_max_players() > 3 {
-                            parent.spawn(NodeBundle {
+                        parent
+                            .spawn(NodeBundle {
                                 style: Style {
                                     max_width: Val::Percent(50.0),
                                     min_width: Val::Percent(48.0),
@@ -278,8 +303,8 @@ pub(super) fn setup_character_selection_system(
                                     justify_content: JustifyContent::Center,
                                     align_items: AlignItems::Center,
                                     margin: UiRect {
-                                        left: Val::Vw(2.0),
-                                        right: Val::Vw(0.0),
+                                        left: Val::Vw(0.0),
+                                        right: Val::Vw(2.0),
                                         top: Val::Vh(2.0),
                                         bottom: Val::Vh(0.0),
                                     },
@@ -287,7 +312,114 @@ pub(super) fn setup_character_selection_system(
                                 },
                                 background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
                                 ..Default::default()
+                            })
+                            .with_children(|parent| {
+                                // Left side of player join
+                                parent.spawn(NodeBundle {
+                                    style: Style {
+                                        width: Val::Percent(20.0),
+                                        height: Val::Percent(100.0),
+                                        justify_content: JustifyContent::Center,
+                                        align_items: AlignItems::Center,
+                                        ..default()
+                                    },
+                                    background_color: Color::rgba(1.0, 0.0, 0.0, 0.5).into(),
+                                    ..default()
+                                });
+
+                                // Center of player join
+                                parent
+                                    .spawn(NodeBundle {
+                                        style: Style {
+                                            width: Val::Percent(60.0),
+                                            height: Val::Percent(100.0),
+                                            justify_content: JustifyContent::Center,
+                                            align_items: AlignItems::Center,
+                                            ..default()
+                                        },
+                                        background_color: Color::rgba(1.0, 1.0, 0.0, 0.5).into(),
+                                        ..default()
+                                    })
+                                    .insert(PlayerCharacterSelection(2));
+
+                                // Right side of player join
+                                parent.spawn(NodeBundle {
+                                    style: Style {
+                                        width: Val::Percent(20.0),
+                                        height: Val::Percent(100.0),
+                                        justify_content: JustifyContent::Center,
+                                        align_items: AlignItems::Center,
+                                        ..default()
+                                    },
+                                    background_color: Color::rgba(1.0, 0.0, 0.0, 0.5).into(),
+                                    ..default()
+                                });
                             });
+
+                        if game_params_res.get_max_players() > 3 {
+                            parent
+                                .spawn(NodeBundle {
+                                    style: Style {
+                                        max_width: Val::Percent(50.0),
+                                        min_width: Val::Percent(48.0),
+                                        max_height: Val::Percent(100.0),
+                                        min_height: Val::Percent(90.0),
+                                        justify_content: JustifyContent::Center,
+                                        align_items: AlignItems::Center,
+                                        margin: UiRect {
+                                            left: Val::Vw(2.0),
+                                            right: Val::Vw(0.0),
+                                            top: Val::Vh(2.0),
+                                            bottom: Val::Vh(0.0),
+                                        },
+                                        ..Default::default()
+                                    },
+                                    background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
+                                    ..Default::default()
+                                })
+                                .with_children(|parent| {
+                                    // Left side of player join
+                                    parent.spawn(NodeBundle {
+                                        style: Style {
+                                            width: Val::Percent(20.0),
+                                            height: Val::Percent(100.0),
+                                            justify_content: JustifyContent::Center,
+                                            align_items: AlignItems::Center,
+                                            ..default()
+                                        },
+                                        background_color: Color::rgba(1.0, 0.0, 0.0, 0.5).into(),
+                                        ..default()
+                                    });
+
+                                    // Center of player join
+                                    parent
+                                        .spawn(NodeBundle {
+                                            style: Style {
+                                                width: Val::Percent(60.0),
+                                                height: Val::Percent(100.0),
+                                                justify_content: JustifyContent::Center,
+                                                align_items: AlignItems::Center,
+                                                ..default()
+                                            },
+                                            background_color: Color::rgba(1.0, 1.0, 0.0, 0.5)
+                                                .into(),
+                                            ..default()
+                                        })
+                                        .insert(PlayerCharacterSelection(3));
+
+                                    // Right side of player join
+                                    parent.spawn(NodeBundle {
+                                        style: Style {
+                                            width: Val::Percent(20.0),
+                                            height: Val::Percent(100.0),
+                                            justify_content: JustifyContent::Center,
+                                            align_items: AlignItems::Center,
+                                            ..default()
+                                        },
+                                        background_color: Color::rgba(1.0, 0.0, 0.0, 0.5).into(),
+                                        ..default()
+                                    });
+                                });
                         }
                     });
             }
@@ -300,9 +432,9 @@ pub(super) fn player_join_system(
     mut gamepad_events: EventReader<GamepadButtonChangedEvent>,
     mut players_resource: ResMut<PlayersResource>,
     mut ui_queries: ParamSet<(
-        Query<&mut Style, With<Player1JoinPrompt>>,
+        Query<&mut Style, With<PlayerJoinPrompt>>,
         Query<&mut Style, With<Player2JoinPrompt>>,
-        Query<&mut Style, With<Player1CharacterSelection>>,
+        Query<&mut Style, With<PlayerCharacterSelection>>,
         Query<&mut Style, With<Player2CharacterSelection>>,
         Query<&mut Visibility, With<StartGamePrompt>>,
     )>,
@@ -315,8 +447,7 @@ pub(super) fn select_character_system(
     menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
     mut gamepad_events: EventReader<GamepadButtonChangedEvent>,
     mut players_resource: ResMut<PlayersResource>,
-    player_1_selection: Query<&Children, With<Player1CharacterSelection>>,
-    player_2_selection: Query<&Children, With<Player2CharacterSelection>>,
+    player_1_selection: Query<&Children, With<PlayerCharacterSelection>>,
 
     mut character_description_queries: ParamSet<(
         Query<(&mut Style, &CharacterDescription), With<Player1Description>>,
@@ -341,12 +472,18 @@ fn character_selection_button_selection_and_click_system(
     mut button_texture_query: Query<(&mut TextureAtlas, &mut Style)>,
     mut sound_effect: EventWriter<PlaySoundEffectEvent>,
     mut button_event_writer: EventWriter<ButtonActionEvent>,
+    character_selection: Query<&PlayerCharacterSelection>,
+    mut current_player_idx: Local<u8>,
+    game_params_res: Res<GameParametersResource>,
 ) {
     // detect if button is clicked
     let button_clicked = button_mouse_movements
         .iter()
-        .find(|(_, x)| match x {
-            Interaction::Pressed => true,
+        .find(|(action, x)| match action {
+            ButtonActionComponent::CharacterSelectJoin => match x {
+                Interaction::Pressed => true,
+                _ => false,
+            },
             _ => false,
         })
         .is_some();
@@ -378,7 +515,12 @@ fn character_selection_button_selection_and_click_system(
     };
 
     // send event if any join input was detected
-    if button_clicked || join_input_keyboard || join_input_gamepad {
+    if (button_clicked || join_input_keyboard || join_input_gamepad)
+        && *current_player_idx < game_params_res.get_max_players()
+    {
         button_event_writer.send(ButtonActionEvent::CharacterSelectJoin);
+        *current_player_idx += 1;
+
+        // transfer the button to be child of CharacterSelectionJoin(current_player_idx)
     }
 }

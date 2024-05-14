@@ -3,9 +3,10 @@ use bevy::{
     asset::Handle,
     ecs::{
         component::Component,
+        entity::Entity,
         event::{Event, EventReader, EventWriter},
         schedule::NextState,
-        system::ResMut,
+        system::{EntityCommands, ResMut},
     },
     hierarchy::{BuildChildren, ChildBuilder},
     log::info,
