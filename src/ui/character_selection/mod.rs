@@ -11,12 +11,13 @@ use bevy::{
     asset::{AssetServer, Handle},
     ecs::{
         component::Component,
+        entity::Entity,
         event::{EventReader, EventWriter},
         query::{Changed, With},
-        schedule::OnEnter,
+        schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter},
         system::{Commands, Local, ParamSet, Query, Res, ResMut},
     },
-    hierarchy::{BuildChildren, Children},
+    hierarchy::{BuildChildren, Children, DespawnRecursiveExt},
     input::gamepad::GamepadButtonChangedEvent,
     render::{color::Color, view::Visibility},
     sprite::TextureAtlas,
@@ -35,7 +36,7 @@ use thetawave_interface::{
     audio::PlaySoundEffectEvent,
     character,
     input::{MenuAction, MenuExplorer},
-    states,
+    states::{self, AppStates},
 };
 use thetawave_interface::{
     character::CharacterType,
@@ -53,7 +54,8 @@ impl Plugin for CharacterSelectionPlugin {
 
         app.add_systems(
             Update,
-            character_selection_button_selection_and_click_system,
+            character_selection_button_selection_and_click_system
+                .run_if(in_state(AppStates::CharacterSelection)),
         );
 
         app.add_systems(
@@ -67,7 +69,7 @@ impl Plugin for CharacterSelectionPlugin {
 pub(super) struct PlayerJoinPrompt;
 
 #[derive(Component)]
-pub(super) struct PlayerCharacterSelection(usize);
+pub(super) struct PlayerCharacterSelection(u8);
 
 #[derive(Component)]
 pub(super) struct Player2JoinPrompt;
@@ -462,65 +464,80 @@ pub(super) fn select_character_system(
 }
 
 fn character_selection_button_selection_and_click_system(
-    join_buttons: Query<(&ButtonActionComponent, &Children), With<Button>>,
-    button_mouse_movements: Query<(&ButtonActionComponent, &Interaction), With<Button>>,
-    button_mouse_changed_movements: Query<
-        (&ButtonActionComponent, &Interaction),
-        (Changed<Interaction>, With<Button>),
-    >,
+    mut commands: Commands,
+    button_mouse_movements: Query<(&ButtonActionComponent, &Interaction, Entity), With<Button>>,
     menu_explorer_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
-    mut button_texture_query: Query<(&mut TextureAtlas, &mut Style)>,
     mut sound_effect: EventWriter<PlaySoundEffectEvent>,
     mut button_event_writer: EventWriter<ButtonActionEvent>,
-    character_selection: Query<&PlayerCharacterSelection>,
+    character_selection: Query<(&PlayerCharacterSelection, Entity)>,
     mut current_player_idx: Local<u8>,
+    mut mouse_interaction: Local<Interaction>,
     game_params_res: Res<GameParametersResource>,
 ) {
-    // detect if button is clicked
-    let button_clicked = button_mouse_movements
-        .iter()
-        .find(|(action, x)| match action {
-            ButtonActionComponent::CharacterSelectJoin => match x {
-                Interaction::Pressed => true,
+    if let Some(button) = button_mouse_movements.iter().find(|(button_action, _, _)| {
+        matches!(button_action, ButtonActionComponent::CharacterSelectJoin)
+    }) {
+        // detect if join button on keyboard
+        let join_input_keyboard = match menu_explorer_query.get_single() {
+            Err(_) => false,
+            Ok(x) => x
+                .get_just_released()
+                .iter()
+                .find(|action_| match action_ {
+                    MenuAction::JoinKeyboard => true,
+                    _ => false,
+                })
+                .is_some(),
+        };
+
+        // detect if join button on gamepad is pressed
+        let join_input_gamepad = match menu_explorer_query.get_single() {
+            Err(_) => false,
+            Ok(x) => x
+                .get_just_released()
+                .iter()
+                .find(|action_| match action_ {
+                    MenuAction::JoinGamepad => true,
+                    _ => false,
+                })
+                .is_some(),
+        };
+
+        let button_released = {
+            match button.1 {
+                Interaction::Hovered => match *mouse_interaction {
+                    Interaction::Pressed => true,
+                    _ => false,
+                },
                 _ => false,
-            },
-            _ => false,
-        })
-        .is_some();
+            }
+        };
+        *mouse_interaction = *button.1;
 
-    // detect if join button on keyboard
-    let join_input_keyboard = match menu_explorer_query.get_single() {
-        Err(_) => false,
-        Ok(x) => x
-            .get_just_released()
-            .iter()
-            .find(|action_| match action_ {
-                MenuAction::JoinKeyboard => true,
-                _ => false,
-            })
-            .is_some(),
-    };
+        // send event if any join input was detected
+        if (button_released || join_input_keyboard || join_input_gamepad)
+            && *current_player_idx < game_params_res.get_max_players()
+        {
+            button_event_writer.send(ButtonActionEvent::CharacterSelectJoin);
+            *current_player_idx += 1;
 
-    // detect if join button on gamepad is pressed
-    let join_input_gamepad = match menu_explorer_query.get_single() {
-        Err(_) => false,
-        Ok(x) => x
-            .get_just_released()
-            .iter()
-            .find(|action_| match action_ {
-                MenuAction::JoinGamepad => true,
-                _ => false,
-            })
-            .is_some(),
-    };
+            // remove the button from PlayerCharacterSelection(current_player_idx-1) and spawn a button for PlayerCharacterSelection(current_player_idx)
+            let prev_character_selection_ui = character_selection
+                .iter()
+                .find(|x| x.0 .0 == *current_player_idx - 1);
 
-    // send event if any join input was detected
-    if (button_clicked || join_input_keyboard || join_input_gamepad)
-        && *current_player_idx < game_params_res.get_max_players()
-    {
-        button_event_writer.send(ButtonActionEvent::CharacterSelectJoin);
-        *current_player_idx += 1;
+            let current_character_selection_ui = character_selection
+                .iter()
+                .find(|x| x.0 .0 == *current_player_idx);
 
-        // transfer the button to be child of CharacterSelectionJoin(current_player_idx)
+            if let Some((_, entity)) = prev_character_selection_ui {
+                commands.entity(entity).remove_children(&[button.2]);
+            }
+            if let Some((_, entity)) = current_character_selection_ui {
+                commands.entity(entity).add_child(button.2);
+            } else {
+                commands.entity(button.2).despawn_recursive();
+            }
+        }
     }
 }
