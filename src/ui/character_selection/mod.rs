@@ -3,7 +3,7 @@
 use crate::{assets::UiAssets, game::GameParametersResource, options::PlayingOnArcadeResource};
 
 use super::{
-    button::{ButtonActionComponent, ButtonActionEvent, UiButtonChildBuilderExt},
+    button::{self, ButtonActionComponent, ButtonActionEvent, UiButtonChildBuilderExt},
     BouncingPromptComponent,
 };
 use bevy::{
@@ -19,6 +19,7 @@ use bevy::{
     },
     hierarchy::{BuildChildren, Children, DespawnRecursiveExt},
     input::gamepad::GamepadButtonChangedEvent,
+    log::info,
     render::{color::Color, view::Visibility},
     sprite::TextureAtlas,
     text::Font,
@@ -54,7 +55,10 @@ impl Plugin for CharacterSelectionPlugin {
 
         app.add_systems(
             Update,
-            character_selection_button_selection_and_click_system
+            (
+                character_selection_button_selection_and_click_system,
+                character_selection_mouse_click_system,
+            )
                 .run_if(in_state(AppStates::CharacterSelection)),
         );
 
@@ -602,6 +606,61 @@ fn character_selection_button_selection_and_click_system(
                     )
                 });
             };
+        }
+    }
+}
+
+fn character_selection_mouse_click_system(
+    button_mouse_movements: Query<(&ButtonActionComponent, &Interaction), With<Button>>,
+    mut button_event_writer: EventWriter<ButtonActionEvent>,
+    mut stored_right_mouse_interaction: Local<[Interaction; 4]>,
+    mut stored_left_mouse_interaction: Local<[Interaction; 4]>,
+) {
+    for (button_action, mouse_interaction) in
+        button_mouse_movements.iter().filter(|(button_action, _)| {
+            matches!(button_action, ButtonActionComponent::CharacterSelectLeft(_))
+                || matches!(
+                    button_action,
+                    ButtonActionComponent::CharacterSelectRight(_)
+                )
+        })
+    {
+        let button_released = match button_action {
+            ButtonActionComponent::CharacterSelectRight(i) => {
+                let result = {
+                    match mouse_interaction {
+                        Interaction::Hovered => match stored_right_mouse_interaction[*i as usize] {
+                            Interaction::Pressed => true,
+                            _ => false,
+                        },
+                        _ => false,
+                    }
+                };
+                stored_right_mouse_interaction[*i as usize] = *mouse_interaction;
+
+                result
+            }
+            ButtonActionComponent::CharacterSelectLeft(i) => {
+                let result = {
+                    match mouse_interaction {
+                        Interaction::Hovered => match stored_left_mouse_interaction[*i as usize] {
+                            Interaction::Pressed => true,
+                            _ => false,
+                        },
+                        _ => false,
+                    }
+                };
+
+                stored_left_mouse_interaction[*i as usize] = *mouse_interaction;
+
+                result
+            }
+            _ => false,
+        };
+
+        // send event if any join input was detected
+        if button_released {
+            button_event_writer.send(*button_action);
         }
     }
 }

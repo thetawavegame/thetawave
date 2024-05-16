@@ -13,16 +13,15 @@ pub struct MenuExplorer;
 pub enum MenuAction {
     Confirm,
     JoinKeyboard,
-    ChangeCharacterKeyboard,
     JoinGamepad,
-    ChangeCharacterGamepad,
     Back,
     Reset,
     ExitPauseMenu,
     PauseGame,
-    ToggleTutorial,
     NavigateUp,
     NavigateDown,
+    NavigateLeft,
+    NavigateRight,
 }
 
 /// Player actions during the main game/while fighting mobs. Many of these can be simultaneously
