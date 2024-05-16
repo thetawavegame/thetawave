@@ -40,8 +40,8 @@ const BUTTON_TEXTURE_PADDING_HOVERED: UiRect =
 #[derive(Component, Event, Clone, PartialEq, Eq, Copy, Debug)]
 pub enum ButtonActionComponent {
     CharacterSelectJoin,
-    CharacterSelectRight,
-    CharacterSelectLeft,
+    CharacterSelectRight(u8),
+    CharacterSelectLeft(u8),
     EnterCharacterSelection,
     EnterOptions,
     EnterCompendium,
@@ -59,9 +59,9 @@ impl ButtonActionComponent {
             Self::EnterOptions => Some("Options"),
             Self::EnterCompendium => Some("Compendium"),
             Self::QuitGame => Some("Exit Game"),
-            Self::CharacterSelectLeft => None,
-            Self::CharacterSelectRight => None,
-            Self::CharacterSelectJoin => Some("Press to\njoin"),
+            Self::CharacterSelectLeft(_) => None,
+            Self::CharacterSelectRight(_) => None,
+            Self::CharacterSelectJoin => Some("Join"),
         }
     }
 
@@ -105,7 +105,10 @@ impl ButtonActionComponent {
                 margin: UiRect::new(Val::Auto, Val::Auto, Val::Percent(1.0), Val::Percent(1.0)),
                 ..default()
             },
-            Self::CharacterSelectLeft | Self::CharacterSelectRight => Style { ..default() },
+            Self::CharacterSelectLeft(_) | Self::CharacterSelectRight(_) => Style {
+                height: Val::Percent(15.0),
+                ..default()
+            },
         }
     }
 
@@ -124,9 +127,7 @@ impl ButtonActionComponent {
                 padding: BUTTON_TEXTURE_PADDING,
                 ..default()
             },
-            Self::CharacterSelectLeft | Self::CharacterSelectRight => Style {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
+            Self::CharacterSelectLeft(_) | Self::CharacterSelectRight(_) => Style {
                 padding: BUTTON_TEXTURE_PADDING,
                 ..default()
             },
@@ -142,9 +143,13 @@ impl ButtonActionComponent {
                 ui_assets.thetawave_menu_button_image.clone(),
                 ui_assets.thetawave_menu_button_layout.clone(),
             ),
-            Self::CharacterSelectLeft | Self::CharacterSelectRight => (
-                ui_assets.arrow_image.clone(),
-                ui_assets.arrow_layout.clone(),
+            Self::CharacterSelectRight(_) => (
+                ui_assets.arrow_right_image.clone(),
+                ui_assets.arrow_right_layout.clone(),
+            ),
+            Self::CharacterSelectLeft(_) => (
+                ui_assets.arrow_left_image.clone(),
+                ui_assets.arrow_left_layout.clone(),
             ),
             Self::CharacterSelectJoin => (
                 ui_assets.large_menu_button_image.clone(),
@@ -171,8 +176,12 @@ pub fn button_on_click_system(
             ButtonActionComponent::QuitGame => {
                 exit.send(AppExit);
             }
-            ButtonActionComponent::CharacterSelectRight => info!("Character selection right."),
-            ButtonActionComponent::CharacterSelectLeft => info!("Character selection left."),
+            ButtonActionComponent::CharacterSelectRight(i) => {
+                info!("Player {} character selection right.", i + 1)
+            }
+            ButtonActionComponent::CharacterSelectLeft(i) => {
+                info!("Player {} character selection left.", i + 1)
+            }
             ButtonActionComponent::CharacterSelectJoin => info!("Character selection join."),
         }
     }

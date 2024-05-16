@@ -28,10 +28,14 @@ pub struct UiAssets {
     pub keyboard_key_return_layout: Handle<TextureAtlasLayout>,
     #[asset(key = "keyboard_key_return.image")]
     pub keyboard_key_return_image: Handle<Image>,
-    #[asset(key = "arrow.layout")]
-    pub arrow_layout: Handle<TextureAtlasLayout>,
-    #[asset(key = "arrow.image")]
-    pub arrow_image: Handle<Image>,
+    #[asset(key = "arrow_right.layout")]
+    pub arrow_right_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "arrow_right.image")]
+    pub arrow_right_image: Handle<Image>,
+    #[asset(key = "arrow_left.layout")]
+    pub arrow_left_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "arrow_left.image")]
+    pub arrow_left_image: Handle<Image>,
     #[asset(key = "ability_icon.mega_blast")]
     pub mega_blast_ability: Handle<Image>,
     #[asset(key = "ability_icon.charge")]

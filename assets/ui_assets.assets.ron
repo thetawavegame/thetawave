@@ -22,13 +22,20 @@
     "font.wibletown": File (path: "fonts/wibletown-regular.otf"),
     "warning_gradient": File( path: "texture/warning_gradient.png"),
     "defense_gradient": File( path: "texture/defense_gradient.png"),
-    "arrow.layout": TextureAtlasLayout (
+    "arrow_right.layout": TextureAtlasLayout (
         tile_size_x: 37.,
         tile_size_y: 16.,
         columns: 1,
         rows: 6,
     ),
-    "arrow.image": File(path: "texture/arrow_spritesheet.png"),
+    "arrow_right.image": File(path: "texture/arrow_right_spritesheet.png"),
+    "arrow_left.layout": TextureAtlasLayout (
+        tile_size_x: 37.,
+        tile_size_y: 16.,
+        columns: 1,
+        rows: 6,
+    ),
+    "arrow_left.image": File(path: "texture/arrow_left_spritesheet.png"),
     "large_menu_button.layout": TextureAtlasLayout (
         tile_size_x: 160.,
         tile_size_y: 77.,
