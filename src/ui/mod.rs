@@ -20,8 +20,7 @@ mod victory;
 use self::{
     button::{button_on_click_system, ButtonActionEvent},
     character_selection::{
-        player_join_system, select_character_system, setup_character_selection_system,
-        CharacterSelectionPlugin,
+        select_character_system, setup_character_selection_system, CharacterSelectionPlugin,
     },
     game::GameUiPlugin,
     game_over::setup_game_over_system,

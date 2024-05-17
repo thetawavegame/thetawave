@@ -32,11 +32,11 @@ use bevy::{
     },
     utils::default,
 };
-use leafwing_input_manager::prelude::ActionState;
+use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
 use thetawave_interface::{
     audio::PlaySoundEffectEvent,
     character,
-    input::{MenuAction, MenuExplorer},
+    input::{InputsResource, MenuAction, MenuExplorer},
     states::{self, AppStates},
 };
 use thetawave_interface::{
@@ -55,10 +55,7 @@ impl Plugin for CharacterSelectionPlugin {
 
         app.add_systems(
             Update,
-            (
-                character_selection_button_selection_and_click_system,
-                character_selection_mouse_click_system,
-            )
+            (player_join_system, character_selection_mouse_click_system)
                 .run_if(in_state(AppStates::CharacterSelection)),
         );
 
@@ -457,6 +454,7 @@ pub(super) fn setup_character_selection_system(
 }
 
 /// Handles players joining the game
+/*
 pub(super) fn player_join_system(
     menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
     mut gamepad_events: EventReader<GamepadButtonChangedEvent>,
@@ -471,6 +469,7 @@ pub(super) fn player_join_system(
     mut player_join_event: EventWriter<PlayerJoinEvent>,
 ) {
 }
+*/
 
 // handle the character selection for each player
 pub(super) fn select_character_system(
@@ -491,7 +490,8 @@ pub(super) fn select_character_system(
 ) {
 }
 
-fn character_selection_button_selection_and_click_system(
+// TODO: register inputs to players and prevent duplicate controls from joining
+fn player_join_system(
     mut commands: Commands,
     button_mouse_movements: Query<(&ButtonActionComponent, &Interaction, Entity), With<Button>>,
     menu_explorer_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
@@ -505,6 +505,7 @@ fn character_selection_button_selection_and_click_system(
     game_params_res: Res<GameParametersResource>,
     ui_assets: Res<UiAssets>,
     asset_server: Res<AssetServer>,
+    inputs_res: Res<InputsResource>,
 ) {
     if let Some(button) = button_mouse_movements.iter().find(|(button_action, _, _)| {
         matches!(button_action, ButtonActionComponent::CharacterSelectJoin)
@@ -606,10 +607,21 @@ fn character_selection_button_selection_and_click_system(
                     )
                 });
             };
+
+            // spawn a menu explorer with the new player idx
+            if *current_player_idx - 1 != 0 {
+                commands
+                    .spawn(InputManagerBundle::<MenuAction> {
+                        action_state: ActionState::default(),
+                        input_map: inputs_res.menu.clone(),
+                    })
+                    .insert(MenuExplorer(*current_player_idx - 1));
+            }
         }
     }
 }
 
+// TODO: check if the player with keyboard input matches the ui player index
 fn character_selection_mouse_click_system(
     button_mouse_movements: Query<(&ButtonActionComponent, &Interaction), With<Button>>,
     mut button_event_writer: EventWriter<ButtonActionEvent>,
@@ -661,6 +673,22 @@ fn character_selection_mouse_click_system(
         // send event if any join input was detected
         if button_released {
             button_event_writer.send(*button_action);
+        }
+    }
+}
+
+fn character_selection_keyboard_gamepad_system(
+    mut button_event_writer: EventWriter<ButtonActionEvent>,
+    menu_input_query: Query<(&ActionState<MenuAction>, &MenuExplorer)>,
+    mut gamepad_events: EventReader<GamepadButtonChangedEvent>,
+) {
+    for (action_state, MenuExplorer(player_id)) in menu_input_query.iter() {
+        for action in action_state.get_just_released().iter() {
+            match action {
+                MenuAction::NavigateLeft => todo!(),
+                MenuAction::NavigateRight => todo!(),
+                _ => {}
+            }
         }
     }
 }

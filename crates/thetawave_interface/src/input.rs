@@ -6,7 +6,7 @@ use leafwing_input_manager::{prelude::InputMap, Actionlike};
 use serde::Deserialize;
 
 #[derive(Component)]
-pub struct MenuExplorer;
+pub struct MenuExplorer(pub u8);
 
 /// The input behaviors from the controller/gamepad available while in the menus.
 #[derive(Actionlike, PartialEq, Eq, Clone, Copy, Hash, Debug, Reflect, Deserialize)]

@@ -114,10 +114,12 @@ impl Plugin for StatesPlugin {
                 .run_if(in_state(GameStates::Playing)),
         );
 
+        /*
         app.add_systems(
             Update,
             start_game_system.run_if(in_state(AppStates::CharacterSelection)),
         );
+        */
 
         app.add_systems(
             OnExit(AppStates::MainMenu),
