@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use leafwing_input_manager::prelude::InputMap;
 use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
 use serde::Deserialize;
-use thetawave_interface::input::{InputsResource, MenuAction, MenuExplorer, PlayerAction};
+use thetawave_interface::input::{InputsResource, MainMenuExplorer, MenuAction, PlayerAction};
 
 /// Spawns entity to track navigation over menus
 /// Given an id of 0 to indicate it is for player 1
@@ -12,7 +12,7 @@ pub fn spawn_menu_explorer_system(mut commands: Commands, inputs_res: Res<Inputs
             action_state: ActionState::default(),
             input_map: inputs_res.menu.clone(),
         })
-        .insert(MenuExplorer(0));
+        .insert(MainMenuExplorer);
 }
 
 #[derive(Deserialize)]

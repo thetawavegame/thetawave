@@ -31,7 +31,7 @@ use bevy::{
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
-    input::{MenuAction, MenuExplorer},
+    input::{MainMenuExplorer, MenuAction},
     states::AppStates,
 };
 
@@ -103,7 +103,7 @@ pub(super) fn main_menu_button_selection_and_click_system(
         (&ButtonActionComponent, &Interaction),
         (Changed<Interaction>, With<Button>),
     >,
-    menu_explorer_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
+    menu_explorer_query: Query<&ActionState<MenuAction>, With<MainMenuExplorer>>,
     mut button_texture_query: Query<(&mut TextureAtlas, &mut Style)>,
     // Index into `MAIN_MENU_BUTTON_ORDER`, possibly mod its size
     mut ui_state: Local<MainMenuUIState>,
@@ -132,8 +132,8 @@ pub(super) fn main_menu_button_selection_and_click_system(
             .get_just_pressed()
             .iter()
             .find_map(|action_| match action_ {
-                MenuAction::NavigateUp => Some(true),
-                MenuAction::NavigateDown => Some(false),
+                MenuAction::NavigateUpKeyboard | MenuAction::NavigateUpGamepad => Some(true),
+                MenuAction::NavigateDownKeyboard | MenuAction::NavigateDownGamepad => Some(false),
                 _ => None,
             }),
     };

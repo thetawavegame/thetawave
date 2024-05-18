@@ -8,6 +8,9 @@ use serde::Deserialize;
 #[derive(Component)]
 pub struct MenuExplorer(pub u8);
 
+#[derive(Component)]
+pub struct MainMenuExplorer;
+
 /// The input behaviors from the controller/gamepad available while in the menus.
 #[derive(Actionlike, PartialEq, Eq, Clone, Copy, Hash, Debug, Reflect, Deserialize)]
 pub enum MenuAction {
@@ -18,10 +21,14 @@ pub enum MenuAction {
     Reset,
     ExitPauseMenu,
     PauseGame,
-    NavigateUp,
-    NavigateDown,
-    NavigateLeft,
-    NavigateRight,
+    NavigateUpKeyboard,
+    NavigateDownKeyboard,
+    NavigateUpGamepad,
+    NavigateDownGamepad,
+    NavigateLeftKeyboard,
+    NavigateRightKeyboard,
+    NavigateLeftGamepad,
+    NavigateRightGamepad,
 }
 
 /// Player actions during the main game/while fighting mobs. Many of these can be simultaneously

@@ -9,6 +9,7 @@ use bevy_asset_loader::loading_state::LoadingState;
 use bevy_asset_loader::loading_state::LoadingStateAppExt;
 use bevy_asset_loader::standard_dynamic_asset::StandardDynamicAssetCollection;
 use leafwing_input_manager::prelude::ActionState;
+use thetawave_interface::input::MainMenuExplorer;
 use thetawave_interface::input::MenuAction;
 use thetawave_interface::input::MenuExplorer;
 use thetawave_interface::states::CharacterSelectionCleanup;
@@ -183,7 +184,7 @@ fn clear_state_system<T: Component>(
 }
 
 fn start_mainmenu_system(
-    menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
+    menu_input_query: Query<&ActionState<MenuAction>, With<MainMenuExplorer>>,
     mut next_app_state: ResMut<NextState<AppStates>>,
     mut next_game_state: ResMut<NextState<GameStates>>,
 ) {

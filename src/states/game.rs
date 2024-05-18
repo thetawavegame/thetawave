@@ -3,7 +3,7 @@ use bevy::ecs::query::With;
 use bevy::ecs::schedule::NextState;
 use bevy::ecs::system::{Query, Res, ResMut};
 use leafwing_input_manager::prelude::ActionState;
-use thetawave_interface::input::{MenuAction, MenuExplorer};
+use thetawave_interface::input::{MainMenuExplorer, MenuAction};
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     player::PlayersResource,
@@ -12,7 +12,7 @@ use thetawave_interface::{
 
 // Start the game by entering the Game state
 pub(super) fn start_game_system(
-    menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
+    menu_input_query: Query<&ActionState<MenuAction>, With<MainMenuExplorer>>,
     mut next_app_state: ResMut<NextState<AppStates>>,
     players_resource: Res<PlayersResource>,
     mut sound_effect_pub: EventWriter<PlaySoundEffectEvent>,
