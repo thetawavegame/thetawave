@@ -1,12 +1,20 @@
 //! Systems to spawn and style the character selection screen, where each player picks a character
 //! from one of a few options, and possibly enables/diables the tutorial.
-use crate::{assets::UiAssets, game::GameParametersResource, options::PlayingOnArcadeResource};
+use std::collections::VecDeque;
+
+use crate::{
+    assets::{PlayerAssets, UiAssets},
+    game::GameParametersResource,
+    options::PlayingOnArcadeResource,
+    player::CharactersResource,
+};
 
 use super::{
     button::{self, ButtonActionComponent, ButtonActionEvent, UiButtonChildBuilderExt},
     BouncingPromptComponent,
 };
 use bevy::{
+    a11y::accesskit::TextAlign,
     app::{App, Plugin, Update},
     asset::{Asset, AssetServer, Handle},
     ecs::{
@@ -20,20 +28,22 @@ use bevy::{
     hierarchy::{BuildChildren, Children, DespawnRecursiveExt},
     input::gamepad::{Gamepad, GamepadButtonChangedEvent},
     log::info,
-    render::{color::Color, view::Visibility},
+    math::Vec2,
+    render::{color::Color, render_graph::Node, texture::Image, view::Visibility},
     sprite::TextureAtlas,
-    text::Font,
+    text::{Font, JustifyText, Text, TextLayoutInfo, TextSection, TextStyle},
     time::{Timer, TimerMode},
     ui::{
-        node_bundles::{ImageBundle, NodeBundle},
-        widget::Button,
-        AlignItems, BackgroundColor, Display, FlexDirection, Interaction, JustifyContent, Style,
-        UiRect, Val,
+        node_bundles::{ImageBundle, NodeBundle, TextBundle},
+        widget::{Button, UiImageSize},
+        AlignContent, AlignItems, AlignSelf, BackgroundColor, Display, FlexDirection, Interaction,
+        JustifyContent, JustifySelf, Style, UiImage, UiRect, Val,
     },
     utils::default,
 };
 use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
 use thetawave_interface::{
+    abilities::AbilityDescriptionsResource,
     audio::PlaySoundEffectEvent,
     character,
     input::{InputsResource, MainMenuExplorer, MenuAction, MenuExplorer},
@@ -62,6 +72,7 @@ impl Plugin for CharacterSelectionPlugin {
                 character_selection_mouse_click_system,
                 character_selection_keyboard_gamepad_system,
                 update_ui_system,
+                carousel_ui_system,
             )
                 .run_if(in_state(AppStates::CharacterSelection)),
         );
@@ -98,11 +109,6 @@ pub(super) struct CharacterSelectionChoice {
 }
 
 #[derive(Component)]
-pub(super) struct CharacterDescription {
-    pub character: Option<CharacterType>,
-}
-
-#[derive(Component)]
 pub(super) struct Player1Description;
 
 #[derive(Component)]
@@ -110,6 +116,66 @@ pub(super) struct Player2Description;
 
 #[derive(Component)]
 pub(super) struct StartGamePrompt;
+
+#[derive(Component)]
+struct CharacterCarousel {
+    pub player_idx: u8,
+    pub characters: VecDeque<CharacterType>,
+}
+
+#[derive(Component)]
+struct CharacterDescription(u8);
+
+#[derive(Component)]
+struct CharacterInfo;
+
+#[derive(Component)]
+struct CharacterName;
+
+#[derive(Component)]
+struct CharacterAbilityDescriptions;
+
+#[derive(Component)]
+struct CharacterStatsDescriptions;
+
+#[derive(Component)]
+struct CharacterCarouselSlot(u8);
+
+impl CharacterCarousel {
+    fn new(player_idx: u8) -> Self {
+        CharacterCarousel {
+            player_idx,
+            characters: CharacterType::to_vec(),
+        }
+    }
+
+    fn rotate_right(&mut self) {
+        if let Some(last_element) = self.characters.pop_back() {
+            self.characters.push_front(last_element);
+        }
+    }
+
+    fn rotate_left(&mut self) {
+        if let Some(first_element) = self.characters.pop_front() {
+            self.characters.push_back(first_element);
+        }
+    }
+
+    fn get_visible_characters(&self) -> [CharacterType; 3] {
+        if let (Some(left), Some(middle), Some(right)) = (
+            self.characters.back(),
+            self.characters.front(),
+            self.characters.get(1),
+        ) {
+            return [*left, *middle, *right];
+        }
+        [
+            CharacterType::default(),
+            CharacterType::default(),
+            CharacterType::default(),
+        ]
+    }
+}
 
 /// Setup the character selection UI
 pub(super) fn setup_character_selection_system(
@@ -152,7 +218,6 @@ pub(super) fn setup_character_selection_system(
                         flex_direction: FlexDirection::Row,
                         ..Default::default()
                     },
-                    background_color: Color::rgba(1.0, 0.0, 0.0, 0.05).into(), // TODO: remove
                     ..Default::default()
                 })
                 .with_children(|parent| {
@@ -175,7 +240,7 @@ pub(super) fn setup_character_selection_system(
                                 },
                                 ..Default::default()
                             },
-                            background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
+                            background_color: Color::BLACK.with_a(0.6).into(),
                             ..Default::default()
                         })
                         .with_children(|parent| {
@@ -189,7 +254,6 @@ pub(super) fn setup_character_selection_system(
                                         align_items: AlignItems::Center,
                                         ..default()
                                     },
-                                    background_color: Color::rgba(1.0, 0.0, 0.0, 0.5).into(),
                                     ..default()
                                 })
                                 .insert(PlayerCharacterSelectionLeft(0));
@@ -202,9 +266,9 @@ pub(super) fn setup_character_selection_system(
                                         height: Val::Percent(100.0),
                                         justify_content: JustifyContent::Center,
                                         align_items: AlignItems::Center,
+                                        flex_direction: FlexDirection::Column,
                                         ..default()
                                     },
-                                    background_color: Color::rgba(1.0, 1.0, 0.0, 0.5).into(),
                                     ..default()
                                 })
                                 .with_children(|parent| {
@@ -226,7 +290,6 @@ pub(super) fn setup_character_selection_system(
                                         align_items: AlignItems::Center,
                                         ..default()
                                     },
-                                    background_color: Color::rgba(1.0, 0.0, 0.0, 0.5).into(),
                                     ..default()
                                 })
                                 .insert(PlayerCharacterSelectionRight(0));
@@ -251,7 +314,7 @@ pub(super) fn setup_character_selection_system(
                                     },
                                     ..Default::default()
                                 },
-                                background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
+                                background_color: Color::BLACK.with_a(0.6).into(),
                                 ..Default::default()
                             })
                             .with_children(|parent| {
@@ -265,7 +328,6 @@ pub(super) fn setup_character_selection_system(
                                             align_items: AlignItems::Center,
                                             ..default()
                                         },
-                                        background_color: Color::rgba(1.0, 0.0, 0.0, 0.5).into(),
                                         ..default()
                                     })
                                     .insert(PlayerCharacterSelectionLeft(1));
@@ -278,9 +340,9 @@ pub(super) fn setup_character_selection_system(
                                             height: Val::Percent(100.0),
                                             justify_content: JustifyContent::Center,
                                             align_items: AlignItems::Center,
+                                            flex_direction: FlexDirection::Column,
                                             ..default()
                                         },
-                                        background_color: Color::rgba(1.0, 1.0, 0.0, 0.5).into(),
                                         ..default()
                                     })
                                     .insert(PlayerCharacterSelection(1));
@@ -295,7 +357,6 @@ pub(super) fn setup_character_selection_system(
                                             align_items: AlignItems::Center,
                                             ..default()
                                         },
-                                        background_color: Color::rgba(1.0, 0.0, 0.0, 0.5).into(),
                                         ..default()
                                     })
                                     .insert(PlayerCharacterSelectionRight(1));
@@ -313,7 +374,6 @@ pub(super) fn setup_character_selection_system(
                             justify_content: JustifyContent::Center,
                             ..Default::default()
                         },
-                        background_color: Color::rgba(1.0, 0.0, 0.0, 0.05).into(), // TODO: remove
                         ..Default::default()
                     })
                     .with_children(|parent| {
@@ -334,7 +394,7 @@ pub(super) fn setup_character_selection_system(
                                     },
                                     ..Default::default()
                                 },
-                                background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
+                                background_color: Color::BLACK.with_a(0.6).into(),
                                 ..Default::default()
                             })
                             .with_children(|parent| {
@@ -348,7 +408,6 @@ pub(super) fn setup_character_selection_system(
                                             align_items: AlignItems::Center,
                                             ..default()
                                         },
-                                        background_color: Color::rgba(1.0, 0.0, 0.0, 0.5).into(),
                                         ..default()
                                     })
                                     .insert(PlayerCharacterSelectionLeft(2));
@@ -361,9 +420,9 @@ pub(super) fn setup_character_selection_system(
                                             height: Val::Percent(100.0),
                                             justify_content: JustifyContent::Center,
                                             align_items: AlignItems::Center,
+                                            flex_direction: FlexDirection::Column,
                                             ..default()
                                         },
-                                        background_color: Color::rgba(1.0, 1.0, 0.0, 0.5).into(),
                                         ..default()
                                     })
                                     .insert(PlayerCharacterSelection(2));
@@ -378,7 +437,6 @@ pub(super) fn setup_character_selection_system(
                                             align_items: AlignItems::Center,
                                             ..default()
                                         },
-                                        background_color: Color::rgba(1.0, 0.0, 0.0, 0.5).into(),
                                         ..default()
                                     })
                                     .insert(PlayerCharacterSelectionRight(2));
@@ -402,7 +460,7 @@ pub(super) fn setup_character_selection_system(
                                         },
                                         ..Default::default()
                                     },
-                                    background_color: Color::rgba(0.0, 1.0, 0.0, 0.05).into(), // TODO: remove
+                                    background_color: Color::BLACK.with_a(0.6).into(),
                                     ..Default::default()
                                 })
                                 .with_children(|parent| {
@@ -416,8 +474,6 @@ pub(super) fn setup_character_selection_system(
                                                 align_items: AlignItems::Center,
                                                 ..default()
                                             },
-                                            background_color: Color::rgba(1.0, 0.0, 0.0, 0.5)
-                                                .into(),
                                             ..default()
                                         })
                                         .insert(PlayerCharacterSelectionLeft(3));
@@ -430,10 +486,9 @@ pub(super) fn setup_character_selection_system(
                                                 height: Val::Percent(100.0),
                                                 justify_content: JustifyContent::Center,
                                                 align_items: AlignItems::Center,
+                                                flex_direction: FlexDirection::Column,
                                                 ..default()
                                             },
-                                            background_color: Color::rgba(1.0, 1.0, 0.0, 0.5)
-                                                .into(),
                                             ..default()
                                         })
                                         .insert(PlayerCharacterSelection(3));
@@ -448,8 +503,6 @@ pub(super) fn setup_character_selection_system(
                                                 align_items: AlignItems::Center,
                                                 ..default()
                                             },
-                                            background_color: Color::rgba(1.0, 0.0, 0.0, 0.5)
-                                                .into(),
                                             ..default()
                                         })
                                         .insert(PlayerCharacterSelectionRight(3));
@@ -636,6 +689,95 @@ fn update_ui_system(
             // remove the join button from the previous character selection
             if let Some((_, entity)) = prev_character_selection_ui {
                 commands.entity(entity).remove_children(&[button_entity]);
+
+                // spawn a character selection carousel
+                commands.entity(entity).with_children(|parent| {
+                    parent
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Percent(75.0),
+                                height: Val::Percent(20.0),
+                                margin: UiRect::all(Val::Px(20.0)),
+                                justify_content: JustifyContent::Center,
+                                align_items: AlignItems::Center,
+                                flex_direction: FlexDirection::Row,
+                                ..default()
+                            },
+                            ..default()
+                        })
+                        .insert(CharacterCarousel::new(*player_idx));
+
+                    parent
+                        .spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Percent(90.0),
+                                height: Val::Percent(80.0),
+                                //justify_content: JustifyContent::Center,
+                                flex_direction: FlexDirection::Column,
+                                padding: UiRect::all(Val::Px(10.0)),
+                                ..default()
+                            },
+                            ..default()
+                        })
+                        .insert(CharacterDescription(*player_idx))
+                        .with_children(|parent| {
+                            parent
+                                .spawn(TextBundle {
+                                    text: Text::from_section(
+                                        "",
+                                        TextStyle {
+                                            font: font.clone(),
+                                            font_size: 20.0,
+                                            color: Color::GOLD,
+                                        },
+                                    ),
+                                    style: Style {
+                                        width: Val::Percent(100.0),
+                                        height: Val::Percent(10.0),
+                                        ..default()
+                                    },
+                                    ..default()
+                                })
+                                .insert(CharacterName);
+
+                            parent
+                                .spawn(NodeBundle {
+                                    style: Style {
+                                        width: Val::Percent(100.0),
+                                        height: Val::Percent(90.0),
+                                        flex_direction: FlexDirection::Row,
+                                        ..default()
+                                    },
+                                    ..default()
+                                })
+                                .insert(CharacterInfo)
+                                .with_children(|parent| {
+                                    parent
+                                        .spawn(NodeBundle {
+                                            style: Style {
+                                                height: Val::Percent(100.0),
+                                                width: Val::Percent(75.0),
+                                                flex_direction: FlexDirection::Column,
+                                                ..default()
+                                            },
+                                            ..default()
+                                        })
+                                        .insert(CharacterAbilityDescriptions);
+
+                                    parent
+                                        .spawn(NodeBundle {
+                                            style: Style {
+                                                height: Val::Percent(100.0),
+                                                width: Val::Percent(25.0),
+                                                flex_direction: FlexDirection::Column,
+                                                ..default()
+                                            },
+                                            ..default()
+                                        })
+                                        .insert(CharacterStatsDescriptions);
+                                });
+                        });
+                });
             }
 
             // add the join button to the the new character selection
@@ -813,6 +955,432 @@ fn character_selection_keyboard_gamepad_system(
                     }
                     _ => {}
                 }
+            }
+        }
+    }
+}
+
+fn carousel_ui_system(
+    mut commands: Commands,
+    mut character_carousels: Query<(Entity, &mut CharacterCarousel, Option<&Children>)>,
+    mut character_descriptions: Query<(&CharacterDescription, &Children)>,
+    mut character_names: Query<&mut Text, With<CharacterName>>,
+    character_info: Query<&Children, With<CharacterInfo>>,
+    mut character_abilities: Query<Entity, With<CharacterAbilityDescriptions>>,
+    mut carousel_slots: Query<(&mut UiImage, &CharacterCarouselSlot)>,
+    player_assets: Res<PlayerAssets>,
+    mut button_reader: EventReader<ButtonActionEvent>,
+    mut players_res: ResMut<PlayersResource>,
+    characters_res: Res<CharactersResource>,
+    abilities_desc_res: Res<AbilityDescriptionsResource>,
+    ui_assets: Res<UiAssets>,
+    asset_server: Res<AssetServer>,
+) {
+    let font: Handle<Font> = asset_server.load("fonts/Lunchds.ttf");
+
+    let button_events: Vec<&ButtonActionEvent> = button_reader.read().collect();
+
+    for (entity, mut carousel, maybe_children) in character_carousels.iter_mut() {
+        let carousel_player_idx = carousel.player_idx;
+        if let Some(carousel_children) = maybe_children {
+            for button in button_events.iter().filter(|action| match action {
+                ButtonActionEvent::CharacterSelectLeft(i) => *i == carousel_player_idx,
+                ButtonActionEvent::CharacterSelectRight(i) => *i == carousel_player_idx,
+                _ => false,
+            }) {
+                // rotate the carousel if correseponding button input is detected
+                let new_characters = if let ButtonActionEvent::CharacterSelectRight(_) = button {
+                    carousel.rotate_right();
+                    Some(carousel.get_visible_characters())
+                } else if let ButtonActionEvent::CharacterSelectLeft(_) = button {
+                    carousel.rotate_left();
+                    Some(carousel.get_visible_characters())
+                } else {
+                    None
+                };
+
+                if let Some(visible_characters) = new_characters {
+                    for child in carousel_children.iter() {
+                        if let Ok((mut ui_image, slot)) = carousel_slots.get_mut(*child) {
+                            *ui_image = player_assets
+                                .get_asset(&visible_characters[slot.0 as usize])
+                                .into();
+                        }
+                    }
+
+                    if let Some(character) = characters_res.characters.get(&visible_characters[1]) {
+                        // set the character description to the middle character
+                        if let Some(children_1) =
+                            character_descriptions
+                                .iter_mut()
+                                .find_map(|(character_description, text)| {
+                                    if character_description.0 == carousel_player_idx {
+                                        Some(text)
+                                    } else {
+                                        None
+                                    }
+                                })
+                        {
+                            for child_1 in children_1.iter() {
+                                if let Ok(mut character_name_text) = character_names.get_mut(*child_1) {
+                                    character_name_text.sections[0]
+                                        .value
+                                        .clone_from(&character.name);
+                                }
+        
+                                if let Ok(children_2) = character_info.get(*child_1) {
+                                    for child_2 in children_2 {
+                                        if let Ok(entity) = character_abilities.get(*child_2) {
+
+                                            commands.entity(entity).despawn_descendants();
+
+                                            commands.entity(entity).with_children(|parent| {
+                                                if let Some(slot_1_ability_type) = &character.slot_1_ability
+                                                {
+                                                    parent
+                                                        .spawn(NodeBundle {
+                                                            style: Style {
+                                                                width: Val::Percent(100.0),
+                                                                height: Val::Percent(25.0),
+                                                                align_content: AlignContent::Center,
+                                                                flex_direction: FlexDirection::Row,
+                                                                ..default()
+                                                            },  
+                                                            ..default()
+                                                        })
+                                                        .with_children(|parent| {
+                                                            parent
+                                                                .spawn(ImageBundle {
+                                                                    image: ui_assets
+                                                                        .get_ability_slot_image(false)
+                                                                        .into(),
+                                                                    ..default()
+                                                                })
+                                                                .with_children(|parent| {
+                                                                    parent.spawn(ImageBundle {
+                                                                        image: ui_assets
+                                                                            .get_slot_1_ability_image(
+                                                                                slot_1_ability_type,
+                                                                            )
+                                                                            .into(),
+                                                                        ..default()
+                                                                    });
+                                                                });
+        
+                                                            if let Some(ability_desc) = abilities_desc_res
+                                                                .slot_one
+                                                                .get(slot_1_ability_type)
+                                                            {
+                                                                parent.spawn(TextBundle {
+                                                                    text: Text::from_section(
+                                                                        ability_desc,
+                                                                        TextStyle {
+                                                                            font: font.clone(),
+                                                                            font_size: 16.0,
+                                                                            color: Color::WHITE,
+                                                                        },
+                                                                    ),
+                                                                    style: Style {
+                                                                        margin: UiRect {
+                                                                            left: Val::Px(5.0),
+                                                                            right: Val::Px(5.0),
+                                                                            ..default()
+                                                                        },
+                                                                        ..default()
+                                                                    },
+                                                                    ..default()
+                                                                });
+                                                            }
+                                                        });
+                                                }
+        
+                                                if let Some(slot_2_ability_type) = &character.slot_2_ability
+                                                {
+                                                    parent
+                                                        .spawn(NodeBundle {
+                                                            style: Style {
+                                                                width: Val::Percent(100.0),
+                                                                height: Val::Percent(25.0),
+                                                                align_content: AlignContent::Center,
+                                                                flex_direction: FlexDirection::Row,
+                                                                ..default()
+                                                            },
+                                                            ..default()
+                                                        })
+                                                        .with_children(|parent| {
+                                                            parent
+                                                                .spawn(ImageBundle {
+                                                                    image: ui_assets
+                                                                        .get_ability_slot_image(false)
+                                                                        .into(),
+                                                                    ..default()
+                                                                })
+                                                                .with_children(|parent| {
+                                                                    parent.spawn(ImageBundle {
+                                                                        image: ui_assets
+                                                                            .get_slot_2_ability_image(
+                                                                                slot_2_ability_type,
+                                                                            )
+                                                                            .into(),
+                                                                        ..default()
+                                                                    });
+                                                                });
+        
+                                                            if let Some(ability_desc) = abilities_desc_res
+                                                                .slot_two
+                                                                .get(slot_2_ability_type)
+                                                            {
+                                                                parent.spawn(TextBundle {
+                                                                    text: Text::from_section(
+                                                                        ability_desc,
+                                                                        TextStyle {
+                                                                            font: font.clone(),
+                                                                            font_size: 16.0,
+                                                                            color: Color::WHITE,
+                                                                        },
+                                                                    ),
+                                                                    style: Style {
+                                                                        margin: UiRect {
+                                                                            left: Val::Px(5.0),
+                                                                            right: Val::Px(5.0),
+                                                                            ..default()
+                                                                        },
+                                                                        ..default()
+                                                                    },
+                                                                    ..default()
+                                                                });
+                                                            }
+                                                        });
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // set the character in the players resource to the middle visible character
+                    if let Some(Some(player_data)) = players_res
+                        .player_data
+                        .get_mut(carousel.player_idx as usize)
+                    {
+                        player_data.character = visible_characters[1];
+                    }
+                }
+            }
+        } else {
+            let visible_characters = carousel.get_visible_characters();
+
+            // spawn initial children
+            commands.entity(entity).with_children(|parent| {
+                parent
+                    .spawn(ImageBundle {
+                        image: player_assets.get_asset(&visible_characters[0]).into(),
+                        background_color: Color::rgba(0.60, 0.60, 0.60, 0.60).into(),
+                        style: Style {
+                            height: Val::Percent(80.0),
+                            margin: UiRect {
+                                left: Val::Vw(0.5),
+                                right: Val::Vw(0.5),
+                                ..default()
+                            },
+                            ..default()
+                        },
+
+                        ..default()
+                    })
+                    .insert(CharacterCarouselSlot(0));
+
+                parent
+                    .spawn(ImageBundle {
+                        image: player_assets.get_asset(&visible_characters[1]).into(),
+                        style: Style {
+                            height: Val::Percent(100.0),
+                            margin: UiRect {
+                                left: Val::Vw(0.5),
+                                right: Val::Vw(0.5),
+                                ..default()
+                            },
+                            ..default()
+                        },
+                        ..default()
+                    })
+                    .insert(CharacterCarouselSlot(1));
+
+                parent
+                    .spawn(ImageBundle {
+                        image: player_assets.get_asset(&visible_characters[2]).into(),
+                        background_color: Color::rgba(0.60, 0.60, 0.60, 0.60).into(),
+                        style: Style {
+                            height: Val::Percent(80.0),
+                            margin: UiRect {
+                                left: Val::Vw(0.5),
+                                right: Val::Vw(0.5),
+                                ..default()
+                            },
+                            ..default()
+                        },
+                        ..default()
+                    })
+                    .insert(CharacterCarouselSlot(2));
+            });
+
+            if let Some(character) = characters_res.characters.get(&visible_characters[1]) {
+                // set the character description to the middle character
+                if let Some(children_1) =
+                    character_descriptions
+                        .iter_mut()
+                        .find_map(|(character_description, text)| {
+                            if character_description.0 == carousel_player_idx {
+                                Some(text)
+                            } else {
+                                None
+                            }
+                        })
+                {
+                    for child_1 in children_1.iter() {
+                        if let Ok(mut character_name_text) = character_names.get_mut(*child_1) {
+                            character_name_text.sections[0]
+                                .value
+                                .clone_from(&character.name);
+                        }
+
+                        if let Ok(children_2) = character_info.get(*child_1) {
+                            for child_2 in children_2 {
+                                if let Ok(entity) = character_abilities.get(*child_2) {
+                                    commands.entity(entity).with_children(|parent| {
+                                        if let Some(slot_1_ability_type) = &character.slot_1_ability
+                                        {
+                                            parent
+                                                .spawn(NodeBundle {
+                                                    style: Style {
+                                                        width: Val::Percent(100.0),
+                                                        height: Val::Percent(25.0),
+                                                        align_content: AlignContent::Center,
+                                                        flex_direction: FlexDirection::Row,
+                                                        ..default()
+                                                    },
+                                                    ..default()
+                                                })
+                                                .with_children(|parent| {
+                                                    parent
+                                                        .spawn(ImageBundle {
+                                                            image: ui_assets
+                                                                .get_ability_slot_image(false)
+                                                                .into(),
+                                                            ..default()
+                                                        })
+                                                        .with_children(|parent| {
+                                                            parent.spawn(ImageBundle {
+                                                                image: ui_assets
+                                                                    .get_slot_1_ability_image(
+                                                                        slot_1_ability_type,
+                                                                    )
+                                                                    .into(),
+                                                                ..default()
+                                                            });
+                                                        });
+
+                                                    if let Some(ability_desc) = abilities_desc_res
+                                                        .slot_one
+                                                        .get(slot_1_ability_type)
+                                                    {
+                                                        parent.spawn(TextBundle {
+                                                            text: Text::from_section(
+                                                                ability_desc,
+                                                                TextStyle {
+                                                                    font: font.clone(),
+                                                                    font_size: 16.0,
+                                                                    color: Color::WHITE,
+                                                                },
+                                                            ),
+                                                            style: Style {
+                                                                margin: UiRect {
+                                                                    left: Val::Px(5.0),
+                                                                    right: Val::Px(5.0),
+                                                                    ..default()
+                                                                },
+                                                                ..default()
+                                                            },
+                                                            ..default()
+                                                        });
+                                                    }
+                                                });
+                                        }
+
+                                        if let Some(slot_2_ability_type) = &character.slot_2_ability
+                                        {
+                                            parent
+                                                .spawn(NodeBundle {
+                                                    style: Style {
+                                                        width: Val::Percent(100.0),
+                                                        height: Val::Percent(25.0),
+                                                        align_content: AlignContent::Center,
+                                                        flex_direction: FlexDirection::Row,
+                                                        ..default()
+                                                    },
+                                                    ..default()
+                                                })
+                                                .with_children(|parent| {
+                                                    parent
+                                                        .spawn(ImageBundle {
+                                                            image: ui_assets
+                                                                .get_ability_slot_image(false)
+                                                                .into(),
+                                                            ..default()
+                                                        })
+                                                        .with_children(|parent| {
+                                                            parent.spawn(ImageBundle {
+                                                                image: ui_assets
+                                                                    .get_slot_2_ability_image(
+                                                                        slot_2_ability_type,
+                                                                    )
+                                                                    .into(),
+                                                                ..default()
+                                                            });
+                                                        });
+
+                                                    if let Some(ability_desc) = abilities_desc_res
+                                                        .slot_two
+                                                        .get(slot_2_ability_type)
+                                                    {
+                                                        parent.spawn(TextBundle {
+                                                            text: Text::from_section(
+                                                                ability_desc,
+                                                                TextStyle {
+                                                                    font: font.clone(),
+                                                                    font_size: 16.0,
+                                                                    color: Color::WHITE,
+                                                                },
+                                                            ),
+                                                            style: Style {
+                                                                margin: UiRect {
+                                                                    left: Val::Px(5.0),
+                                                                    right: Val::Px(5.0),
+                                                                    ..default()
+                                                                },
+                                                                ..default()
+                                                            },
+                                                            ..default()
+                                                        });
+                                                    }
+                                                });
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // set the character in the players resource to the middle visible character
+            if let Some(Some(player_data)) = players_res
+                .player_data
+                .get_mut(carousel.player_idx as usize)
+            {
+                player_data.character = visible_characters[1];
             }
         }
     }

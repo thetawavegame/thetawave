@@ -1,5 +1,9 @@
+use std::{collections::VecDeque, default};
+
 use bevy_math::Vec2;
 use serde::Deserialize;
+use strum::IntoEnumIterator;
+use strum_macros::EnumIter;
 
 use crate::{
     abilities::{SlotOneAbilityType, SlotTwoAbilityType},
@@ -8,10 +12,17 @@ use crate::{
 };
 
 /// The playable character types. To a player, these will have different appearances and abilities.
-#[derive(Deserialize, Clone, Debug, Hash, PartialEq, Eq)]
+#[derive(Deserialize, Clone, Debug, Hash, PartialEq, Eq, EnumIter, Default, Copy)]
 pub enum CharacterType {
+    #[default]
     Captain,
     Juggernaut,
+}
+
+impl CharacterType {
+    pub fn to_vec() -> VecDeque<CharacterType> {
+        CharacterType::iter().collect()
+    }
 }
 
 /// Contains data necessary to create a player entity.
@@ -20,6 +31,8 @@ pub enum CharacterType {
 /// Other data such as sprite sheets are also included with the character.
 #[derive(Deserialize, Clone)]
 pub struct Character {
+    /// Name of the character
+    pub name: String,
     /// Base acceleration
     pub acceleration: Vec2,
     /// Base deceleration

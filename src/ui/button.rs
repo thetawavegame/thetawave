@@ -106,7 +106,7 @@ impl ButtonActionComponent {
                 ..default()
             },
             Self::CharacterSelectLeft(_) | Self::CharacterSelectRight(_) => Style {
-                height: Val::Percent(15.0),
+                height: Val::Percent(10.0),
                 ..default()
             },
         }

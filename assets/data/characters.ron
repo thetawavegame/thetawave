@@ -1,6 +1,7 @@
 (
 	characters: {
 		Captain: (
+			name: "Captain",
 			acceleration: (25.0, 25.0),
 			deceleration: (10.0, 10.0),
 			speed: (300.0, 300.0),
@@ -27,6 +28,7 @@
 			slot_2_ability: Some(MegaBlast),
 		),
 		Juggernaut: (
+			name: "Juggernaut",
 			acceleration: (25.0, 25.0),
 			deceleration: (10.0, 10.0),
 			speed: (250.0, 250.0),
