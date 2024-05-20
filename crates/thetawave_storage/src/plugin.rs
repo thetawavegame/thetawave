@@ -171,7 +171,7 @@ mod test {
     }
 
     fn set_dummy_terminal_game_state(mut s: ResMut<NextState<AppStates>>) {
-        (*s).set(AppStates::Instructions);
+        (*s).set(AppStates::CharacterSelection);
     }
 
     fn clear_completed_games_metrics(

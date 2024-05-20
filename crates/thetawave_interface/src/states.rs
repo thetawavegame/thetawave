@@ -14,7 +14,6 @@ pub enum AppStates {
     #[default]
     LoadingAssets,
     MainMenu,
-    Instructions,
     CharacterSelection,
     InitializeRun,
     Game,
@@ -43,9 +42,6 @@ pub struct VictoryCleanup;
 
 #[derive(Component)]
 pub struct PauseCleanup;
-
-#[derive(Component)]
-pub struct InstructionsCleanup;
 
 #[derive(Component)]
 pub struct CharacterSelectionCleanup;

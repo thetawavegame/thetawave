@@ -13,4 +13,13 @@
         rows: 2,
     ),
     "thetawave_menu_button.image": File( path: "texture/menu_button_spritesheet.png"),
+    "ability_icon.mega_blast": File( path: "texture/megablast_ability.png"),
+    "ability_icon.charge": File( path: "texture/charge_ability.png"),
+    "ability_icon.standard_blast": File( path: "texture/blast_ability.png"),
+    "ability_icon.standard_bullet": File ( path: "texture/bullet_ability.png"),
+    "ability_slot.left": File ( path: "texture/ability_square_left.png"),
+    "ability_slot.right": File ( path: "texture/ability_square_right.png"),
+    "font.wibletown": File (path: "fonts/wibletown-regular.otf"),
+    "warning_gradient": File( path: "texture/warning_gradient.png"),
+    "defense_gradient": File( path: "texture/defense_gradient.png"),
 })

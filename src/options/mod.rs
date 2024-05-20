@@ -45,7 +45,7 @@ pub struct GameInitCLIOptions {
     /// 'EXECUTABLE_DIR/assets/' or 'CARGO_MANIFEST_DIR/assets'.
     pub assets_dir: Option<PathBuf>,
     #[cfg_attr(
-        all(not(target_arch = "wasm32"), feature = "arcade"),
+        all(not(target_arch = "wasm32"), feature = "cli", feature = "arcade"),
         argh(switch, short = 'a')
     )]
     /// whether to use instructions, serial port IO, etc. specific to deploying on an arcade

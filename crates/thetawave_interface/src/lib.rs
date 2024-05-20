@@ -1,3 +1,4 @@
+pub mod abilities;
 pub mod animation;
 pub mod audio;
 pub mod camera;
