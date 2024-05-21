@@ -278,7 +278,7 @@ pub(super) fn setup_character_selection_system(
                                     .spawn(NodeBundle {
                                         style: Style {
                                             width: Val::Percent(100.0),
-                                            height: Val::Percent(85.0),
+                                            height: Val::Percent(80.0),
                                             justify_content: JustifyContent::Center,
                                             align_items: AlignItems::Center,
                                             flex_direction: FlexDirection::Column,
@@ -299,7 +299,7 @@ pub(super) fn setup_character_selection_system(
                                     parent.spawn(NodeBundle {
                                         style: Style{
                                             width: Val::Percent(100.0),
-                                            height: Val::Percent(15.0),
+                                            height: Val::Percent(20.0),
                                             ..default()
                                         },
                                         background_color: Color::YELLOW.with_a(0.5).into(),
@@ -376,7 +376,7 @@ pub(super) fn setup_character_selection_system(
                                 .spawn(NodeBundle {
                                     style: Style {
                                         width: Val::Percent(100.0),
-                                        height: Val::Percent(85.0),
+                                        height: Val::Percent(80.0),
                                         justify_content: JustifyContent::Center,
                                         align_items: AlignItems::Center,
                                         flex_direction: FlexDirection::Column,
@@ -389,7 +389,7 @@ pub(super) fn setup_character_selection_system(
                                 parent.spawn(NodeBundle {
                                     style: Style{
                                         width: Val::Percent(100.0),
-                                        height: Val::Percent(15.0),
+                                        height: Val::Percent(20.0),
                                         ..default()
                                     },
                                     background_color: Color::YELLOW.with_a(0.5).into(),
@@ -479,7 +479,7 @@ pub(super) fn setup_character_selection_system(
                                 .spawn(NodeBundle {
                                     style: Style {
                                         width: Val::Percent(100.0),
-                                        height: Val::Percent(85.0),
+                                        height: Val::Percent(80.0),
                                         justify_content: JustifyContent::Center,
                                         align_items: AlignItems::Center,
                                         flex_direction: FlexDirection::Column,
@@ -492,7 +492,7 @@ pub(super) fn setup_character_selection_system(
                                 parent.spawn(NodeBundle {
                                     style: Style{
                                         width: Val::Percent(100.0),
-                                        height: Val::Percent(15.0),
+                                        height: Val::Percent(20.0),
                                         ..default()
                                     },
                                     background_color: Color::YELLOW.with_a(0.5).into(),
@@ -568,7 +568,7 @@ pub(super) fn setup_character_selection_system(
                                 .spawn(NodeBundle {
                                     style: Style {
                                         width: Val::Percent(100.0),
-                                        height: Val::Percent(85.0),
+                                        height: Val::Percent(80.0),
                                         justify_content: JustifyContent::Center,
                                         align_items: AlignItems::Center,
                                         flex_direction: FlexDirection::Column,
@@ -581,7 +581,7 @@ pub(super) fn setup_character_selection_system(
                                 parent.spawn(NodeBundle {
                                     style: Style{
                                         width: Val::Percent(100.0),
-                                        height: Val::Percent(15.0),
+                                        height: Val::Percent(20.0),
                                         ..default()
                                     },
                                     background_color: Color::YELLOW.with_a(0.5).into(),
@@ -1257,7 +1257,7 @@ fn carousel_ui_system(
                                                 parent.spawn(NodeBundle {
                                                     style: Style {
                                                         width: Val::Percent(100.0),
-                                                        height: Val::Percent(10.0),
+                                                        height: Val::Percent(12.0),
                                                         flex_direction: FlexDirection::Row,
                                                         ..default()
                                                     },
@@ -1298,7 +1298,7 @@ fn carousel_ui_system(
                                                 parent.spawn(NodeBundle {
                                                     style: Style {
                                                         width: Val::Percent(100.0),
-                                                        height: Val::Percent(10.0),
+                                                        height: Val::Percent(12.0),
                                                         flex_direction: FlexDirection::Row,
                                                         ..default()
                                                     },
@@ -1339,7 +1339,7 @@ fn carousel_ui_system(
                                                 parent.spawn(NodeBundle {
                                                     style: Style {
                                                         width: Val::Percent(100.0),
-                                                        height: Val::Percent(10.0),
+                                                        height: Val::Percent(12.0),
                                                         align_content: AlignContent::Center,
                                                         flex_direction: FlexDirection::Row,
                                                         ..default()
@@ -1381,7 +1381,7 @@ fn carousel_ui_system(
                                                 parent.spawn(NodeBundle {
                                                     style: Style {
                                                         width: Val::Percent(100.0),
-                                                        height: Val::Percent(10.0),
+                                                        height: Val::Percent(12.0),
                                                         align_content: AlignContent::Center,
                                                         flex_direction: FlexDirection::Row,
                                                         ..default()
@@ -1423,7 +1423,7 @@ fn carousel_ui_system(
                                                 parent.spawn(NodeBundle {
                                                     style: Style {
                                                         width: Val::Percent(100.0),
-                                                        height: Val::Percent(10.0),
+                                                        height: Val::Percent(12.0),
                                                         align_content: AlignContent::Center,
                                                         flex_direction: FlexDirection::Row,
                                                         ..default()
@@ -1465,7 +1465,7 @@ fn carousel_ui_system(
                                                 parent.spawn(NodeBundle {
                                                     style: Style {
                                                         width: Val::Percent(100.0),
-                                                        height: Val::Percent(10.0),
+                                                        height: Val::Percent(12.0),
                                                         align_content: AlignContent::Center,
                                                         flex_direction: FlexDirection::Row,
                                                         ..default()
@@ -1723,7 +1723,7 @@ fn carousel_ui_system(
                                         parent.spawn(NodeBundle {
                                             style: Style {
                                                 width: Val::Percent(100.0),
-                                                height: Val::Percent(10.0),
+                                                height: Val::Percent(12.0),
                                                 flex_direction: FlexDirection::Row,
                                                 ..default()
                                             },
@@ -1764,7 +1764,7 @@ fn carousel_ui_system(
                                         parent.spawn(NodeBundle {
                                             style: Style {
                                                 width: Val::Percent(100.0),
-                                                height: Val::Percent(10.0),
+                                                height: Val::Percent(12.0),
                                                 flex_direction: FlexDirection::Row,
                                                 ..default()
                                             },
@@ -1805,7 +1805,7 @@ fn carousel_ui_system(
                                         parent.spawn(NodeBundle {
                                             style: Style {
                                                 width: Val::Percent(100.0),
-                                                height: Val::Percent(10.0),
+                                                height: Val::Percent(12.0),
                                                 align_content: AlignContent::Center,
                                                 flex_direction: FlexDirection::Row,
                                                 ..default()
@@ -1847,7 +1847,7 @@ fn carousel_ui_system(
                                         parent.spawn(NodeBundle {
                                             style: Style {
                                                 width: Val::Percent(100.0),
-                                                height: Val::Percent(10.0),
+                                                height: Val::Percent(12.0),
                                                 align_content: AlignContent::Center,
                                                 flex_direction: FlexDirection::Row,
                                                 ..default()
@@ -1889,7 +1889,7 @@ fn carousel_ui_system(
                                         parent.spawn(NodeBundle {
                                             style: Style {
                                                 width: Val::Percent(100.0),
-                                                height: Val::Percent(10.0),
+                                                height: Val::Percent(12.0),
                                                 align_content: AlignContent::Center,
                                                 flex_direction: FlexDirection::Row,
                                                 ..default()
@@ -1931,7 +1931,7 @@ fn carousel_ui_system(
                                         parent.spawn(NodeBundle {
                                             style: Style {
                                                 width: Val::Percent(100.0),
-                                                height: Val::Percent(10.0),
+                                                height: Val::Percent(12.0),
                                                 align_content: AlignContent::Center,
                                                 flex_direction: FlexDirection::Row,
                                                 ..default()
