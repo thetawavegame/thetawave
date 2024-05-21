@@ -57,4 +57,10 @@
         rows: 2,
     ),
     "keyboard_key_return.image": File(path: "texture/keyboard_key_return.png"),
+    "stat_icon.damage": File( path: "texture/damage_icon.png"),
+    "stat_icon.health": File( path: "texture/health_icon.png"),
+    "stat_icon.size": File( path: "texture/size_icon.png"),
+    "stat_icon.range": File( path: "texture/range_icon.png"),
+    "stat_icon.fire_rate": File( path: "texture/fire_rate_icon.png"),
+    "stat_icon.speed": File( path: "texture/speed_icon.png"),
 })

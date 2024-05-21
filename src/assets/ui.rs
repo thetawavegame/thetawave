@@ -54,6 +54,18 @@ pub struct UiAssets {
     pub warning_gradient: Handle<Image>,
     #[asset(key = "defense_gradient")]
     pub defense_gradient: Handle<Image>,
+    #[asset(key = "stat_icon.damage")]
+    pub damage_icon: Handle<Image>,
+    #[asset(key = "stat_icon.speed")]
+    pub speed_icon: Handle<Image>,
+    #[asset(key = "stat_icon.range")]
+    pub range_icon: Handle<Image>,
+    #[asset(key = "stat_icon.size")]
+    pub size_icon: Handle<Image>,
+    #[asset(key = "stat_icon.fire_rate")]
+    pub fire_rate_icon: Handle<Image>,
+    #[asset(key = "stat_icon.health")]
+    pub health_icon: Handle<Image>,
 }
 
 impl UiAssets {
