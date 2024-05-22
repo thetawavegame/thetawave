@@ -3,10 +3,9 @@ use bevy::{
     asset::Handle,
     ecs::{
         component::Component,
-        entity::Entity,
         event::{Event, EventReader, EventWriter},
         schedule::NextState,
-        system::{EntityCommands, ResMut},
+        system::ResMut,
     },
     hierarchy::{BuildChildren, ChildBuilder},
     log::info,
@@ -22,17 +21,6 @@ use bevy::{
 use thetawave_interface::{player::PlayerInput, states::AppStates};
 
 use crate::assets::UiAssets;
-
-const BUTTON_WIDTH: Val = Val::Percent(25.0);
-const BUTTON_MAX_WIDTH: Val = Val::Px(500.0);
-const BUTTON_MIN_WIDTH: Val = Val::Px(200.0);
-const BUTTON_MARGIN: UiRect =
-    UiRect::new(Val::Auto, Val::Auto, Val::Percent(1.0), Val::Percent(1.0));
-const BUTTON_ASPECT_RATIO: Option<f32> = Some(160.0 / 34.0);
-const BUTTON_TEXTURE_PADDING: UiRect =
-    UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(5.0), Val::ZERO);
-const BUTTON_TEXTURE_PADDING_HOVERED: UiRect =
-    UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(8.5), Val::ZERO);
 
 /// Event and Component for giving and sending menu buttons actions to move the user from
 /// `AppStates::MainMenu` to `AppStates::CharacterSelection`, plus possibly a few digressions and
@@ -54,7 +42,7 @@ pub type ButtonActionEvent = ButtonActionComponent;
 impl ButtonActionComponent {
     /// The label that will show on the main menu screen for the button representing this
     /// option/action
-    pub fn in_game_text(&self) -> Option<&'static str> {
+    pub fn text(&self) -> Option<&'static str> {
         match self {
             Self::EnterCharacterSelection => Some("Start Game"),
             Self::EnterOptions => Some("Options"),
@@ -67,10 +55,11 @@ impl ButtonActionComponent {
         }
     }
 
+    /// Get input button animations to show on the button
     pub fn inputs(
         &self,
         ui_assets: &UiAssets,
-        player_input: Option<PlayerInput>,
+        player_input: Option<PlayerInput>, // optional input method (keyboard/gamepad) of the player that the button belongs to
     ) -> Option<Vec<(Handle<Image>, Handle<TextureAtlasLayout>)>> {
         match self {
             Self::CharacterSelectJoin => Some(vec![
@@ -83,46 +72,44 @@ impl ButtonActionComponent {
                     ui_assets.keyboard_key_return_layout.clone(),
                 ),
             ]),
-            Self::CharacterSelectReady(_) => {
-                if let Some(player_input) = player_input {
-                    Some(vec![
-                        (match player_input {
-                            PlayerInput::Keyboard => (
-                                ui_assets.keyboard_key_return_image.clone(),
-                                ui_assets.keyboard_key_return_layout.clone(),
-                            ),
-                            PlayerInput::Gamepad(_) => (
-                                ui_assets.gamepad_button_a_image.clone(),
-                                ui_assets.gamepad_button_a_layout.clone(),
-                            ),
-                        }),
-                    ])
-                } else {
-                    None
-                }
-            }
+            Self::CharacterSelectReady(_) => player_input.map(|player_input| {
+                vec![
+                    (match player_input {
+                        PlayerInput::Keyboard => (
+                            ui_assets.keyboard_key_return_image.clone(),
+                            ui_assets.keyboard_key_return_layout.clone(),
+                        ),
+                        PlayerInput::Gamepad(_) => (
+                            ui_assets.gamepad_button_a_image.clone(),
+                            ui_assets.gamepad_button_a_layout.clone(),
+                        ),
+                    }),
+                ]
+            }),
             _ => None,
         }
     }
 
+    /// External style applied to buttons
+    /// Returns different styles based the based on the button action
     fn external_style(&self) -> Style {
         match self {
             Self::EnterCharacterSelection
             | Self::EnterOptions
             | Self::EnterCompendium
             | Self::QuitGame => Style {
-                max_width: BUTTON_MAX_WIDTH,
-                width: BUTTON_WIDTH,
-                min_width: BUTTON_MIN_WIDTH,
-                aspect_ratio: BUTTON_ASPECT_RATIO,
-                margin: BUTTON_MARGIN,
+                max_width: Val::Px(500.0),
+                width: Val::Percent(25.0),
+                min_width: Val::Px(200.0),
+                aspect_ratio: Some(160.0 / 34.0),
+                margin: UiRect::new(Val::Auto, Val::Auto, Val::Percent(1.0), Val::Percent(1.0)),
                 ..default()
             },
             Self::CharacterSelectJoin => Style {
                 max_width: Val::Px(500.0),
                 width: Val::Percent(100.0),
                 min_width: Val::Px(200.0),
-                aspect_ratio: Some(2.0779221),
+                aspect_ratio: Some(2.077_922),
                 margin: UiRect::new(Val::Auto, Val::Auto, Val::Percent(1.0), Val::Percent(1.0)),
                 ..default()
             },
@@ -132,14 +119,16 @@ impl ButtonActionComponent {
             },
             Self::CharacterSelectReady(_) => Style {
                 max_width: Val::Px(500.0),
-                width: Val::Percent(100.0),
-                min_width: Val::Px(200.0),
+                width: Val::Percent(85.0),
+                min_width: Val::Px(300.0),
                 margin: UiRect::new(Val::Auto, Val::Auto, Val::Percent(1.0), Val::Percent(1.0)),
                 ..default()
             },
         }
     }
 
+    /// Internal style of the ui inside of the button
+    /// such as the text and the input symbols
     fn internal_style(&self) -> Style {
         match self {
             Self::EnterCharacterSelection
@@ -152,11 +141,11 @@ impl ButtonActionComponent {
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 flex_direction: FlexDirection::Column,
-                padding: BUTTON_TEXTURE_PADDING,
+                padding: UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(5.0), Val::ZERO),
                 ..default()
             },
             Self::CharacterSelectLeft(_) | Self::CharacterSelectRight(_) => Style {
-                padding: BUTTON_TEXTURE_PADDING,
+                padding: UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(5.0), Val::ZERO),
                 ..default()
             },
             Self::CharacterSelectReady(_) => Style {
@@ -165,12 +154,13 @@ impl ButtonActionComponent {
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 flex_direction: FlexDirection::Row,
-                padding: BUTTON_TEXTURE_PADDING,
+                padding: UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(5.0), Val::ZERO),
                 ..default()
             },
         }
     }
 
+    /// Get image and texture atlas assets based on the button action
     fn asset(&self, ui_assets: &UiAssets) -> (Handle<Image>, Handle<TextureAtlasLayout>) {
         match self {
             Self::EnterCharacterSelection
@@ -200,9 +190,9 @@ impl ButtonActionComponent {
     }
 }
 
-// Handles actions for menu buttons, changeing states, quitting. This runs when a user actually
+// Handles state changes for buttons. This runs when a user actually
 // clicks/whacks enter on a button in the main menu
-pub fn button_on_click_system(
+pub fn button_action_change_state_system(
     mut button_event_reader: EventReader<ButtonActionEvent>,
     mut next_app_state: ResMut<NextState<AppStates>>,
     mut exit: EventWriter<AppExit>,
@@ -217,16 +207,7 @@ pub fn button_on_click_system(
             ButtonActionComponent::QuitGame => {
                 exit.send(AppExit);
             }
-            ButtonActionComponent::CharacterSelectRight(i) => {
-                info!("Player {} character selection right.", i + 1)
-            }
-            ButtonActionComponent::CharacterSelectLeft(i) => {
-                info!("Player {} character selection left.", i + 1)
-            }
-            ButtonActionComponent::CharacterSelectJoin => info!("Character selection join."),
-            ButtonActionComponent::CharacterSelectReady(i) => {
-                info!("Player {} ready.", i + 1)
-            }
+            _ => {}
         }
     }
 }
@@ -269,7 +250,7 @@ impl UiButtonChildBuilderExt for ChildBuilder<'_> {
                     ..default()
                 })
                 .with_children(|parent| {
-                    if let Some(text) = action.in_game_text() {
+                    if let Some(text) = action.text() {
                         parent.spawn(
                             TextBundle::from_section(
                                 text,
@@ -279,8 +260,7 @@ impl UiButtonChildBuilderExt for ChildBuilder<'_> {
                                     color: Color::BLACK,
                                 },
                             )
-                            .with_text_justify(JustifyText::Center)
-                            .with_background_color(Color::BLUE.with_a(0.3)), // TODO: remove after testing
+                            .with_text_justify(JustifyText::Center),
                         );
                     }
 
@@ -295,7 +275,6 @@ impl UiButtonChildBuilderExt for ChildBuilder<'_> {
                                     margin: UiRect::top(Val::Vh(1.0)),
                                     ..default()
                                 },
-                                background_color: Color::GREEN.with_a(0.3).into(),
                                 ..default()
                             })
                             .with_children(|parent| {
