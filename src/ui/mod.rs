@@ -1,10 +1,9 @@
 //! Exposes a plugin that handles layout, rendering, and styling for each of the major game states.
 use bevy::{
     app::{App, Plugin, Update},
-    ecs::schedule::{common_conditions::in_state, OnEnter},
-    prelude::{Component, IntoSystemConfigs, Query, Res, Time, Timer, Transform},
+    ecs::schedule::OnEnter,
+    prelude::{Component, Query, Res, Time, Timer, Transform},
 };
-use thetawave_interface::character_selection::PlayerJoinEvent;
 use thetawave_interface::game::historical_metrics::{MobsKilledByPlayerCacheT, DEFAULT_USER_ID};
 
 use thetawave_interface::states;
@@ -19,9 +18,7 @@ mod victory;
 
 use self::{
     button::{button_action_change_state_system, ButtonActionEvent},
-    character_selection::{
-        select_character_system, setup_character_selection_system, CharacterSelectionPlugin,
-    },
+    character_selection::CharacterSelectionPlugin,
     game::GameUiPlugin,
     game_over::setup_game_over_system,
     main_menu::MainMenuUIPlugin,

@@ -9,35 +9,22 @@ use crate::{
     player::CharactersResource,
 };
 
-use super::{
-    button::{self, ButtonActionComponent, ButtonActionEvent, UiButtonChildBuilderExt},
-    BouncingPromptComponent,
-};
+use super::button::{ButtonActionComponent, ButtonActionEvent, UiButtonChildBuilderExt};
 use bevy::{
-    a11y::accesskit::TextAlign,
     app::{App, Plugin, Update},
-    asset::{Asset, AssetServer, Handle},
+    asset::{AssetServer, Handle},
     ecs::{
-        component::Component,
-        entity::Entity,
-        event::{EventReader, EventWriter},
-        query::{Changed, With},
-        schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter},
-        system::{Commands, Local, ParamSet, Query, Res, ResMut},
+        component::Component, entity::Entity, event::{EventReader, EventWriter}, query::With, schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter}, system::{Commands, Local, Query, Res, ResMut}
     },
     hierarchy::{BuildChildren, Children, DespawnRecursiveExt},
     input::gamepad::{Gamepad, GamepadButtonChangedEvent},
-    log::info,
-    math::Vec2,
-    render::{color::Color, render_graph::Node, texture::Image, view::Visibility},
-    sprite::TextureAtlas,
-    text::{Font, JustifyText, Text, TextLayoutInfo, TextSection, TextStyle},
-    time::{Timer, TimerMode},
+    render::color::Color,
+    text::{Font, Text, TextStyle},
     ui::{
         node_bundles::{ImageBundle, NodeBundle, TextBundle},
-        widget::{Button, UiImageSize},
-        AlignContent, AlignItems, AlignSelf, BackgroundColor, Display, FlexDirection, Interaction,
-        JustifyContent, JustifySelf, Style, UiImage, UiRect, Val,
+        widget::Button,
+        AlignContent, AlignItems, AlignSelf, FlexDirection, Interaction,
+        JustifyContent, Style, UiImage, UiRect, Val,
     },
     utils::default,
 };
@@ -45,7 +32,7 @@ use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
 use thetawave_interface::{
     abilities::AbilityDescriptionsResource,
     audio::PlaySoundEffectEvent,
-    character::{self, CharacterStatType},
+    character::CharacterStatType,
     input::{InputsResource, MainMenuExplorer, MenuAction, MenuExplorer},
     states::{self, AppStates},
 };
@@ -84,9 +71,6 @@ impl Plugin for CharacterSelectionPlugin {
     }
 }
 
-#[derive(Component)]
-pub(super) struct PlayerJoinPrompt;
-
 #[derive(Component, Debug)]
 pub(super) struct PlayerCharacterSelection(u8);
 
@@ -95,27 +79,6 @@ struct PlayerCharacterSelectionRight(u8);
 
 #[derive(Component)]
 struct PlayerCharacterSelectionLeft(u8);
-
-#[derive(Component)]
-pub(super) struct Player2JoinPrompt;
-
-#[derive(Component)]
-pub(super) struct Player2CharacterSelection;
-
-#[derive(Component)]
-pub(super) struct CharacterSelectionChoice {
-    pub character: CharacterType,
-    pub is_active: bool,
-}
-
-#[derive(Component)]
-pub(super) struct Player1Description;
-
-#[derive(Component)]
-pub(super) struct Player2Description;
-
-#[derive(Component)]
-pub(super) struct StartGamePrompt;
 
 #[derive(Component)]
 struct CharacterCarousel {
@@ -602,25 +565,6 @@ pub(super) fn setup_character_selection_system(
         });
 }
 
-// handle the character selection for each player
-pub(super) fn select_character_system(
-    menu_input_query: Query<&ActionState<MenuAction>, With<MainMenuExplorer>>,
-    mut gamepad_events: EventReader<GamepadButtonChangedEvent>,
-    mut players_resource: ResMut<PlayersResource>,
-    player_1_selection: Query<&Children, With<PlayerCharacterSelection>>,
-
-    mut character_description_queries: ParamSet<(
-        Query<(&mut Style, &CharacterDescription), With<Player1Description>>,
-        Query<(&mut Style, &CharacterDescription), With<Player2Description>>,
-    )>,
-    mut selection_choice: Query<(
-        &mut CharacterSelectionChoice,
-        &mut BouncingPromptComponent,
-        &mut BackgroundColor,
-    )>,
-) {
-}
-
 fn player_join_system(
     button_mouse_movements: Query<(&ButtonActionComponent, &Interaction, Entity), With<Button>>,
     menu_explorer_query: Query<&ActionState<MenuAction>, With<MainMenuExplorer>>,
@@ -881,11 +825,11 @@ fn update_ui_system(
             // spawn right and left arrow buttons for the previous character selection
             let prev_character_selection_right_arrow_ui = character_selection_right
                 .iter()
-                .find(|x| x.0 .0 == *player_idx as u8);
+                .find(|x| x.0 .0 == *player_idx );
 
             let prev_character_selection_left_arrow_ui = character_selection_left
                 .iter()
-                .find(|x| x.0 .0 == *player_idx as u8);
+                .find(|x| x.0 .0 == *player_idx);
 
             let player_ready_node = player_ready.iter().find(|x | x.0.0 == *player_idx);
 
@@ -894,7 +838,7 @@ fn update_ui_system(
                     parent.spawn_button(
                         &ui_assets,
                         font.clone(),
-                        ButtonActionComponent::CharacterSelectRight(*player_idx as u8),
+                        ButtonActionComponent::CharacterSelectRight(*player_idx),
                         None,
                     )
                 });
@@ -905,7 +849,7 @@ fn update_ui_system(
                     parent.spawn_button(
                         &ui_assets,
                         font.clone(),
-                        ButtonActionComponent::CharacterSelectLeft(*player_idx as u8),
+                        ButtonActionComponent::CharacterSelectLeft(*player_idx),
                         None,
                     )
                 });
@@ -934,7 +878,7 @@ fn update_ui_system(
                     action_state: ActionState::default(),
                     input_map,
                 })
-                .insert(MenuExplorer(*player_idx as u8));
+                .insert(MenuExplorer(*player_idx));
         }
     }
 }
