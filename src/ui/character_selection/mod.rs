@@ -270,7 +270,6 @@ pub(super) fn setup_character_selection_system(
                                     align_items: AlignItems::Center,
                                     ..default()
                                 },
-                                background_color: Color::BLUE.with_a(0.5).into(),
                                 ..default()
                             }).with_children(|parent| {
 
@@ -293,6 +292,7 @@ pub(super) fn setup_character_selection_system(
                                             &ui_assets,
                                             font.clone(),
                                             ButtonActionComponent::CharacterSelectJoin,
+                                            None,
                                         );
                                     });
                                     
@@ -302,7 +302,6 @@ pub(super) fn setup_character_selection_system(
                                             height: Val::Percent(20.0),
                                             ..default()
                                         },
-                                        background_color: Color::YELLOW.with_a(0.5).into(),
                                     ..default()
                                 }).insert(PlayerReadyNode(0));
                             });
@@ -368,7 +367,6 @@ pub(super) fn setup_character_selection_system(
                                 align_items: AlignItems::Center,
                                 ..default()
                             },
-                            background_color: Color::BLUE.with_a(0.5).into(),
                             ..default()
                         }).with_children(|parent| {
 
@@ -392,7 +390,6 @@ pub(super) fn setup_character_selection_system(
                                         height: Val::Percent(20.0),
                                         ..default()
                                     },
-                                    background_color: Color::YELLOW.with_a(0.5).into(),
                                 ..default()
                             }).insert(PlayerReadyNode(1));
                         });
@@ -471,7 +468,6 @@ pub(super) fn setup_character_selection_system(
                                 align_items: AlignItems::Center,
                                 ..default()
                             },
-                            background_color: Color::BLUE.with_a(0.5).into(),
                             ..default()
                         }).with_children(|parent| {
 
@@ -495,7 +491,6 @@ pub(super) fn setup_character_selection_system(
                                         height: Val::Percent(20.0),
                                         ..default()
                                     },
-                                    background_color: Color::YELLOW.with_a(0.5).into(),
                                 ..default()
                             }).insert(PlayerReadyNode(2));
                         });
@@ -560,7 +555,6 @@ pub(super) fn setup_character_selection_system(
                                 align_items: AlignItems::Center,
                                 ..default()
                             },
-                            background_color: Color::BLUE.with_a(0.5).into(),
                             ..default()
                         }).with_children(|parent| {
 
@@ -584,7 +578,6 @@ pub(super) fn setup_character_selection_system(
                                         height: Val::Percent(20.0),
                                         ..default()
                                     },
-                                    background_color: Color::YELLOW.with_a(0.5).into(),
                                 ..default()
                             }).insert(PlayerReadyNode(3));
                         });
@@ -761,6 +754,7 @@ fn update_ui_system(
     character_selection_center: Query<(&PlayerCharacterSelection, Entity)>,
     character_selection_right: Query<(&PlayerCharacterSelectionRight, Entity)>,
     character_selection_left: Query<(&PlayerCharacterSelectionLeft, Entity)>,
+    player_ready: Query<(&PlayerReadyNode, Entity)>,
     buttons: Query<(&ButtonActionComponent, Entity), With<Button>>,
     ui_assets: Res<UiAssets>,
     inputs_res: Res<InputsResource>,
@@ -893,12 +887,15 @@ fn update_ui_system(
                 .iter()
                 .find(|x| x.0 .0 == *player_idx as u8);
 
+            let player_ready_node = player_ready.iter().find(|x | x.0.0 == *player_idx);
+
             if let Some((_, entity)) = prev_character_selection_right_arrow_ui {
                 commands.entity(entity).with_children(|parent| {
                     parent.spawn_button(
                         &ui_assets,
                         font.clone(),
                         ButtonActionComponent::CharacterSelectRight(*player_idx as u8),
+                        None,
                     )
                 });
             };
@@ -909,9 +906,21 @@ fn update_ui_system(
                         &ui_assets,
                         font.clone(),
                         ButtonActionComponent::CharacterSelectLeft(*player_idx as u8),
+                        None,
                     )
                 });
             };
+
+            if let Some((_, entity)) = player_ready_node {
+                commands.entity(entity).with_children(|parent| {
+                    parent.spawn_button(
+                    &ui_assets,
+                    font.clone(),
+                    ButtonActionComponent::CharacterSelectReady(*player_idx),
+                    Some(input)
+                    );
+                });
+            }
 
             // spawn a menu explorer with the new player idx
             let mut input_map = inputs_res.menu.clone();

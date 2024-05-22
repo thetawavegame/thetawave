@@ -19,7 +19,7 @@ use bevy::{
     },
     utils::default,
 };
-use thetawave_interface::states::AppStates;
+use thetawave_interface::{player::PlayerInput, states::AppStates};
 
 use crate::assets::UiAssets;
 
@@ -39,6 +39,7 @@ const BUTTON_TEXTURE_PADDING_HOVERED: UiRect =
 /// sprinkles.
 #[derive(Component, Event, Clone, PartialEq, Eq, Copy, Debug)]
 pub enum ButtonActionComponent {
+    CharacterSelectReady(u8),
     CharacterSelectJoin,
     CharacterSelectRight(u8),
     CharacterSelectLeft(u8),
@@ -62,12 +63,14 @@ impl ButtonActionComponent {
             Self::CharacterSelectLeft(_) => None,
             Self::CharacterSelectRight(_) => None,
             Self::CharacterSelectJoin => Some("Join"),
+            Self::CharacterSelectReady(_) => Some("Ready"),
         }
     }
 
     pub fn inputs(
         &self,
         ui_assets: &UiAssets,
+        player_input: Option<PlayerInput>,
     ) -> Option<Vec<(Handle<Image>, Handle<TextureAtlasLayout>)>> {
         match self {
             Self::CharacterSelectJoin => Some(vec![
@@ -80,6 +83,24 @@ impl ButtonActionComponent {
                     ui_assets.keyboard_key_return_layout.clone(),
                 ),
             ]),
+            Self::CharacterSelectReady(_) => {
+                if let Some(player_input) = player_input {
+                    Some(vec![
+                        (match player_input {
+                            PlayerInput::Keyboard => (
+                                ui_assets.keyboard_key_return_image.clone(),
+                                ui_assets.keyboard_key_return_layout.clone(),
+                            ),
+                            PlayerInput::Gamepad(_) => (
+                                ui_assets.gamepad_button_a_image.clone(),
+                                ui_assets.gamepad_button_a_layout.clone(),
+                            ),
+                        }),
+                    ])
+                } else {
+                    None
+                }
+            }
             _ => None,
         }
     }
@@ -109,6 +130,13 @@ impl ButtonActionComponent {
                 height: Val::Percent(10.0),
                 ..default()
             },
+            Self::CharacterSelectReady(_) => Style {
+                max_width: Val::Px(500.0),
+                width: Val::Percent(100.0),
+                min_width: Val::Px(200.0),
+                margin: UiRect::new(Val::Auto, Val::Auto, Val::Percent(1.0), Val::Percent(1.0)),
+                ..default()
+            },
         }
     }
 
@@ -128,6 +156,15 @@ impl ButtonActionComponent {
                 ..default()
             },
             Self::CharacterSelectLeft(_) | Self::CharacterSelectRight(_) => Style {
+                padding: BUTTON_TEXTURE_PADDING,
+                ..default()
+            },
+            Self::CharacterSelectReady(_) => Style {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                flex_direction: FlexDirection::Row,
                 padding: BUTTON_TEXTURE_PADDING,
                 ..default()
             },
@@ -154,6 +191,10 @@ impl ButtonActionComponent {
             Self::CharacterSelectJoin => (
                 ui_assets.large_menu_button_image.clone(),
                 ui_assets.large_menu_button_layout.clone(),
+            ),
+            Self::CharacterSelectReady(_) => (
+                ui_assets.thetawave_menu_button_image.clone(),
+                ui_assets.thetawave_menu_button_layout.clone(),
             ),
         }
     }
@@ -183,6 +224,9 @@ pub fn button_on_click_system(
                 info!("Player {} character selection left.", i + 1)
             }
             ButtonActionComponent::CharacterSelectJoin => info!("Character selection join."),
+            ButtonActionComponent::CharacterSelectReady(i) => {
+                info!("Player {} ready.", i + 1)
+            }
         }
     }
 }
@@ -195,6 +239,7 @@ pub trait UiButtonChildBuilderExt {
         ui_assets: &UiAssets,
         font: Handle<Font>,
         action: ButtonActionComponent,
+        player_input: Option<&PlayerInput>,
     );
 }
 
@@ -204,6 +249,7 @@ impl UiButtonChildBuilderExt for ChildBuilder<'_> {
         ui_assets: &UiAssets,
         font: Handle<Font>,
         action: ButtonActionComponent,
+        player_input: Option<&PlayerInput>,
     ) {
         // Spawn button bundle entity, with a child entity containing the texture
         self.spawn(ButtonBundle {
@@ -238,7 +284,7 @@ impl UiButtonChildBuilderExt for ChildBuilder<'_> {
                         );
                     }
 
-                    if let Some(inputs) = action.inputs(ui_assets) {
+                    if let Some(inputs) = action.inputs(ui_assets, player_input.copied()) {
                         // Row for all button inputs
                         parent
                             .spawn(NodeBundle {
