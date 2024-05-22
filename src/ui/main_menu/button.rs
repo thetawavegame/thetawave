@@ -67,12 +67,17 @@ impl MainMenuButtonActionComponent {
     }
 }
 /// This is the order (vertical, going down) of the buttons shown on the main menu UI.
+#[cfg(not(any(feature = "arcade", target_arch = "wasm32")))]
 const MAIN_MENU_BUTTON_ORDER: [MainMenuButtonActionComponent; 4] = [
     MainMenuButtonActionComponent::EnterCharacterSelection,
     MainMenuButtonActionComponent::EnterOptions,
     MainMenuButtonActionComponent::EnterCompendium,
     MainMenuButtonActionComponent::QuitGame,
 ];
+
+#[cfg(any(feature = "arcade", target_arch = "wasm32"))]
+const MAIN_MENU_BUTTON_ORDER: [MainMenuButtonActionComponent; 1] =
+    [MainMenuButtonActionComponent::EnterInstructions];
 
 pub(super) type MainMenuButtonActionEvent = MainMenuButtonActionComponent;
 
