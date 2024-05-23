@@ -14,17 +14,22 @@ use bevy::{
     app::{App, Plugin, Update},
     asset::{AssetServer, Handle},
     ecs::{
-        component::Component, entity::Entity, event::{EventReader, EventWriter}, query::With, schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter}, system::{Commands, Local, Query, Res, ResMut}
+        component::Component,
+        entity::Entity,
+        event::{EventReader, EventWriter},
+        query::With,
+        schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter},
+        system::{Commands, Local, Query, Res, ResMut},
     },
-    hierarchy::{BuildChildren, Children, DespawnRecursiveExt},
+    hierarchy::{BuildChildren, ChildBuilder, Children, DespawnRecursiveExt},
     input::gamepad::{Gamepad, GamepadButtonChangedEvent},
     render::color::Color,
     text::{Font, Text, TextStyle},
     ui::{
         node_bundles::{ImageBundle, NodeBundle, TextBundle},
         widget::Button,
-        AlignContent, AlignItems, AlignSelf, FlexDirection, Interaction,
-        JustifyContent, Style, UiImage, UiRect, Val,
+        AlignContent, AlignItems, AlignSelf, FlexDirection, Interaction, JustifyContent, Style,
+        UiImage, UiRect, Val,
     },
     utils::default,
 };
@@ -33,6 +38,7 @@ use thetawave_interface::{
     abilities::AbilityDescriptionsResource,
     audio::PlaySoundEffectEvent,
     character::CharacterStatType,
+    game,
     input::{InputsResource, MainMenuExplorer, MenuAction, MenuExplorer},
     states::{self, AppStates},
 };
@@ -143,12 +149,139 @@ impl CharacterCarousel {
     }
 }
 
+pub trait UiPlayerJoinChildBuilderExt {
+    fn spawn_player_join_row(&mut self, ui_assets: &UiAssets, font: Handle<Font>, players: Vec<u8>);
+}
+
+impl UiPlayerJoinChildBuilderExt for ChildBuilder<'_> {
+    fn spawn_player_join_row(
+        &mut self,
+        ui_assets: &UiAssets,
+        font: Handle<Font>,
+        players: Vec<u8>,
+    ) {
+        self.spawn(NodeBundle {
+            style: Style {
+                width: Val::Percent(100.0),
+                height: Val::Percent(50.0),
+                justify_content: JustifyContent::Center,
+                flex_direction: FlexDirection::Row,
+                ..Default::default()
+            },
+            ..Default::default()
+        })
+        .with_children(|parent| {
+            for player_idx in players {
+                // Top left player join
+                parent
+                    .spawn(NodeBundle {
+                        style: Style {
+                            width: Val::Percent(49.0),
+                            max_height: Val::Percent(100.0),
+                            min_height: Val::Percent(90.0),
+                            justify_content: JustifyContent::Center,
+                            align_items: AlignItems::Center,
+                            flex_direction: FlexDirection::Row,
+                            margin: UiRect {
+                                left: Val::Vw(0.0),
+                                right: Val::Vw(0.5),
+                                top: Val::Vh(0.0),
+                                bottom: Val::Vh(0.5),
+                            },
+                            ..Default::default()
+                        },
+                        background_color: Color::BLACK.with_a(0.6).into(),
+                        ..Default::default()
+                    })
+                    .with_children(|parent| {
+                        // Left side of player join
+                        parent
+                            .spawn(NodeBundle {
+                                style: Style {
+                                    width: Val::Percent(18.0),
+                                    height: Val::Percent(100.0),
+                                    justify_content: JustifyContent::Center,
+                                    align_items: AlignItems::Center,
+                                    ..default()
+                                },
+                                ..default()
+                            })
+                            .insert(PlayerCharacterSelectionLeft(player_idx));
+
+                        // Center of player join
+                        parent
+                            .spawn(NodeBundle {
+                                style: Style {
+                                    flex_direction: FlexDirection::Column,
+                                    width: Val::Percent(64.0),
+                                    height: Val::Percent(100.0),
+                                    justify_content: JustifyContent::Center,
+                                    align_items: AlignItems::Center,
+                                    ..default()
+                                },
+                                ..default()
+                            })
+                            .with_children(|parent| {
+                                parent
+                                    .spawn(NodeBundle {
+                                        style: Style {
+                                            width: Val::Percent(100.0),
+                                            height: Val::Percent(80.0),
+                                            justify_content: JustifyContent::Center,
+                                            align_items: AlignItems::Center,
+                                            flex_direction: FlexDirection::Column,
+                                            ..default()
+                                        },
+                                        ..default()
+                                    })
+                                    .insert(PlayerCharacterSelection(player_idx))
+                                    .with_children(|parent| {
+                                        if player_idx == 0 {
+                                            parent.spawn_button(
+                                                &ui_assets,
+                                                font.clone(),
+                                                ButtonActionComponent::CharacterSelectJoin,
+                                                None,
+                                            );
+                                        }
+                                    });
+
+                                parent
+                                    .spawn(NodeBundle {
+                                        style: Style {
+                                            width: Val::Percent(100.0),
+                                            height: Val::Percent(20.0),
+                                            ..default()
+                                        },
+                                        ..default()
+                                    })
+                                    .insert(PlayerReadyNode(player_idx));
+                            });
+
+                        // Right side of player join
+                        parent
+                            .spawn(NodeBundle {
+                                style: Style {
+                                    width: Val::Percent(18.0),
+                                    height: Val::Percent(100.0),
+                                    justify_content: JustifyContent::Center,
+                                    align_items: AlignItems::Center,
+                                    ..default()
+                                },
+                                ..default()
+                            })
+                            .insert(PlayerCharacterSelectionRight(player_idx));
+                    });
+            }
+        });
+    }
+}
+
 /// Setup the character selection UI
 pub(super) fn setup_character_selection_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     game_params_res: Res<GameParametersResource>,
-    playing_on_arcade: Res<PlayingOnArcadeResource>,
     ui_assets: Res<UiAssets>,
 ) {
     let font: Handle<Font> = asset_server.load("fonts/Lunchds.ttf");
@@ -174,393 +307,25 @@ pub(super) fn setup_character_selection_system(
         })
         .insert(CharacterSelectionCleanup)
         .with_children(|parent| {
-            // Top row of player joins
-            parent
-                .spawn(NodeBundle {
-                    style: Style {
-                        width: Val::Percent(100.0),
-                        height: Val::Percent(50.0),
-                        justify_content: JustifyContent::Center,
-                        flex_direction: FlexDirection::Row,
-                        ..Default::default()
-                    },
-                    ..Default::default()
-                })
-                .with_children(|parent| {
-                    // Top left player join
-                    parent
-                        .spawn(NodeBundle {
-                            style: Style {
-                                width: Val::Percent(49.0),
-                                max_height: Val::Percent(100.0),
-                                min_height: Val::Percent(90.0),
-                                justify_content: JustifyContent::Center,
-                                align_items: AlignItems::Center,
-                                flex_direction: FlexDirection::Row,
-                                margin: UiRect {
-                                    left: Val::Vw(0.0),
-                                    right: Val::Vw(0.5),
-                                    top: Val::Vh(0.0),
-                                    bottom: Val::Vh(0.5),
-                                },
-                                ..Default::default()
-                            },
-                            background_color: Color::BLACK.with_a(0.6).into(),
-                            ..Default::default()
-                        })
-                        .with_children(|parent| {
-                            // Left side of player join
-                            parent
-                                .spawn(NodeBundle {
-                                    style: Style {
-                                        width: Val::Percent(18.0),
-                                        height: Val::Percent(100.0),
-                                        justify_content: JustifyContent::Center,
-                                        align_items: AlignItems::Center,
-                                        ..default()
-                                    },
-                                    ..default()
-                                })
-                                .insert(PlayerCharacterSelectionLeft(0));
+            // create vectors of player idxs to use for spawning player join rows
+            let mut top_row_player_idxs = vec![];
+            let mut bottom_row_player_idxs = vec![];
 
-                            // Center of player join
-                            parent.spawn(NodeBundle{
-                                style: Style{
-                                    flex_direction: FlexDirection::Column,
-                                    width: Val::Percent(64.0),
-                                    height: Val::Percent(100.0),
-                                    justify_content: JustifyContent::Center,
-                                    align_items: AlignItems::Center,
-                                    ..default()
-                                },
-                                ..default()
-                            }).with_children(|parent| {
+            for i in 0..game_params_res.get_max_players() {
+                if (top_row_player_idxs.len() as u8) < game_params_res.get_max_players() / 2 {
+                    top_row_player_idxs.push(i);
+                } else {
+                    bottom_row_player_idxs.push(i)
+                }
+            }
 
-                                parent
-                                    .spawn(NodeBundle {
-                                        style: Style {
-                                            width: Val::Percent(100.0),
-                                            height: Val::Percent(80.0),
-                                            justify_content: JustifyContent::Center,
-                                            align_items: AlignItems::Center,
-                                            flex_direction: FlexDirection::Column,
-                                            ..default()
-                                        },
-                                        ..default()
-                                    })
-                                    .insert(PlayerCharacterSelection(0))
-                                    .with_children(|parent| {
+            // spawn player join rows
+            if !top_row_player_idxs.is_empty() {
+                parent.spawn_player_join_row(&ui_assets, font.clone(), top_row_player_idxs);
+            }
 
-                                        parent.spawn_button(
-                                            &ui_assets,
-                                            font.clone(),
-                                            ButtonActionComponent::CharacterSelectJoin,
-                                            None,
-                                        );
-                                    });
-                                    
-                                    parent.spawn(NodeBundle {
-                                        style: Style{
-                                            width: Val::Percent(100.0),
-                                            height: Val::Percent(20.0),
-                                            ..default()
-                                        },
-                                    ..default()
-                                }).insert(PlayerReadyNode(0));
-                            });
-                            
-                            // Right side of player join
-                            parent
-                                .spawn(NodeBundle {
-                                    style: Style {
-                                        width: Val::Percent(18.0),
-                                        height: Val::Percent(100.0),
-                                        justify_content: JustifyContent::Center,
-                                        align_items: AlignItems::Center,
-                                        ..default()
-                                    },
-                                    ..default()
-                                })
-                                .insert(PlayerCharacterSelectionRight(0));
-                        });
-
-                    // Spawn second player join on the right side if there are at least 2 players
-                    if game_params_res.get_max_players() > 1 {
-                        parent
-                            .spawn(NodeBundle {
-                                style: Style {
-                                    width: Val::Percent(49.0),
-                                    max_height: Val::Percent(100.0),
-                                    min_height: Val::Percent(90.0),
-                                    justify_content: JustifyContent::Center,
-                                    align_items: AlignItems::Center,
-                                    margin: UiRect {
-                                        left: Val::Vw(0.5),
-                                        right: Val::Vw(0.0),
-                                        top: Val::Vh(0.0),
-                                        bottom: Val::Vh(0.5),
-                                    },
-                                    ..Default::default()
-                                },
-                                background_color: Color::BLACK.with_a(0.6).into(),
-                                ..Default::default()
-                            })
-                            .with_children(|parent| {
-                                // Left side of player join
-                            parent
-                            .spawn(NodeBundle {
-                                style: Style {
-                                    width: Val::Percent(18.0),
-                                    height: Val::Percent(100.0),
-                                    justify_content: JustifyContent::Center,
-                                    align_items: AlignItems::Center,
-                                    ..default()
-                                },
-                                ..default()
-                            })
-                            .insert(PlayerCharacterSelectionLeft(1));
-
-                        // Center of player join
-                        parent.spawn(NodeBundle{
-                            style: Style{
-                                flex_direction: FlexDirection::Column,
-                                width: Val::Percent(64.0),
-                                height: Val::Percent(100.0),
-                                justify_content: JustifyContent::Center,
-                                align_items: AlignItems::Center,
-                                ..default()
-                            },
-                            ..default()
-                        }).with_children(|parent| {
-
-                            parent
-                                .spawn(NodeBundle {
-                                    style: Style {
-                                        width: Val::Percent(100.0),
-                                        height: Val::Percent(80.0),
-                                        justify_content: JustifyContent::Center,
-                                        align_items: AlignItems::Center,
-                                        flex_direction: FlexDirection::Column,
-                                        ..default()
-                                    },
-                                    ..default()
-                                })
-                                .insert(PlayerCharacterSelection(1));
-                                
-                                parent.spawn(NodeBundle {
-                                    style: Style{
-                                        width: Val::Percent(100.0),
-                                        height: Val::Percent(20.0),
-                                        ..default()
-                                    },
-                                ..default()
-                            }).insert(PlayerReadyNode(1));
-                        });
-                        
-                        // Right side of player join
-                        parent
-                            .spawn(NodeBundle {
-                                style: Style {
-                                    width: Val::Percent(18.0),
-                                    height: Val::Percent(100.0),
-                                    justify_content: JustifyContent::Center,
-                                    align_items: AlignItems::Center,
-                                    ..default()
-                                },
-                                ..default()
-                            })
-                            .insert(PlayerCharacterSelectionRight(1));
-                            });
-                    }
-                });
-
-            // spawn 2 rows if there are 3 or 4 players
-            if game_params_res.get_max_players() > 2 {
-                parent
-                    .spawn(NodeBundle {
-                        style: Style {
-                            width: Val::Percent(100.0),
-                            height: Val::Percent(50.0),
-                            justify_content: JustifyContent::Center,
-                            ..Default::default()
-                        },
-                        ..Default::default()
-                    })
-                    .with_children(|parent| {
-                        parent
-                            .spawn(NodeBundle {
-                                style: Style {
-                                    width: Val::Percent(49.0),
-                                    max_height: Val::Percent(100.0),
-                                    min_height: Val::Percent(90.0),
-                                    justify_content: JustifyContent::Center,
-                                    align_items: AlignItems::Center,
-                                    margin: UiRect {
-                                        left: Val::Vw(0.0),
-                                        right: Val::Vw(0.5),
-                                        top: Val::Vh(0.5),
-                                        bottom: Val::Vh(0.0),
-                                    },
-                                    ..Default::default()
-                                },
-                                background_color: Color::BLACK.with_a(0.6).into(),
-                                ..Default::default()
-                            })
-                            .with_children(|parent| {
-                                    // Left side of player join
-                            parent
-                            .spawn(NodeBundle {
-                                style: Style {
-                                    width: Val::Percent(18.0),
-                                    height: Val::Percent(100.0),
-                                    justify_content: JustifyContent::Center,
-                                    align_items: AlignItems::Center,
-                                    ..default()
-                                },
-                                ..default()
-                            })
-                            .insert(PlayerCharacterSelectionLeft(2));
-
-                        // Center of player join
-                        parent.spawn(NodeBundle{
-                            style: Style{
-                                flex_direction: FlexDirection::Column,
-                                width: Val::Percent(64.0),
-                                height: Val::Percent(100.0),
-                                justify_content: JustifyContent::Center,
-                                align_items: AlignItems::Center,
-                                ..default()
-                            },
-                            ..default()
-                        }).with_children(|parent| {
-
-                            parent
-                                .spawn(NodeBundle {
-                                    style: Style {
-                                        width: Val::Percent(100.0),
-                                        height: Val::Percent(80.0),
-                                        justify_content: JustifyContent::Center,
-                                        align_items: AlignItems::Center,
-                                        flex_direction: FlexDirection::Column,
-                                        ..default()
-                                    },
-                                    ..default()
-                                })
-                                .insert(PlayerCharacterSelection(2));
-                                
-                                parent.spawn(NodeBundle {
-                                    style: Style{
-                                        width: Val::Percent(100.0),
-                                        height: Val::Percent(20.0),
-                                        ..default()
-                                    },
-                                ..default()
-                            }).insert(PlayerReadyNode(2));
-                        });
-                        
-                        // Right side of player join
-                        parent
-                            .spawn(NodeBundle {
-                                style: Style {
-                                    width: Val::Percent(18.0),
-                                    height: Val::Percent(100.0),
-                                    justify_content: JustifyContent::Center,
-                                    align_items: AlignItems::Center,
-                                    ..default()
-                                },
-                                ..default()
-                            })
-                            .insert(PlayerCharacterSelectionRight(2));
-                            });
-
-                        if game_params_res.get_max_players() > 3 {
-                            parent
-                                .spawn(NodeBundle {
-                                    style: Style {
-                                        width: Val::Percent(49.0),
-                                        max_height: Val::Percent(100.0),
-                                        min_height: Val::Percent(90.0),
-                                        justify_content: JustifyContent::Center,
-                                        align_items: AlignItems::Center,
-                                        margin: UiRect {
-                                            left: Val::Vw(0.5),
-                                            right: Val::Vw(0.0),
-                                            top: Val::Vh(0.5),
-                                            bottom: Val::Vh(0.0),
-                                        },
-                                        ..Default::default()
-                                    },
-                                    background_color: Color::BLACK.with_a(0.6).into(),
-                                    ..Default::default()
-                                })
-                                .with_children(|parent| {
-                                        // Left side of player join
-                            parent
-                            .spawn(NodeBundle {
-                                style: Style {
-                                    width: Val::Percent(18.0),
-                                    height: Val::Percent(100.0),
-                                    justify_content: JustifyContent::Center,
-                                    align_items: AlignItems::Center,
-                                    ..default()
-                                },
-                                ..default()
-                            })
-                            .insert(PlayerCharacterSelectionLeft(3));
-
-                        // Center of player join
-                        parent.spawn(NodeBundle{
-                            style: Style{
-                                flex_direction: FlexDirection::Column,
-                                width: Val::Percent(64.0),
-                                height: Val::Percent(100.0),
-                                justify_content: JustifyContent::Center,
-                                align_items: AlignItems::Center,
-                                ..default()
-                            },
-                            ..default()
-                        }).with_children(|parent| {
-
-                            parent
-                                .spawn(NodeBundle {
-                                    style: Style {
-                                        width: Val::Percent(100.0),
-                                        height: Val::Percent(80.0),
-                                        justify_content: JustifyContent::Center,
-                                        align_items: AlignItems::Center,
-                                        flex_direction: FlexDirection::Column,
-                                        ..default()
-                                    },
-                                    ..default()
-                                })
-                                .insert(PlayerCharacterSelection(3));
-                                
-                                parent.spawn(NodeBundle {
-                                    style: Style{
-                                        width: Val::Percent(100.0),
-                                        height: Val::Percent(20.0),
-                                        ..default()
-                                    },
-                                ..default()
-                            }).insert(PlayerReadyNode(3));
-                        });
-                        
-                        // Right side of player join
-                        parent
-                            .spawn(NodeBundle {
-                                style: Style {
-                                    width: Val::Percent(18.0),
-                                    height: Val::Percent(100.0),
-                                    justify_content: JustifyContent::Center,
-                                    align_items: AlignItems::Center,
-                                    ..default()
-                                },
-                                ..default()
-                            })
-                            .insert(PlayerCharacterSelectionRight(3));
-                                });
-                        }
-                    });
+            if !bottom_row_player_idxs.is_empty() {
+                parent.spawn_player_join_row(&ui_assets, font.clone(), bottom_row_player_idxs);
             }
         });
 }
@@ -825,13 +590,13 @@ fn update_ui_system(
             // spawn right and left arrow buttons for the previous character selection
             let prev_character_selection_right_arrow_ui = character_selection_right
                 .iter()
-                .find(|x| x.0 .0 == *player_idx );
+                .find(|x| x.0 .0 == *player_idx);
 
             let prev_character_selection_left_arrow_ui = character_selection_left
                 .iter()
                 .find(|x| x.0 .0 == *player_idx);
 
-            let player_ready_node = player_ready.iter().find(|x | x.0.0 == *player_idx);
+            let player_ready_node = player_ready.iter().find(|x| x.0 .0 == *player_idx);
 
             if let Some((_, entity)) = prev_character_selection_right_arrow_ui {
                 commands.entity(entity).with_children(|parent| {
@@ -858,10 +623,10 @@ fn update_ui_system(
             if let Some((_, entity)) = player_ready_node {
                 commands.entity(entity).with_children(|parent| {
                     parent.spawn_button(
-                    &ui_assets,
-                    font.clone(),
-                    ButtonActionComponent::CharacterSelectReady(*player_idx),
-                    Some(input)
+                        &ui_assets,
+                        font.clone(),
+                        ButtonActionComponent::CharacterSelectReady(*player_idx),
+                        Some(input),
                     );
                 });
             }
@@ -1059,28 +824,27 @@ fn carousel_ui_system(
 
                     if let Some(character) = characters_res.characters.get(&visible_characters[1]) {
                         // set the character description to the middle character
-                        if let Some(children_1) =
-                            character_descriptions
-                                .iter_mut()
-                                .find_map(|(character_description, text)| {
-                                    if character_description.0 == carousel_player_idx {
-                                        Some(text)
-                                    } else {
-                                        None
-                                    }
-                                })
-                        {
+                        if let Some(children_1) = character_descriptions.iter_mut().find_map(
+                            |(character_description, text)| {
+                                if character_description.0 == carousel_player_idx {
+                                    Some(text)
+                                } else {
+                                    None
+                                }
+                            },
+                        ) {
                             for child_1 in children_1.iter() {
-                                if let Ok(mut character_name_text) = character_names.get_mut(*child_1) {
+                                if let Ok(mut character_name_text) =
+                                    character_names.get_mut(*child_1)
+                                {
                                     character_name_text.sections[0]
                                         .value
                                         .clone_from(&character.name);
                                 }
-        
+
                                 if let Ok(children_2) = character_info.get(*child_1) {
                                     for child_2 in children_2 {
                                         if let Ok(entity) = character_abilities.get(*child_2) {
-
                                             commands.entity(entity).despawn_descendants();
 
                                             commands.entity(entity).with_children(|parent| {
@@ -1203,7 +967,6 @@ fn carousel_ui_system(
                                                 }
                                             });
                                         } else if let Ok(entity) = character_stats.get(*child_2) {
-
                                             commands.entity(entity).despawn_descendants();
 
                                             commands.entity(entity).with_children(|parent|{
@@ -1246,7 +1009,7 @@ fn carousel_ui_system(
                                                     });
                                                 });
                                             });
-        
+
                                             commands.entity(entity).with_children(|parent|{
                                                 parent.spawn(NodeBundle {
                                                     style: Style {
@@ -1287,7 +1050,7 @@ fn carousel_ui_system(
                                                     });
                                                 });
                                             });
-        
+
                                             commands.entity(entity).with_children(|parent|{
                                                 parent.spawn(NodeBundle {
                                                     style: Style {
@@ -1329,7 +1092,7 @@ fn carousel_ui_system(
                                                     });
                                                 });
                                             });
-        
+
                                             commands.entity(entity).with_children(|parent|{
                                                 parent.spawn(NodeBundle {
                                                     style: Style {
@@ -1371,7 +1134,7 @@ fn carousel_ui_system(
                                                     });
                                                 });
                                             });
-        
+
                                             commands.entity(entity).with_children(|parent|{
                                                 parent.spawn(NodeBundle {
                                                     style: Style {
@@ -1413,7 +1176,7 @@ fn carousel_ui_system(
                                                     });
                                                 });
                                             });
-        
+
                                             commands.entity(entity).with_children(|parent|{
                                                 parent.spawn(NodeBundle {
                                                     style: Style {
@@ -1670,88 +1433,103 @@ fn carousel_ui_system(
                                                 });
                                         }
                                     });
-                                }  else if let Ok(entity) = character_stats.get(*child_2) {
-
-                                    commands.entity(entity).with_children(|parent|{
-                                        parent.spawn(NodeBundle {
-                                            style: Style {
-                                                width: Val::Percent(100.0),
-                                                height: Val::Percent(12.0),
-                                                flex_direction: FlexDirection::Row,
-                                                ..default()
-                                            },
-                                            ..default()
-                                        }).with_children(|parent| {
-                                            parent.spawn(ImageBundle{
-                                                image: ui_assets.health_icon.clone().into(),
+                                } else if let Ok(entity) = character_stats.get(*child_2) {
+                                    commands.entity(entity).with_children(|parent| {
+                                        parent
+                                            .spawn(NodeBundle {
                                                 style: Style {
-                                                    margin: UiRect::all(Val::Px(5.0)),
-                                                    ..default()
-                                                },
-                                                ..default()
-                                            });
-
-                                            parent.spawn(NodeBundle{
-                                                style: Style {
-                                                    height: Val::Percent(100.0),
                                                     width: Val::Percent(100.0),
+                                                    height: Val::Percent(12.0),
+                                                    flex_direction: FlexDirection::Row,
                                                     ..default()
                                                 },
                                                 ..default()
-                                            }).with_children(|parent| {
-                                                parent.spawn(NodeBundle {
+                                            })
+                                            .with_children(|parent| {
+                                                parent.spawn(ImageBundle {
+                                                    image: ui_assets.health_icon.clone().into(),
                                                     style: Style {
-                                                        width: Val::Percent(character.get_stat_percent(&CharacterStatType::Health)),
-                                                        height: Val::Percent(50.0),
-                                                        align_self: AlignSelf::Center,
+                                                        margin: UiRect::all(Val::Px(5.0)),
                                                         ..default()
                                                     },
-                                                    background_color: Color::WHITE.into(),
                                                     ..default()
                                                 });
+
+                                                parent
+                                                    .spawn(NodeBundle {
+                                                        style: Style {
+                                                            height: Val::Percent(100.0),
+                                                            width: Val::Percent(100.0),
+                                                            ..default()
+                                                        },
+                                                        ..default()
+                                                    })
+                                                    .with_children(|parent| {
+                                                        parent.spawn(NodeBundle {
+                                                            style: Style {
+                                                                width: Val::Percent(
+                                                                    character.get_stat_percent(
+                                                                        &CharacterStatType::Health,
+                                                                    ),
+                                                                ),
+                                                                height: Val::Percent(50.0),
+                                                                align_self: AlignSelf::Center,
+                                                                ..default()
+                                                            },
+                                                            background_color: Color::WHITE.into(),
+                                                            ..default()
+                                                        });
+                                                    });
                                             });
-                                        });
                                     });
 
-                                    commands.entity(entity).with_children(|parent|{
-                                        parent.spawn(NodeBundle {
-                                            style: Style {
-                                                width: Val::Percent(100.0),
-                                                height: Val::Percent(12.0),
-                                                flex_direction: FlexDirection::Row,
-                                                ..default()
-                                            },
-                                            ..default()
-                                        }).with_children(|parent| {
-                                            parent.spawn(ImageBundle{
-                                                image: ui_assets.damage_icon.clone().into(),
+                                    commands.entity(entity).with_children(|parent| {
+                                        parent
+                                            .spawn(NodeBundle {
                                                 style: Style {
-                                                    margin: UiRect::all(Val::Px(5.0)),
-                                                    ..default()
-                                                },
-                                                ..default()
-                                            });
-
-                                            parent.spawn(NodeBundle{
-                                                style: Style {
-                                                    height: Val::Percent(100.0),
                                                     width: Val::Percent(100.0),
+                                                    height: Val::Percent(12.0),
+                                                    flex_direction: FlexDirection::Row,
                                                     ..default()
                                                 },
                                                 ..default()
-                                            }).with_children(|parent| {
-                                                parent.spawn(NodeBundle {
+                                            })
+                                            .with_children(|parent| {
+                                                parent.spawn(ImageBundle {
+                                                    image: ui_assets.damage_icon.clone().into(),
                                                     style: Style {
-                                                        width: Val::Percent(character.get_stat_percent(&CharacterStatType::Damage)),
-                                                        height: Val::Percent(50.0),
-                                                        align_self: AlignSelf::Center,
+                                                        margin: UiRect::all(Val::Px(5.0)),
                                                         ..default()
                                                     },
-                                                    background_color: Color::WHITE.into(),
                                                     ..default()
                                                 });
+
+                                                parent
+                                                    .spawn(NodeBundle {
+                                                        style: Style {
+                                                            height: Val::Percent(100.0),
+                                                            width: Val::Percent(100.0),
+                                                            ..default()
+                                                        },
+                                                        ..default()
+                                                    })
+                                                    .with_children(|parent| {
+                                                        parent.spawn(NodeBundle {
+                                                            style: Style {
+                                                                width: Val::Percent(
+                                                                    character.get_stat_percent(
+                                                                        &CharacterStatType::Damage,
+                                                                    ),
+                                                                ),
+                                                                height: Val::Percent(50.0),
+                                                                align_self: AlignSelf::Center,
+                                                                ..default()
+                                                            },
+                                                            background_color: Color::WHITE.into(),
+                                                            ..default()
+                                                        });
+                                                    });
                                             });
-                                        });
                                     });
 
                                     commands.entity(entity).with_children(|parent|{
@@ -1796,130 +1574,154 @@ fn carousel_ui_system(
                                         });
                                     });
 
-                                    commands.entity(entity).with_children(|parent|{
-                                        parent.spawn(NodeBundle {
-                                            style: Style {
-                                                width: Val::Percent(100.0),
-                                                height: Val::Percent(12.0),
-                                                align_content: AlignContent::Center,
-                                                flex_direction: FlexDirection::Row,
-                                                ..default()
-                                            },
-                                            ..default()
-                                        }).with_children(|parent| {
-                                            parent.spawn(ImageBundle{
-                                                image: ui_assets.range_icon.clone().into(),
+                                    commands.entity(entity).with_children(|parent| {
+                                        parent
+                                            .spawn(NodeBundle {
                                                 style: Style {
-                                                    margin: UiRect::all(Val::Px(5.0)),
-                                                    ..default()
-                                                },
-                                                ..default()
-                                            });
-
-                                            parent.spawn(NodeBundle{
-                                                style: Style {
-                                                    height: Val::Percent(100.0),
                                                     width: Val::Percent(100.0),
+                                                    height: Val::Percent(12.0),
+                                                    align_content: AlignContent::Center,
+                                                    flex_direction: FlexDirection::Row,
                                                     ..default()
                                                 },
                                                 ..default()
-                                            }).with_children(|parent| {
-                                                parent.spawn(NodeBundle {
+                                            })
+                                            .with_children(|parent| {
+                                                parent.spawn(ImageBundle {
+                                                    image: ui_assets.range_icon.clone().into(),
                                                     style: Style {
-                                                        width: Val::Percent(character.get_stat_percent(&CharacterStatType::Range)),
-                                                        height: Val::Percent(50.0),
-                                                        align_self: AlignSelf::Center,
+                                                        margin: UiRect::all(Val::Px(5.0)),
                                                         ..default()
                                                     },
-                                                    background_color: Color::WHITE.into(),
                                                     ..default()
                                                 });
+
+                                                parent
+                                                    .spawn(NodeBundle {
+                                                        style: Style {
+                                                            height: Val::Percent(100.0),
+                                                            width: Val::Percent(100.0),
+                                                            ..default()
+                                                        },
+                                                        ..default()
+                                                    })
+                                                    .with_children(|parent| {
+                                                        parent.spawn(NodeBundle {
+                                                            style: Style {
+                                                                width: Val::Percent(
+                                                                    character.get_stat_percent(
+                                                                        &CharacterStatType::Range,
+                                                                    ),
+                                                                ),
+                                                                height: Val::Percent(50.0),
+                                                                align_self: AlignSelf::Center,
+                                                                ..default()
+                                                            },
+                                                            background_color: Color::WHITE.into(),
+                                                            ..default()
+                                                        });
+                                                    });
                                             });
-                                        });
                                     });
 
-                                    commands.entity(entity).with_children(|parent|{
-                                        parent.spawn(NodeBundle {
-                                            style: Style {
-                                                width: Val::Percent(100.0),
-                                                height: Val::Percent(12.0),
-                                                align_content: AlignContent::Center,
-                                                flex_direction: FlexDirection::Row,
-                                                ..default()
-                                            },
-                                            ..default()
-                                        }).with_children(|parent| {
-                                            parent.spawn(ImageBundle{
-                                                image: ui_assets.speed_icon.clone().into(),
+                                    commands.entity(entity).with_children(|parent| {
+                                        parent
+                                            .spawn(NodeBundle {
                                                 style: Style {
-                                                    margin: UiRect::all(Val::Px(5.0)),
-                                                    ..default()
-                                                },
-                                                ..default()
-                                            });
-
-                                            parent.spawn(NodeBundle{
-                                                style: Style {
-                                                    height: Val::Percent(100.0),
                                                     width: Val::Percent(100.0),
+                                                    height: Val::Percent(12.0),
+                                                    align_content: AlignContent::Center,
+                                                    flex_direction: FlexDirection::Row,
                                                     ..default()
                                                 },
                                                 ..default()
-                                            }).with_children(|parent| {
-                                                parent.spawn(NodeBundle {
+                                            })
+                                            .with_children(|parent| {
+                                                parent.spawn(ImageBundle {
+                                                    image: ui_assets.speed_icon.clone().into(),
                                                     style: Style {
-                                                        width: Val::Percent(character.get_stat_percent(&CharacterStatType::Speed)),
-                                                        height: Val::Percent(50.0),
-                                                        align_self: AlignSelf::Center,
+                                                        margin: UiRect::all(Val::Px(5.0)),
                                                         ..default()
                                                     },
-                                                    background_color: Color::WHITE.into(),
                                                     ..default()
                                                 });
+
+                                                parent
+                                                    .spawn(NodeBundle {
+                                                        style: Style {
+                                                            height: Val::Percent(100.0),
+                                                            width: Val::Percent(100.0),
+                                                            ..default()
+                                                        },
+                                                        ..default()
+                                                    })
+                                                    .with_children(|parent| {
+                                                        parent.spawn(NodeBundle {
+                                                            style: Style {
+                                                                width: Val::Percent(
+                                                                    character.get_stat_percent(
+                                                                        &CharacterStatType::Speed,
+                                                                    ),
+                                                                ),
+                                                                height: Val::Percent(50.0),
+                                                                align_self: AlignSelf::Center,
+                                                                ..default()
+                                                            },
+                                                            background_color: Color::WHITE.into(),
+                                                            ..default()
+                                                        });
+                                                    });
                                             });
-                                        });
                                     });
 
-                                    commands.entity(entity).with_children(|parent|{
-                                        parent.spawn(NodeBundle {
-                                            style: Style {
-                                                width: Val::Percent(100.0),
-                                                height: Val::Percent(12.0),
-                                                align_content: AlignContent::Center,
-                                                flex_direction: FlexDirection::Row,
-                                                ..default()
-                                            },
-                                            ..default()
-                                        }).with_children(|parent| {
-                                            parent.spawn(ImageBundle{
-                                                image: ui_assets.size_icon.clone().into(),
+                                    commands.entity(entity).with_children(|parent| {
+                                        parent
+                                            .spawn(NodeBundle {
                                                 style: Style {
-                                                    margin: UiRect::all(Val::Px(5.0)),
-                                                    ..default()
-                                                },
-                                                ..default()
-                                            });
-
-                                            parent.spawn(NodeBundle{
-                                                style: Style {
-                                                    height: Val::Percent(100.0),
                                                     width: Val::Percent(100.0),
+                                                    height: Val::Percent(12.0),
+                                                    align_content: AlignContent::Center,
+                                                    flex_direction: FlexDirection::Row,
                                                     ..default()
                                                 },
                                                 ..default()
-                                            }).with_children(|parent| {
-                                                parent.spawn(NodeBundle {
+                                            })
+                                            .with_children(|parent| {
+                                                parent.spawn(ImageBundle {
+                                                    image: ui_assets.size_icon.clone().into(),
                                                     style: Style {
-                                                        width: Val::Percent(character.get_stat_percent(&CharacterStatType::Size)),
-                                                        height: Val::Percent(50.0),
-                                                        align_self: AlignSelf::Center,
+                                                        margin: UiRect::all(Val::Px(5.0)),
                                                         ..default()
                                                     },
-                                                    background_color: Color::WHITE.into(),
                                                     ..default()
                                                 });
+
+                                                parent
+                                                    .spawn(NodeBundle {
+                                                        style: Style {
+                                                            height: Val::Percent(100.0),
+                                                            width: Val::Percent(100.0),
+                                                            ..default()
+                                                        },
+                                                        ..default()
+                                                    })
+                                                    .with_children(|parent| {
+                                                        parent.spawn(NodeBundle {
+                                                            style: Style {
+                                                                width: Val::Percent(
+                                                                    character.get_stat_percent(
+                                                                        &CharacterStatType::Size,
+                                                                    ),
+                                                                ),
+                                                                height: Val::Percent(50.0),
+                                                                align_self: AlignSelf::Center,
+                                                                ..default()
+                                                            },
+                                                            background_color: Color::WHITE.into(),
+                                                            ..default()
+                                                        });
+                                                    });
                                             });
-                                        });
                                     });
                                 }
                             }
