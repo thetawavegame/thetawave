@@ -4,7 +4,10 @@ use bevy::{
     text::Font,
 };
 use bevy_asset_loader::prelude::AssetCollection;
-use thetawave_interface::abilities::{SlotOneAbilityType, SlotTwoAbilityType};
+use thetawave_interface::{
+    abilities::{SlotOneAbilityType, SlotTwoAbilityType},
+    character::CharacterStatType,
+};
 
 #[derive(AssetCollection, Resource)]
 pub struct UiAssets {
@@ -88,6 +91,17 @@ impl UiAssets {
             self.right_ability_slot.clone()
         } else {
             self.left_ability_slot.clone()
+        }
+    }
+
+    pub fn get_stat_icon(&self, stat: &CharacterStatType) -> Handle<Image> {
+        match stat {
+            CharacterStatType::Damage => self.damage_icon.clone(),
+            CharacterStatType::Health => self.health_icon.clone(),
+            CharacterStatType::Range => self.range_icon.clone(),
+            CharacterStatType::FireRate => self.fire_rate_icon.clone(),
+            CharacterStatType::Size => self.size_icon.clone(),
+            CharacterStatType::Speed => self.speed_icon.clone(),
         }
     }
 }

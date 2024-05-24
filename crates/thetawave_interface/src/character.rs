@@ -20,13 +20,14 @@ pub enum CharacterType {
 }
 
 // Stats used to give the player a rough idea of the strengths and weaknesses of the character
+#[derive(EnumIter)]
 pub enum CharacterStatType {
-    Damage,
     Health,
-    Range,
-    FireRate,
-    Size,
+    Damage,
     Speed,
+    FireRate,
+    Range,
+    Size,
 }
 
 impl CharacterStatType {

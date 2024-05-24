@@ -5,7 +5,6 @@ use std::collections::VecDeque;
 use crate::{
     assets::{PlayerAssets, UiAssets},
     game::GameParametersResource,
-    options::PlayingOnArcadeResource,
     player::CharactersResource,
 };
 
@@ -34,6 +33,7 @@ use bevy::{
     utils::default,
 };
 use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
+use strum::IntoEnumIterator;
 use thetawave_interface::{
     abilities::AbilityDescriptionsResource,
     audio::PlaySoundEffectEvent,
@@ -163,273 +163,49 @@ pub trait UiPlayerJoinChildBuilderExt {
 
 impl UiPlayerJoinChildBuilderExt for ChildBuilder<'_> {
     fn spawn_stats(&mut self, ui_assets: &UiAssets, character: &Character) {
-        self.spawn(NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Percent(12.0),
-                flex_direction: FlexDirection::Row,
-                ..default()
-            },
-            ..default()
-        })
-        .with_children(|parent| {
-            parent.spawn(ImageBundle {
-                image: ui_assets.health_icon.clone().into(),
+        for stat in CharacterStatType::iter() {
+            self.spawn(NodeBundle {
                 style: Style {
-                    margin: UiRect::all(Val::Px(5.0)),
+                    width: Val::Percent(100.0),
+                    height: Val::Percent(12.0),
+                    flex_direction: FlexDirection::Row,
                     ..default()
                 },
                 ..default()
-            });
-
-            parent
-                .spawn(NodeBundle {
+            })
+            .with_children(|parent| {
+                parent.spawn(ImageBundle {
+                    image: ui_assets.get_stat_icon(&stat).into(),
                     style: Style {
-                        height: Val::Percent(100.0),
-                        width: Val::Percent(100.0),
+                        margin: UiRect::all(Val::Px(5.0)),
                         ..default()
                     },
                     ..default()
-                })
-                .with_children(|parent| {
-                    parent.spawn(NodeBundle {
+                });
+
+                parent
+                    .spawn(NodeBundle {
                         style: Style {
-                            width: Val::Percent(
-                                character.get_stat_percent(&CharacterStatType::Health),
-                            ),
-                            height: Val::Percent(50.0),
-                            align_self: AlignSelf::Center,
+                            height: Val::Percent(100.0),
+                            width: Val::Percent(100.0),
                             ..default()
                         },
-                        background_color: Color::WHITE.into(),
                         ..default()
+                    })
+                    .with_children(|parent| {
+                        parent.spawn(NodeBundle {
+                            style: Style {
+                                width: Val::Percent(character.get_stat_percent(&stat)),
+                                height: Val::Percent(50.0),
+                                align_self: AlignSelf::Center,
+                                ..default()
+                            },
+                            background_color: Color::WHITE.into(),
+                            ..default()
+                        });
                     });
-                });
-        });
-
-        self.spawn(NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Percent(12.0),
-                flex_direction: FlexDirection::Row,
-                ..default()
-            },
-            ..default()
-        })
-        .with_children(|parent| {
-            parent.spawn(ImageBundle {
-                image: ui_assets.damage_icon.clone().into(),
-                style: Style {
-                    margin: UiRect::all(Val::Px(5.0)),
-                    ..default()
-                },
-                ..default()
             });
-
-            parent
-                .spawn(NodeBundle {
-                    style: Style {
-                        height: Val::Percent(100.0),
-                        width: Val::Percent(100.0),
-                        ..default()
-                    },
-                    ..default()
-                })
-                .with_children(|parent| {
-                    parent.spawn(NodeBundle {
-                        style: Style {
-                            width: Val::Percent(
-                                character.get_stat_percent(&CharacterStatType::Damage),
-                            ),
-                            height: Val::Percent(50.0),
-                            align_self: AlignSelf::Center,
-                            ..default()
-                        },
-                        background_color: Color::WHITE.into(),
-                        ..default()
-                    });
-                });
-        });
-
-        self.spawn(NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Percent(12.0),
-                align_content: AlignContent::Center,
-                flex_direction: FlexDirection::Row,
-                ..default()
-            },
-            ..default()
-        })
-        .with_children(|parent| {
-            parent.spawn(ImageBundle {
-                image: ui_assets.fire_rate_icon.clone().into(),
-                style: Style {
-                    margin: UiRect::all(Val::Px(5.0)),
-                    ..default()
-                },
-                ..default()
-            });
-
-            parent
-                .spawn(NodeBundle {
-                    style: Style {
-                        height: Val::Percent(100.0),
-                        width: Val::Percent(100.0),
-                        ..default()
-                    },
-                    ..default()
-                })
-                .with_children(|parent| {
-                    parent.spawn(NodeBundle {
-                        style: Style {
-                            width: Val::Percent(
-                                character.get_stat_percent(&CharacterStatType::FireRate),
-                            ),
-                            height: Val::Percent(50.0),
-                            align_self: AlignSelf::Center,
-                            ..default()
-                        },
-                        background_color: Color::WHITE.into(),
-                        ..default()
-                    });
-                });
-        });
-
-        self.spawn(NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Percent(12.0),
-                align_content: AlignContent::Center,
-                flex_direction: FlexDirection::Row,
-                ..default()
-            },
-            ..default()
-        })
-        .with_children(|parent| {
-            parent.spawn(ImageBundle {
-                image: ui_assets.range_icon.clone().into(),
-                style: Style {
-                    margin: UiRect::all(Val::Px(5.0)),
-                    ..default()
-                },
-                ..default()
-            });
-
-            parent
-                .spawn(NodeBundle {
-                    style: Style {
-                        height: Val::Percent(100.0),
-                        width: Val::Percent(100.0),
-                        ..default()
-                    },
-                    ..default()
-                })
-                .with_children(|parent| {
-                    parent.spawn(NodeBundle {
-                        style: Style {
-                            width: Val::Percent(
-                                character.get_stat_percent(&CharacterStatType::Range),
-                            ),
-                            height: Val::Percent(50.0),
-                            align_self: AlignSelf::Center,
-                            ..default()
-                        },
-                        background_color: Color::WHITE.into(),
-                        ..default()
-                    });
-                });
-        });
-
-        self.spawn(NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Percent(12.0),
-                align_content: AlignContent::Center,
-                flex_direction: FlexDirection::Row,
-                ..default()
-            },
-            ..default()
-        })
-        .with_children(|parent| {
-            parent.spawn(ImageBundle {
-                image: ui_assets.speed_icon.clone().into(),
-                style: Style {
-                    margin: UiRect::all(Val::Px(5.0)),
-                    ..default()
-                },
-                ..default()
-            });
-
-            parent
-                .spawn(NodeBundle {
-                    style: Style {
-                        height: Val::Percent(100.0),
-                        width: Val::Percent(100.0),
-                        ..default()
-                    },
-                    ..default()
-                })
-                .with_children(|parent| {
-                    parent.spawn(NodeBundle {
-                        style: Style {
-                            width: Val::Percent(
-                                character.get_stat_percent(&CharacterStatType::Speed),
-                            ),
-                            height: Val::Percent(50.0),
-                            align_self: AlignSelf::Center,
-                            ..default()
-                        },
-                        background_color: Color::WHITE.into(),
-                        ..default()
-                    });
-                });
-        });
-
-        self.spawn(NodeBundle {
-            style: Style {
-                width: Val::Percent(100.0),
-                height: Val::Percent(12.0),
-                align_content: AlignContent::Center,
-                flex_direction: FlexDirection::Row,
-                ..default()
-            },
-            ..default()
-        })
-        .with_children(|parent| {
-            parent.spawn(ImageBundle {
-                image: ui_assets.size_icon.clone().into(),
-                style: Style {
-                    margin: UiRect::all(Val::Px(5.0)),
-                    ..default()
-                },
-                ..default()
-            });
-
-            parent
-                .spawn(NodeBundle {
-                    style: Style {
-                        height: Val::Percent(100.0),
-                        width: Val::Percent(100.0),
-                        ..default()
-                    },
-                    ..default()
-                })
-                .with_children(|parent| {
-                    parent.spawn(NodeBundle {
-                        style: Style {
-                            width: Val::Percent(
-                                character.get_stat_percent(&CharacterStatType::Size),
-                            ),
-                            height: Val::Percent(50.0),
-                            align_self: AlignSelf::Center,
-                            ..default()
-                        },
-                        background_color: Color::WHITE.into(),
-                        ..default()
-                    });
-                });
-        });
+        }
     }
 
     fn spawn_ability_descriptions(
@@ -624,7 +400,7 @@ impl UiPlayerJoinChildBuilderExt for ChildBuilder<'_> {
                                     .with_children(|parent| {
                                         if player_idx == 0 {
                                             parent.spawn_button(
-                                                &ui_assets,
+                                                ui_assets,
                                                 font.clone(),
                                                 ButtonActionComponent::CharacterSelectJoin,
                                                 None,
@@ -865,11 +641,11 @@ fn update_ui_system(
             // get center ui for the current player slot and the next player slot
             let prev_character_selection_ui = character_selection_center
                 .iter()
-                .find(|x| x.0 .0 == *player_idx as u8);
+                .find(|x| x.0 .0 == *player_idx);
 
             let current_character_selection_ui = character_selection_center
                 .iter()
-                .find(|x| x.0 .0 == (*player_idx as u8) + 1);
+                .find(|x| x.0 .0 == player_idx + 1);
 
             // remove the join button from the previous character selection
             if let Some((_, entity)) = prev_character_selection_ui {
