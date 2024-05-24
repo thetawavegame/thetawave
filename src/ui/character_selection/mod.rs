@@ -37,7 +37,7 @@ use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
 use thetawave_interface::{
     abilities::AbilityDescriptionsResource,
     audio::PlaySoundEffectEvent,
-    character::CharacterStatType,
+    character::{Character, CharacterStatType},
     game,
     input::{InputsResource, MainMenuExplorer, MenuAction, MenuExplorer},
     states::{self, AppStates},
@@ -151,9 +151,116 @@ impl CharacterCarousel {
 
 pub trait UiPlayerJoinChildBuilderExt {
     fn spawn_player_join_row(&mut self, ui_assets: &UiAssets, font: Handle<Font>, players: Vec<u8>);
+    fn spawn_ability_descriptions(&mut self, ui_assets: &UiAssets, font: Handle<Font>, character: &Character, abilities_desc_res: &AbilityDescriptionsResource);
 }
 
 impl UiPlayerJoinChildBuilderExt for ChildBuilder<'_> {
+    fn spawn_ability_descriptions(&mut self, ui_assets: &UiAssets, font: Handle<Font>, character: &Character, abilities_desc_res: &AbilityDescriptionsResource) {
+        if let Some(slot_1_ability_type) = &character.slot_1_ability {
+            self
+                .spawn(NodeBundle {
+                    style: Style {
+                        width: Val::Percent(100.0),
+                        height: Val::Percent(25.0),
+                        align_content: AlignContent::Center,
+                        flex_direction: FlexDirection::Row,
+                        ..default()
+                    },
+                    ..default()
+                })
+                .with_children(|parent| {
+                    parent
+                        .spawn(ImageBundle {
+                            image: ui_assets.get_ability_slot_image(false).into(),
+                            ..default()
+                        })
+                        .with_children(|parent| {
+                            parent.spawn(ImageBundle {
+                                image: ui_assets
+                                    .get_slot_1_ability_image(slot_1_ability_type)
+                                    .into(),
+                                ..default()
+                            });
+                        });
+
+                    if let Some(ability_desc) = abilities_desc_res.slot_one.get(slot_1_ability_type)
+                    {
+                        parent.spawn(TextBundle {
+                            text: Text::from_section(
+                                ability_desc,
+                                TextStyle {
+                                    font: font.clone(),
+                                    font_size: 16.0,
+                                    color: Color::WHITE,
+                                },
+                            ),
+                            style: Style {
+                                margin: UiRect {
+                                    left: Val::Px(5.0),
+                                    right: Val::Px(5.0),
+                                    ..default()
+                                },
+                                ..default()
+                            },
+                            ..default()
+                        });
+                    }
+                });
+        }
+
+        if let Some(slot_2_ability_type) = &character.slot_2_ability {
+            self
+                .spawn(NodeBundle {
+                    style: Style {
+                        width: Val::Percent(100.0),
+                        height: Val::Percent(25.0),
+                        align_content: AlignContent::Center,
+                        flex_direction: FlexDirection::Row,
+                        ..default()
+                    },
+                    ..default()
+                })
+                .with_children(|parent| {
+                    parent
+                        .spawn(ImageBundle {
+                            image: ui_assets.get_ability_slot_image(false).into(),
+                            ..default()
+                        })
+                        .with_children(|parent| {
+                            parent.spawn(ImageBundle {
+                                image: ui_assets
+                                    .get_slot_2_ability_image(slot_2_ability_type)
+                                    .into(),
+                                ..default()
+                            });
+                        });
+
+                    if let Some(ability_desc) = abilities_desc_res.slot_two.get(slot_2_ability_type)
+                    {
+                        parent.spawn(TextBundle {
+                            text: Text::from_section(
+                                ability_desc,
+                                TextStyle {
+                                    font: font.clone(),
+                                    font_size: 16.0,
+                                    color: Color::WHITE,
+                                },
+                            ),
+                            style: Style {
+                                margin: UiRect {
+                                    left: Val::Px(5.0),
+                                    right: Val::Px(5.0),
+                                    ..default()
+                                },
+                                ..default()
+                            },
+                            ..default()
+                        });
+                    }
+                });
+        }
+    }
+
     fn spawn_player_join_row(
         &mut self,
         ui_assets: &UiAssets,
@@ -848,123 +955,7 @@ fn carousel_ui_system(
                                             commands.entity(entity).despawn_descendants();
 
                                             commands.entity(entity).with_children(|parent| {
-                                                if let Some(slot_1_ability_type) = &character.slot_1_ability
-                                                {
-                                                    parent
-                                                        .spawn(NodeBundle {
-                                                            style: Style {
-                                                                width: Val::Percent(100.0),
-                                                                height: Val::Percent(25.0),
-                                                                align_content: AlignContent::Center,
-                                                                flex_direction: FlexDirection::Row,
-                                                                ..default()
-                                                            },  
-                                                            ..default()
-                                                        })
-                                                        .with_children(|parent| {
-                                                            parent
-                                                                .spawn(ImageBundle {
-                                                                    image: ui_assets
-                                                                        .get_ability_slot_image(false)
-                                                                        .into(),
-                                                                    ..default()
-                                                                })
-                                                                .with_children(|parent| {
-                                                                    parent.spawn(ImageBundle {
-                                                                        image: ui_assets
-                                                                            .get_slot_1_ability_image(
-                                                                                slot_1_ability_type,
-                                                                            )
-                                                                            .into(),
-                                                                        ..default()
-                                                                    });
-                                                                });
-        
-                                                            if let Some(ability_desc) = abilities_desc_res
-                                                                .slot_one
-                                                                .get(slot_1_ability_type)
-                                                            {
-                                                                parent.spawn(TextBundle {
-                                                                    text: Text::from_section(
-                                                                        ability_desc,
-                                                                        TextStyle {
-                                                                            font: font.clone(),
-                                                                            font_size: 16.0,
-                                                                            color: Color::WHITE,
-                                                                        },
-                                                                    ),
-                                                                    style: Style {
-                                                                        margin: UiRect {
-                                                                            left: Val::Px(5.0),
-                                                                            right: Val::Px(5.0),
-                                                                            ..default()
-                                                                        },
-                                                                        ..default()
-                                                                    },
-                                                                    ..default()
-                                                                });
-                                                            }
-                                                        });
-                                                }
-        
-                                                if let Some(slot_2_ability_type) = &character.slot_2_ability
-                                                {
-                                                    parent
-                                                        .spawn(NodeBundle {
-                                                            style: Style {
-                                                                width: Val::Percent(100.0),
-                                                                height: Val::Percent(25.0),
-                                                                align_content: AlignContent::Center,
-                                                                flex_direction: FlexDirection::Row,
-                                                                ..default()
-                                                            },
-                                                            ..default()
-                                                        })
-                                                        .with_children(|parent| {
-                                                            parent
-                                                                .spawn(ImageBundle {
-                                                                    image: ui_assets
-                                                                        .get_ability_slot_image(false)
-                                                                        .into(),
-                                                                    ..default()
-                                                                })
-                                                                .with_children(|parent| {
-                                                                    parent.spawn(ImageBundle {
-                                                                        image: ui_assets
-                                                                            .get_slot_2_ability_image(
-                                                                                slot_2_ability_type,
-                                                                            )
-                                                                            .into(),
-                                                                        ..default()
-                                                                    });
-                                                                });
-        
-                                                            if let Some(ability_desc) = abilities_desc_res
-                                                                .slot_two
-                                                                .get(slot_2_ability_type)
-                                                            {
-                                                                parent.spawn(TextBundle {
-                                                                    text: Text::from_section(
-                                                                        ability_desc,
-                                                                        TextStyle {
-                                                                            font: font.clone(),
-                                                                            font_size: 16.0,
-                                                                            color: Color::WHITE,
-                                                                        },
-                                                                    ),
-                                                                    style: Style {
-                                                                        margin: UiRect {
-                                                                            left: Val::Px(5.0),
-                                                                            right: Val::Px(5.0),
-                                                                            ..default()
-                                                                        },
-                                                                        ..default()
-                                                                    },
-                                                                    ..default()
-                                                                });
-                                                            }
-                                                        });
-                                                }
+                                                parent.spawn_ability_descriptions(&ui_assets, font.clone(), character, &abilities_desc_res);
                                             });
                                         } else if let Ok(entity) = character_stats.get(*child_2) {
                                             commands.entity(entity).despawn_descendants();
@@ -1315,123 +1306,7 @@ fn carousel_ui_system(
                             for child_2 in children_2 {
                                 if let Ok(entity) = character_abilities.get(*child_2) {
                                     commands.entity(entity).with_children(|parent| {
-                                        if let Some(slot_1_ability_type) = &character.slot_1_ability
-                                        {
-                                            parent
-                                                .spawn(NodeBundle {
-                                                    style: Style {
-                                                        width: Val::Percent(100.0),
-                                                        height: Val::Percent(25.0),
-                                                        align_content: AlignContent::Center,
-                                                        flex_direction: FlexDirection::Row,
-                                                        ..default()
-                                                    },
-                                                    ..default()
-                                                })
-                                                .with_children(|parent| {
-                                                    parent
-                                                        .spawn(ImageBundle {
-                                                            image: ui_assets
-                                                                .get_ability_slot_image(false)
-                                                                .into(),
-                                                            ..default()
-                                                        })
-                                                        .with_children(|parent| {
-                                                            parent.spawn(ImageBundle {
-                                                                image: ui_assets
-                                                                    .get_slot_1_ability_image(
-                                                                        slot_1_ability_type,
-                                                                    )
-                                                                    .into(),
-                                                                ..default()
-                                                            });
-                                                        });
-
-                                                    if let Some(ability_desc) = abilities_desc_res
-                                                        .slot_one
-                                                        .get(slot_1_ability_type)
-                                                    {
-                                                        parent.spawn(TextBundle {
-                                                            text: Text::from_section(
-                                                                ability_desc,
-                                                                TextStyle {
-                                                                    font: font.clone(),
-                                                                    font_size: 16.0,
-                                                                    color: Color::WHITE,
-                                                                },
-                                                            ),
-                                                            style: Style {
-                                                                margin: UiRect {
-                                                                    left: Val::Px(5.0),
-                                                                    right: Val::Px(5.0),
-                                                                    ..default()
-                                                                },
-                                                                ..default()
-                                                            },
-                                                            ..default()
-                                                        });
-                                                    }
-                                                });
-                                        }
-
-                                        if let Some(slot_2_ability_type) = &character.slot_2_ability
-                                        {
-                                            parent
-                                                .spawn(NodeBundle {
-                                                    style: Style {
-                                                        width: Val::Percent(100.0),
-                                                        height: Val::Percent(25.0),
-                                                        align_content: AlignContent::Center,
-                                                        flex_direction: FlexDirection::Row,
-                                                        ..default()
-                                                    },
-                                                    ..default()
-                                                })
-                                                .with_children(|parent| {
-                                                    parent
-                                                        .spawn(ImageBundle {
-                                                            image: ui_assets
-                                                                .get_ability_slot_image(false)
-                                                                .into(),
-                                                            ..default()
-                                                        })
-                                                        .with_children(|parent| {
-                                                            parent.spawn(ImageBundle {
-                                                                image: ui_assets
-                                                                    .get_slot_2_ability_image(
-                                                                        slot_2_ability_type,
-                                                                    )
-                                                                    .into(),
-                                                                ..default()
-                                                            });
-                                                        });
-
-                                                    if let Some(ability_desc) = abilities_desc_res
-                                                        .slot_two
-                                                        .get(slot_2_ability_type)
-                                                    {
-                                                        parent.spawn(TextBundle {
-                                                            text: Text::from_section(
-                                                                ability_desc,
-                                                                TextStyle {
-                                                                    font: font.clone(),
-                                                                    font_size: 16.0,
-                                                                    color: Color::WHITE,
-                                                                },
-                                                            ),
-                                                            style: Style {
-                                                                margin: UiRect {
-                                                                    left: Val::Px(5.0),
-                                                                    right: Val::Px(5.0),
-                                                                    ..default()
-                                                                },
-                                                                ..default()
-                                                            },
-                                                            ..default()
-                                                        });
-                                                    }
-                                                });
-                                        }
+                                        parent.spawn_ability_descriptions(&ui_assets, font.clone(), character, &abilities_desc_res);
                                     });
                                 } else if let Ok(entity) = character_stats.get(*child_2) {
                                     commands.entity(entity).with_children(|parent| {
