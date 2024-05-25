@@ -72,7 +72,7 @@ impl ButtonActionComponent {
                     ui_assets.keyboard_key_return_layout.clone(),
                 ),
             ]),
-            Self::CharacterSelectReady(_) => player_input.map(|player_input| {
+            Self::CharacterSelectReady { .. } => player_input.map(|player_input| {
                 vec![
                     (match player_input {
                         PlayerInput::Keyboard => (
@@ -117,7 +117,7 @@ impl ButtonActionComponent {
                 height: Val::Percent(10.0),
                 ..default()
             },
-            Self::CharacterSelectReady(_) => Style {
+            Self::CharacterSelectReady { .. } => Style {
                 max_width: Val::Px(500.0),
                 width: Val::Percent(85.0),
                 min_width: Val::Px(300.0),
@@ -148,7 +148,7 @@ impl ButtonActionComponent {
                 padding: UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(5.0), Val::ZERO),
                 ..default()
             },
-            Self::CharacterSelectReady(_) => Style {
+            Self::CharacterSelectReady { .. } => Style {
                 width: Val::Percent(100.0),
                 height: Val::Percent(100.0),
                 justify_content: JustifyContent::Center,
@@ -182,7 +182,7 @@ impl ButtonActionComponent {
                 ui_assets.large_menu_button_image.clone(),
                 ui_assets.large_menu_button_layout.clone(),
             ),
-            Self::CharacterSelectReady(_) => (
+            Self::CharacterSelectReady { .. } => (
                 ui_assets.thetawave_menu_button_image.clone(),
                 ui_assets.thetawave_menu_button_layout.clone(),
             ),

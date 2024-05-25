@@ -27,11 +27,12 @@ use bevy::{
     ui::{
         node_bundles::{ImageBundle, NodeBundle, TextBundle},
         widget::Button,
-        AlignContent, AlignItems, AlignSelf, FlexDirection, Interaction, JustifyContent, Style,
-        UiImage, UiRect, Val,
+        AlignContent, AlignItems, AlignSelf, BackgroundColor, FlexDirection, Interaction,
+        JustifyContent, Style, UiImage, UiRect, Val,
     },
     utils::default,
 };
+use bevy_rapier2d::na::SimdBool;
 use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
 use strum::IntoEnumIterator;
 use thetawave_interface::{
@@ -64,6 +65,7 @@ impl Plugin for CharacterSelectionPlugin {
                 update_ui_system,
                 carousel_ui_system,
                 init_carousel_ui_system,
+                player_ready_system,
             )
                 .run_if(in_state(AppStates::CharacterSelection)),
         );
@@ -109,7 +111,10 @@ struct CharacterStatsDescriptions;
 struct CharacterCarouselSlot(u8);
 
 #[derive(Component)]
-struct PlayerReadyNode(u8);
+struct PlayerReadyNode {
+    pub player_idx: u8,
+    pub is_ready: bool,
+}
 
 impl CharacterCarousel {
     fn new(player_idx: u8) -> Self {
@@ -415,7 +420,10 @@ impl UiPlayerJoinChildBuilderExt for ChildBuilder<'_> {
                                         },
                                         ..default()
                                     })
-                                    .insert(PlayerReadyNode(player_idx));
+                                    .insert(PlayerReadyNode {
+                                        player_idx,
+                                        is_ready: false,
+                                    });
                             });
 
                         // Right side of player join
@@ -756,7 +764,7 @@ fn update_ui_system(
                 .iter()
                 .find(|x| x.0 .0 == *player_idx);
 
-            let player_ready_node = player_ready.iter().find(|x| x.0 .0 == *player_idx);
+            let player_ready_node = player_ready.iter().find(|x| x.0.player_idx == *player_idx);
 
             if let Some((_, entity)) = prev_character_selection_right_arrow_ui {
                 commands.entity(entity).with_children(|parent| {
@@ -813,6 +821,7 @@ fn character_selection_mouse_click_system(
     mut button_event_writer: EventWriter<ButtonActionEvent>,
     mut stored_right_mouse_interaction: Local<[Interaction; 4]>,
     mut stored_left_mouse_interaction: Local<[Interaction; 4]>,
+    mut stored_player_ready_interaction: Local<[Interaction; 4]>,
     players_resource: Res<PlayersResource>,
 ) {
     // check for a player using a keyboard input
@@ -840,14 +849,31 @@ fn character_selection_mouse_click_system(
             })
         {
             let button_released = match button_action {
+                ButtonActionComponent::CharacterSelectReady(player_idx) => {
+                    let result = {
+                        match mouse_interaction {
+                            Interaction::Hovered => {
+                                matches!(
+                                    stored_player_ready_interaction[*player_idx as usize],
+                                    Interaction::Pressed
+                                )
+                            }
+                            _ => false,
+                        }
+                    };
+                    stored_player_ready_interaction[*player_idx as usize] = *mouse_interaction;
+
+                    result
+                }
+
                 ButtonActionComponent::CharacterSelectRight(i) => {
                     let result = {
                         match mouse_interaction {
                             Interaction::Hovered => {
-                                match stored_right_mouse_interaction[*i as usize] {
-                                    Interaction::Pressed => true,
-                                    _ => false,
-                                }
+                                matches!(
+                                    stored_right_mouse_interaction[*i as usize],
+                                    Interaction::Pressed
+                                )
                             }
                             _ => false,
                         }
@@ -860,10 +886,10 @@ fn character_selection_mouse_click_system(
                     let result = {
                         match mouse_interaction {
                             Interaction::Hovered => {
-                                match stored_left_mouse_interaction[*i as usize] {
-                                    Interaction::Pressed => true,
-                                    _ => false,
-                                }
+                                matches!(
+                                    stored_left_mouse_interaction[*i as usize],
+                                    Interaction::Pressed
+                                )
                             }
                             _ => false,
                         }
@@ -906,6 +932,10 @@ fn character_selection_keyboard_gamepad_system(
         for action in action_state.get_just_released().iter() {
             if gamepad_idxs.contains(player_idx) {
                 match action {
+                    MenuAction::PlayerReadyGamepad => {
+                        button_event_writer
+                            .send(ButtonActionEvent::CharacterSelectReady(*player_idx));
+                    }
                     MenuAction::NavigateLeftGamepad => {
                         button_event_writer
                             .send(ButtonActionEvent::CharacterSelectLeft(*player_idx));
@@ -918,6 +948,10 @@ fn character_selection_keyboard_gamepad_system(
                 };
             } else {
                 match action {
+                    MenuAction::PlayerReadyKeyboard => {
+                        button_event_writer
+                            .send(ButtonActionEvent::CharacterSelectReady(*player_idx));
+                    }
                     MenuAction::NavigateLeftKeyboard => {
                         button_event_writer
                             .send(ButtonActionEvent::CharacterSelectLeft(*player_idx));
@@ -1186,6 +1220,39 @@ fn carousel_ui_system(
                     .get_mut(carousel.player_idx as usize)
                 {
                     player_data.character = visible_characters[1];
+                }
+            }
+        }
+    }
+}
+
+fn player_ready_system(
+    mut button_reader: EventReader<ButtonActionEvent>,
+    mut player_ready: Query<(&mut PlayerReadyNode, &Children)>,
+    ready_button_parents: Query<&Children>,
+    mut ready_button_backgrounds: Query<&mut BackgroundColor>,
+) {
+    for event in button_reader.read() {
+        if let ButtonActionEvent::CharacterSelectReady(player_idx) = event {
+            for (mut player_ready_node, ready_node_children) in player_ready.iter_mut() {
+                // if the button is not in the ready state, change it to ready and update the button color
+                if !player_ready_node.is_ready {
+                    player_ready_node.is_ready = true;
+
+                    if let Some(ready_button_parent_entity) = ready_node_children.first() {
+                        if let Ok(ready_button_parent_children) =
+                            ready_button_parents.get(*ready_button_parent_entity)
+                        {
+                            if let Some(ready_button_entity) = ready_button_parent_children.first()
+                            {
+                                if let Ok(mut background_color) =
+                                    ready_button_backgrounds.get_mut(*ready_button_entity)
+                                {
+                                    *background_color = Color::rgba(0.2, 1.0, 0.4, 1.0).into();
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

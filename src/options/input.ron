@@ -14,6 +14,7 @@
         (NavigateDownKeyboard, ArrowDown),
         (NavigateLeftKeyboard, ArrowLeft),
         (NavigateRightKeyboard, ArrowRight),
+        (PlayerReadyKeyboard, Enter),
     ],
     menu_gamepad: [
         (NavigateUpGamepad, DPadUp),
@@ -26,6 +27,7 @@
         (Reset, East),
         (ExitPauseMenu, Start),
         (PauseGame, Start),
+        (PlayerReadyGamepad, South),
     ],
     player_keyboard: [
         (MoveUp, KeyW),

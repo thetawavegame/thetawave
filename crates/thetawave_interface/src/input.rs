@@ -29,6 +29,8 @@ pub enum MenuAction {
     NavigateRightKeyboard,
     NavigateLeftGamepad,
     NavigateRightGamepad,
+    PlayerReadyKeyboard,
+    PlayerReadyGamepad,
 }
 
 /// Player actions during the main game/while fighting mobs. Many of these can be simultaneously
