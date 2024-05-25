@@ -5,7 +5,6 @@ use serde::Deserialize;
 use thetawave_interface::input::{InputsResource, MainMenuExplorer, MenuAction, PlayerAction};
 
 /// Spawns entity to track navigation over menus
-/// Given an id of 0 to indicate it is for player 1
 pub fn spawn_menu_explorer_system(mut commands: Commands, inputs_res: Res<InputsResource>) {
     commands
         .spawn(InputManagerBundle::<MenuAction> {

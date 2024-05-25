@@ -812,7 +812,8 @@ fn update_ui_system(
                     action_state: ActionState::default(),
                     input_map,
                 })
-                .insert(MenuExplorer(*player_idx));
+                .insert(MenuExplorer(*player_idx))
+                .insert(CharacterSelectionCleanup);
         }
     }
 }
