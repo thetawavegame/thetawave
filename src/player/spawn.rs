@@ -84,7 +84,7 @@ pub(super) fn spawn_players_system(
     abilities_res: Res<AbilitiesResource>,
 ) {
     // check if more than one player is playing
-    let is_multiplayer = players_resource.player_data[1].is_some();
+    let is_multiplayer = players_resource.player_data.get(1).is_some();
 
     for (player_id, maybe_player_data) in players_resource
         .player_data

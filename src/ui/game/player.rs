@@ -111,7 +111,7 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
         ui_assets: &UiAssets,
     ) {
         // Only spawn ui for player with id if its player slot is filled
-        if let Some(player_data) = &players_res.player_data[id as usize] {
+        if let Some(Some(player_data)) = &players_res.player_data.get(id as usize) {
             // Get character for the player slot
             let character = characters_res
                 .characters
