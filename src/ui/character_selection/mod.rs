@@ -935,7 +935,7 @@ fn character_selection_keyboard_gamepad_system(
 
 fn init_carousel_ui_system(
     mut commands: Commands,
-    mut character_carousels: Query<(Entity, &mut CharacterCarousel), Without<Children>>,
+    character_carousels: Query<(Entity, &CharacterCarousel), Without<Children>>,
     player_assets: Res<PlayerAssets>,
     character_descriptions: Query<(&CharacterDescription, &Children)>,
     characters_res: Res<CharactersResource>,
@@ -950,7 +950,7 @@ fn init_carousel_ui_system(
 ) {
     let font: Handle<Font> = asset_server.load("fonts/Lunchds.ttf");
 
-    for (carousel_entity, mut carousel) in character_carousels.iter_mut() {
+    for (carousel_entity, carousel) in character_carousels.iter() {
         let carousel_player_idx = carousel.player_idx;
         let visible_characters = carousel.get_visible_characters();
 
@@ -1008,39 +1008,45 @@ fn init_carousel_ui_system(
                 .insert(CharacterCarouselSlot(2));
         });
 
+        // set the character description to the middle character
         if let Some(character) = characters_res.characters.get(&visible_characters[1]) {
-            // set the character description to the middle character
-            if let Some(children_1) =
+            if let Some(char_desc_children) =
                 character_descriptions
                     .iter()
-                    .find_map(|(character_description, text)| {
+                    .find_map(|(character_description, children)| {
                         if character_description.0 == carousel_player_idx {
-                            Some(text)
+                            Some(children)
                         } else {
                             None
                         }
                     })
             {
-                for child_1 in children_1.iter() {
-                    if let Ok(mut character_name_text) = character_names.get_mut(*child_1) {
+                for char_desc_child in char_desc_children.iter() {
+                    if let Ok(mut character_name_text) = character_names.get_mut(*char_desc_child) {
                         character_name_text.sections[0]
                             .value
                             .clone_from(&character.name);
                     }
 
-                    if let Ok(children_2) = character_info.get(*child_1) {
-                        for child_2 in children_2 {
-                            if let Ok(entity) = character_abilities.get(*child_2) {
-                                commands.entity(entity).with_children(|parent| {
-                                    parent.spawn_ability_descriptions(
-                                        &ui_assets,
-                                        font.clone(),
-                                        character,
-                                        &abilities_desc_res,
-                                    );
-                                });
-                            } else if let Ok(entity) = character_stats.get(*child_2) {
-                                commands.entity(entity).with_children(|parent| {
+                    if let Ok(char_info_children) = character_info.get(*char_desc_child) {
+                        for char_info_child in char_info_children {
+                            if let Ok(char_ability_entity) =
+                                character_abilities.get(*char_info_child)
+                            {
+                                commands
+                                    .entity(char_ability_entity)
+                                    .with_children(|parent| {
+                                        parent.spawn_ability_descriptions(
+                                            &ui_assets,
+                                            font.clone(),
+                                            character,
+                                            &abilities_desc_res,
+                                        );
+                                    });
+                            } else if let Ok(char_stats_entity) =
+                                character_stats.get(*char_info_child)
+                            {
+                                commands.entity(char_stats_entity).with_children(|parent| {
                                     parent.spawn_stats(&ui_assets, character);
                                 });
                             }
@@ -1062,7 +1068,7 @@ fn init_carousel_ui_system(
 
 fn carousel_ui_system(
     mut commands: Commands,
-    mut character_carousels: Query<(Entity, &mut CharacterCarousel, &Children)>,
+    mut character_carousels: Query<(&mut CharacterCarousel, &Children)>,
     character_descriptions: Query<(&CharacterDescription, &Children)>,
     mut character_names: Query<&mut Text, With<CharacterName>>,
     character_info: Query<&Children, With<CharacterInfo>>,
@@ -1081,7 +1087,7 @@ fn carousel_ui_system(
 
     let button_events: Vec<&ButtonActionEvent> = button_reader.read().collect();
 
-    for (carousel_entity, mut carousel, carousel_children) in character_carousels.iter_mut() {
+    for (mut carousel, carousel_children) in character_carousels.iter_mut() {
         let carousel_player_idx = carousel.player_idx;
         for button in button_events.iter().filter(|action| match action {
             ButtonActionEvent::CharacterSelectLeft(i) => *i == carousel_player_idx,
