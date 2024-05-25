@@ -17,7 +17,7 @@ use bevy::{
         entity::Entity,
         event::{EventReader, EventWriter},
         query::{With, Without},
-        schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter},
+        schedule::{common_conditions::in_state, IntoSystemConfigs, NextState, OnEnter},
         system::{Commands, Local, Query, Res, ResMut},
     },
     hierarchy::{BuildChildren, ChildBuilder, Children, DespawnRecursiveExt},
@@ -66,6 +66,7 @@ impl Plugin for CharacterSelectionPlugin {
                 carousel_ui_system,
                 init_carousel_ui_system,
                 player_ready_system,
+                check_players_ready_system,
             )
                 .run_if(in_state(AppStates::CharacterSelection)),
         );
@@ -1116,6 +1117,7 @@ fn carousel_ui_system(
     abilities_desc_res: Res<AbilityDescriptionsResource>,
     ui_assets: Res<UiAssets>,
     asset_server: Res<AssetServer>,
+    player_ready_node: Query<&PlayerReadyNode>,
 ) {
     let font: Handle<Font> = asset_server.load("fonts/Lunchds.ttf");
 
@@ -1123,103 +1125,113 @@ fn carousel_ui_system(
 
     for (mut carousel, carousel_children) in character_carousels.iter_mut() {
         let carousel_player_idx = carousel.player_idx;
-        for button in button_events.iter().filter(|action| match action {
-            ButtonActionEvent::CharacterSelectLeft(i) => *i == carousel_player_idx,
-            ButtonActionEvent::CharacterSelectRight(i) => *i == carousel_player_idx,
-            _ => false,
-        }) {
-            // rotate the carousel if correseponding button input is detected
-            // save the new 3 visible characters in the carousel
-            let new_characters = if let ButtonActionEvent::CharacterSelectRight(_) = button {
-                carousel.rotate_right();
-                Some(carousel.get_visible_characters())
-            } else if let ButtonActionEvent::CharacterSelectLeft(_) = button {
-                carousel.rotate_left();
-                Some(carousel.get_visible_characters())
-            } else {
-                None
-            };
 
-            // set the correct image of each of the visible characters in the carousel
-            if let Some(visible_characters) = new_characters {
-                for carousel_child in carousel_children.iter() {
-                    if let Ok((mut ui_image, slot)) = carousel_slots.get_mut(*carousel_child) {
-                        *ui_image = player_assets
-                            .get_asset(&visible_characters[slot.0 as usize])
-                            .into();
+        // only allow the player to change characters if they are not ready
+        let player_ready_node = player_ready_node
+            .iter()
+            .find(|node| node.player_idx == carousel_player_idx);
+
+        if player_ready_node.is_some_and(|node| !node.is_ready) {
+            for button in button_events.iter().filter(|action| match action {
+                ButtonActionEvent::CharacterSelectLeft(i) => *i == carousel_player_idx,
+                ButtonActionEvent::CharacterSelectRight(i) => *i == carousel_player_idx,
+                _ => false,
+            }) {
+                // rotate the carousel if correseponding button input is detected
+                // save the new 3 visible characters in the carousel
+                let new_characters = if let ButtonActionEvent::CharacterSelectRight(_) = button {
+                    carousel.rotate_right();
+                    Some(carousel.get_visible_characters())
+                } else if let ButtonActionEvent::CharacterSelectLeft(_) = button {
+                    carousel.rotate_left();
+                    Some(carousel.get_visible_characters())
+                } else {
+                    None
+                };
+
+                // set the correct image of each of the visible characters in the carousel
+                if let Some(visible_characters) = new_characters {
+                    for carousel_child in carousel_children.iter() {
+                        if let Ok((mut ui_image, slot)) = carousel_slots.get_mut(*carousel_child) {
+                            *ui_image = player_assets
+                                .get_asset(&visible_characters[slot.0 as usize])
+                                .into();
+                        }
                     }
-                }
 
-                // set the character description to the middle character
-                if let Some(character) = characters_res.characters.get(&visible_characters[1]) {
-                    if let Some(char_desc_children) = character_descriptions.iter().find_map(
-                        |(character_description, children)| {
-                            if character_description.0 == carousel_player_idx {
-                                Some(children)
-                            } else {
-                                None
-                            }
-                        },
-                    ) {
-                        for char_desc_child in char_desc_children.iter() {
-                            // check if child entity is for the character name or for the character info
-                            if let Ok(mut character_name_text) =
-                                character_names.get_mut(*char_desc_child)
-                            {
-                                // replace the character name with the name of the new middle character
-                                character_name_text.sections[0]
-                                    .value
-                                    .clone_from(&character.name);
-                            } else if let Ok(char_info_children) =
-                                character_info.get(*char_desc_child)
-                            {
-                                for char_info_child in char_info_children {
-                                    // check if the child is for the character abilities or the character stats
-                                    if let Ok(char_abilities_entity) =
-                                        character_abilities.get(*char_info_child)
-                                    {
-                                        // despawn the existing ability descriptions
-                                        commands
-                                            .entity(char_abilities_entity)
-                                            .despawn_descendants();
+                    // set the character description to the middle character
+                    if let Some(character) = characters_res.characters.get(&visible_characters[1]) {
+                        if let Some(char_desc_children) = character_descriptions.iter().find_map(
+                            |(character_description, children)| {
+                                if character_description.0 == carousel_player_idx {
+                                    Some(children)
+                                } else {
+                                    None
+                                }
+                            },
+                        ) {
+                            for char_desc_child in char_desc_children.iter() {
+                                // check if child entity is for the character name or for the character info
+                                if let Ok(mut character_name_text) =
+                                    character_names.get_mut(*char_desc_child)
+                                {
+                                    // replace the character name with the name of the new middle character
+                                    character_name_text.sections[0]
+                                        .value
+                                        .clone_from(&character.name);
+                                } else if let Ok(char_info_children) =
+                                    character_info.get(*char_desc_child)
+                                {
+                                    for char_info_child in char_info_children {
+                                        // check if the child is for the character abilities or the character stats
+                                        if let Ok(char_abilities_entity) =
+                                            character_abilities.get(*char_info_child)
+                                        {
+                                            // despawn the existing ability descriptions
+                                            commands
+                                                .entity(char_abilities_entity)
+                                                .despawn_descendants();
 
-                                        // spawn ability descriptions as children
-                                        commands.entity(char_abilities_entity).with_children(
-                                            |parent| {
-                                                parent.spawn_ability_descriptions(
-                                                    &ui_assets,
-                                                    font.clone(),
-                                                    character,
-                                                    &abilities_desc_res,
-                                                );
-                                            },
-                                        );
-                                    } else if let Ok(char_stats_entity) =
-                                        character_stats.get(*char_info_child)
-                                    {
-                                        // despawn all of the existing stats
-                                        commands.entity(char_stats_entity).despawn_descendants();
+                                            // spawn ability descriptions as children
+                                            commands.entity(char_abilities_entity).with_children(
+                                                |parent| {
+                                                    parent.spawn_ability_descriptions(
+                                                        &ui_assets,
+                                                        font.clone(),
+                                                        character,
+                                                        &abilities_desc_res,
+                                                    );
+                                                },
+                                            );
+                                        } else if let Ok(char_stats_entity) =
+                                            character_stats.get(*char_info_child)
+                                        {
+                                            // despawn all of the existing stats
+                                            commands
+                                                .entity(char_stats_entity)
+                                                .despawn_descendants();
 
-                                        // spawn character stats as children
-                                        commands.entity(char_stats_entity).with_children(
-                                            |parent| {
-                                                parent.spawn_stats(&ui_assets, character);
-                                            },
-                                        );
+                                            // spawn character stats as children
+                                            commands.entity(char_stats_entity).with_children(
+                                                |parent| {
+                                                    parent.spawn_stats(&ui_assets, character);
+                                                },
+                                            );
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
 
-                // set the character in the players resource to the middle visible character
-                // this value is later read to spawn the correct the correct player in the game state
-                if let Some(Some(player_data)) = players_res
-                    .player_data
-                    .get_mut(carousel.player_idx as usize)
-                {
-                    player_data.character = visible_characters[1];
+                    // set the character in the players resource to the middle visible character
+                    // this value is later read to spawn the correct the correct player in the game state
+                    if let Some(Some(player_data)) = players_res
+                        .player_data
+                        .get_mut(carousel.player_idx as usize)
+                    {
+                        player_data.character = visible_characters[1];
+                    }
                 }
             }
         }
@@ -1235,20 +1247,23 @@ fn player_ready_system(
     for event in button_reader.read() {
         if let ButtonActionEvent::CharacterSelectReady(player_idx) = event {
             for (mut player_ready_node, ready_node_children) in player_ready.iter_mut() {
-                // if the button is not in the ready state, change it to ready and update the button color
-                if !player_ready_node.is_ready {
-                    player_ready_node.is_ready = true;
+                if *player_idx == player_ready_node.player_idx {
+                    // if the button is not in the ready state, change it to ready and update the button color
+                    if !player_ready_node.is_ready {
+                        player_ready_node.is_ready = true;
 
-                    if let Some(ready_button_parent_entity) = ready_node_children.first() {
-                        if let Ok(ready_button_parent_children) =
-                            ready_button_parents.get(*ready_button_parent_entity)
-                        {
-                            if let Some(ready_button_entity) = ready_button_parent_children.first()
+                        if let Some(ready_button_parent_entity) = ready_node_children.first() {
+                            if let Ok(ready_button_parent_children) =
+                                ready_button_parents.get(*ready_button_parent_entity)
                             {
-                                if let Ok(mut background_color) =
-                                    ready_button_backgrounds.get_mut(*ready_button_entity)
+                                if let Some(ready_button_entity) =
+                                    ready_button_parent_children.first()
                                 {
-                                    *background_color = Color::rgba(0.2, 1.0, 0.4, 1.0).into();
+                                    if let Ok(mut background_color) =
+                                        ready_button_backgrounds.get_mut(*ready_button_entity)
+                                    {
+                                        *background_color = Color::rgba(0.2, 1.0, 0.4, 1.0).into();
+                                    }
                                 }
                             }
                         }
@@ -1256,5 +1271,30 @@ fn player_ready_system(
                 }
             }
         }
+    }
+}
+
+fn check_players_ready_system(
+    players_res: Res<PlayersResource>,
+    player_ready_nodes: Query<&PlayerReadyNode>,
+    mut next_app_state: ResMut<NextState<AppStates>>,
+) {
+    let mut all_players_ready = true;
+
+    // check if every node matching a used player slot is readys
+    for node in player_ready_nodes.iter() {
+        let node_ready = node.is_ready;
+        let corresponding_player_exists = players_res
+            .player_data
+            .get(node.player_idx as usize)
+            .is_some();
+
+        if !node_ready && corresponding_player_exists {
+            all_players_ready = false;
+        }
+    }
+
+    if !players_res.player_data.is_empty() && all_players_ready {
+        next_app_state.set(AppStates::InitializeRun);
     }
 }
