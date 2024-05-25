@@ -142,5 +142,6 @@ impl Character {
                         / stat.get_divisor()
                 }
             }
+            .min(100.0)
     }
 }
