@@ -895,6 +895,8 @@ fn mouse_click_input_system(
                     return *i == keyboard_idx;
                 } else if let ButtonActionComponent::CharacterSelectRight(i) = button_action {
                     return *i == keyboard_idx;
+                } else if let ButtonActionComponent::CharacterSelectReady(i) = button_action {
+                    return *i == keyboard_idx;
                 }
                 false
             })
