@@ -26,7 +26,7 @@ use crate::assets::UiAssets;
 /// `AppStates::MainMenu` to `AppStates::CharacterSelection`, plus possibly a few digressions and
 /// sprinkles.
 #[derive(Component, Event, Clone, PartialEq, Eq, Copy, Debug)]
-pub enum ButtonActionComponent {
+pub(super) enum ButtonActionComponent {
     CharacterSelectReady(u8),
     CharacterSelectJoin,
     CharacterSelectRight(u8),
@@ -37,12 +37,12 @@ pub enum ButtonActionComponent {
     QuitGame,
 }
 
-pub type ButtonActionEvent = ButtonActionComponent;
+pub(super) type ButtonActionEvent = ButtonActionComponent;
 
 impl ButtonActionComponent {
     /// The label that will show on the main menu screen for the button representing this
     /// option/action
-    pub fn text(&self) -> Option<&'static str> {
+    fn text(&self) -> Option<&'static str> {
         match self {
             Self::EnterCharacterSelection => Some("Start Game"),
             Self::EnterOptions => Some("Options"),
@@ -56,7 +56,7 @@ impl ButtonActionComponent {
     }
 
     /// Get input button animations to show on the button
-    pub fn inputs(
+    fn get_input_images(
         &self,
         ui_assets: &UiAssets,
         player_input: Option<PlayerInput>, // optional input method (keyboard/gamepad) of the player that the button belongs to
@@ -92,7 +92,7 @@ impl ButtonActionComponent {
 
     /// External style applied to buttons
     /// Returns different styles based the based on the button action
-    fn external_style(&self) -> Style {
+    fn get_external_style(&self) -> Style {
         match self {
             Self::EnterCharacterSelection
             | Self::EnterOptions
@@ -129,7 +129,7 @@ impl ButtonActionComponent {
 
     /// Internal style of the ui inside of the button
     /// such as the text and the input symbols
-    fn internal_style(&self) -> Style {
+    fn get_internal_style(&self) -> Style {
         match self {
             Self::EnterCharacterSelection
             | Self::EnterOptions
@@ -192,7 +192,7 @@ impl ButtonActionComponent {
 
 // Handles state changes for buttons. This runs when a user actually
 // clicks/whacks enter on a button in the main menu
-pub fn button_action_change_state_system(
+pub(super) fn button_action_change_state_system(
     mut button_event_reader: EventReader<ButtonActionEvent>,
     mut next_app_state: ResMut<NextState<AppStates>>,
     mut exit: EventWriter<AppExit>,
@@ -213,7 +213,7 @@ pub fn button_action_change_state_system(
 }
 
 /// Extension trait for spawning customized UI elements for Thetawave
-pub trait UiButtonChildBuilderExt {
+pub(super) trait UiButtonChildBuilderExt {
     /// Spawn a Thetawave-stylized menu button
     fn spawn_button(
         &mut self,
@@ -234,7 +234,7 @@ impl UiButtonChildBuilderExt for ChildBuilder<'_> {
     ) {
         // Spawn button bundle entity, with a child entity containing the texture
         self.spawn(ButtonBundle {
-            style: action.external_style(),
+            style: action.get_external_style(),
             background_color: BackgroundColor(Color::NONE),
             ..default()
         })
@@ -246,7 +246,7 @@ impl UiButtonChildBuilderExt for ChildBuilder<'_> {
                 .spawn(AtlasImageBundle {
                     image: button_asset.0.into(),
                     texture_atlas: button_asset.1.into(),
-                    style: action.internal_style(),
+                    style: action.get_internal_style(),
                     ..default()
                 })
                 .with_children(|parent| {
@@ -264,7 +264,8 @@ impl UiButtonChildBuilderExt for ChildBuilder<'_> {
                         );
                     }
 
-                    if let Some(inputs) = action.inputs(ui_assets, player_input.copied()) {
+                    if let Some(inputs) = action.get_input_images(ui_assets, player_input.copied())
+                    {
                         // Row for all button inputs
                         parent
                             .spawn(NodeBundle {

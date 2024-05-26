@@ -1,4 +1,4 @@
-use std::{collections::VecDeque, default};
+use std::collections::VecDeque;
 
 use bevy_math::Vec2;
 use serde::Deserialize;

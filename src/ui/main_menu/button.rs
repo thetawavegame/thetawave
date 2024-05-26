@@ -7,40 +7,24 @@ use crate::{
     ui::button::{ButtonActionComponent, ButtonActionEvent, UiButtonChildBuilderExt},
 };
 use bevy::{
-    app::AppExit,
     asset::Handle,
     ecs::{
-        component::Component,
-        event::{Event, EventReader, EventWriter},
+        event::EventWriter,
         query::{Changed, With},
-        schedule::NextState,
-        system::{Local, Query, ResMut},
+        system::{Local, Query},
     },
-    hierarchy::{BuildChildren, ChildBuilder, Children},
+    hierarchy::{ChildBuilder, Children},
     log::{error, info},
-    render::color::Color,
     sprite::TextureAtlas,
-    text::{Font, TextStyle},
-    ui::{
-        node_bundles::{AtlasImageBundle, ButtonBundle, TextBundle},
-        widget::Button,
-        AlignItems, BackgroundColor, Interaction, JustifyContent, Style, UiRect, Val,
-    },
-    utils::default,
+    text::Font,
+    ui::{widget::Button, Interaction, Style, UiRect, Val},
 };
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     input::{MainMenuExplorer, MenuAction},
-    states::AppStates,
 };
 
-const BUTTON_WIDTH: Val = Val::Percent(25.0);
-const BUTTON_MAX_WIDTH: Val = Val::Px(500.0);
-const BUTTON_MIN_WIDTH: Val = Val::Px(200.0);
-const BUTTON_MARGIN: UiRect =
-    UiRect::new(Val::Auto, Val::Auto, Val::Percent(1.0), Val::Percent(1.0));
-const BUTTON_ASPECT_RATIO: Option<f32> = Some(160.0 / 34.0);
 const BUTTON_TEXTURE_PADDING: UiRect =
     UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(5.0), Val::ZERO);
 const BUTTON_TEXTURE_PADDING_HOVERED: UiRect =

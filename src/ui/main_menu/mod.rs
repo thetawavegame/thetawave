@@ -27,7 +27,7 @@ use thetawave_interface::states::{AppStates, MainMenuCleanup};
 mod button;
 use self::button::main_menu_button_selection_and_click_system;
 use self::button::UiChildBuilderExt;
-use super::button::ButtonActionEvent;
+
 /// Renders a button-based UI to transition the app from `AppStates::MainMenu` to
 /// `AppStates::CharacterSelection`, possibly with some digressions. Without this plugin, the game will
 /// never progress past a blank main menu screen and the user cannot start the run.
