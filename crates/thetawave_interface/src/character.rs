@@ -30,19 +30,6 @@ pub enum CharacterStatType {
     Size,
 }
 
-impl CharacterStatType {
-    fn get_divisor(&self) -> f32 {
-        match self {
-            CharacterStatType::Damage => 50.0,
-            CharacterStatType::Health => 160.0,
-            CharacterStatType::Range => 1.0,
-            CharacterStatType::FireRate => 5.0,
-            CharacterStatType::Size => 30.0,
-            CharacterStatType::Speed => 800.0,
-        }
-    }
-}
-
 impl CharacterType {
     pub fn to_vec() -> VecDeque<CharacterType> {
         CharacterType::iter().collect()
@@ -110,38 +97,5 @@ impl From<&Character> for HealthComponent {
             character.shields,
             character.shields_recharge_rate,
         )
-    }
-}
-
-impl Character {
-    pub fn get_stat_percent(&self, stat: &CharacterStatType) -> f32 {
-        100.0
-            * match stat {
-                CharacterStatType::Damage => {
-                    (self.collision_damage as f32
-                        + (self.weapon_damage as f32 * self.projectile_count as f32))
-                        / stat.get_divisor()
-                }
-                CharacterStatType::Health => {
-                    (self.health as f32 + self.shields as f32) / stat.get_divisor()
-                }
-                CharacterStatType::Range => self.projectile_despawn_time / stat.get_divisor(),
-                CharacterStatType::FireRate => {
-                    (stat.get_divisor() - self.cooldown_multiplier) / stat.get_divisor()
-                }
-                CharacterStatType::Size => {
-                    (self.collider_dimensions.x * self.collider_dimensions.y) / stat.get_divisor()
-                }
-                CharacterStatType::Speed => {
-                    (self.acceleration.x
-                        + self.acceleration.y
-                        + self.deceleration.x
-                        + self.deceleration.y
-                        + self.speed.x
-                        + self.speed.y)
-                        / stat.get_divisor()
-                }
-            }
-            .min(100.0)
     }
 }
