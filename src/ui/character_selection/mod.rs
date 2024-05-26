@@ -481,7 +481,7 @@ pub(super) fn setup_character_selection_system(
             let mut bottom_row_player_idxs = vec![];
 
             for i in 0..game_params_res.get_max_players() {
-                if (top_row_player_idxs.len() as u8) < game_params_res.get_max_players() / 2 {
+                if (top_row_player_idxs.len() as u8) <= 1 {
                     top_row_player_idxs.push(i);
                 } else {
                     bottom_row_player_idxs.push(i)
