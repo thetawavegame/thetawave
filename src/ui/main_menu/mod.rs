@@ -53,11 +53,10 @@ impl Plugin for MainMenuUIPlugin {
 /// component is the main way to undo the side effects of this system.
 fn setup_main_menu_system(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     ui_assets: Res<UiAssets>,
 ) {
-    let font: Handle<Font> = asset_server.load("fonts/Lunchds.ttf");
+    let font = ui_assets.lunchds_font.clone();
 
     change_bg_music_event_writer.send(ChangeBackgroundMusicEvent {
         bg_music_type: Some(BGMusicType::Main),
