@@ -1,6 +1,6 @@
 //! Systems to spawn and style the character selection screen, where each player picks a character
 //! from one of a few options, and possibly enables/diables the tutorial.
-use crate::{options::PlayingOnArcadeResource, run::CurrentRunProgressResource};
+use crate::{assets::UiAssets, options::PlayingOnArcadeResource, run::CurrentRunProgressResource};
 
 use super::BouncingPromptComponent;
 use bevy::{
@@ -75,9 +75,10 @@ pub(super) struct ToggleTutorialUI;
 pub(super) fn setup_character_selection_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
+    ui_assets: Res<UiAssets>,
     playing_on_arcade: Res<PlayingOnArcadeResource>,
 ) {
-    let font = asset_server.load("fonts/wibletown-regular.otf");
+    let font = ui_assets.lunchds_font.clone();
 
     commands
         .spawn(NodeBundle {

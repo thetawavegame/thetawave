@@ -5,7 +5,6 @@ use crate::{
     assets::UiAssets,
 };
 use bevy::{
-    asset::{AssetServer, Handle},
     ecs::{
         event::EventWriter,
         system::{Commands, Res},
@@ -13,7 +12,6 @@ use bevy::{
     hierarchy::BuildChildren,
     prelude::{in_state, App, IntoSystemConfigs, OnEnter, Plugin, Update},
     render::color::Color,
-    text::Font,
     time::{Timer, TimerMode},
     ui::{
         node_bundles::{AtlasImageBundle, NodeBundle},
