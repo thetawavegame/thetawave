@@ -87,7 +87,7 @@ pub(super) fn setup_game_ui_system(
     players_resource: Res<PlayersResource>,
     characters_resource: Res<CharactersResource>,
 ) {
-    let font: Handle<Font> = ui_assets.wibletown_font.clone();
+    let font: Handle<Font> = ui_assets.lunchds_font.clone();
 
     commands.spawn_border_gradient(&ui_assets, BorderGradientType::Defense);
     commands.spawn_border_gradient(&ui_assets, BorderGradientType::Warning);
