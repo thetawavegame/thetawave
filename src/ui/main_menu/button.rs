@@ -2,90 +2,44 @@
 //! vertically layed out on the main menu, and change the state from
 //! `thetawave_interface::states::AppStates::MainMenu` to
 //! `thetawave_interface::states::AppStates::CharacterSelection`
-use crate::assets::UiAssets;
+use crate::{
+    assets::UiAssets,
+    ui::button::{ButtonActionComponent, ButtonActionEvent, UiButtonChildBuilderExt},
+};
 use bevy::{
-    app::AppExit,
     asset::Handle,
     ecs::{
-        component::Component,
-        event::{Event, EventReader, EventWriter},
+        event::EventWriter,
         query::{Changed, With},
-        schedule::NextState,
-        system::{Local, Query, ResMut},
+        system::{Local, Query},
     },
-    hierarchy::{BuildChildren, ChildBuilder, Children},
+    hierarchy::{ChildBuilder, Children},
     log::{error, info},
-    render::color::Color,
     sprite::TextureAtlas,
-    text::{Font, TextStyle},
-    ui::{
-        node_bundles::{AtlasImageBundle, ButtonBundle, TextBundle},
-        widget::Button,
-        AlignItems, BackgroundColor, Interaction, JustifyContent, Style, UiRect, Val,
-    },
-    utils::default,
+    text::Font,
+    ui::{widget::Button, Interaction, Style, UiRect, Val},
 };
 use leafwing_input_manager::prelude::ActionState;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
-    input::{MenuAction, MenuExplorer},
-    states::AppStates,
+    input::{MainMenuExplorer, MenuAction},
 };
 
-const BUTTON_WIDTH: Val = Val::Percent(25.0);
-const BUTTON_MAX_WIDTH: Val = Val::Px(500.0);
-const BUTTON_MIN_WIDTH: Val = Val::Px(200.0);
-const BUTTON_MARGIN: UiRect =
-    UiRect::new(Val::Auto, Val::Auto, Val::Percent(1.0), Val::Percent(1.0));
-const BUTTON_ASPECT_RATIO: Option<f32> = Some(160.0 / 34.0);
 const BUTTON_TEXTURE_PADDING: UiRect =
-    UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(9.0), Val::ZERO);
+    UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(5.0), Val::ZERO);
 const BUTTON_TEXTURE_PADDING_HOVERED: UiRect =
-    UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(10.5), Val::ZERO);
+    UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(8.5), Val::ZERO);
 
-/// Event and Component for giving and sending menu buttons actions to move the user from
-/// `AppStates::MainMenu` to `AppStates::CharacterSelection`, plus possibly a few digressions and
-/// sprinkles.
-#[derive(Component, Event, Clone, PartialEq, Eq, Copy, Debug)]
-pub(super) enum MainMenuButtonActionComponent {
-    EnterCharacterSelection,
-    EnterOptions,
-    EnterCompendium,
-    QuitGame,
-}
-
-impl MainMenuButtonActionComponent {
-    /// The label that will show on the main menu screen for the button representing this
-    /// option/action
-    fn in_game_text(&self) -> &'static str {
-        match self {
-            Self::EnterCharacterSelection => "Start Game",
-            Self::EnterOptions => "Options",
-            Self::EnterCompendium => "Compendium",
-            Self::QuitGame => "Exit Game",
-        }
-    }
-}
 /// This is the order (vertical, going down) of the buttons shown on the main menu UI.
-const MAIN_MENU_BUTTON_ORDER: [MainMenuButtonActionComponent; 4] = [
-    MainMenuButtonActionComponent::EnterCharacterSelection,
-    MainMenuButtonActionComponent::EnterOptions,
-    MainMenuButtonActionComponent::EnterCompendium,
-    MainMenuButtonActionComponent::QuitGame,
+const MAIN_MENU_BUTTON_ORDER: [ButtonActionComponent; 4] = [
+    ButtonActionComponent::EnterCharacterSelection,
+    ButtonActionComponent::EnterOptions,
+    ButtonActionComponent::EnterCompendium,
+    ButtonActionComponent::QuitGame,
 ];
-
-pub(super) type MainMenuButtonActionEvent = MainMenuButtonActionComponent;
 
 /// Extension trait for spawning customized UI elements for Thetawave
 pub(super) trait UiChildBuilderExt {
-    /// Spawn a Thetawave-stylized menu button
-    fn spawn_main_menu_button(
-        &mut self,
-        ui_assets: &UiAssets,
-        text: String,
-        font: Handle<Font>,
-        action: MainMenuButtonActionComponent,
-    );
     // Spawn 1 menu button for each element of `MainMenuButtonActionComponent`
     fn spawn_main_menu_buttons(&mut self, ui_assets: &UiAssets, font: Handle<Font>) -> &mut Self;
 }
@@ -93,63 +47,10 @@ pub(super) trait UiChildBuilderExt {
 impl UiChildBuilderExt for ChildBuilder<'_> {
     fn spawn_main_menu_buttons(&mut self, ui_assets: &UiAssets, font: Handle<Font>) -> &mut Self {
         for action in MAIN_MENU_BUTTON_ORDER.iter() {
-            self.spawn_main_menu_button(
-                ui_assets,
-                action.in_game_text().into(),
-                font.clone(),
-                action.clone(),
-            )
+            self.spawn_button(ui_assets, font.clone(), action.clone(), None);
         }
 
         self
-    }
-    fn spawn_main_menu_button(
-        &mut self,
-        ui_assets: &UiAssets,
-        text: String,
-        font: Handle<Font>,
-        action: MainMenuButtonActionComponent,
-    ) {
-        // Spawn button bundle entity, with a child entity containing the texture
-        self.spawn(ButtonBundle {
-            style: Style {
-                max_width: BUTTON_MAX_WIDTH,
-                width: BUTTON_WIDTH,
-                min_width: BUTTON_MIN_WIDTH,
-                aspect_ratio: BUTTON_ASPECT_RATIO,
-                margin: BUTTON_MARGIN,
-                ..default()
-            },
-            background_color: BackgroundColor(Color::NONE),
-            ..default()
-        })
-        .insert(action)
-        .with_children(|parent| {
-            parent
-                .spawn(AtlasImageBundle {
-                    image: ui_assets.thetawave_menu_button_image.clone().into(),
-                    texture_atlas: ui_assets.thetawave_menu_button_layout.clone().into(),
-                    style: Style {
-                        width: Val::Percent(100.0),
-                        height: Val::Percent(100.0),
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::FlexStart,
-                        padding: BUTTON_TEXTURE_PADDING,
-                        ..default()
-                    },
-                    ..default()
-                })
-                .with_children(|parent| {
-                    parent.spawn(TextBundle::from_section(
-                        text,
-                        TextStyle {
-                            font: font.clone(),
-                            font_size: 30.0,
-                            color: Color::BLACK,
-                        },
-                    ));
-                });
-        });
     }
 }
 
@@ -180,22 +81,19 @@ fn bool_to_plus_minus_1(val: bool) -> i8 {
 /// Selection happens from the mouse, keyboard and gamepad. We deal with all kinds of inputs in 1
 /// system to control the interactionsm between using, for example, arrows and hovers.
 pub(super) fn main_menu_button_selection_and_click_system(
-    main_menu_buttons: Query<(&MainMenuButtonActionComponent, &Children), With<Button>>,
-    main_menu_button_mouse_movements: Query<
-        (&MainMenuButtonActionComponent, &Interaction),
-        With<Button>,
-    >,
+    main_menu_buttons: Query<(&ButtonActionComponent, &Children), With<Button>>,
+    main_menu_button_mouse_movements: Query<(&ButtonActionComponent, &Interaction), With<Button>>,
     main_menu_button_mouse_changed_movements: Query<
-        (&MainMenuButtonActionComponent, &Interaction),
+        (&ButtonActionComponent, &Interaction),
         (Changed<Interaction>, With<Button>),
     >,
-    menu_explorer_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
+    menu_explorer_query: Query<&ActionState<MenuAction>, With<MainMenuExplorer>>,
     mut button_texture_query: Query<(&mut TextureAtlas, &mut Style)>,
     // Index into `MAIN_MENU_BUTTON_ORDER`, possibly mod its size
     mut ui_state: Local<MainMenuUIState>,
     // The main side effects of this system/UI component/widget
     mut sound_effect: EventWriter<PlaySoundEffectEvent>,
-    mut button_event_writer: EventWriter<MainMenuButtonActionEvent>,
+    mut button_event_writer: EventWriter<ButtonActionEvent>,
 ) {
     // We do a fair number of linear traversals, but there should only be < 10 buttons, children,
     // etc. So all of those linear time operations should actually be fast.
@@ -204,7 +102,7 @@ pub(super) fn main_menu_button_selection_and_click_system(
     // 3. Send out any events for "button clicked" actions
     // 4. Set the styling so that only that one button looks "pressed" while all other are inactive
     // 5. Update the `ui_state` for the next frame.
-    let currently_hovered_on_button: Option<&MainMenuButtonActionComponent> =
+    let currently_hovered_on_button: Option<&ButtonActionComponent> =
         main_menu_button_mouse_movements
             .iter()
             .find_map(|(action, x)| match x {
@@ -218,27 +116,26 @@ pub(super) fn main_menu_button_selection_and_click_system(
             .get_just_pressed()
             .iter()
             .find_map(|action_| match action_ {
-                MenuAction::NavigateUp => Some(true),
-                MenuAction::NavigateDown => Some(false),
+                MenuAction::NavigateUpKeyboard | MenuAction::NavigateUpGamepad => Some(true),
+                MenuAction::NavigateDownKeyboard | MenuAction::NavigateDownGamepad => Some(false),
                 _ => None,
             }),
     };
-    let player_confirmed_button_selection: Option<MainMenuButtonActionComponent> =
-        menu_explorer_query
-            .get_single()
-            .ok()
-            .map(|x| match &ui_state.current_selected_button_and_cause {
-                Some((idx, _)) if x.just_released(&MenuAction::Confirm) => Some(
-                    MAIN_MENU_BUTTON_ORDER[(*idx as usize % MAIN_MENU_BUTTON_ORDER.len()) as usize]
-                        .clone(),
-                ),
-                _ => None,
-            })
-            .flatten();
+    let player_confirmed_button_selection: Option<ButtonActionComponent> = menu_explorer_query
+        .get_single()
+        .ok()
+        .map(|x| match &ui_state.current_selected_button_and_cause {
+            Some((idx, _)) if x.just_released(&MenuAction::Confirm) => Some(
+                MAIN_MENU_BUTTON_ORDER[(*idx as usize % MAIN_MENU_BUTTON_ORDER.len()) as usize]
+                    .clone(),
+            ),
+            _ => None,
+        })
+        .flatten();
     // Note that this uses the Changed<_> query filter, which allows us to detect when the mouse
     // was clicked THEN RELEASED. Using the `main_menu_button_mouse_movements` query would make
     // this Some whenever the mouse is just pressed down on a button.
-    let first_button_mouse_clicked: Option<MainMenuButtonActionComponent> =
+    let first_button_mouse_clicked: Option<ButtonActionComponent> =
         main_menu_button_mouse_changed_movements
             .iter()
             .find_map(|(res, interaction)| {
@@ -290,7 +187,7 @@ pub(super) fn main_menu_button_selection_and_click_system(
         },
     };
 
-    let next_frame_button_state: Option<MainMenuButtonActionComponent> = next_frame_ui_state
+    let next_frame_button_state: Option<ButtonActionComponent> = next_frame_ui_state
         .current_selected_button_and_cause
         .map(|(idx, _)| {
             MAIN_MENU_BUTTON_ORDER
@@ -357,25 +254,4 @@ pub(super) fn main_menu_button_selection_and_click_system(
     }
     // This MUST come last
     *ui_state = next_frame_ui_state;
-}
-
-// Handles actions for menu buttons, changeing states, quitting. This runs when a user actually
-// clicks/whacks enter on a button in the main menu
-pub(super) fn main_menu_button_on_click_system(
-    mut button_event_reader: EventReader<MainMenuButtonActionEvent>,
-    mut next_app_state: ResMut<NextState<AppStates>>,
-    mut exit: EventWriter<AppExit>,
-) {
-    for event in button_event_reader.read() {
-        match event {
-            MainMenuButtonActionComponent::EnterCharacterSelection => {
-                next_app_state.set(AppStates::CharacterSelection);
-            }
-            MainMenuButtonActionComponent::EnterOptions => info!("Enter options menu."),
-            MainMenuButtonActionComponent::EnterCompendium => info!("Enter compendium."),
-            MainMenuButtonActionComponent::QuitGame => {
-                exit.send(AppExit);
-            }
-        }
-    }
 }

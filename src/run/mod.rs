@@ -11,7 +11,7 @@ use thetawave_interface::player::InputRestrictionsAtSpawn;
 use thetawave_interface::{
     audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent, SoundEffectType},
     objective::{DefenseInteraction, MobReachedBottomGateEvent, Objective},
-    player::{PlayerComponent, PlayersResource},
+    player::PlayerComponent,
     run::{CyclePhaseEvent, RunDefeatType, RunEndEvent, RunOutcomeType},
     spawnable::{MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnMobEvent},
     states::{AppStates, GameStates},
@@ -96,8 +96,6 @@ pub struct CurrentRunProgressResource {
     pub completed_levels: VecDeque<Level>,
     /// Tracks the level currently being played
     pub current_level: Option<Level>,
-    /// If true will append tutorial level to beginning of the run
-    pub tutorials_on: bool,
 }
 
 impl Default for CurrentRunProgressResource {
@@ -106,7 +104,6 @@ impl Default for CurrentRunProgressResource {
             queued_levels: VecDeque::new(),
             completed_levels: VecDeque::new(),
             current_level: None,
-            tutorials_on: true,
         }
     }
 }
@@ -123,17 +120,10 @@ impl CurrentRunProgressResource {
         let level_keys = premade_runs_res.runs.get(&run_key).unwrap();
 
         // get levels from the levels resource
-        let mut levels: VecDeque<Level> = level_keys
+        let levels: VecDeque<Level> = level_keys
             .iter()
             .map(|key| Level::from(premade_levels_res.levels_data.get(key).unwrap()))
             .collect();
-
-        // push a tutorial level to be the first level played
-        if self.tutorials_on {
-            levels.push_front(Level::from(
-                premade_levels_res.levels_data.get("tutorial").unwrap(),
-            ));
-        }
 
         // set levels in the run resource
         self.queued_levels = levels;
@@ -217,19 +207,12 @@ impl CurrentRunProgressResource {
 
 fn init_run_system(
     mut run_res: ResMut<CurrentRunProgressResource>,
-    players: Res<PlayersResource>,
     premade_runs_res: Res<PremadeRunsResource>,
     premade_levels_res: Res<PremadeLevelsResource>,
     mut next_app_state: ResMut<NextState<AppStates>>,
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     mut cycle_phase_event_writer: EventWriter<CyclePhaseEvent>,
 ) {
-    // Enable tutorials if and only if:
-    // - It was specifically toggled on when the user was setting up the run
-    // - We have exactly 1 player. TODO: Maybe enhance the tutorial to also work for many players.
-    run_res.tutorials_on = run_res.tutorials_on
-        && ((players.player_data.len() <= 1) || players.player_data[1].is_none());
-    info!("Tutorials are on: {}", run_res.tutorials_on);
     // generate the run
     run_res.generate_premade(
         "test_run".to_string(),
@@ -379,8 +362,6 @@ mod test {
     };
     use thetawave_interface::states::{AppStates, GameStates};
 
-    use super::CurrentRunProgressResource;
-
     fn _minimal_app_for_run_progression_defend_gate_objective() -> App {
         let mut app = App::new();
         app.add_plugins(MinimalPlugins)
@@ -403,10 +384,7 @@ mod test {
             .insert_resource(PlayersResource::default())
             .insert_resource(InputRestrictionsAtSpawn::default())
             .add_plugins(RunPlugin);
-        app.world
-            .get_resource_mut::<CurrentRunProgressResource>()
-            .unwrap()
-            .tutorials_on = false; // We have the gate defense objective after tutorials
+
         app
     }
 

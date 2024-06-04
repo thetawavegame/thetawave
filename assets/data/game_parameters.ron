@@ -9,4 +9,5 @@
 	scan_range: 100.0,
 	sprite_scale: 3.0,
 	stop_threshold: 0.1,
+	max_players: 2, // should be between 1 and 4
 )

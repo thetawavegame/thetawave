@@ -1,0 +1,10 @@
+(
+    slot_one: {
+        StandardBlast: "Fires energy blasts.",
+        StandardBullet: "Fires lead bullets.",
+    },
+    slot_two: {
+        Charge: "Charge in a direction.",
+        MegaBlast: "Fires large, high damage, blasts.",
+    }
+)

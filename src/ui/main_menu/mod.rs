@@ -23,24 +23,19 @@ use std::time::Duration;
 use thetawave_interface::audio::{BGMusicType, ChangeBackgroundMusicEvent};
 use thetawave_interface::states::{AppStates, MainMenuCleanup};
 mod button;
-use self::button::main_menu_button_on_click_system;
 use self::button::main_menu_button_selection_and_click_system;
-use self::button::MainMenuButtonActionEvent;
 use self::button::UiChildBuilderExt;
+
 /// Renders a button-based UI to transition the app from `AppStates::MainMenu` to
 /// `AppStates::CharacterSelection`, possibly with some digressions. Without this plugin, the game will
 /// never progress past a blank main menu screen and the user cannot start the run.
 pub(super) struct MainMenuUIPlugin;
 impl Plugin for MainMenuUIPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<MainMenuButtonActionEvent>()
-            .add_systems(OnEnter(AppStates::MainMenu), setup_main_menu_system)
+        app.add_systems(OnEnter(AppStates::MainMenu), setup_main_menu_system)
             .add_systems(
                 Update,
-                (
-                    main_menu_button_selection_and_click_system,
-                    main_menu_button_on_click_system,
-                )
+                (main_menu_button_selection_and_click_system,)
                     .run_if(in_state(AppStates::MainMenu)),
             );
     }

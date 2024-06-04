@@ -17,7 +17,7 @@ pub struct InputRestrictions {
 }
 
 /// Stores all available player slots
-#[derive(Resource, Debug)]
+#[derive(Resource, Debug, Default)]
 pub struct PlayersResource {
     /// Vec of Optional players, an index is Some if a player has joined for that slot
     pub player_data: Vec<Option<PlayerData>>,
@@ -34,19 +34,10 @@ pub struct PlayerData {
 
 /// Input method for a player
 /// Gamepad has a usize identifier
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, PartialEq, Debug, Copy)]
 pub enum PlayerInput {
     Keyboard,
     Gamepad(usize),
-}
-
-/// Defaults to all player slots being empty
-impl Default for PlayersResource {
-    fn default() -> Self {
-        PlayersResource {
-            player_data: vec![None, None, None, None],
-        }
-    }
 }
 
 impl PlayersResource {

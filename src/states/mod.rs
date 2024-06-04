@@ -9,8 +9,8 @@ use bevy_asset_loader::loading_state::LoadingState;
 use bevy_asset_loader::loading_state::LoadingStateAppExt;
 use bevy_asset_loader::standard_dynamic_asset::StandardDynamicAssetCollection;
 use leafwing_input_manager::prelude::ActionState;
+use thetawave_interface::input::MainMenuExplorer;
 use thetawave_interface::input::MenuAction;
-use thetawave_interface::input::MenuExplorer;
 use thetawave_interface::states::CharacterSelectionCleanup;
 use thetawave_interface::states::GameCleanup;
 use thetawave_interface::states::GameOverCleanup;
@@ -19,7 +19,6 @@ use thetawave_interface::states::PauseCleanup;
 use thetawave_interface::states::VictoryCleanup;
 use thetawave_interface::states::{AppStates, GameStates};
 
-mod game;
 mod pause_menu;
 
 use crate::assets::ConsumableAssets;
@@ -33,7 +32,6 @@ use crate::assets::UiAssets;
 use crate::GameEnterSet;
 use crate::GameUpdateSet;
 
-use self::game::start_game_system;
 use self::pause_menu::{close_pause_menu_system, open_pause_menu_system};
 /// Includes systems that handle state transitions for `AppStates` and `GameStates`. Also includes
 /// an asset loading state.
@@ -114,10 +112,12 @@ impl Plugin for StatesPlugin {
                 .run_if(in_state(GameStates::Playing)),
         );
 
+        /*
         app.add_systems(
             Update,
             start_game_system.run_if(in_state(AppStates::CharacterSelection)),
         );
+        */
 
         app.add_systems(
             OnExit(AppStates::MainMenu),
@@ -181,7 +181,7 @@ fn clear_state_system<T: Component>(
 }
 
 fn start_mainmenu_system(
-    menu_input_query: Query<&ActionState<MenuAction>, With<MenuExplorer>>,
+    menu_input_query: Query<&ActionState<MenuAction>, With<MainMenuExplorer>>,
     mut next_app_state: ResMut<NextState<AppStates>>,
     mut next_game_state: ResMut<NextState<GameStates>>,
 ) {

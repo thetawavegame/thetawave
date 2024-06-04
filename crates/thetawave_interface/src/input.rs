@@ -5,24 +5,35 @@ use bevy_reflect::Reflect;
 use leafwing_input_manager::{prelude::InputMap, Actionlike};
 use serde::Deserialize;
 
+/// Used by players to access their matching menu ui
+/// has a u8 index matching the player (0-3) for a 4 player game
 #[derive(Component)]
-pub struct MenuExplorer;
+pub struct MenuExplorer(pub u8);
+
+/// Shared between all players to access shared ui such as the main and pause menus
+#[derive(Component)]
+pub struct MainMenuExplorer;
 
 /// The input behaviors from the controller/gamepad available while in the menus.
 #[derive(Actionlike, PartialEq, Eq, Clone, Copy, Hash, Debug, Reflect, Deserialize)]
 pub enum MenuAction {
     Confirm,
     JoinKeyboard,
-    ChangeCharacterKeyboard,
     JoinGamepad,
-    ChangeCharacterGamepad,
     Back,
     Reset,
     ExitPauseMenu,
     PauseGame,
-    ToggleTutorial,
-    NavigateUp,
-    NavigateDown,
+    NavigateUpKeyboard,
+    NavigateDownKeyboard,
+    NavigateUpGamepad,
+    NavigateDownGamepad,
+    NavigateLeftKeyboard,
+    NavigateRightKeyboard,
+    NavigateLeftGamepad,
+    NavigateRightGamepad,
+    PlayerReadyKeyboard,
+    PlayerReadyGamepad,
 }
 
 /// Player actions during the main game/while fighting mobs. Many of these can be simultaneously
