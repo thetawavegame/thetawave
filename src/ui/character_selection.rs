@@ -150,7 +150,7 @@ impl CharacterCarousel {
     fn new(player_idx: u8) -> Self {
         CharacterCarousel {
             player_idx,
-            characters: CharacterType::to_vec(),
+            characters: CharacterType::iter().collect(),
         }
     }
 

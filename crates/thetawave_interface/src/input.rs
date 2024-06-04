@@ -5,9 +5,12 @@ use bevy_reflect::Reflect;
 use leafwing_input_manager::{prelude::InputMap, Actionlike};
 use serde::Deserialize;
 
+/// Used by players to access their matching menu ui
+/// has a u8 index matching the player (0-3) for a 4 player game
 #[derive(Component)]
 pub struct MenuExplorer(pub u8);
 
+/// Shared between all players to access shared ui such as the main and pause menus
 #[derive(Component)]
 pub struct MainMenuExplorer;
 

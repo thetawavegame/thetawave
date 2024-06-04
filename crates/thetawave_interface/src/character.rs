@@ -1,8 +1,5 @@
-use std::collections::VecDeque;
-
 use bevy_math::Vec2;
 use serde::Deserialize;
-use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
 use crate::{
@@ -28,12 +25,6 @@ pub enum CharacterStatType {
     FireRate,
     Range,
     Size,
-}
-
-impl CharacterType {
-    pub fn to_vec() -> VecDeque<CharacterType> {
-        CharacterType::iter().collect()
-    }
 }
 
 /// Contains data necessary to create a player entity.
