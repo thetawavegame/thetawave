@@ -147,12 +147,10 @@ macro_rules! confgen {
             $({
                 let default = include_bytes!($filename);
                 let file_path = conf_dir.join($filename);
-                if !file_path.is_file() {
-                    let mut file = File::create(file_path)
-                        .expect(concat!("Confgen failed: could not create config file ", $filename, "."));
-                    file.write_all(default)
-                        .expect(concat!("Confgen failed: could not write config file ", $filename, "."));
-                }
+                let mut file = File::create(file_path)
+                    .expect(concat!("Confgen failed: could not create config file ", $filename, "."));
+                file.write_all(default)
+                    .expect(concat!("Confgen failed: could not write config file ", $filename, "."));
             })*
         }
     }

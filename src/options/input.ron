@@ -47,6 +47,8 @@
         (MoveLeft, DPadLeft),
         (MoveRight, DPadRight),
         (SlotOneAbility, RightTrigger),
+        (SlotOneAbility, South),
         (SlotTwoAbility, LeftTrigger),
+        (SlotTwoAbility, East),
     ],
 )
