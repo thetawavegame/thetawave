@@ -1,10 +1,10 @@
 use bevy::{
-    asset::{AssetServer, Handle},
+    asset::Handle,
     ecs::{
         component::Component,
         entity::Entity,
         query::With,
-        system::{Commands, Query, Res, ResMut},
+        system::{Commands, Query, Res},
     },
     hierarchy::{BuildChildren, ChildBuilder, DespawnRecursiveExt},
     render::color::Color,
@@ -17,8 +17,8 @@ use bevy::{
 };
 use thetawave_interface::health::HealthComponent;
 
-use crate::run::level_phase::LevelPhaseType;
 use crate::run::tutorial::TutorialLesson;
+use crate::{assets::UiAssets, run::level_phase::LevelPhaseType};
 use crate::{run::CurrentRunProgressResource, spawnable::BossComponent};
 
 use super::parent::PhaseUiChildBuilderExt;
@@ -102,7 +102,7 @@ impl PhaseUiChildBuilderExt for ChildBuilder<'_> {
 }
 
 pub(super) fn update_phase_ui_system(
-    asset_server: ResMut<AssetServer>,
+    ui_assets: Res<UiAssets>,
     mut commands: Commands,
     mut phase_name_ui_query: Query<&mut Text, With<PhaseNameUi>>,
     phase_data_ui_query: Query<Entity, With<PhaseDataUi>>,
@@ -120,7 +120,7 @@ pub(super) fn update_phase_ui_system(
 
                 match &current_phase.phase_type {
                     LevelPhaseType::FormationSpawn { phase_timer, .. } => {
-                        let font = asset_server.load("fonts/wibletown-regular.otf");
+                        let font = ui_assets.lunchds_font.clone();
 
                         commands.entity(entity).with_children(|phase_data_ui| {
                             phase_data_ui.spawn(TextBundle {
@@ -138,7 +138,7 @@ pub(super) fn update_phase_ui_system(
                         });
                     }
                     LevelPhaseType::Break { phase_timer, .. } => {
-                        let font = asset_server.load("fonts/wibletown-regular.otf");
+                        let font = ui_assets.lunchds_font.clone();
 
                         commands.entity(entity).with_children(|phase_data_ui| {
                             phase_data_ui.spawn(TextBundle {
@@ -192,7 +192,7 @@ pub(super) fn update_phase_ui_system(
                     LevelPhaseType::Tutorial {
                         tutorial_lesson, ..
                     } => {
-                        let font = asset_server.load("fonts/wibletown-regular.otf");
+                        let font = ui_assets.lunchds_font.clone();
 
                         commands.entity(entity).with_children(|phase_data_ui| {
                             phase_data_ui

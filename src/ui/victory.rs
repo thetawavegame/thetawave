@@ -1,5 +1,5 @@
-use crate::options::PlayingOnArcadeResource;
 use crate::ui::BouncingPromptComponent;
+use crate::{assets::UiAssets, options::PlayingOnArcadeResource};
 use bevy::{
     asset::AssetServer,
     ecs::{
@@ -32,6 +32,7 @@ pub struct VictoryUI;
 pub fn setup_victory_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
+    ui_assets: Res<UiAssets>,
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     current_game_shot_counts: Res<UserStatsByPlayerForCurrentGameCache>,
     current_game_enemy_mob_kill_counts: Res<MobKillsByPlayerForCurrentGame>,
@@ -81,7 +82,7 @@ pub fn setup_victory_system(
                     ..default()
                 })
                 .with_children(|parent| {
-                    let font = asset_server.load("fonts/wibletown-regular.otf");
+                    let font = ui_assets.lunchds_font.clone();
 
                     parent
                         .spawn(NodeBundle {

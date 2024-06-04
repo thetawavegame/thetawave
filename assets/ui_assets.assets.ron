@@ -1,4 +1,5 @@
 ({
+    "font.lunchds": File( path: "fonts/Lunchds.ttf"),
     "thetawave_logo.layout": TextureAtlasLayout (
         tile_size_x: 1920.,
         tile_size_y: 1080.,
@@ -19,7 +20,6 @@
     "ability_icon.standard_bullet": File ( path: "texture/bullet_ability.png"),
     "ability_slot.left": File ( path: "texture/ability_square_left.png"),
     "ability_slot.right": File ( path: "texture/ability_square_right.png"),
-    "font.wibletown": File (path: "fonts/wibletown-regular.otf"),
     "warning_gradient": File( path: "texture/warning_gradient.png"),
     "defense_gradient": File( path: "texture/defense_gradient.png"),
     "arrow_right.layout": TextureAtlasLayout (

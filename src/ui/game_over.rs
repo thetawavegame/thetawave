@@ -24,12 +24,13 @@ use thetawave_interface::{
     states::GameOverCleanup,
 };
 
-use crate::{options::PlayingOnArcadeResource, ui::BouncingPromptComponent};
+use crate::{assets::UiAssets, options::PlayingOnArcadeResource, ui::BouncingPromptComponent};
 
 /// Spawn the styled UI elements for the game over screen. It should tell the player how they did.
 pub(super) fn setup_game_over_system(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
+    ui_assets: Res<UiAssets>,
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     current_game_shot_counts: Res<UserStatsByPlayerForCurrentGameCache>,
     current_game_enemy_mob_kill_counts: Res<MobKillsByPlayerForCurrentGame>,
@@ -78,7 +79,7 @@ pub(super) fn setup_game_over_system(
                     ..default()
                 })
                 .with_children(|parent| {
-                    let font = asset_server.load("fonts/wibletown-regular.otf");
+                    let font = ui_assets.lunchds_font.clone();
 
                     parent
                         .spawn(NodeBundle {

@@ -1,4 +1,6 @@
 //! Systems to spawn and style the character selection screen, where each player picks a character
+//! //! from one of a few options, and possibly enables/diables the tutorial.
+
 use std::collections::VecDeque;
 
 use crate::{
