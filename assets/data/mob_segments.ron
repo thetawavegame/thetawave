@@ -164,8 +164,8 @@
                 ))
             ],
         ),
-        Enemy(RepeaterBody): (
-            mob_segment_type: Enemy(RepeaterBody),
+        Enemy(FerritharaxBody): (
+            mob_segment_type: Enemy(FerritharaxBody),
             animation: (
                 direction: PingPong(Forward),
                 frame_duration: 0.25,
@@ -189,7 +189,7 @@
             ],
             mob_segment_anchor_points: Some([
                 (
-                    mob_segment_type: Enemy(RepeaterRightShoulder),
+                    mob_segment_type: Enemy(FerritharaxRightShoulder),
                     position: (72.0, -5.0),
                     joint: Revolute,
                     target_pos: 0.0,
@@ -197,7 +197,7 @@
                     damping: 30.0,
                 ),
                 (
-                    mob_segment_type: Enemy(RepeaterLeftShoulder),
+                    mob_segment_type: Enemy(FerritharaxLeftShoulder),
                     position: (-72.0, -5.0),
                     joint: Revolute,
                     target_pos: 0.0,
@@ -206,8 +206,8 @@
                 ),
             ]),
         ), 
-        Enemy(RepeaterRightShoulder): (
-            mob_segment_type: Enemy(RepeaterRightShoulder),
+        Enemy(FerritharaxRightShoulder): (
+            mob_segment_type: Enemy(FerritharaxRightShoulder),
             animation: (
                 direction: None,
                 frame_duration: 1.0,
@@ -232,7 +232,7 @@
             behaviors: [],
             mob_segment_anchor_points: Some([
                 (
-                    mob_segment_type: Enemy(RepeaterRightArm),
+                    mob_segment_type: Enemy(FerritharaxRightArm),
                     position: (65.0, -85.0),
                     joint: Revolute,
                     target_pos: 0.0,
@@ -241,8 +241,8 @@
                 ),
             ])
         ),
-        Enemy(RepeaterLeftShoulder): (
-            mob_segment_type: Enemy(RepeaterLeftShoulder),
+        Enemy(FerritharaxLeftShoulder): (
+            mob_segment_type: Enemy(FerritharaxLeftShoulder),
             animation: (
                 direction: None,
                 frame_duration: 1.0,
@@ -267,7 +267,7 @@
             behaviors: [],
             mob_segment_anchor_points: Some([
                 (
-                    mob_segment_type: Enemy(RepeaterLeftArm),
+                    mob_segment_type: Enemy(FerritharaxLeftArm),
                     position: (-65.0, -85.0),
                     joint: Revolute,
                     target_pos: 0.0,
@@ -276,8 +276,8 @@
                 ),
             ])  
         ),
-        Enemy(RepeaterRightArm): (
-            mob_segment_type: Enemy(RepeaterRightArm),
+        Enemy(FerritharaxRightArm): (
+            mob_segment_type: Enemy(FerritharaxRightArm),
             animation: (
                 direction: None,
                 frame_duration: 1.0,
@@ -307,7 +307,7 @@
             behaviors: [],
             mob_segment_anchor_points: Some([
                 (
-                    mob_segment_type: Enemy(RepeaterRightClaw),
+                    mob_segment_type: Enemy(FerritharaxRightClaw),
                     position: (-30.0, -75.0),
                     joint: Revolute,
                     target_pos: 0.0,
@@ -330,8 +330,8 @@
                 ],
 		    }),    
         ),
-        Enemy(RepeaterLeftArm): (
-            mob_segment_type: Enemy(RepeaterLeftArm),
+        Enemy(FerritharaxLeftArm): (
+            mob_segment_type: Enemy(FerritharaxLeftArm),
             animation: (
                 direction: None,
                 frame_duration: 1.0,
@@ -361,7 +361,7 @@
             behaviors: [],
             mob_segment_anchor_points: Some([
                 (
-                    mob_segment_type: Enemy(RepeaterLeftClaw),
+                    mob_segment_type: Enemy(FerritharaxLeftClaw),
                     position: (30.0, -75.0),
                     joint: Revolute,
                     target_pos: 0.0,
@@ -384,8 +384,8 @@
                 ],
 		    }),    
         ),
-        Enemy(RepeaterRightClaw): (
-            mob_segment_type: Enemy(RepeaterRightClaw),
+        Enemy(FerritharaxRightClaw): (
+            mob_segment_type: Enemy(FerritharaxRightClaw),
             animation: (
                 direction: None,
                 frame_duration: 1.0,
@@ -409,8 +409,8 @@
             anchor_point: (42.0, -23.0),
             behaviors: [],  
         ),
-        Enemy(RepeaterLeftClaw): (
-            mob_segment_type: Enemy(RepeaterLeftClaw),
+        Enemy(FerritharaxLeftClaw): (
+            mob_segment_type: Enemy(FerritharaxLeftClaw),
             animation: (
                 direction: None,
                 frame_duration: 1.0,

@@ -142,7 +142,7 @@ impl MobAssets {
                 EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => {
                     self.crustling_head_layout.clone()
                 }
-                EnemyMobType::Repeater => self.repeater_head_layout.clone(),
+                EnemyMobType::Ferritharax => self.repeater_head_layout.clone(),
                 EnemyMobType::Shelly => self.shelly_layout.clone(),
             },
             MobType::Ally(ally_type) => match ally_type {
@@ -170,7 +170,7 @@ impl MobAssets {
                 EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => {
                     self.crustling_head_image.clone()
                 }
-                EnemyMobType::Repeater => self.repeater_head_image.clone(),
+                EnemyMobType::Ferritharax => self.repeater_head_image.clone(),
                 EnemyMobType::Shelly => self.shelly_image.clone(),
             },
             MobType::Ally(ally_type) => match ally_type {
@@ -199,17 +199,19 @@ impl MobAssets {
                 EnemyMobSegmentType::CrustlingTentacle1 => self.crustling_tentacle1_layout.clone(),
                 EnemyMobSegmentType::CrustlingTentacle2 => self.crustling_tentacle2_layout.clone(),
                 EnemyMobSegmentType::CrustlingTentacle3 => self.crustling_tentacle3_layout.clone(),
-                EnemyMobSegmentType::RepeaterBody => self.repeater_body_layout.clone(),
-                EnemyMobSegmentType::RepeaterRightShoulder => {
+                EnemyMobSegmentType::FerritharaxBody => self.repeater_body_layout.clone(),
+                EnemyMobSegmentType::FerritharaxRightShoulder => {
                     self.repeater_right_shoulder_layout.clone()
                 }
-                EnemyMobSegmentType::RepeaterLeftShoulder => {
+                EnemyMobSegmentType::FerritharaxLeftShoulder => {
                     self.repeater_left_shoulder_layout.clone()
                 }
-                EnemyMobSegmentType::RepeaterRightArm => self.repeater_right_arm_layout.clone(),
-                EnemyMobSegmentType::RepeaterLeftArm => self.repeater_left_arm_layout.clone(),
-                EnemyMobSegmentType::RepeaterRightClaw => self.repeater_right_claw_layout.clone(),
-                EnemyMobSegmentType::RepeaterLeftClaw => self.repeater_left_claw_layout.clone(),
+                EnemyMobSegmentType::FerritharaxRightArm => self.repeater_right_arm_layout.clone(),
+                EnemyMobSegmentType::FerritharaxLeftArm => self.repeater_left_arm_layout.clone(),
+                EnemyMobSegmentType::FerritharaxRightClaw => {
+                    self.repeater_right_claw_layout.clone()
+                }
+                EnemyMobSegmentType::FerritharaxLeftClaw => self.repeater_left_claw_layout.clone(),
             },
         }
     }
@@ -225,17 +227,17 @@ impl MobAssets {
                 EnemyMobSegmentType::CrustlingTentacle1 => self.crustling_tentacle1_image.clone(),
                 EnemyMobSegmentType::CrustlingTentacle2 => self.crustling_tentacle2_image.clone(),
                 EnemyMobSegmentType::CrustlingTentacle3 => self.crustling_tentacle3_image.clone(),
-                EnemyMobSegmentType::RepeaterBody => self.repeater_body_image.clone(),
-                EnemyMobSegmentType::RepeaterRightShoulder => {
+                EnemyMobSegmentType::FerritharaxBody => self.repeater_body_image.clone(),
+                EnemyMobSegmentType::FerritharaxRightShoulder => {
                     self.repeater_right_shoulder_image.clone()
                 }
-                EnemyMobSegmentType::RepeaterLeftShoulder => {
+                EnemyMobSegmentType::FerritharaxLeftShoulder => {
                     self.repeater_left_shoulder_image.clone()
                 }
-                EnemyMobSegmentType::RepeaterRightArm => self.repeater_right_arm_image.clone(),
-                EnemyMobSegmentType::RepeaterLeftArm => self.repeater_left_arm_image.clone(),
-                EnemyMobSegmentType::RepeaterRightClaw => self.repeater_right_claw_image.clone(),
-                EnemyMobSegmentType::RepeaterLeftClaw => self.repeater_left_claw_image.clone(),
+                EnemyMobSegmentType::FerritharaxRightArm => self.repeater_right_arm_image.clone(),
+                EnemyMobSegmentType::FerritharaxLeftArm => self.repeater_left_arm_image.clone(),
+                EnemyMobSegmentType::FerritharaxRightClaw => self.repeater_right_claw_image.clone(),
+                EnemyMobSegmentType::FerritharaxLeftClaw => self.repeater_left_claw_image.clone(),
             },
         }
     }
@@ -256,7 +258,7 @@ impl MobAssets {
                 }
                 EnemyMobType::Missile => Some(self.missile_thruster_layout.clone()),
                 EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => None,
-                EnemyMobType::Repeater => None,
+                EnemyMobType::Ferritharax => None,
                 EnemyMobType::Shelly => None,
             },
             MobType::Ally(ally_type) => match ally_type {
@@ -282,7 +284,7 @@ impl MobAssets {
                 EnemyMobType::MissileLauncher => Some(self.missile_launcher_thruster_image.clone()),
                 EnemyMobType::Missile => Some(self.missile_thruster_image.clone()),
                 EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => None,
-                EnemyMobType::Repeater => None,
+                EnemyMobType::Ferritharax => None,
                 EnemyMobType::Shelly => None,
             },
             MobType::Ally(ally_type) => match ally_type {

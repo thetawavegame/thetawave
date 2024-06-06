@@ -27,8 +27,8 @@ pub enum MobBehavior {
 
 #[derive(Deserialize, Hash, PartialEq, Eq, Clone)]
 pub enum MobSegmentControlBehavior {
-    RepeaterProtectHead,
-    RepeaterAttack,
+    FerritharaxProtectHead,
+    FerritharaxAttack,
 }
 
 #[allow(clippy::too_many_arguments)]

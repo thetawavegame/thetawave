@@ -27,7 +27,7 @@ pub struct BehaviorSequenceResource {
 
 #[derive(Deserialize, Debug, Hash, PartialEq, Eq, Clone)]
 pub enum MobBehaviorSequenceType {
-    Repeater,
+    Ferritharax,
 }
 
 pub fn mob_behavior_sequence_tracker_system(

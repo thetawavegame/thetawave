@@ -1,18 +1,18 @@
 {
-	Enemy(Repeater): (
-		mob_type: Enemy(Repeater),
+	Enemy(Ferritharax): (
+		mob_type: Enemy(Ferritharax),
 		mob_segment_behaviors: Some({
-			RepeaterProtectHead: {
-				Enemy(RepeaterBody): [
+			FerritharaxProtectHead: {
+				Enemy(FerritharaxBody): [
 					DealDamageToPlayerOnImpact,
             		ReceiveDamageOnImpact,
 					DieAtZeroHealth,
 				],
-				Enemy(RepeaterRightShoulder): [
+				Enemy(FerritharaxRightShoulder): [
 					DealDamageToPlayerOnImpact,
             		ReceiveDamageOnImpact,
 					DieAtZeroHealth,
-					RepeaterProtectHead(
+					FerritharaxProtectHead(
 						(
 							angle: -0.15,
 							stiffness: 30.0,
@@ -20,11 +20,11 @@
 						)
 					),
 				],
-				Enemy(RepeaterLeftShoulder): [
+				Enemy(FerritharaxLeftShoulder): [
 					DealDamageToPlayerOnImpact,
 					ReceiveDamageOnImpact,
 					DieAtZeroHealth,
-					RepeaterProtectHead(
+					FerritharaxProtectHead(
 						(
 							angle: 0.15,
 							stiffness: 30.0,
@@ -32,11 +32,11 @@
 						)
 					),
 				],
-				Enemy(RepeaterRightArm): [
+				Enemy(FerritharaxRightArm): [
 					DealDamageToPlayerOnImpact,
 					ReceiveDamageOnImpact,
 					DieAtZeroHealth,
-					RepeaterProtectHead(
+					FerritharaxProtectHead(
 						(
 							angle: -0.5,
 							stiffness: 30.0,
@@ -45,11 +45,11 @@
 					),
 					SpawnMob("missile"),
 				],
-				Enemy(RepeaterLeftArm): [
+				Enemy(FerritharaxLeftArm): [
 					DealDamageToPlayerOnImpact,
 					ReceiveDamageOnImpact,
 					DieAtZeroHealth,
-					RepeaterProtectHead(
+					FerritharaxProtectHead(
 						(
 							angle: 0.5,
 							stiffness: 30.0,
@@ -58,11 +58,11 @@
 					),
 					SpawnMob("missile"),
 				],
-				Enemy(RepeaterRightClaw): [
+				Enemy(FerritharaxRightClaw): [
 					DealDamageToPlayerOnImpact,
 					ReceiveDamageOnImpact,
 					DieAtZeroHealth,
-					RepeaterProtectHead(
+					FerritharaxProtectHead(
 						(
 							angle: 1.0,
 							stiffness: 30.0,
@@ -70,11 +70,11 @@
 						)
 					),
 				],
-				Enemy(RepeaterLeftClaw): [
+				Enemy(FerritharaxLeftClaw): [
 					DealDamageToPlayerOnImpact,
 					ReceiveDamageOnImpact,
 					DieAtZeroHealth,
-					RepeaterProtectHead(
+					FerritharaxProtectHead(
 						(
 							angle: -1.0,
 							stiffness: 30.0,
@@ -83,17 +83,17 @@
 					),
 				],
 			},
-			RepeaterAttack: {
-				Enemy(RepeaterBody): [
+			FerritharaxAttack: {
+				Enemy(FerritharaxBody): [
 					DealDamageToPlayerOnImpact,
             		ReceiveDamageOnImpact,
 					DieAtZeroHealth,
 				],
-				Enemy(RepeaterRightShoulder): [
+				Enemy(FerritharaxRightShoulder): [
 					DealDamageToPlayerOnImpact,
             		ReceiveDamageOnImpact,
 					DieAtZeroHealth,
-					RepeaterAttack(
+					FerritharaxAttack(
 						(
 							angle: 0.0,
 							stiffness: 30.0,
@@ -101,11 +101,11 @@
 						)
 					),
 				],
-				Enemy(RepeaterLeftShoulder): [
+				Enemy(FerritharaxLeftShoulder): [
 					DealDamageToPlayerOnImpact,
 					ReceiveDamageOnImpact,
 					DieAtZeroHealth,
-					RepeaterAttack(
+					FerritharaxAttack(
 						(
 							angle: 0.0,
 							stiffness: 30.0,
@@ -113,11 +113,11 @@
 						)
 					),
 				],
-				Enemy(RepeaterRightArm): [
+				Enemy(FerritharaxRightArm): [
 					DealDamageToPlayerOnImpact,
 					ReceiveDamageOnImpact,
 					DieAtZeroHealth,
-					RepeaterAttack(
+					FerritharaxAttack(
 						(
 							angle: 0.0,
 							stiffness: 30.0,
@@ -125,11 +125,11 @@
 						)
 					),
 				],
-				Enemy(RepeaterLeftArm): [
+				Enemy(FerritharaxLeftArm): [
 					DealDamageToPlayerOnImpact,
 					ReceiveDamageOnImpact,
 					DieAtZeroHealth,
-					RepeaterAttack(
+					FerritharaxAttack(
 						(
 							angle: 0.0,
 							stiffness: 30.0,
@@ -137,11 +137,11 @@
 						)
 					),
 				],
-				Enemy(RepeaterRightClaw): [
+				Enemy(FerritharaxRightClaw): [
 					DealDamageToPlayerOnImpact,
 					ReceiveDamageOnImpact,
 					DieAtZeroHealth,
-					RepeaterAttack(
+					FerritharaxAttack(
 						(
 							angle: 0.0,
 							stiffness: 30.0,
@@ -149,11 +149,11 @@
 						)
 					),
 				],
-				Enemy(RepeaterLeftClaw): [
+				Enemy(FerritharaxLeftClaw): [
 					DealDamageToPlayerOnImpact,
 					ReceiveDamageOnImpact,
 					DieAtZeroHealth,
-					RepeaterAttack(
+					FerritharaxAttack(
 						(
 							angle: 0.0,
 							stiffness: 30.0,
@@ -163,7 +163,7 @@
 				],
 			},
 		}),
-		behavior_sequence_type: Some(Repeater),
+		behavior_sequence_type: Some(Ferritharax),
 		acceleration: (2.0, 2.0),
 		deceleration: (2.0, 2.0),
 		speed: (80.0, 30.0),
@@ -184,7 +184,7 @@
 		),	
 		mob_segment_anchor_points: [
 			(
-				mob_segment_type: Enemy(RepeaterBody),
+				mob_segment_type: Enemy(FerritharaxBody),
 				position: (0.0, 60.0),
 				joint: Revolute,
 				target_pos: 0,

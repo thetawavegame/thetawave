@@ -17,7 +17,7 @@ pub enum EnemyMobType {
     Missile,
     CrustlingRight,
     CrustlingLeft,
-    Repeater,
+    Ferritharax,
     Shelly,
 }
 
@@ -81,7 +81,7 @@ impl MobType {
                 EnemyMobType::MissileLauncher => "Missile Launcher",
                 EnemyMobType::Missile => "Missile",
                 EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => "Crustling",
-                EnemyMobType::Repeater => "Repeater",
+                EnemyMobType::Ferritharax => "Ferritharax",
                 EnemyMobType::Shelly => "Shelly",
             },
             MobType::Ally(ally_type) => match ally_type {
@@ -125,13 +125,13 @@ pub enum EnemyMobSegmentType {
     CrustlingTentacle1,
     CrustlingTentacle2,
     CrustlingTentacle3,
-    RepeaterBody,
-    RepeaterRightShoulder,
-    RepeaterLeftShoulder,
-    RepeaterRightArm,
-    RepeaterLeftArm,
-    RepeaterRightClaw,
-    RepeaterLeftClaw,
+    FerritharaxBody,
+    FerritharaxRightShoulder,
+    FerritharaxLeftShoulder,
+    FerritharaxRightArm,
+    FerritharaxLeftArm,
+    FerritharaxRightClaw,
+    FerritharaxLeftClaw,
 }
 
 /// Type that encompasses all spawnable neutral mobs

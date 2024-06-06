@@ -29,20 +29,20 @@ pub enum MobSegmentBehavior {
     ReceiveDamageOnImpact,
     DieAtZeroHealth,
     RandomRotation(RandomRotationData),
-    RepeaterProtectHead(RepeaterSegmentProtectHeadData), // takes in angle to protect head
-    RepeaterAttack(RepeaterSegmentAttackData),
+    FerritharaxProtectHead(FerritharaxSegmentProtectHeadData), // takes in angle to protect head
+    FerritharaxAttack(FerritharaxSegmentAttackData),
     SpawnMob(String),
 }
 
 #[derive(Deserialize, Clone)]
-pub struct RepeaterSegmentProtectHeadData {
+pub struct FerritharaxSegmentProtectHeadData {
     pub angle: f32,
     pub damping: f32,
     pub stiffness: f32,
 }
 
 #[derive(Deserialize, Clone)]
-pub struct RepeaterSegmentAttackData {
+pub struct FerritharaxSegmentAttackData {
     pub angle: f32,
     pub damping: f32,
     pub stiffness: f32,
@@ -156,7 +156,7 @@ pub fn mob_segment_execute_behavior_system(
                     );
                 }
 
-                MobSegmentBehavior::RepeaterProtectHead(data) => {
+                MobSegmentBehavior::FerritharaxProtectHead(data) => {
                     joint.data.set_motor_position(
                         JointAxis::AngX,
                         data.angle,
@@ -165,7 +165,7 @@ pub fn mob_segment_execute_behavior_system(
                     );
                 }
 
-                MobSegmentBehavior::RepeaterAttack(data) => {
+                MobSegmentBehavior::FerritharaxAttack(data) => {
                     joint.data.set_motor_position(
                         JointAxis::AngX,
                         data.angle,
