@@ -1,4 +1,224 @@
 {
+	Enemy(MechaFerritharax): (
+		mob_type: Enemy(MechaFerritharax),
+		mob_segment_behaviors: Some({
+			FerritharaxProtectHead: {
+				Enemy(MechaFerritharaxBody): [
+					DealDamageToPlayerOnImpact,
+            		ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+				],
+				Enemy(MechaFerritharaxRightShoulder): [
+					DealDamageToPlayerOnImpact,
+            		ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					FerritharaxProtectHead(
+						(
+							angle: -0.15,
+							stiffness: 300.0,
+							damping: 300.0,
+						)
+					),
+				],
+				Enemy(MechaFerritharaxLeftShoulder): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					FerritharaxProtectHead(
+						(
+							angle: 0.15,
+							stiffness: 300.0,
+							damping: 300.0,
+						)
+					),
+				],
+				Enemy(MechaFerritharaxRightArm): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					FerritharaxProtectHead(
+						(
+							angle: -0.5,
+							stiffness: 300.0,
+							damping: 300.0,
+						)
+					),
+					SpawnMob("missile"),
+				],
+				Enemy(MechaFerritharaxLeftArm): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					FerritharaxProtectHead(
+						(
+							angle: 0.5,
+							stiffness: 300.0,
+							damping: 300.0,
+						)
+					),
+					SpawnMob("missile"),
+				],
+				Enemy(MechaFerritharaxRightClaw): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					FerritharaxProtectHead(
+						(
+							angle: 1.0,
+							stiffness: 300.0,
+							damping: 300.0,
+						)
+					),
+				],
+				Enemy(MechaFerritharaxLeftClaw): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					FerritharaxProtectHead(
+						(
+							angle: -1.0,
+							stiffness: 300.0,
+							damping: 300.0,
+						)
+					),
+				],
+			},
+			FerritharaxAttack: {
+				Enemy(MechaFerritharaxBody): [
+					DealDamageToPlayerOnImpact,
+            		ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+				],
+				Enemy(MechaFerritharaxRightShoulder): [
+					DealDamageToPlayerOnImpact,
+            		ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					FerritharaxAttack(
+						(
+							angle: 0.0,
+							stiffness: 300.0,
+							damping: 300.0,
+						)
+					)
+				],
+				Enemy(MechaFerritharaxLeftShoulder): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					FerritharaxAttack(
+						(
+							angle: 0.0,
+							stiffness: 300.0,
+							damping: 300.0,
+						)
+					),
+				],
+				Enemy(MechaFerritharaxRightArm): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					FerritharaxAttack(
+						(
+							angle: 0.0,
+							stiffness: 300.0,
+							damping: 300.0,
+						)
+					),
+				],
+				Enemy(MechaFerritharaxLeftArm): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					FerritharaxAttack(
+						(
+							angle: 0.0,
+							stiffness: 300.0,
+							damping: 300.0,
+						)
+					),
+				],
+				Enemy(MechaFerritharaxRightClaw): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					FerritharaxAttack(
+						(
+							angle: 0.0,
+							stiffness: 300.0,
+							damping: 300.0,
+						)
+					),
+				],
+				Enemy(MechaFerritharaxLeftClaw): [
+					DealDamageToPlayerOnImpact,
+					ReceiveDamageOnImpact,
+					DieAtZeroHealth,
+					FerritharaxAttack(
+						(
+							angle: 0.0,
+							stiffness: 300.0,
+							damping: 300.0,
+						)
+					),
+				],
+			},
+		}),
+		behavior_sequence_type: Some(MechaFerritharax),
+		acceleration: (4.0, 4.0),
+		deceleration: (4.0, 4.0),
+		speed: (80.0, 80.0),
+		collision_damage: 20,
+		colliders: [
+			(
+				dimensions: (12.0, 12.0),
+				position: (0.0, 0.0),
+				rotation: 0.0,
+			)
+		],
+		z_level: 5.0,
+		consumable_drops: Boss,
+		health: 1500,
+		animation: (
+			direction: PingPong(Forward),
+			frame_duration: 0.25,
+		),	
+		mob_segment_anchor_points: [
+			(
+				mob_segment_type: Enemy(MechaFerritharaxBody),
+				position: (0.0, 80.0),
+				joint: Revolute,
+				target_pos: 0,
+				stiffness: 500.0,
+				damping: 500.0,
+			),
+		],
+		mob_spawners: {
+			"mobs-left": [
+				(
+					mob_type: Enemy(Pawn),
+					position: Global((-400.0, 500.0)),
+					period: 7.0,
+				),
+				(
+					mob_type: Enemy(Drone),
+					position: Global((-200.0, 500.0)),
+					period: 5.0,
+				),
+			],
+			"mobs-right": [
+				(
+					mob_type: Enemy(Pawn),
+					position: Global((400.0, 500.0)),
+					period: 7.0,
+				),
+				(
+					mob_type: Enemy(Drone),
+					position: Global((200.0, 500.0)),
+					period: 5.0,
+				),
+			],
+		},
+	),
 	Enemy(Ferritharax): (
 		mob_type: Enemy(Ferritharax),
 		mob_segment_behaviors: Some({

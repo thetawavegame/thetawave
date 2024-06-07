@@ -18,6 +18,7 @@ pub enum EnemyMobType {
     CrustlingRight,
     CrustlingLeft,
     Ferritharax,
+    MechaFerritharax,
     Shelly,
 }
 
@@ -82,6 +83,7 @@ impl MobType {
                 EnemyMobType::Missile => "Missile",
                 EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => "Crustling",
                 EnemyMobType::Ferritharax => "Ferritharax",
+                EnemyMobType::MechaFerritharax => "Mecha-Ferritharax",
                 EnemyMobType::Shelly => "Shelly",
             },
             MobType::Ally(ally_type) => match ally_type {
@@ -132,6 +134,13 @@ pub enum EnemyMobSegmentType {
     FerritharaxLeftArm,
     FerritharaxRightClaw,
     FerritharaxLeftClaw,
+    MechaFerritharaxBody,
+    MechaFerritharaxRightShoulder,
+    MechaFerritharaxLeftShoulder,
+    MechaFerritharaxRightArm,
+    MechaFerritharaxLeftArm,
+    MechaFerritharaxRightClaw,
+    MechaFerritharaxLeftClaw,
 }
 
 /// Type that encompasses all spawnable neutral mobs

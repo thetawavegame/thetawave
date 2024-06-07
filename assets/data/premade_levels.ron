@@ -1,5 +1,42 @@
 (
 	levels_data: {
+		"boss_test": (
+			name: "Boss Test",
+			objective: Some(Defense((
+				defense: 100,
+				max_defense: 100,
+			))),
+			phases: [
+				(
+					intro_text: Some("Destroy the command ship!"),
+					phase_type: Boss(
+						mob_type: Enemy(MechaFerritharax),
+						position: (0.0, 600.0),
+						spawn_timer: (
+							mode: Once,
+							duration: (
+								secs: 5,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),		
+					),
+					bg_music_transition: Some((
+						loop_from: Some(9.615),
+						bg_music_type: Some(Boss),
+						fade_out: Some(8.0),
+					)),
+				)
+			],
+		),
 		"test_level_1": (
 			name: "Test Level I",
 			objective: Some(Defense((
