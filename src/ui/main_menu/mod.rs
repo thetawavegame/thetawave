@@ -5,15 +5,14 @@ use crate::{
     assets::UiAssets,
 };
 use bevy::{
-    asset::{AssetServer, Handle},
     ecs::{
         event::EventWriter,
+        schedule::Condition,
         system::{Commands, Res},
     },
     hierarchy::BuildChildren,
     prelude::{in_state, App, IntoSystemConfigs, OnEnter, Plugin, Update},
     render::color::Color,
-    text::Font,
     time::{Timer, TimerMode},
     ui::{
         node_bundles::{AtlasImageBundle, NodeBundle},
@@ -22,28 +21,27 @@ use bevy::{
     utils::default,
 };
 use std::time::Duration;
-use thetawave_interface::audio::{BGMusicType, ChangeBackgroundMusicEvent};
 use thetawave_interface::states::{AppStates, MainMenuCleanup};
+use thetawave_interface::{
+    audio::{BGMusicType, ChangeBackgroundMusicEvent},
+    states::OptionsMenuOverlay,
+};
 mod button;
-use self::button::main_menu_button_on_click_system;
 use self::button::main_menu_button_selection_and_click_system;
-use self::button::MainMenuButtonActionEvent;
 use self::button::UiChildBuilderExt;
+
 /// Renders a button-based UI to transition the app from `AppStates::MainMenu` to
 /// `AppStates::CharacterSelection`, possibly with some digressions. Without this plugin, the game will
 /// never progress past a blank main menu screen and the user cannot start the run.
 pub(super) struct MainMenuUIPlugin;
 impl Plugin for MainMenuUIPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<MainMenuButtonActionEvent>()
-            .add_systems(OnEnter(AppStates::MainMenu), setup_main_menu_system)
+        app.add_systems(OnEnter(AppStates::MainMenu), setup_main_menu_system)
             .add_systems(
                 Update,
-                (
-                    main_menu_button_selection_and_click_system,
-                    main_menu_button_on_click_system,
-                )
-                    .run_if(in_state(AppStates::MainMenu)),
+                (main_menu_button_selection_and_click_system,).run_if(
+                    in_state(AppStates::MainMenu).and_then(in_state(OptionsMenuOverlay::Disabled)),
+                ),
             );
     }
 }
@@ -53,11 +51,10 @@ impl Plugin for MainMenuUIPlugin {
 /// component is the main way to undo the side effects of this system.
 fn setup_main_menu_system(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
     mut change_bg_music_event_writer: EventWriter<ChangeBackgroundMusicEvent>,
     ui_assets: Res<UiAssets>,
 ) {
-    let font: Handle<Font> = asset_server.load("fonts/Lunchds.ttf");
+    let font = ui_assets.lunchds_font.clone();
 
     change_bg_music_event_writer.send(ChangeBackgroundMusicEvent {
         bg_music_type: Some(BGMusicType::Main),

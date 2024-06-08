@@ -1,6 +1,7 @@
 (
 	characters: {
 		Captain: (
+			name: "Captain",
 			acceleration: (25.0, 25.0),
 			deceleration: (10.0, 10.0),
 			speed: (300.0, 300.0),
@@ -15,7 +16,6 @@
 			attraction_acceleration: 15.0,
 			money: 0,
 			weapon_damage: 12,
-			ability_period: 5.0,
 			ability_type: MegaBlast(5.0),
 			projectile_speed: 800.0,
             projectile_spawn_position: Local((0.0, 40.0)),
@@ -27,6 +27,7 @@
 			slot_2_ability: Some(MegaBlast),
 		),
 		Juggernaut: (
+			name: "Juggernaut",
 			acceleration: (25.0, 25.0),
 			deceleration: (10.0, 10.0),
 			speed: (250.0, 250.0),
@@ -41,7 +42,6 @@
 			attraction_acceleration: 15.0,
 			money: 0,
 			weapon_damage: 10,
-			ability_period: 2.0,
 			ability_type: Charge(0.5),
 			projectile_speed: 650.0,
             projectile_spawn_position: Local((0.0, 45.0)),

@@ -9,4 +9,5 @@ pub const DEFAULT_OPTIONS_PROFILE_ID: usize = 0;
 pub struct GameOptions {
     pub bloom_enabled: bool,
     pub bloom_intensity: f32,
+    pub tutorials_enabled: bool,
 }

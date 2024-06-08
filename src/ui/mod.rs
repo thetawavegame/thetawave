@@ -1,12 +1,13 @@
 //! Exposes a plugin that handles layout, rendering, and styling for each of the major game states.
 use bevy::{
     app::{App, Plugin, Update},
-    ecs::schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter},
+    ecs::schedule::OnEnter,
     prelude::{Component, Query, Res, Time, Timer, Transform},
 };
-use thetawave_interface::character_selection::PlayerJoinEvent;
 use thetawave_interface::game::historical_metrics::{MobsKilledByPlayerCacheT, DEFAULT_USER_ID};
 use thetawave_interface::states;
+
+mod button;
 mod character_selection;
 mod game;
 mod game_over;
@@ -16,10 +17,8 @@ mod pause_menu;
 mod victory;
 use self::options_menu::OptionsMenuPlugin;
 use self::{
-    character_selection::{
-        player_join_system, select_character_system, setup_character_selection_system,
-        toggle_tutorial_system,
-    },
+    button::{button_action_change_state_system, ButtonActionEvent},
+    character_selection::CharacterSelectionPlugin,
     game::GameUiPlugin,
     game_over::setup_game_over_system,
     main_menu::MainMenuUIPlugin,
@@ -33,25 +32,14 @@ pub(super) struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<PlayerJoinEvent>();
         app.add_plugins(OptionsMenuPlugin);
+        app.add_event::<ButtonActionEvent>();
         app.add_plugins(GameUiPlugin);
         app.add_plugins(MainMenuUIPlugin);
-        app.add_systems(Update, bouncing_prompt_system);
-
-        app.add_systems(
-            OnEnter(states::AppStates::CharacterSelection),
-            setup_character_selection_system,
-        );
-
+        app.add_plugins(CharacterSelectionPlugin);
         app.add_systems(
             Update,
-            (
-                player_join_system,
-                select_character_system,
-                toggle_tutorial_system,
-            )
-                .run_if(in_state(states::AppStates::CharacterSelection)),
+            (bouncing_prompt_system, button_action_change_state_system),
         );
 
         app.add_systems(OnEnter(states::AppStates::GameOver), setup_game_over_system);

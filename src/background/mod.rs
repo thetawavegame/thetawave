@@ -9,7 +9,7 @@ use bevy::{
         event::EventReader,
         query::With,
         reflect::ReflectComponent,
-        schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter},
+        schedule::{common_conditions::in_state, Condition, IntoSystemConfigs, OnEnter},
         system::{Commands, Query, Res, ResMut, Resource},
     },
     hierarchy::BuildChildren,
@@ -38,7 +38,7 @@ use std::ops::Range;
 use thetawave_interface::{
     game::options::GameOptions,
     run::{RunDefeatType, RunEndEvent, RunOutcomeType},
-    states::{self, GameCleanup, MainMenuCleanup},
+    states::{self, CharacterSelectionCleanup, GameCleanup},
 };
 use thiserror::Error;
 
@@ -68,7 +68,10 @@ impl Plugin for BackgroundPlugin {
 
         app.add_systems(
             Update,
-            rotate_planet_system.run_if(in_state(states::AppStates::MainMenu)),
+            rotate_planet_system.run_if(
+                in_state(states::AppStates::MainMenu)
+                    .or_else(in_state(states::AppStates::CharacterSelection)),
+            ),
         );
 
         app.add_systems(
@@ -226,7 +229,7 @@ fn create_background_system(
                 rotation_speed: rng.gen_range(backgrounds_res.rotation_speed_range.clone()),
             })
             .insert(GameCleanup)
-            .insert(MainMenuCleanup)
+            .insert(CharacterSelectionCleanup)
             .insert(Visibility::default())
             .insert(InheritedVisibility::default())
             .insert(Name::new("Planet"));
@@ -280,7 +283,7 @@ fn create_background_system(
     let mut background_commands = commands.spawn_empty();
     background_commands
         .insert(GameCleanup)
-        .insert(MainMenuCleanup)
+        .insert(CharacterSelectionCleanup)
         .insert(Visibility::default())
         .insert(InheritedVisibility::default())
         .insert(Name::new("Space Background"))
@@ -353,7 +356,7 @@ fn create_background_system(
                     ..default()
                 },))
                 .insert(GameCleanup)
-                .insert(MainMenuCleanup)
+                .insert(CharacterSelectionCleanup)
                 .insert(Visibility::default())
                 .insert(InheritedVisibility::default())
                 .insert(Name::new("Star"))

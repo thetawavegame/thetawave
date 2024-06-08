@@ -1,11 +1,10 @@
 use crate::animation::AnimationComponent;
-use crate::assets::EffectAssets;
+use crate::assets::{EffectAssets, UiAssets};
 use crate::spawnable::effect::{EffectComponent, TextEffectData, TextEffectsResource};
 use crate::spawnable::{EffectsResource, InitialMotion, SpawnEffectEvent, SpawnableComponent};
 use bevy::prelude::{
-    in_state, App, AssetServer, Commands, EventReader, IntoSystemConfigs, Name, Plugin, Res,
-    Sprite, SpriteSheetBundle, Text, Text2dBundle, TextStyle, Timer, TimerMode, Transform, Update,
-    Vec3,
+    in_state, App, Commands, EventReader, IntoSystemConfigs, Name, Plugin, Res, Sprite,
+    SpriteSheetBundle, Text, Text2dBundle, TextStyle, Timer, TimerMode, Transform, Update, Vec3,
 };
 use bevy_rapier2d::prelude::{LockedAxes, RigidBody, Velocity};
 use rand::Rng;
@@ -62,9 +61,9 @@ fn spawn_effect_system(
 fn spawn_text_effect_system(
     mut commands: Commands,
     mut event_reader: EventReader<SpawnEffectEvent>,
-    asset_server: Res<AssetServer>,
     effects_resource: Res<EffectsResource>,
     text_effects_resource: Res<TextEffectsResource>,
+    ui_assets: Res<UiAssets>,
 ) {
     for event in event_reader.read() {
         if let EffectType::Text(text_effect_type) = &event.effect_type {
@@ -73,9 +72,9 @@ fn spawn_text_effect_system(
                 text_effect_type,
                 event.transform,
                 &mut commands,
-                &asset_server,
                 &text_effects_resource,
                 &effects_resource,
+                &ui_assets,
             );
         }
     }
@@ -90,9 +89,9 @@ fn spawn_text_effect(
     text_effect_type: &TextEffectType,
     transform: Transform,
     commands: &mut Commands,
-    asset_server: &AssetServer,
     text_effects_resource: &TextEffectsResource,
     effects_resource: &EffectsResource,
+    ui_assets: &UiAssets,
 ) {
     let mut rng = rand::thread_rng();
 
@@ -108,7 +107,7 @@ fn spawn_text_effect(
             TextEffectType::ConsumableCollected(_) => text_effect_data.text.clone(),
         },
         TextStyle {
-            font: asset_server.load("fonts/wibletown-regular.otf"),
+            font: ui_assets.lunchds_font.clone(),
             font_size: text_effect_data.font_size,
             color: text_effect_data.text_color,
         },

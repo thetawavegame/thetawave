@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use bevy_ecs::{bundle::Bundle, component::Component, event::Event, system::Resource};
 use bevy_time::{Timer, TimerMode};
 use serde::Deserialize;
@@ -9,7 +11,7 @@ use crate::{
 
 /// Identifier for slot one abilities
 /// One for each unique ability
-#[derive(Clone, Deserialize)]
+#[derive(Clone, Deserialize, PartialEq, Eq, Hash)]
 pub enum SlotOneAbilityType {
     StandardBlast,
     StandardBullet,
@@ -17,10 +19,18 @@ pub enum SlotOneAbilityType {
 
 /// Identifier for slot two abilities
 /// One for each unique ability
-#[derive(Clone, Deserialize)]
+#[derive(Clone, Deserialize, PartialEq, Eq, Hash)]
 pub enum SlotTwoAbilityType {
     Charge,
     MegaBlast,
+}
+
+/// Hashmaps of ability types to descriptions
+/// Used for providing information to user on character selection screen
+#[derive(Resource, Deserialize)]
+pub struct AbilityDescriptionsResource {
+    pub slot_one: HashMap<SlotOneAbilityType, String>,
+    pub slot_two: HashMap<SlotTwoAbilityType, String>,
 }
 
 /// Event for triggering ability systems to fire when criteria like inputs and cooldowns are met

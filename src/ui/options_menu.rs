@@ -181,8 +181,6 @@ fn exit_options_menu_on_input_action(
             info!("Exiting options menu overlay state");
             next_options_menu_overlay_state.set(OptionsMenuOverlay::Disabled)
         }
-    } else {
-        error!("Cannot find input device");
     }
 }
 
