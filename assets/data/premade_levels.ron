@@ -10,7 +10,7 @@
 				(
 					intro_text: Some("Destroy the command ship!"),
 					phase_type: Boss(
-						mob_type: Enemy(MechaFerritharax),
+						mob_type: Enemy(Ferritharax),
 						position: (0.0, 600.0),
 						spawn_timer: (
 							mode: Once,
@@ -443,7 +443,7 @@
 				(
 					intro_text: Some("Destroy the command ship!"),
 					phase_type: Boss(
-						mob_type: Enemy(Ferritharax),
+						mob_type: Enemy(MechaFerritharax),
 						position: (0.0, 600.0),
 						spawn_timer: (
 							mode: Once,

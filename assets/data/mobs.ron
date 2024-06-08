@@ -235,7 +235,7 @@
 					FerritharaxProtectHead(
 						(
 							angle: -0.15,
-							stiffness: 30.0,
+							stiffness: 50.0,
 							damping: 50.0,
 						)
 					),
@@ -247,7 +247,7 @@
 					FerritharaxProtectHead(
 						(
 							angle: 0.15,
-							stiffness: 30.0,
+							stiffness: 50.0,
 							damping: 50.0,
 						)
 					),
@@ -259,7 +259,7 @@
 					FerritharaxProtectHead(
 						(
 							angle: -0.5,
-							stiffness: 30.0,
+							stiffness: 50.0,
 							damping: 50.0,
 						)
 					),
@@ -272,7 +272,7 @@
 					FerritharaxProtectHead(
 						(
 							angle: 0.5,
-							stiffness: 30.0,
+							stiffness: 50.0,
 							damping: 50.0,
 						)
 					),
@@ -285,7 +285,7 @@
 					FerritharaxProtectHead(
 						(
 							angle: 1.0,
-							stiffness: 30.0,
+							stiffness: 50.0,
 							damping: 50.0,
 						)
 					),
@@ -297,7 +297,7 @@
 					FerritharaxProtectHead(
 						(
 							angle: -1.0,
-							stiffness: 30.0,
+							stiffness: 50.0,
 							damping: 50.0,
 						)
 					),
@@ -316,7 +316,7 @@
 					FerritharaxAttack(
 						(
 							angle: 0.0,
-							stiffness: 30.0,
+							stiffness: 50.0,
 							damping: 50.0,
 						)
 					),
@@ -328,7 +328,7 @@
 					FerritharaxAttack(
 						(
 							angle: 0.0,
-							stiffness: 30.0,
+							stiffness: 50.0,
 							damping: 50.0,
 						)
 					),
@@ -340,7 +340,7 @@
 					FerritharaxAttack(
 						(
 							angle: 0.0,
-							stiffness: 30.0,
+							stiffness: 50.0,
 							damping: 50.0,
 						)
 					),
@@ -352,7 +352,7 @@
 					FerritharaxAttack(
 						(
 							angle: 0.0,
-							stiffness: 30.0,
+							stiffness: 50.0,
 							damping: 50.0,
 						)
 					),
@@ -364,7 +364,7 @@
 					FerritharaxAttack(
 						(
 							angle: 0.0,
-							stiffness: 30.0,
+							stiffness: 50.0,
 							damping: 50.0,
 						)
 					),
@@ -376,17 +376,17 @@
 					FerritharaxAttack(
 						(
 							angle: 0.0,
-							stiffness: 30.0,
-							damping: 30.0,
+							stiffness: 50.0,
+							damping: 50.0,
 						)
 					),
 				],
 			},
 		}),
 		behavior_sequence_type: Some(Ferritharax),
-		acceleration: (2.0, 2.0),
-		deceleration: (2.0, 2.0),
-		speed: (80.0, 30.0),
+		acceleration: (3.6, 3.6),
+		deceleration: (3.6, 3.6),
+		speed: (60.0, 60.0),
 		collision_damage: 20,
 		colliders: [
 			(
@@ -408,8 +408,8 @@
 				position: (0.0, 60.0),
 				joint: Revolute,
 				target_pos: 0,
-				stiffness: 30.0,
-				damping: 30.0,
+				stiffness: 50.0,
+				damping: 50.0,
 			),
 		],
 		mob_spawners: {
