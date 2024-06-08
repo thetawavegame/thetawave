@@ -29,6 +29,7 @@ pub struct BehaviorSequenceResource {
 pub enum MobBehaviorSequenceType {
     Ferritharax,
     MechaFerritharax,
+    MechaSaucetron,
 }
 
 pub fn mob_behavior_sequence_tracker_system(

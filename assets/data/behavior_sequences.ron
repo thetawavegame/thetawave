@@ -31,7 +31,7 @@
         MechaFerritharax: (
             behaviors: [
                 (
-                    time: 10.0,
+                    time: 8.0,
                     spawnable_behaviors: [MoveToPosition((0,175))],
                     mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
                     control_behaviors: [FerritharaxAttack],
@@ -43,7 +43,35 @@
                     control_behaviors: [FerritharaxProtectHead],
                 ),
                 (
-                    time: 10.0,
+                    time: 8.0,
+                    spawnable_behaviors: [MoveToPosition((0,175))],
+                    mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+                    control_behaviors: [FerritharaxAttack],
+                ),
+                (
+                    time: 20.0,
+                    spawnable_behaviors: [MoveToPosition((-175, 150))],
+                    mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth, SpawnMob("mobs-right")],
+                    control_behaviors: [FerritharaxProtectHead],
+                ),
+            ]
+        ),
+        MechaSaucetron: (
+            behaviors: [
+                (
+                    time: 7.0,
+                    spawnable_behaviors: [MoveToPosition((0,175))],
+                    mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
+                    control_behaviors: [FerritharaxAttack],
+                ),
+                (
+                    time: 20.0,
+                    spawnable_behaviors: [MoveToPosition((175, 150))],
+                    mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth, SpawnMob("mobs-left")],
+                    control_behaviors: [FerritharaxProtectHead],
+                ),
+                (
+                    time: 7.0,
                     spawnable_behaviors: [MoveToPosition((0,175))],
                     mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
                     control_behaviors: [FerritharaxAttack],
