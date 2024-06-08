@@ -177,7 +177,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Boss,
-		health: 1500,
+		health: 3000,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
@@ -397,7 +397,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Boss,
-		health: 1500,
+		health: 2250,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
