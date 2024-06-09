@@ -98,6 +98,12 @@ pub struct MobSegmentData {
     pub disconnected_behaviors: Option<Vec<MobSegmentBehavior>>,
     pub mob_spawners: Option<HashMap<String, Vec<MobSpawnerData>>>,
     pub weapon: Option<WeaponData>,
+    #[serde(default = "default_mob_segment_density")]
+    pub density: f32,
+}
+
+fn default_mob_segment_density() -> f32 {
+    1.0
 }
 
 impl From<&MobSegmentData> for HealthComponent {
@@ -181,6 +187,7 @@ pub fn spawn_mob_segment(
         .insert(SpawnableComponent::new(SpawnableType::MobSegment(
             mob_segment_type.clone(),
         )))
+        .insert(ColliderMassProperties::Density(mob_segment_data.density))
         .insert(ActiveEvents::COLLISION_EVENTS)
         .insert(GameCleanup)
         .insert(Velocity::default())
