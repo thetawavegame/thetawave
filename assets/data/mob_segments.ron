@@ -449,8 +449,13 @@
             ),
             colliders: [
                 (
-                    dimensions: (21.0, 9.0),
-                    position: (0.0, 0.0),
+                    dimensions: (22.0, 7.0),
+                    position: (0.0, 5.0),
+                    rotation: 0.0,
+                ),
+                (
+                    dimensions: (12.0, 6.0),
+                    position: (0.0, -7.0),
                     rotation: 0.0,
                 )
             ],
@@ -492,14 +497,14 @@
             ),
             colliders: [
                 (
-                    dimensions: (23.0, 5.0),
-                    position: (10.0, -5.0),
+                    dimensions: (25.0, 4.5),
+                    position: (11.0, -4.0),
                     rotation: -1.05,
                 ),
                 (
-                    dimensions: (10.5, 8.0),
-                    position: (-11.5, 14.0),
-                    rotation: 0.0,
+                    dimensions: (11.5, 7.5),
+                    position: (-11.5, 15.0),
+                    rotation: -0.261799,
                 )
             ],
             collision_damage: 10,
@@ -528,14 +533,14 @@
             ),
             colliders: [
                 (
-                    dimensions: (23.0, 5.0),
-                    position: (-10.0, -5.0),
+                    dimensions: (25.0, 4.5),
+                    position: (-11.0, -4.0),
                     rotation: 1.05,
                 ),
                 (
-                    dimensions: (10.5, 8.0),
-                    position: (11.5, 14.0),
-                    rotation: 0.0,
+                    dimensions: (11.5, 7.5),
+                    position: (11.5, 15.0),
+                    rotation: 0.261799,
                 )
             ],
             collision_damage: 10,
@@ -718,14 +723,29 @@
             ),
             colliders: [
                 (
-                    dimensions: (11.0, 3.0),
-                    position: (1.5, -8.0),
+                    dimensions: (5.0, 2.0),
+                    position: (15.0, 0.0),
                     rotation: 0.0,
                 ),
                 (
-                    dimensions: (10.0, 2.0),
-                    position: (-9.0, -1.0),
-                    rotation: -1.2,
+                    dimensions: (8.0, 2.5),
+                    position: (4.0, -10.0),
+                    rotation: 0.523599,
+                ),
+                (
+                    dimensions: (8.0, 2.0),
+                    position: (-8.0, -13.0),
+                    rotation: -0.174533,
+                ),
+                (
+                    dimensions: (8.0, 2.5),
+                    position: (4.0, 10.0),
+                    rotation: -0.523599,
+                ),
+                (
+                    dimensions: (8.0, 2.0),
+                    position: (-8.0, 13.0),
+                    rotation: 0.174533,
                 ),
             ],
             collision_damage: 10,
@@ -744,14 +764,29 @@
             ),
             colliders: [
                 (
-                    dimensions: (11.0, 3.0),
-                    position: (-1.5, -8.0),
+                    dimensions: (5.0, 2.0),
+                    position: (-15.0, 0.0),
                     rotation: 0.0,
                 ),
                 (
-                    dimensions: (10.0, 2.0),
-                    position: (9.0, -1.0),
-                    rotation: 1.2,
+                    dimensions: (8.0, 2.5),
+                    position: (-4.0, -10.0),
+                    rotation: -0.523599,
+                ),
+                (
+                    dimensions: (8.0, 2.0),
+                    position: (8.0, -13.0),
+                    rotation: 0.174533,
+                ),
+                (
+                    dimensions: (8.0, 2.5),
+                    position: (-4.0, 10.0),
+                    rotation: 0.523599,
+                ),
+                (
+                    dimensions: (8.0, 2.0),
+                    position: (8.0, 13.0),
+                    rotation: -0.174533,
                 ),
             ],
             collision_damage: 10,
@@ -770,8 +805,13 @@
             ),
             colliders: [
                 (
-                    dimensions: (21.0, 9.0),
-                    position: (0.0, 0.0),
+                    dimensions: (22.0, 7.0),
+                    position: (0.0, 5.0),
+                    rotation: 0.0,
+                ),
+                (
+                    dimensions: (12.0, 6.0),
+                    position: (0.0, -7.0),
                     rotation: 0.0,
                 )
             ],
@@ -813,14 +853,14 @@
             ),
             colliders: [
                 (
-                    dimensions: (23.0, 5.0),
-                    position: (10.0, -5.0),
+                    dimensions: (25.0, 4.5),
+                    position: (11.0, -4.0),
                     rotation: -1.05,
                 ),
                 (
-                    dimensions: (10.5, 8.0),
-                    position: (-11.5, 14.0),
-                    rotation: 0.0,
+                    dimensions: (11.5, 7.5),
+                    position: (-11.5, 15.0),
+                    rotation: -0.261799,
                 )
             ],
             collision_damage: 10,
@@ -849,14 +889,14 @@
             ),
             colliders: [
                 (
-                    dimensions: (23.0, 5.0),
-                    position: (-10.0, -5.0),
+                    dimensions: (25.0, 4.5),
+                    position: (-11.0, -4.0),
                     rotation: 1.05,
                 ),
                 (
-                    dimensions: (10.5, 8.0),
-                    position: (11.5, 14.0),
-                    rotation: 0.0,
+                    dimensions: (11.5, 7.5),
+                    position: (11.5, 15.0),
+                    rotation: 0.261799,
                 )
             ],
             collision_damage: 10,
@@ -1049,14 +1089,29 @@
             ),
             colliders: [
                 (
-                    dimensions: (11.0, 3.0),
-                    position: (1.5, -8.0),
+                    dimensions: (5.0, 2.0),
+                    position: (15.0, 0.0),
                     rotation: 0.0,
                 ),
                 (
-                    dimensions: (10.0, 2.0),
-                    position: (-9.0, -1.0),
-                    rotation: -1.2,
+                    dimensions: (8.0, 2.5),
+                    position: (4.0, -10.0),
+                    rotation: 0.523599,
+                ),
+                (
+                    dimensions: (8.0, 2.0),
+                    position: (-8.0, -13.0),
+                    rotation: -0.174533,
+                ),
+                (
+                    dimensions: (8.0, 2.5),
+                    position: (4.0, 10.0),
+                    rotation: -0.523599,
+                ),
+                (
+                    dimensions: (8.0, 2.0),
+                    position: (-8.0, 13.0),
+                    rotation: 0.174533,
                 ),
             ],
             collision_damage: 10,
@@ -1075,14 +1130,29 @@
             ),
             colliders: [
                 (
-                    dimensions: (11.0, 3.0),
-                    position: (-1.5, -8.0),
+                    dimensions: (5.0, 2.0),
+                    position: (-15.0, 0.0),
                     rotation: 0.0,
                 ),
                 (
-                    dimensions: (10.0, 2.0),
-                    position: (9.0, -1.0),
-                    rotation: 1.2,
+                    dimensions: (8.0, 2.5),
+                    position: (-4.0, -10.0),
+                    rotation: -0.523599,
+                ),
+                (
+                    dimensions: (8.0, 2.0),
+                    position: (8.0, -13.0),
+                    rotation: 0.174533,
+                ),
+                (
+                    dimensions: (8.0, 2.5),
+                    position: (-4.0, 10.0),
+                    rotation: 0.523599,
+                ),
+                (
+                    dimensions: (8.0, 2.0),
+                    position: (8.0, 13.0),
+                    rotation: -0.174533,
                 ),
             ],
             collision_damage: 10,
