@@ -618,9 +618,9 @@
                 projectile_data: (
                     ammunition: Bullet(Enemy),
                     damage: 5,
-                    position: Local((15.0, -75.0)),
+                    position: Local((25.0, -70.0)),
                     speed: 300.0,
-                    direction: 4.71239,
+                    direction: 4.45059,
                     despawn_time: 0.8,
                     count: 3,
                     spread_pattern: Arc((
@@ -695,9 +695,9 @@
                 projectile_data: (
                     ammunition: Bullet(Enemy),
                     damage: 5,
-                    position: Local((-15.0, -75.0)),
+                    position: Local((-25.0, -70.0)),
                     speed: 300.0,
-                    direction: 4.71239,
+                    direction: 4.97419,
                     despawn_time: 0.8,
                     count: 3,
                     spread_pattern: Arc((
@@ -939,9 +939,9 @@
                 projectile_data: (
                     ammunition: Blast(Enemy),
                     damage: 5,
-                    position: Local((15.0, -75.0)),
+                    position: Local((25.0, -70.0)),
                     speed: 300.0,
-                    direction: 4.71239,
+                    direction: 4.45059,
                     despawn_time: 0.8,
                     count: 6,
                     spread_pattern: Random((
@@ -1021,9 +1021,9 @@
                 projectile_data: (
                     ammunition: Blast(Enemy),
                     damage: 5,
-                    position: Local((-15.0, -75.0)),
+                    position: Local((-25.0, -70.0)),
                     speed: 300.0,
-                    direction: 4.71239,
+                    direction: 4.45059,
                     despawn_time: 0.8,
                     count: 6,
                     spread_pattern: Random((

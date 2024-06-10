@@ -70,9 +70,9 @@ pub(in crate::player) fn player_tilt_system(
     for (vel, mut player_trans) in player_info.iter_mut() {
         let rotation_amount = -vel.linvel.x.atan2(vel.linvel.y.abs()) / PI;
 
-        player_trans.rotation.z += rotation_amount * 0.05;
+        player_trans.rotation.z += rotation_amount * 0.01;
         player_trans.rotation.z *= 0.9;
-        player_trans.rotation.z = player_trans.rotation.z.clamp(-0.25, 0.25);
+        player_trans.rotation.z = player_trans.rotation.z.clamp(-0.03, 0.02);
         if player_trans.rotation.z.abs() < 0.001 {
             player_trans.rotation.z = 0.0;
         }
