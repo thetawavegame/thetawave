@@ -40,11 +40,6 @@
                 probability: 0.1,
                 consumable: Money1,
             )),
-            Consumable((
-                rolls: 1,
-                probability: 1.0,
-                consumable: GainProjectiles,
-            )),
         ],
         MoneyAsteroid: [
             Consumable((
