@@ -605,6 +605,7 @@
                 DealDamageToPlayerOnImpact,
                 ReceiveDamageOnImpact,
                 DieAtZeroHealth,
+                DisableWeapons,
             ]),
             mob_spawners: Some({
                 "missile": [
@@ -682,6 +683,7 @@
                 DealDamageToPlayerOnImpact,
                 ReceiveDamageOnImpact,
                 DieAtZeroHealth,
+                DisableWeapons,
             ]),
             mob_spawners: Some({
                 "missile": [
@@ -961,6 +963,7 @@
                 DealDamageToPlayerOnImpact,
                 ReceiveDamageOnImpact,
                 DieAtZeroHealth,
+                DisableWeapons,
             ]),
             mob_spawners: Some({
                 "missile": [
@@ -1043,6 +1046,7 @@
                 DealDamageToPlayerOnImpact,
                 ReceiveDamageOnImpact,
                 DieAtZeroHealth,
+                DisableWeapons,
             ]),
             mob_spawners: Some({
                 "missile": [
