@@ -849,7 +849,7 @@
 				alpha: 1.0,
 			),
 		)),
-		weapon: Some((
+		weapons: Some([(
 			reload_time: 3.0,
 			initial_time: 1.0,
 			fire_mode: Automatic,
@@ -870,7 +870,7 @@
 				size: 1.0,
 				sound: EnemyFireBlast,
 			),
-		)),
+		)]),
 	),
 	Enemy(Shelly): (
 		mob_type: Enemy(Shelly),
@@ -884,6 +884,7 @@
 		deceleration: (2.0, 1.0),
 		speed: (0.0, 75.0),
 		collision_damage: 8,
+		can_rotate: true,
 		defense_interaction: Some(Damage(8)),
 		colliders: [
 			(
@@ -894,33 +895,229 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Standard,
-		health: 25,
+		health: 50,
 		animation: (
 			direction: PingPong(Forward),
 			frame_duration: 0.25,
 		),
-		weapon: Some((
-			reload_time: 3.0,
-			initial_time: 1.0,
-			fire_mode: Automatic,
-			capacity: 1,
-			projectile_data: (
-				ammunition: Bullet(Enemy),
-				damage: 10,
-				position: Local((0.0, -40.0)),
-				speed: 400.0,
-				direction: 4.71239,
-				despawn_time: 2.0,
-				count: 1,
-				spread_pattern: Arc((
-					spread_weights: (0.5, 1.0),
-					max_spread: 1.57080,
-					projectile_gap: 3.14159,
-				)),
-				size: 1.0,
-				sound: EnemyFireBlast,
+		weapons: Some([
+			(
+				reload_time: 1.6,
+				initial_time: 1.0,
+				fire_mode: Automatic,
+				capacity: 1,
+				projectile_data: (
+					ammunition: Bullet(Enemy),
+					damage: 10,
+					position: Local((0.0, -40.0)),
+					speed: 300.0,
+					direction: 4.71239,
+					despawn_time: 0.3,
+					count: 1,
+					spread_pattern: Random((
+                        speed_range: (
+                            start: 0.75,
+                            end: 1.25,
+                        ),
+                        angle_range: (
+                            start: 0.9,
+                            end: 1.1,
+                        ),
+                    )),
+					size: 1.0,
+					sound: EnemyFireBlast,
+				),
 			),
-		)),
+			(
+				reload_time: 1.6,
+				initial_time: 1.2,
+				fire_mode: Automatic,
+				capacity: 1,
+				projectile_data: (
+					ammunition: Bullet(Enemy),
+					damage: 10,
+					position: Local((-28.28427, -28.28427)),
+					speed: 300.0,
+					direction: 3.92699,
+					despawn_time: 0.3,
+					count: 1,
+					spread_pattern: Random((
+                        speed_range: (
+                            start: 0.75,
+                            end: 1.25,
+                        ),
+                        angle_range: (
+                            start: 0.9,
+                            end: 1.1,
+                        ),
+                    )),
+					size: 1.0,
+					sound: EnemyFireBlast,
+				),
+			),
+			(
+				reload_time: 1.6,
+				initial_time: 1.4,
+				fire_mode: Automatic,
+				capacity: 1,
+				projectile_data: (
+					ammunition: Bullet(Enemy),
+					damage: 10,
+					position: Local((-40.0, 0.0)),
+					speed: 300.0,
+					direction: 3.14159,
+					despawn_time: 0.3,
+					count: 1,
+					spread_pattern: Random((
+                        speed_range: (
+                            start: 0.75,
+                            end: 1.25,
+                        ),
+                        angle_range: (
+                            start: 0.9,
+                            end: 1.1,
+                        ),
+                    )),
+					size: 1.0,
+					sound: EnemyFireBlast,
+				),
+			),
+			(
+				reload_time: 1.6,
+				initial_time: 1.6,
+				fire_mode: Automatic,
+				capacity: 1,
+				projectile_data: (
+					ammunition: Bullet(Enemy),
+					damage: 10,
+					position: Local((-28.28427, 28.28427)),
+					speed: 300.0,
+					direction: 2.35619,
+					despawn_time: 0.3,
+					count: 1,
+					spread_pattern: Random((
+                        speed_range: (
+                            start: 0.75,
+                            end: 1.25,
+                        ),
+                        angle_range: (
+                            start: 0.9,
+                            end: 1.1,
+                        ),
+                    )),
+					size: 1.0,
+					sound: EnemyFireBlast,
+				),
+			),
+			(
+				reload_time: 1.6,
+				initial_time: 1.8,
+				fire_mode: Automatic,
+				capacity: 1,
+				projectile_data: (
+					ammunition: Bullet(Enemy),
+					damage: 10,
+					position: Local((0.0, 40.0)),
+					speed: 300.0,
+					direction: 1.57080,
+					despawn_time: 0.3,
+					count: 1,
+					spread_pattern: Random((
+                        speed_range: (
+                            start: 0.75,
+                            end: 1.25,
+                        ),
+                        angle_range: (
+                            start: 0.9,
+                            end: 1.1,
+                        ),
+                    )),
+					size: 1.0,
+					sound: EnemyFireBlast,
+				),
+			),
+			(
+				reload_time: 1.6,
+				initial_time: 2.0,
+				fire_mode: Automatic,
+				capacity: 1,
+				projectile_data: (
+					ammunition: Bullet(Enemy),
+					damage: 10,
+					position: Local((28.28427, 28.28427)),
+					speed: 300.0,
+					direction: 0.78540,
+					despawn_time: 0.3,
+					count: 1,
+					spread_pattern: Random((
+                        speed_range: (
+                            start: 0.75,
+                            end: 1.25,
+                        ),
+                        angle_range: (
+                            start: 0.9,
+                            end: 1.1,
+                        ),
+                    )),
+					size: 1.0,
+					sound: EnemyFireBlast,
+				),
+			),
+			(
+				reload_time: 1.6,
+				initial_time: 2.2,
+				fire_mode: Automatic,
+				capacity: 1,
+				projectile_data: (
+					ammunition: Bullet(Enemy),
+					damage: 10,
+					position: Local((40.0, 0.0)),
+					speed: 300.0,
+					direction: 0.0,
+					despawn_time: 0.3,
+					count: 1,
+					spread_pattern: Random((
+                        speed_range: (
+                            start: 0.75,
+                            end: 1.25,
+                        ),
+                        angle_range: (
+                            start: 0.9,
+                            end: 1.1,
+                        ),
+                    )),
+					size: 1.0,
+					sound: EnemyFireBlast,
+				),
+			),
+			(
+				reload_time: 1.6,
+				initial_time: 2.4,
+				fire_mode: Automatic,
+				capacity: 1,
+				projectile_data: (
+					ammunition: Bullet(Enemy),
+					damage: 10,
+					position: Local((28.28427, -28.28427)),
+					speed: 300.0,
+					direction: 5.49779,
+					despawn_time: 0.3,
+					count: 1,
+					spread_pattern: Random((
+                        speed_range: (
+                            start: 0.75,
+                            end: 1.25,
+                        ),
+                        angle_range: (
+                            start: 0.9,
+                            end: 1.1,
+                        ),
+                    )),
+					size: 1.0,
+					sound: EnemyFireBlast,
+				),
+			),
+		]),
 	),
 	Ally(Hauler3): (
 		mob_type: Ally(Hauler3),
@@ -1186,7 +1383,7 @@
 				alpha: 1.0,
 			),
 		)),
-		weapon: Some((
+		weapons: Some([(
 			reload_time: 3.0,
 			initial_time: 1.0,
 			fire_mode: Automatic,
@@ -1207,7 +1404,7 @@
 				size: 1.0,
 				sound: EnemyFireBlast,
 			),
-		)),
+		)]),
 	),
 	Enemy(StraferLeft): (
 		mob_type: Enemy(StraferLeft),
@@ -1249,7 +1446,7 @@
 				alpha: 1.0,
 			),
 		)),
-		weapon: Some((
+		weapons: Some([(
 			reload_time: 3.0,
 			initial_time: 1.0,
 			fire_mode: Automatic,
@@ -1270,7 +1467,7 @@
 				size: 1.0,
 				sound: EnemyFireBlast,
 			),
-		)),
+		)]),
 	),
 	Neutral(MoneyAsteroid): (
 		mob_type: Neutral(MoneyAsteroid),
@@ -1278,6 +1475,7 @@
 		mob_behaviors: [DealDamageToPlayerOnImpact, ReceiveDamageOnImpact, DieAtZeroHealth],
 		acceleration: (0.0, 2.0),
 		deceleration: (2.0, 1.0),
+		can_rotate: true,
 		speed: (0.0, 75.0),
 		collision_damage: 7,
 		z_level: 4.0,

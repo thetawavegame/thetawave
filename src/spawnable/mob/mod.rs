@@ -32,7 +32,7 @@ use thetawave_interface::{
     objective::DefenseInteraction,
     spawnable::{MobDestroyedEvent, MobSegmentType, MobType, SpawnMobEvent, SpawnPosition},
     states::GameCleanup,
-    weapon::{WeaponComponent, WeaponData},
+    weapon::{WeaponData, WeaponsComponent},
 };
 
 /// Core component for mobs
@@ -200,7 +200,7 @@ pub struct MobData {
     pub mob_spawners: HashMap<String, Vec<MobSpawnerData>>,
     /// projectile spawners that the mob can use
     #[serde(default)]
-    pub weapon: Option<WeaponData>,
+    pub weapons: Option<Vec<WeaponData>>,
     #[serde(default = "default_mob_density")]
     pub density: f32,
 }
@@ -216,8 +216,8 @@ impl From<&MobData> for HealthComponent {
 }
 
 impl MobData {
-    pub fn get_weapon_component(&self) -> Option<WeaponComponent> {
-        self.weapon.clone().map(WeaponComponent::from)
+    pub fn get_weapon_component(&self) -> Option<WeaponsComponent> {
+        self.weapons.clone().map(WeaponsComponent::from)
     }
 }
 

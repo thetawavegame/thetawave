@@ -9,7 +9,7 @@ use thetawave_interface::{
     spawnable::{
         EffectType, MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnItemEvent, SpawnPosition,
     },
-    weapon::WeaponComponent,
+    weapon::WeaponsComponent,
 };
 
 use crate::{
@@ -69,7 +69,7 @@ pub fn mob_segment_execute_behavior_system(
         &Transform,
         &mut ImpulseJoint,
         &HealthComponent,
-        Option<&mut WeaponComponent>,
+        Option<&mut WeaponsComponent>,
     )>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     player_query: Query<(Entity, &PlayerIncomingDamageComponent)>,
@@ -217,7 +217,7 @@ pub fn mob_segment_execute_behavior_system(
 
                 MobSegmentBehavior::DisableWeapons => {
                     if let Some(ref mut weapon_component) = maybe_weapon {
-                        weapon_component.is_enabled = false;
+                        weapon_component.disable_all();
                     }
                 }
             }

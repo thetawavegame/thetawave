@@ -8,7 +8,7 @@ use thetawave_interface::{
     objective::DefenseInteraction,
     spawnable::{MobSegmentType, SpawnableType},
     states::GameCleanup,
-    weapon::{WeaponComponent, WeaponData},
+    weapon::{WeaponData, WeaponsComponent},
 };
 
 use crate::collision::{
@@ -97,7 +97,8 @@ pub struct MobSegmentData {
     pub behaviors: Vec<MobSegmentBehavior>,
     pub disconnected_behaviors: Option<Vec<MobSegmentBehavior>>,
     pub mob_spawners: Option<HashMap<String, Vec<MobSpawnerData>>>,
-    pub weapon: Option<WeaponData>,
+    #[serde(default)]
+    pub weapons: Option<Vec<WeaponData>>,
     #[serde(default = "default_mob_segment_density")]
     pub density: f32,
 }
@@ -113,8 +114,8 @@ impl From<&MobSegmentData> for HealthComponent {
 }
 
 impl MobSegmentData {
-    pub fn get_weapon_component(&self) -> Option<WeaponComponent> {
-        self.weapon.clone().map(WeaponComponent::from)
+    pub fn get_weapon_component(&self) -> Option<WeaponsComponent> {
+        self.weapons.clone().map(WeaponsComponent::from)
     }
 }
 

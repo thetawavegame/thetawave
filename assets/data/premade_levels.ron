@@ -10,7 +10,7 @@
 				(
 					intro_text: Some("Destroy the command ship!"),
 					phase_type: Boss(
-						mob_type: Enemy(MechaFerritharax),
+						mob_type: Enemy(MechaSaucetron),
 						position: (0.0, 600.0),
 						spawn_timer: (
 							mode: Once,
@@ -45,7 +45,7 @@
 			))),	
 			phases: [
 				(
-					intro_text: Some("Decimate the invaders!"),
+					intro_text: Some("Destroy the invaders!"),
 					phase_type: FormationSpawn(
 						phase_timer: (
 							mode: Once,
@@ -143,7 +143,7 @@
 							finished: false,
 							times_finished_this_tick: 0,
 						),
-						formation_pool: "medium",
+						formation_pool: "easy",
 					),
 				),
 				(
@@ -200,7 +200,7 @@
 							finished: false,
 							times_finished_this_tick: 0,
 						),
-						formation_pool: "hard",
+						formation_pool: "medium",
 					),
 					
 				),
@@ -262,7 +262,7 @@
 			))),		
 			phases: [
 				(
-					intro_text: Some("Decimate the invaders!"),
+					intro_text: Some("Destroy the invaders!"),
 					phase_type: FormationSpawn(
 						phase_timer: (
 							mode: Once,
@@ -296,7 +296,7 @@
 							finished: false,
 							times_finished_this_tick: 0,
 						),
-						formation_pool: "easy",
+						formation_pool: "medium",
 					),
 					bg_music_transition: Some((
 						loop_from: Some(0.0),
@@ -416,7 +416,7 @@
 							finished: false,
 							times_finished_this_tick: 0,
 						),
-						formation_pool: "hard",
+						formation_pool: "medium",
 					),
 					
 				),
@@ -478,7 +478,7 @@
 			))),
 			phases: [
 				(
-					intro_text: Some("Decimate the invaders!"),
+					intro_text: Some("Harvest the Asteroids!"),
 					phase_type: FormationSpawn(
 						phase_timer: (
 							mode: Once,
@@ -512,7 +512,71 @@
 							finished: false,
 							times_finished_this_tick: 0,
 						),
-						formation_pool: "easy",
+						formation_pool: "asteroids",
+					),
+					bg_music_transition: Some((
+						loop_from: Some(0.0),
+						bg_music_type: Some(Game),
+						fade_out: Some(2.0),
+						fade_in: Some(2.0),
+					)),
+				),
+				(
+					phase_type: Break(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 9,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+					),
+				),
+				(
+					intro_text: Some("Destroy the invaders!"),
+					phase_type: FormationSpawn(
+						phase_timer: (
+							mode: Once,
+							duration: (
+								secs: 20,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						spawn_timer: (
+							mode: Once,
+							duration: (
+								secs: 1,
+								nanos: 0,
+							),
+							stopwatch: (
+								elapsed: (
+									secs: 0,
+									nanos: 0,
+								),
+								paused: false, 
+							),
+							finished: false,
+							times_finished_this_tick: 0,
+						),
+						formation_pool: "hard",
 					),
 					bg_music_transition: Some((
 						loop_from: Some(0.0),
@@ -575,7 +639,7 @@
 							finished: false,
 							times_finished_this_tick: 0,
 						),
-						formation_pool: "medium",
+						formation_pool: "hard",
 					),
 				),
 				(
@@ -927,7 +991,7 @@
 							finished: false,
 							times_finished_this_tick: 0,
 						),
-						formation_pool: "medium",
+						formation_pool: "test",
 					),
 				),
 			],

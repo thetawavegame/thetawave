@@ -616,7 +616,7 @@
                     ),
                 ],
 		    }),
-            weapon: Some((
+            weapons: Some([(
                 reload_time: 1.0,
                 initial_time: 3.0,
                 fire_mode: Automatic,
@@ -637,7 +637,7 @@
                     size: 1.0,
                     sound: EnemyFireBlast,
                 ),
-            )),    
+            )]),    
         ),
         Enemy(MechaFerritharaxLeftArm): (
             mob_segment_type: Enemy(MechaFerritharaxLeftArm),
@@ -694,7 +694,7 @@
                     ),
                 ],
 		    }),
-            weapon: Some((
+            weapons: Some([(
                 reload_time: 1.0,
                 initial_time: 3.0,
                 fire_mode: Automatic,
@@ -715,7 +715,7 @@
                     size: 1.0,
                     sound: EnemyFireBlast,
                 ),
-            )),        
+            )]),        
         ),
         Enemy(MechaFerritharaxRightClaw): (
             mob_segment_type: Enemy(MechaFerritharaxRightClaw),
@@ -974,7 +974,7 @@
                     ),
                 ],
 		    }),
-            weapon: Some((
+            weapons: Some([(
                 reload_time: 1.0,
                 initial_time: 3.0,
                 fire_mode: Automatic,
@@ -993,14 +993,14 @@
                             end: 1.25,
                         ),
                         angle_range: (
-                            start: 4.51604,
-                            end: 4.90874,
+                            start: 0.9,
+                            end: 1.1,
                         ),
                     )),
                     size: 1.0,
                     sound: EnemyFireBlast,
                 ),
-            )),    
+            )]),    
         ),
         Enemy(MechaSaucetronLeftArm): (
             mob_segment_type: Enemy(MechaSaucetronLeftArm),
@@ -1057,7 +1057,7 @@
                     ),
                 ],
 		    }),
-            weapon: Some((
+            weapons: Some([(
                 reload_time: 1.0,
                 initial_time: 3.0,
                 fire_mode: Automatic,
@@ -1067,7 +1067,7 @@
                     damage: 5,
                     position: Local((-25.0, -70.0)),
                     speed: 300.0,
-                    direction: 4.45059,
+                    direction: 4.97419,
                     despawn_time: 0.8,
                     count: 6,
                     spread_pattern: Random((
@@ -1076,14 +1076,14 @@
                             end: 1.25,
                         ),
                         angle_range: (
-                            start: 4.51604,
-                            end: 4.90874,
+                            start: 0.9,
+                            end: 1.1,
                         ),
                     )),
                     size: 1.0,
                     sound: EnemyFireBlast,
                 ),
-            )),        
+            )]),        
         ),
         Enemy(MechaSaucetronRightClaw): (
             mob_segment_type: Enemy(MechaSaucetronRightClaw),

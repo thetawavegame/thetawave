@@ -34,7 +34,7 @@
 			collider_dimensions: (4.0 , 5.5),
 			collider_density: 1.5,
 			character_type: Juggernaut,
-			health: 150,
+			health: 140,
 			shields: 10,
 			shields_recharge_rate: 0.75,
 			collision_damage: 15,

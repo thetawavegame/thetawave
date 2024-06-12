@@ -79,7 +79,37 @@ pub struct WeaponProjectileData {
 
 /// Describes how projectiles are spawned
 #[derive(Component, Clone)]
-pub struct WeaponComponent {
+pub struct WeaponsComponent {
+    pub weapons: Vec<Weapon>,
+}
+
+impl From<Vec<WeaponData>> for WeaponsComponent {
+    fn from(value: Vec<WeaponData>) -> Self {
+        let weapons = value
+            .iter()
+            .map(|weapon_data| Weapon::from(weapon_data))
+            .collect();
+
+        WeaponsComponent { weapons }
+    }
+}
+
+impl WeaponsComponent {
+    pub fn enable_all(&mut self) {
+        self.weapons
+            .iter_mut()
+            .for_each(|weapon| weapon.is_enabled = true);
+    }
+
+    pub fn disable_all(&mut self) {
+        self.weapons
+            .iter_mut()
+            .for_each(|weapon| weapon.is_enabled = false);
+    }
+}
+
+#[derive(Component, Clone)]
+pub struct Weapon {
     /// Base reload time of the weapon
     pub base_reload_time: f32,
     /// Tracks time until next projectile(s) can be spawned
@@ -96,26 +126,26 @@ pub struct WeaponComponent {
     pub projectile_data: WeaponProjectileData,
 }
 
-impl From<WeaponData> for WeaponComponent {
-    fn from(value: WeaponData) -> Self {
-        WeaponComponent {
+impl From<&WeaponData> for Weapon {
+    fn from(value: &WeaponData) -> Self {
+        Weapon {
             base_reload_time: value.reload_time,
             reload_timer: Timer::from_seconds(value.reload_time, TimerMode::Once),
             initial_timer: Timer::from_seconds(value.initial_time, TimerMode::Once),
-            fire_mode: value.fire_mode,
+            fire_mode: value.fire_mode.clone(),
             capacity: value.capacity,
-            projectile_data: value.projectile_data,
+            projectile_data: value.projectile_data.clone(),
             is_enabled: true,
         }
     }
 }
 
-impl WeaponComponent {
+impl Weapon {
     pub fn enable(&mut self) {
         self.is_enabled = true;
     }
 
-    pub fn disable(&mut self) {
+    pub fn disable_all(&mut self) {
         self.is_enabled = false;
     }
     /// Returns ture if the weapon can be fired (<=> is currently reloaded)

@@ -24,8 +24,11 @@ pub(super) fn spawn_barriers_system(
     spawn_spawnables_pass_barrier(&mut commands, Vec2::new(0.0, -360.0), 1000.0, 30.0);
 
     // spawn vertical barriers at right and left of arena
-    spawn_barrier(&mut commands, Vec2::new(500.0, 0.0), 30.0, 3000.0);
-    spawn_barrier(&mut commands, Vec2::new(-500.0, 0.0), 30.0, 3000.0);
+    spawn_barrier(&mut commands, Vec2::new(500.0, 0.0), 30.0, 10000.0);
+    spawn_barrier(&mut commands, Vec2::new(-500.0, 0.0), 30.0, 10000.0);
+
+    // spawn horizontal barriers
+    spawn_barrier(&mut commands, Vec2::new(0.0, 2250.0), 3000.0, 30.0);
 
     // spawn barrier glow effect
     spawn_effect.send(SpawnEffectEvent {
