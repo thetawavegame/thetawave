@@ -1,7 +1,6 @@
 (	
 	formation_pools: {
 		"test": [
-			
 		],
 		"easy": [
 			(
@@ -138,7 +137,7 @@
 					),
 				],
 				weight: 1.0,
-				period: 9.0,
+				period: 7.0,
 			),
 			(
 				formation_spawnables: [
@@ -660,6 +659,132 @@
 			),
 		],
 		"hard": [
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Ally(Hauler3)),
+						position: (0.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (120.0, 1000.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (-120.0, 1000.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (120.0, 900.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (-120.0, 900.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (120.0, 800.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (-120.0, 800.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-240.0, 700.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (240.0, 700.0),
+					),
+				],
+				weight: 0.7,
+				period: 10.0,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (0.0, 500.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (75.0, 525.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (-75.0, 525.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (150.0, 550.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (-150.0, 550.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (225.0, 575.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Shelly)),
+						position: (-225.0, 575.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (300.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Drone)),
+						position: (-300.0, 600.0),
+					),
+				],
+				weight: 1.0,
+				period: 10.0,
+			),
+			(
+				formation_spawnables: [
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (0.0, 500.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (75.0, 525.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-75.0, 525.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (150.0, 550.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-150.0, 550.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (225.0, 575.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-225.0, 575.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (300.0, 600.0),
+					),
+					(
+						spawnable_type: Mob(Enemy(Pawn)),
+						position: (-300.0, 600.0),
+					),	
+				],
+				weight: 1.0,
+				period: 10.0,
+			),
 			(
 				formation_spawnables: [
 					(

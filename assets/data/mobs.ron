@@ -177,7 +177,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Boss,
-		health: 3000,
+		health: 2400,
 		density: 3.8,
 		animation: (
 			direction: PingPong(Forward),
@@ -398,7 +398,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Boss,
-		health: 2250,
+		health: 1800,
 		density: 3.5,
 		animation: (
 			direction: PingPong(Forward),
@@ -619,7 +619,7 @@
 		],
 		z_level: 5.0,
 		consumable_drops: Boss,
-		health: 1500,
+		health: 1200,
 		density: 2.7,
 		animation: (
 			direction: PingPong(Forward),

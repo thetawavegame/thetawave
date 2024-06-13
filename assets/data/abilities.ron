@@ -17,7 +17,7 @@
                 max_spread: 1.57080,
                 projectile_gap: 3.14159,
             )),
-            damage_multiplier: 5.0,
+            damage_multiplier: 3.0,
             ammunition: Blast(Ally),
             speed_multiplier: 2.0,
             direction: 1.57080,

@@ -16,7 +16,6 @@
 			attraction_acceleration: 15.0,
 			money: 0,
 			weapon_damage: 10,
-			ability_type: MegaBlast(3.0),
 			projectile_speed: 800.0,
             projectile_spawn_position: Local((0.0, 40.0)),
             projectile_despawn_time: 1.0,

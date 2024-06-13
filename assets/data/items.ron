@@ -4,9 +4,9 @@
         collider_dimensions: (5.0, 5.0),
         spawnable_behaviors: [BrakeHorizontal, MoveDown, AttractToPlayer],
         item_behaviors: [OnCollectIncreaseMaxHealth(100), OnCollectFullHeal],
-        acceleration: (0.0, 2.0),
-        deceleration: (0.5, 1.0),
-        speed: (0.0, 110.0),
+        acceleration: (8.0, 8.0),
+        deceleration: (5.0, 5.0),
+        speed: (0.0, 120.0),
         z_level: 15.0,
         initial_motion: (
             random_linvel: Some(((-100, 50),(100, 100))),
