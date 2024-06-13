@@ -1,29 +1,54 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Thetawave</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="favicon.png" />
-  <link rel="stylesheet" href="style.css" />
-  <title>Thetawave</title>
-</head>
-
-<body>
-  <div class="screen scanlines">
-    <div class="flexbox hcenter screen-content">
-      <div id="logo-container" class="hcenter">
-        <img src="https://assets.thetawave.metalmancy.tech/promo/thetawave_logo_animated.gif" width="800" alt="logo" />
+  <body>
+    <div class="screen scanlines">
+      <div class="flexbox hcenter screen-content">
+        <div id="logo-container" class="hcenter">
+          <img
+            src="https://assets.thetawave.metalmancy.tech/promo/thetawave_logo_animated.gif"
+            width="800"
+            alt="logo"
+          />
+        </div>
+        <div id="link-container" class="flexbox hcenter">
+          <div class="hdiv"></div>
+          <a id="trigger_game_button" href="#">Play</a>
+          <div class="hdiv"></div>
+          <a href="https://github.com/thetawavegame" target="_blank"
+            >Source Code</a
+          >
+          <div class="hdiv"></div>
+        </div>
       </div>
-      <div id="link-container" class="flexbox hcenter">
-        <div class="hdiv"></div>
-        <a id="trigger_game_button" href="#">Play</a>
-        <div class="hdiv"></div>
-        <a href="https://github.com/thetawavegame" target="_blank">Source Code</a>
-        <div class="hdiv"></div>
+    <script type="module" src="thetawave-init.js"></script>
+      <div id="chrome-warning" style="display: none">
+        <p>
+          This website is optimized for Google Chrome. For the best performance
+          and audio quality, please use Chrome.
+        </p>
+        <p>
+          If you don't have Chrome installed, you can download it
+          <a href="https://www.google.com/chrome/">here</a>.
+        </p>
       </div>
     </div>
-  </div>
-  <script type="module" src="thetawave-init.js"></script>
-</body>
-
+    <script>
+      function isChrome() {
+        return (
+          /Chrome/.test(navigator.userAgent) &&
+          /Google Inc/.test(navigator.vendor)
+        ); }
+        
+          if (!isChrome()) {
+            document.getElementById("chrome-warning").style.display = "block";
+          }
+    </script>
+  </body>
 </html>
