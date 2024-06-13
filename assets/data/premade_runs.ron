@@ -1,5 +1,6 @@
 (
     runs: {
+        //"test_run": ["test"],
         "test_run": ["test_level_1", "test_level_2", "test_level_3"],
     }
 )

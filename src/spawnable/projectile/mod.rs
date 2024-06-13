@@ -1,4 +1,5 @@
 use bevy::{
+    math::{EulerRot, Mat2},
     prelude::{
         Commands, Component, Entity, Event, EventReader, EventWriter, Name, Quat, Res, Resource,
         Sprite, SpriteSheetBundle, Timer, TimerMode, Transform, Vec2, Vec3Swizzles,
@@ -154,12 +155,17 @@ pub fn spawn_projectile_from_weapon(
         translation: match weapon_projectile_data.position {
             thetawave_interface::spawnable::SpawnPosition::Global(pos) => pos,
             thetawave_interface::spawnable::SpawnPosition::Local(pos) => {
-                source_transform.translation.xy() + pos
+                // Apply the rotation to the local position
+                let rotated_pos = source_transform.rotation * pos.extend(0.0);
+                // Convert back to Vec2 and add to the source translation
+                source_transform.translation.xy() + rotated_pos.xy()
             }
         }
         .extend(projectile_data.z_level),
         scale: Vec2::splat(game_parameters.sprite_scale * weapon_projectile_data.size).extend(1.0),
-        rotation: Quat::from_rotation_z(weapon_projectile_data.direction),
+        rotation: Quat::from_rotation_z(
+            weapon_projectile_data.direction + source_transform.rotation.z,
+        ),
     };
 
     // Set the correct collider group for the ammunition based on the faction
@@ -172,8 +178,18 @@ pub fn spawn_projectile_from_weapon(
     for linvel in spread_linvels {
         let new_initial_motion =
             if let Some(mut initial_motion_linvel) = initial_motion.clone().linvel {
-                // Convert the angle to a velocity vector
-                initial_motion_linvel += linvel;
+                let rotation = source_transform.rotation.to_euler(EulerRot::ZYX).0; // Get the z-rotation (yaw)
+                let cos_theta = rotation.cos();
+                let sin_theta = rotation.sin();
+
+                // Create the rotation matrix for 2D rotation
+                let rotation_matrix =
+                    Mat2::from_cols_array(&[cos_theta, sin_theta, -sin_theta, cos_theta]);
+
+                // Apply the rotation to the linvel
+                let rotated_linvel = rotation_matrix * linvel;
+
+                initial_motion_linvel += rotated_linvel;
 
                 InitialMotion {
                     linvel: Some(initial_motion_linvel),

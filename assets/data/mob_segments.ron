@@ -164,8 +164,8 @@
                 ))
             ],
         ),
-        Enemy(RepeaterBody): (
-            mob_segment_type: Enemy(RepeaterBody),
+        Enemy(FerritharaxBody): (
+            mob_segment_type: Enemy(FerritharaxBody),
             animation: (
                 direction: PingPong(Forward),
                 frame_duration: 0.25,
@@ -178,7 +178,8 @@
                 )
             ],
             collision_damage: 10,
-            health: 350,
+            health: 450,
+            density: 2.3,
             consumable_drops: Standard,
             z_level: 4.9,
             anchor_point: (0.0, -51.0),
@@ -189,25 +190,25 @@
             ],
             mob_segment_anchor_points: Some([
                 (
-                    mob_segment_type: Enemy(RepeaterRightShoulder),
+                    mob_segment_type: Enemy(FerritharaxRightShoulder),
                     position: (72.0, -5.0),
                     joint: Revolute,
                     target_pos: 0.0,
-                    stiffness: 30.0,
-                    damping: 30.0,
+                    stiffness: 50.0,
+                    damping: 50.0,
                 ),
                 (
-                    mob_segment_type: Enemy(RepeaterLeftShoulder),
+                    mob_segment_type: Enemy(FerritharaxLeftShoulder),
                     position: (-72.0, -5.0),
                     joint: Revolute,
                     target_pos: 0.0,
-                    stiffness: 30.0,
-                    damping: 30.0,
+                    stiffness: 50.0,
+                    damping: 50.0,
                 ),
             ]),
         ), 
-        Enemy(RepeaterRightShoulder): (
-            mob_segment_type: Enemy(RepeaterRightShoulder),
+        Enemy(FerritharaxRightShoulder): (
+            mob_segment_type: Enemy(FerritharaxRightShoulder),
             animation: (
                 direction: None,
                 frame_duration: 1.0,
@@ -225,24 +226,25 @@
                 )
             ],
             collision_damage: 10,
-            health: 350,
+            health: 450,
+            density: 2.3,
             consumable_drops: Standard,
             z_level: 5.1,
             anchor_point: (-75.0, 48.0),
             behaviors: [],
             mob_segment_anchor_points: Some([
                 (
-                    mob_segment_type: Enemy(RepeaterRightArm),
+                    mob_segment_type: Enemy(FerritharaxRightArm),
                     position: (65.0, -85.0),
                     joint: Revolute,
                     target_pos: 0.0,
-                    stiffness: 30.0,
-                    damping: 30.0,
+                    stiffness: 50.0,
+                    damping: 50.0,
                 ),
             ])
         ),
-        Enemy(RepeaterLeftShoulder): (
-            mob_segment_type: Enemy(RepeaterLeftShoulder),
+        Enemy(FerritharaxLeftShoulder): (
+            mob_segment_type: Enemy(FerritharaxLeftShoulder),
             animation: (
                 direction: None,
                 frame_duration: 1.0,
@@ -260,24 +262,25 @@
                 )
             ],
             collision_damage: 10,
-            health: 350,
+            health: 450,
+            density: 2.3,
             consumable_drops: Standard,
             z_level: 5.1,
             anchor_point: (75.0, 48.0),
             behaviors: [],
             mob_segment_anchor_points: Some([
                 (
-                    mob_segment_type: Enemy(RepeaterLeftArm),
+                    mob_segment_type: Enemy(FerritharaxLeftArm),
                     position: (-65.0, -85.0),
                     joint: Revolute,
                     target_pos: 0.0,
-                    stiffness: 30.0,
-                    damping: 30.0,
+                    stiffness: 50.0,
+                    damping: 50.0,
                 ),
             ])  
         ),
-        Enemy(RepeaterRightArm): (
-            mob_segment_type: Enemy(RepeaterRightArm),
+        Enemy(FerritharaxRightArm): (
+            mob_segment_type: Enemy(FerritharaxRightArm),
             animation: (
                 direction: None,
                 frame_duration: 1.0,
@@ -300,19 +303,20 @@
                 ),
             ],
             collision_damage: 10,
-            health: 500,
+            health: 650,
+            density: 2.3,
             consumable_drops: Standard,
             z_level: 5.2,
             anchor_point: (-28.0, 80.0),
             behaviors: [],
             mob_segment_anchor_points: Some([
                 (
-                    mob_segment_type: Enemy(RepeaterRightClaw),
+                    mob_segment_type: Enemy(FerritharaxRightClaw),
                     position: (-30.0, -75.0),
                     joint: Revolute,
                     target_pos: 0.0,
-                    stiffness: 30.0,
-                    damping: 30.0,
+                    stiffness: 50.0,
+                    damping: 50.0,
                 ),
             ]),
             disconnected_behaviors: Some([
@@ -325,13 +329,13 @@
                     (
                         mob_type: Enemy(Missile),
                         position: Local((30.0, -90.0)),
-                        period: 3.5,
+                        period: 5.0,
                     ),
                 ],
 		    }),    
         ),
-        Enemy(RepeaterLeftArm): (
-            mob_segment_type: Enemy(RepeaterLeftArm),
+        Enemy(FerritharaxLeftArm): (
+            mob_segment_type: Enemy(FerritharaxLeftArm),
             animation: (
                 direction: None,
                 frame_duration: 1.0,
@@ -354,19 +358,20 @@
                 ),
             ],
             collision_damage: 10,
-            health: 500,
+            health: 650,
+            density: 2.3,
             consumable_drops: Standard,
             z_level: 5.2,
             anchor_point: (28.0, 80.0),
             behaviors: [],
             mob_segment_anchor_points: Some([
                 (
-                    mob_segment_type: Enemy(RepeaterLeftClaw),
+                    mob_segment_type: Enemy(FerritharaxLeftClaw),
                     position: (30.0, -75.0),
                     joint: Revolute,
                     target_pos: 0.0,
-                    stiffness: 30.0,
-                    damping: 30.0,
+                    stiffness: 50.0,
+                    damping: 50.0,
                 ),
             ]),
             disconnected_behaviors: Some([
@@ -379,13 +384,13 @@
                     (
                         mob_type: Enemy(Missile),
                         position: Local((-30.0, -90.0)),
-                        period: 3.5,
+                        period: 5.0,
                     ),
                 ],
 		    }),    
         ),
-        Enemy(RepeaterRightClaw): (
-            mob_segment_type: Enemy(RepeaterRightClaw),
+        Enemy(FerritharaxRightClaw): (
+            mob_segment_type: Enemy(FerritharaxRightClaw),
             animation: (
                 direction: None,
                 frame_duration: 1.0,
@@ -403,14 +408,15 @@
                 ),
             ],
             collision_damage: 10,
-            health: 600,
+            health: 700,
+            density: 2.3,
             consumable_drops: Standard,
             z_level: 5.3,
             anchor_point: (42.0, -23.0),
             behaviors: [],  
         ),
-        Enemy(RepeaterLeftClaw): (
-            mob_segment_type: Enemy(RepeaterLeftClaw),
+        Enemy(FerritharaxLeftClaw): (
+            mob_segment_type: Enemy(FerritharaxLeftClaw),
             animation: (
                 direction: None,
                 frame_duration: 1.0,
@@ -428,10 +434,737 @@
                 ),
             ],
             collision_damage: 10,
-            health: 600,
+            health: 700,
+            density: 2.3,
             consumable_drops: Standard,
             z_level: 5.3,
             anchor_point: (-42.0, -23.0),
+            behaviors: [],  
+        ),
+        Enemy(MechaFerritharaxBody): (
+            mob_segment_type: Enemy(MechaFerritharaxBody),
+            animation: (
+                direction: PingPong(Forward),
+                frame_duration: 0.25,
+            ),
+            colliders: [
+                (
+                    dimensions: (22.0, 7.0),
+                    position: (0.0, 5.0),
+                    rotation: 0.0,
+                ),
+                (
+                    dimensions: (12.0, 6.0),
+                    position: (0.0, -7.0),
+                    rotation: 0.0,
+                )
+            ],
+            collision_damage: 10,
+            health: 725,
+            density: 3.3,
+            consumable_drops: Standard,
+            z_level: 5.1,
+            anchor_point: (0.0, -51.0),
+            behaviors: [
+                DealDamageToPlayerOnImpact,
+                ReceiveDamageOnImpact,
+                DieAtZeroHealth,
+            ],
+            mob_segment_anchor_points: Some([
+                (
+                    mob_segment_type: Enemy(MechaFerritharaxRightShoulder),
+                    position: (90.0, 10.0),
+                    joint: Revolute,
+                    target_pos: 0.0,
+                    stiffness: 300.0,
+                    damping: 300.0,
+                ),
+                (
+                    mob_segment_type: Enemy(MechaFerritharaxLeftShoulder),
+                    position: (-90.0, 10.0),
+                    joint: Revolute,
+                    target_pos: 0.0,
+                    stiffness: 300.0,
+                    damping: 300.0,
+                ),
+            ]),
+        ), 
+        Enemy(MechaFerritharaxRightShoulder): (
+            mob_segment_type: Enemy(MechaFerritharaxRightShoulder),
+            animation: (
+                direction: None,
+                frame_duration: 1.0,
+            ),
+            colliders: [
+                (
+                    dimensions: (25.0, 4.5),
+                    position: (11.0, -4.0),
+                    rotation: -1.05,
+                ),
+                (
+                    dimensions: (11.5, 7.5),
+                    position: (-11.5, 15.0),
+                    rotation: -0.261799,
+                )
+            ],
+            collision_damage: 10,
+            health: 725,
+            density: 3.3,
+            consumable_drops: Standard,
+            z_level: 5.0,
+            anchor_point: (-75.0, 48.0),
+            behaviors: [],
+            mob_segment_anchor_points: Some([
+                (
+                    mob_segment_type: Enemy(MechaFerritharaxRightArm),
+                    position: (75.0, -85.0),
+                    joint: Revolute,
+                    target_pos: 0.0,
+                    stiffness: 300.0,
+                    damping: 300.0,
+                ),
+            ])
+        ),
+        Enemy(MechaFerritharaxLeftShoulder): (
+            mob_segment_type: Enemy(MechaFerritharaxLeftShoulder),
+            animation: (
+                direction: None,
+                frame_duration: 1.0,
+            ),
+            colliders: [
+                (
+                    dimensions: (25.0, 4.5),
+                    position: (-11.0, -4.0),
+                    rotation: 1.05,
+                ),
+                (
+                    dimensions: (11.5, 7.5),
+                    position: (11.5, 15.0),
+                    rotation: 0.261799,
+                )
+            ],
+            collision_damage: 10,
+            health: 725,
+            density: 3.3,
+            consumable_drops: Standard,
+            z_level: 5.0,
+            anchor_point: (75.0, 48.0),
+            behaviors: [],
+            mob_segment_anchor_points: Some([
+                (
+                    mob_segment_type: Enemy(MechaFerritharaxLeftArm),
+                    position: (-75.0, -85.0),
+                    joint: Revolute,
+                    target_pos: 0.0,
+                    stiffness: 300.0,
+                    damping: 300.0,
+                ),
+            ])  
+        ),
+        Enemy(MechaFerritharaxRightArm): (
+            mob_segment_type: Enemy(MechaFerritharaxRightArm),
+            animation: (
+                direction: None,
+                frame_duration: 1.0,
+            ),
+            colliders: [
+                (
+                    dimensions: (17.0, 4.0),
+                    position: (-4.0, 9.0),
+                    rotation: -1.25,
+                ),
+                (
+                    dimensions: (10.0, 3.0),
+                    position: (-1.0, -14.5),
+                    rotation: 0.75,
+                ),
+                (
+                    dimensions: (4.0, 12.0),
+                    position: (7.0, -8.0),
+                    rotation: 0.0,
+                ),
+            ],
+            collision_damage: 10,
+            health: 1050,
+            density: 3.3,
+            consumable_drops: Standard,
+            z_level: 5.1,
+            anchor_point: (-28.0, 80.0),
+            behaviors: [],
+            mob_segment_anchor_points: Some([
+                (
+                    mob_segment_type: Enemy(MechaFerritharaxRightClaw),
+                    position: (-48.0, -62.0),
+                    joint: Revolute,
+                    target_pos: 0.0,
+                    stiffness: 300.0,
+                    damping: 300.0,
+                ),
+            ]),
+            disconnected_behaviors: Some([
+                DealDamageToPlayerOnImpact,
+                ReceiveDamageOnImpact,
+                DieAtZeroHealth,
+                DisableWeapons,
+            ]),
+            mob_spawners: Some({
+                "missile": [
+                    (
+                        mob_type: Enemy(Missile),
+                        position: Local((30.0, -90.0)),
+                        period: 7.0,
+                    ),
+                ],
+		    }),
+            weapons: Some([(
+                reload_time: 1.0,
+                initial_time: 3.0,
+                fire_mode: Automatic,
+                capacity: 3,
+                projectile_data: (
+                    ammunition: Bullet(Enemy),
+                    damage: 5,
+                    position: Local((25.0, -70.0)),
+                    speed: 300.0,
+                    direction: 4.45059,
+                    despawn_time: 0.8,
+                    count: 3,
+                    spread_pattern: Arc((
+                        spread_weights: (0.5, 1.0),
+                        max_spread: 1.57080,
+                        projectile_gap: 3.14159,
+                    )),
+                    size: 1.0,
+                    sound: EnemyFireBlast,
+                ),
+            )]),    
+        ),
+        Enemy(MechaFerritharaxLeftArm): (
+            mob_segment_type: Enemy(MechaFerritharaxLeftArm),
+            animation: (
+                direction: None,
+                frame_duration: 1.0,
+            ),
+            colliders: [
+                (
+                    dimensions: (17.0, 4.0),
+                    position: (4.0, 9.0),
+                    rotation: 1.25,
+                ),
+                (
+                    dimensions: (10.0, 3.0),
+                    position: (1.0, -14.5),
+                    rotation: -0.75,
+                ),
+                (
+                    dimensions: (4.0, 12.0),
+                    position: (-7.0, -8.0),
+                    rotation: 0.0,
+                ),
+            ],
+            collision_damage: 10,
+            health: 1050,
+            density: 3.3,
+            consumable_drops: Standard,
+            z_level: 5.1,
+            anchor_point: (28.0, 80.0),
+            behaviors: [],
+            mob_segment_anchor_points: Some([
+                (
+                    mob_segment_type: Enemy(MechaFerritharaxLeftClaw),
+                    position: (48.0, -62.0),
+                    joint: Revolute,
+                    target_pos: 0.0,
+                    stiffness: 300.0,
+                    damping: 300.0,
+                ),
+            ]),
+            disconnected_behaviors: Some([
+                DealDamageToPlayerOnImpact,
+                ReceiveDamageOnImpact,
+                DieAtZeroHealth,
+                DisableWeapons,
+            ]),
+            mob_spawners: Some({
+                "missile": [
+                    (
+                        mob_type: Enemy(Missile),
+                        position: Local((-30.0, -90.0)),
+                        period: 7.0,
+                    ),
+                ],
+		    }),
+            weapons: Some([(
+                reload_time: 1.0,
+                initial_time: 3.0,
+                fire_mode: Automatic,
+                capacity: 3,
+                projectile_data: (
+                    ammunition: Bullet(Enemy),
+                    damage: 5,
+                    position: Local((-25.0, -70.0)),
+                    speed: 300.0,
+                    direction: 4.97419,
+                    despawn_time: 0.8,
+                    count: 3,
+                    spread_pattern: Arc((
+                        spread_weights: (0.5, 1.0),
+                        max_spread: 1.57080,
+                        projectile_gap: 3.14159,
+                    )),
+                    size: 1.0,
+                    sound: EnemyFireBlast,
+                ),
+            )]),        
+        ),
+        Enemy(MechaFerritharaxRightClaw): (
+            mob_segment_type: Enemy(MechaFerritharaxRightClaw),
+            animation: (
+                direction: None,
+                frame_duration: 1.0,
+            ),
+            colliders: [
+                (
+                    dimensions: (5.0, 2.0),
+                    position: (15.0, 0.0),
+                    rotation: 0.0,
+                ),
+                (
+                    dimensions: (8.0, 2.5),
+                    position: (4.0, -10.0),
+                    rotation: 0.523599,
+                ),
+                (
+                    dimensions: (8.0, 2.0),
+                    position: (-8.0, -13.0),
+                    rotation: -0.174533,
+                ),
+                (
+                    dimensions: (8.0, 2.5),
+                    position: (4.0, 10.0),
+                    rotation: -0.523599,
+                ),
+                (
+                    dimensions: (8.0, 2.0),
+                    position: (-8.0, 13.0),
+                    rotation: 0.174533,
+                ),
+            ],
+            collision_damage: 10,
+            health: 1100,
+            density: 3.3,
+            consumable_drops: Standard,
+            z_level: 5.3,
+            anchor_point: (50.0, 0.0),
+            behaviors: [],  
+        ),
+        Enemy(MechaFerritharaxLeftClaw): (
+            mob_segment_type: Enemy(MechaFerritharaxLeftClaw),
+            animation: (
+                direction: None,
+                frame_duration: 1.0,
+            ),
+            colliders: [
+                (
+                    dimensions: (5.0, 2.0),
+                    position: (-15.0, 0.0),
+                    rotation: 0.0,
+                ),
+                (
+                    dimensions: (8.0, 2.5),
+                    position: (-4.0, -10.0),
+                    rotation: -0.523599,
+                ),
+                (
+                    dimensions: (8.0, 2.0),
+                    position: (8.0, -13.0),
+                    rotation: 0.174533,
+                ),
+                (
+                    dimensions: (8.0, 2.5),
+                    position: (-4.0, 10.0),
+                    rotation: 0.523599,
+                ),
+                (
+                    dimensions: (8.0, 2.0),
+                    position: (8.0, 13.0),
+                    rotation: -0.174533,
+                ),
+            ],
+            collision_damage: 10,
+            health: 1100,
+            density: 3.3,
+            consumable_drops: Standard,
+            z_level: 5.3,
+            anchor_point: (-50.0, 0.0),
+            behaviors: [],  
+        ),
+        Enemy(MechaSaucetronBody): (
+            mob_segment_type: Enemy(MechaSaucetronBody),
+            animation: (
+                direction: PingPong(Forward),
+                frame_duration: 0.25,
+            ),
+            colliders: [
+                (
+                    dimensions: (22.0, 7.0),
+                    position: (0.0, 5.0),
+                    rotation: 0.0,
+                ),
+                (
+                    dimensions: (12.0, 6.0),
+                    position: (0.0, -7.0),
+                    rotation: 0.0,
+                )
+            ],
+            collision_damage: 10,
+            health: 1000,
+            density: 3.6,
+            consumable_drops: Standard,
+            z_level: 5.1,
+            anchor_point: (0.0, -51.0),
+            behaviors: [
+                DealDamageToPlayerOnImpact,
+                ReceiveDamageOnImpact,
+                DieAtZeroHealth,
+            ],
+            mob_segment_anchor_points: Some([
+                (
+                    mob_segment_type: Enemy(MechaSaucetronRightShoulder),
+                    position: (90.0, 10.0),
+                    joint: Revolute,
+                    target_pos: 0.0,
+                    stiffness: 300.0,
+                    damping: 300.0,
+                ),
+                (
+                    mob_segment_type: Enemy(MechaSaucetronLeftShoulder),
+                    position: (-90.0, 10.0),
+                    joint: Revolute,
+                    target_pos: 0.0,
+                    stiffness: 300.0,
+                    damping: 300.0,
+                ),
+            ]),
+        ), 
+        Enemy(MechaSaucetronRightShoulder): (
+            mob_segment_type: Enemy(MechaSaucetronRightShoulder),
+            animation: (
+                direction: None,
+                frame_duration: 1.0,
+            ),
+            colliders: [
+                (
+                    dimensions: (25.0, 4.5),
+                    position: (11.0, -4.0),
+                    rotation: -1.05,
+                ),
+                (
+                    dimensions: (11.5, 7.5),
+                    position: (-11.5, 15.0),
+                    rotation: -0.261799,
+                )
+            ],
+            collision_damage: 10,
+            health: 1000,
+            density: 3.6,
+            consumable_drops: Standard,
+            z_level: 5.0,
+            anchor_point: (-75.0, 48.0),
+            behaviors: [],
+            mob_segment_anchor_points: Some([
+                (
+                    mob_segment_type: Enemy(MechaSaucetronRightArm),
+                    position: (75.0, -85.0),
+                    joint: Revolute,
+                    target_pos: 0.0,
+                    stiffness: 300.0,
+                    damping: 300.0,
+                ),
+            ])
+        ),
+        Enemy(MechaSaucetronLeftShoulder): (
+            mob_segment_type: Enemy(MechaSaucetronLeftShoulder),
+            animation: (
+                direction: None,
+                frame_duration: 1.0,
+            ),
+            colliders: [
+                (
+                    dimensions: (25.0, 4.5),
+                    position: (-11.0, -4.0),
+                    rotation: 1.05,
+                ),
+                (
+                    dimensions: (11.5, 7.5),
+                    position: (11.5, 15.0),
+                    rotation: 0.261799,
+                )
+            ],
+            collision_damage: 10,
+            health: 1000,
+            density: 3.6,
+            consumable_drops: Standard,
+            z_level: 5.0,
+            anchor_point: (75.0, 48.0),
+            behaviors: [],
+            mob_segment_anchor_points: Some([
+                (
+                    mob_segment_type: Enemy(MechaSaucetronLeftArm),
+                    position: (-75.0, -85.0),
+                    joint: Revolute,
+                    target_pos: 0.0,
+                    stiffness: 300.0,
+                    damping: 300.0,
+                ),
+            ])  
+        ),
+        Enemy(MechaSaucetronRightArm): (
+            mob_segment_type: Enemy(MechaSaucetronRightArm),
+            animation: (
+                direction: None,
+                frame_duration: 1.0,
+            ),
+            colliders: [
+                (
+                    dimensions: (17.0, 4.0),
+                    position: (-4.0, 9.0),
+                    rotation: -1.25,
+                ),
+                (
+                    dimensions: (10.0, 3.0),
+                    position: (-1.0, -14.5),
+                    rotation: 0.75,
+                ),
+                (
+                    dimensions: (4.0, 12.0),
+                    position: (7.0, -8.0),
+                    rotation: 0.0,
+                ),
+            ],
+            collision_damage: 10,
+            health: 1450,
+            density: 3.6,
+            consumable_drops: Standard,
+            z_level: 5.1,
+            anchor_point: (-28.0, 80.0),
+            behaviors: [],
+            mob_segment_anchor_points: Some([
+                (
+                    mob_segment_type: Enemy(MechaSaucetronRightClaw),
+                    position: (-48.0, -62.0),
+                    joint: Revolute,
+                    target_pos: 0.0,
+                    stiffness: 300.0,
+                    damping: 300.0,
+                ),
+            ]),
+            disconnected_behaviors: Some([
+                DealDamageToPlayerOnImpact,
+                ReceiveDamageOnImpact,
+                DieAtZeroHealth,
+                DisableWeapons,
+            ]),
+            mob_spawners: Some({
+                "missile": [
+                    (
+                        mob_type: Enemy(Missile),
+                        position: Local((30.0, -90.0)),
+                        period: 5.5,
+                    ),
+                ],
+		    }),
+            weapons: Some([(
+                reload_time: 1.0,
+                initial_time: 3.0,
+                fire_mode: Automatic,
+                capacity: 6,
+                projectile_data: (
+                    ammunition: Blast(Enemy),
+                    damage: 5,
+                    position: Local((25.0, -70.0)),
+                    speed: 300.0,
+                    direction: 4.45059,
+                    despawn_time: 0.8,
+                    count: 6,
+                    spread_pattern: Random((
+                        speed_range: (
+                            start: 0.75,
+                            end: 1.25,
+                        ),
+                        angle_range: (
+                            start: 0.9,
+                            end: 1.1,
+                        ),
+                    )),
+                    size: 1.0,
+                    sound: EnemyFireBlast,
+                ),
+            )]),    
+        ),
+        Enemy(MechaSaucetronLeftArm): (
+            mob_segment_type: Enemy(MechaSaucetronLeftArm),
+            animation: (
+                direction: None,
+                frame_duration: 1.0,
+            ),
+            colliders: [
+                (
+                    dimensions: (17.0, 4.0),
+                    position: (4.0, 9.0),
+                    rotation: 1.25,
+                ),
+                (
+                    dimensions: (10.0, 3.0),
+                    position: (1.0, -14.5),
+                    rotation: -0.75,
+                ),
+                (
+                    dimensions: (4.0, 12.0),
+                    position: (-7.0, -8.0),
+                    rotation: 0.0,
+                ),
+            ],
+            collision_damage: 10,
+            health: 1450,
+            density: 3.6,
+            consumable_drops: Standard,
+            z_level: 5.1,
+            anchor_point: (28.0, 80.0),
+            behaviors: [],
+            mob_segment_anchor_points: Some([
+                (
+                    mob_segment_type: Enemy(MechaSaucetronLeftClaw),
+                    position: (48.0, -62.0),
+                    joint: Revolute,
+                    target_pos: 0.0,
+                    stiffness: 300.0,
+                    damping: 300.0,
+                ),
+            ]),
+            disconnected_behaviors: Some([
+                DealDamageToPlayerOnImpact,
+                ReceiveDamageOnImpact,
+                DieAtZeroHealth,
+                DisableWeapons,
+            ]),
+            mob_spawners: Some({
+                "missile": [
+                    (
+                        mob_type: Enemy(Missile),
+                        position: Local((-30.0, -90.0)),
+                        period: 5.5,
+                    ),
+                ],
+		    }),
+            weapons: Some([(
+                reload_time: 1.0,
+                initial_time: 3.0,
+                fire_mode: Automatic,
+                capacity: 6,
+                projectile_data: (
+                    ammunition: Blast(Enemy),
+                    damage: 5,
+                    position: Local((-25.0, -70.0)),
+                    speed: 300.0,
+                    direction: 4.97419,
+                    despawn_time: 0.8,
+                    count: 6,
+                    spread_pattern: Random((
+                        speed_range: (
+                            start: 0.75,
+                            end: 1.25,
+                        ),
+                        angle_range: (
+                            start: 0.9,
+                            end: 1.1,
+                        ),
+                    )),
+                    size: 1.0,
+                    sound: EnemyFireBlast,
+                ),
+            )]),        
+        ),
+        Enemy(MechaSaucetronRightClaw): (
+            mob_segment_type: Enemy(MechaSaucetronRightClaw),
+            animation: (
+                direction: None,
+                frame_duration: 1.0,
+            ),
+            colliders: [
+                (
+                    dimensions: (5.0, 2.0),
+                    position: (15.0, 0.0),
+                    rotation: 0.0,
+                ),
+                (
+                    dimensions: (8.0, 2.5),
+                    position: (4.0, -10.0),
+                    rotation: 0.523599,
+                ),
+                (
+                    dimensions: (8.0, 2.0),
+                    position: (-8.0, -13.0),
+                    rotation: -0.174533,
+                ),
+                (
+                    dimensions: (8.0, 2.5),
+                    position: (4.0, 10.0),
+                    rotation: -0.523599,
+                ),
+                (
+                    dimensions: (8.0, 2.0),
+                    position: (-8.0, 13.0),
+                    rotation: 0.174533,
+                ),
+            ],
+            collision_damage: 10,
+            health: 1500,
+            density: 3.6,
+            consumable_drops: Standard,
+            z_level: 5.3,
+            anchor_point: (50.0, 0.0),
+            behaviors: [],  
+        ),
+        Enemy(MechaSaucetronLeftClaw): (
+            mob_segment_type: Enemy(MechaSaucetronLeftClaw),
+            animation: (
+                direction: None,
+                frame_duration: 1.0,
+            ),
+            colliders: [
+                (
+                    dimensions: (5.0, 2.0),
+                    position: (-15.0, 0.0),
+                    rotation: 0.0,
+                ),
+                (
+                    dimensions: (8.0, 2.5),
+                    position: (-4.0, -10.0),
+                    rotation: -0.523599,
+                ),
+                (
+                    dimensions: (8.0, 2.0),
+                    position: (8.0, -13.0),
+                    rotation: 0.174533,
+                ),
+                (
+                    dimensions: (8.0, 2.5),
+                    position: (-4.0, 10.0),
+                    rotation: 0.523599,
+                ),
+                (
+                    dimensions: (8.0, 2.0),
+                    position: (8.0, 13.0),
+                    rotation: -0.174533,
+                ),
+            ],
+            collision_damage: 10,
+            health: 1500,
+            density: 3.6,
+            consumable_drops: Standard,
+            z_level: 5.3,
+            anchor_point: (-50.0, 0.0),
             behaviors: [],  
         ),
     },

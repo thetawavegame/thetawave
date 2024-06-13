@@ -1,7 +1,10 @@
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::{
-    ActiveEvents, CoefficientCombineRule, Collider, CollisionGroups, Friction, Group, LockedAxes,
-    Restitution, RevoluteJointBuilder, RigidBody, Velocity,
+use bevy_rapier2d::{
+    geometry::ColliderMassProperties,
+    prelude::{
+        ActiveEvents, CoefficientCombineRule, Collider, CollisionGroups, Friction, Group,
+        LockedAxes, Restitution, RevoluteJointBuilder, RigidBody, Velocity,
+    },
 };
 use serde::Deserialize;
 use std::collections::{hash_map::Entry, HashMap};
@@ -29,7 +32,7 @@ use thetawave_interface::{
     objective::DefenseInteraction,
     spawnable::{MobDestroyedEvent, MobSegmentType, MobType, SpawnMobEvent, SpawnPosition},
     states::GameCleanup,
-    weapon::{WeaponComponent, WeaponData},
+    weapon::{WeaponData, WeaponsComponent},
 };
 
 /// Core component for mobs
@@ -197,8 +200,15 @@ pub struct MobData {
     pub mob_spawners: HashMap<String, Vec<MobSpawnerData>>,
     /// projectile spawners that the mob can use
     #[serde(default)]
-    pub weapon: Option<WeaponData>,
+    pub weapons: Option<Vec<WeaponData>>,
+    #[serde(default = "default_mob_density")]
+    pub density: f32,
 }
+
+fn default_mob_density() -> f32 {
+    1.0
+}
+
 impl From<&MobData> for HealthComponent {
     fn from(mob_data: &MobData) -> Self {
         HealthComponent::new(mob_data.health, 0, 0.0)
@@ -206,8 +216,8 @@ impl From<&MobData> for HealthComponent {
 }
 
 impl MobData {
-    pub fn get_weapon_component(&self) -> Option<WeaponComponent> {
-        self.weapon.clone().map(WeaponComponent::from)
+    pub fn get_weapon_component(&self) -> Option<WeaponsComponent> {
+        self.weapons.clone().map(WeaponsComponent::from)
     }
 }
 
@@ -360,6 +370,7 @@ pub fn spawn_mob(
     .insert(SpawnableComponent::from(mob_data))
     .insert(ActiveEvents::COLLISION_EVENTS)
     .insert(GameCleanup)
+    .insert(ColliderMassProperties::Density(mob_data.density))
     .insert(Name::new(mob_data.mob_type.to_string()));
 
     if boss {

@@ -260,5 +260,150 @@
     "repeater.left_claw.image": File (
         path: "texture/repeater_left_claw_spritesheet.png"
     ),
+    "mecha_ferritharax.head.layout": TextureAtlasLayout (
+        tile_size_x: 42.,
+        tile_size_y: 48.,
+        columns: 3,
+        rows: 1,
+    ),
+    "mecha_ferritharax.head.image": File (
+        path: "texture/mecha_ferritharax_head.png"
+    ),
+    "mecha_ferritharax.body.layout": TextureAtlasLayout (
+        tile_size_x: 80.,
+        tile_size_y: 43.,
+        columns: 3,
+        rows: 1,
+    ),
+    "mecha_ferritharax.body.image": File (
+        path: "texture/mecha_ferritharax_body.png"
+    ),
+    "mecha_ferritharax.right_shoulder.layout": TextureAtlasLayout (
+        tile_size_x: 62.,
+        tile_size_y: 66.,
+        columns: 3,
+        rows: 1,
+    ),
+    "mecha_ferritharax.right_shoulder.image": File (
+        path: "texture/mecha_ferritharax_right_shoulder.png"
+    ),
+    "mecha_ferritharax.left_shoulder.layout": TextureAtlasLayout (
+        tile_size_x: 62.,
+        tile_size_y: 66.,
+        columns: 3,
+        rows: 1,
+    ),
+    "mecha_ferritharax.left_shoulder.image": File (
+        path: "texture/mecha_ferritharax_left_shoulder.png"
+    ),
+    "mecha_ferritharax.right_arm.layout": TextureAtlasLayout (
+        tile_size_x: 40.,
+        tile_size_y: 57.,
+        columns: 3,
+        rows: 1,
+    ),
+    "mecha_ferritharax.right_arm.image": File (
+        path: "texture/mecha_ferritharax_right_arm.png"
+    ),
+    "mecha_ferritharax.left_arm.layout": TextureAtlasLayout (
+        tile_size_x: 40.,
+        tile_size_y: 57.,
+        columns: 3,
+        rows: 1,
+    ),
+    "mecha_ferritharax.left_arm.image": File (
+        path: "texture/mecha_ferritharax_left_arm.png"
+    ),
+    "mecha_ferritharax.right_claw.layout": TextureAtlasLayout (
+        tile_size_x: 44.,
+        tile_size_y: 39.,
+        columns: 3,
+        rows: 1,
+    ),
+    "mecha_ferritharax.right_claw.image": File (
+        path: "texture/mecha_ferritharax_right_claw.png"
+    ),
+    "mecha_ferritharax.left_claw.layout": TextureAtlasLayout (
+        tile_size_x: 44.,
+        tile_size_y: 39.,
+        columns: 3,
+        rows: 1,
+    ),
+    "mecha_ferritharax.left_claw.image": File (
+        path: "texture/mecha_ferritharax_left_claw.png"
+    ),
+    "mecha_saucetron.head.layout": TextureAtlasLayout (
+    tile_size_x: 46.,
+    tile_size_y: 50.,
+    columns: 3,
+    rows: 1,
+    ),
+    "mecha_saucetron.head.image": File (
+        path: "texture/mecha_saucetron_head.png"
+    ),
+    "mecha_saucetron.body.layout": TextureAtlasLayout (
+        tile_size_x: 80.,
+        tile_size_y: 43.,
+        columns: 3,
+        rows: 1,
+    ),
+    "mecha_saucetron.body.image": File (
+        path: "texture/mecha_saucetron_body.png"
+    ),
+    "mecha_saucetron.right_shoulder.layout": TextureAtlasLayout (
+        tile_size_x: 62.,
+        tile_size_y: 66.,
+        columns: 3,
+        rows: 1,
+    ),
+    "mecha_saucetron.right_shoulder.image": File (
+        path: "texture/mecha_saucetron_right_shoulder.png"
+    ),
+    "mecha_saucetron.left_shoulder.layout": TextureAtlasLayout (
+        tile_size_x: 62.,
+        tile_size_y: 66.,
+        columns: 3,
+        rows: 1,
+    ),
+    "mecha_saucetron.left_shoulder.image": File (
+        path: "texture/mecha_saucetron_left_shoulder.png"
+    ),
+    "mecha_saucetron.right_arm.layout": TextureAtlasLayout (
+        tile_size_x: 40.,
+        tile_size_y: 57.,
+        columns: 3,
+        rows: 1,
+    ),
+    "mecha_saucetron.right_arm.image": File (
+        path: "texture/mecha_saucetron_right_arm.png"
+    ),
+    "mecha_saucetron.left_arm.layout": TextureAtlasLayout (
+        tile_size_x: 40.,
+        tile_size_y: 57.,
+        columns: 3,
+        rows: 1,
+    ),
+    "mecha_saucetron.left_arm.image": File (
+        path: "texture/mecha_saucetron_left_arm.png"
+    ),
+    "mecha_saucetron.right_claw.layout": TextureAtlasLayout (
+        tile_size_x: 44.,
+        tile_size_y: 39.,
+        columns: 3,
+        rows: 1,
+    ),
+    "mecha_saucetron.right_claw.image": File (
+        path: "texture/mecha_saucetron_right_claw.png"
+    ),
+    "mecha_saucetron.left_claw.layout": TextureAtlasLayout (
+        tile_size_x: 44.,
+        tile_size_y: 39.,
+        columns: 3,
+        rows: 1,
+    ),
+    "mecha_saucetron.left_claw.image": File (
+        path: "texture/mecha_saucetron_left_claw.png"
+    ),
+
 })
 

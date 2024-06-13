@@ -8,6 +8,7 @@ use thetawave_interface::{
     objective::DefenseInteraction,
     spawnable::{MobSegmentType, SpawnableType},
     states::GameCleanup,
+    weapon::{WeaponData, WeaponsComponent},
 };
 
 use crate::collision::{
@@ -96,6 +97,14 @@ pub struct MobSegmentData {
     pub behaviors: Vec<MobSegmentBehavior>,
     pub disconnected_behaviors: Option<Vec<MobSegmentBehavior>>,
     pub mob_spawners: Option<HashMap<String, Vec<MobSpawnerData>>>,
+    #[serde(default)]
+    pub weapons: Option<Vec<WeaponData>>,
+    #[serde(default = "default_mob_segment_density")]
+    pub density: f32,
+}
+
+fn default_mob_segment_density() -> f32 {
+    1.0
 }
 
 impl From<&MobSegmentData> for HealthComponent {
@@ -103,6 +112,13 @@ impl From<&MobSegmentData> for HealthComponent {
         HealthComponent::new(mob_segment_data.health, 0, 0.0)
     }
 }
+
+impl MobSegmentData {
+    pub fn get_weapon_component(&self) -> Option<WeaponsComponent> {
+        self.weapons.clone().map(WeaponsComponent::from)
+    }
+}
+
 /// Spawn a mob segment
 #[allow(clippy::too_many_arguments)]
 pub fn spawn_mob_segment(
@@ -172,9 +188,15 @@ pub fn spawn_mob_segment(
         .insert(SpawnableComponent::new(SpawnableType::MobSegment(
             mob_segment_type.clone(),
         )))
+        .insert(ColliderMassProperties::Density(mob_segment_data.density))
         .insert(ActiveEvents::COLLISION_EVENTS)
         .insert(GameCleanup)
+        .insert(Velocity::default())
         .insert(Name::new(mob_segment_data.mob_segment_type.to_string()));
+
+    if let Some(weapon_component) = mob_segment_data.get_weapon_component() {
+        mob_segment.insert(weapon_component);
+    }
 
     let mob_segment_entity = mob_segment.id();
 

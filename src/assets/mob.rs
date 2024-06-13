@@ -126,6 +126,70 @@ pub struct MobAssets {
     pub repeater_left_claw_layout: Handle<TextureAtlasLayout>,
     #[asset(key = "repeater.left_claw.image")]
     pub repeater_left_claw_image: Handle<Image>,
+    #[asset(key = "mecha_ferritharax.head.layout")]
+    pub mecha_ferritharax_head_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "mecha_ferritharax.head.image")]
+    pub mecha_ferritharax_head_image: Handle<Image>,
+    #[asset(key = "mecha_ferritharax.body.layout")]
+    pub mecha_ferritharax_body_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "mecha_ferritharax.body.image")]
+    pub mecha_ferritharax_body_image: Handle<Image>,
+    #[asset(key = "mecha_ferritharax.right_shoulder.layout")]
+    pub mecha_ferritharax_right_shoulder_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "mecha_ferritharax.right_shoulder.image")]
+    pub mecha_ferritharax_right_shoulder_image: Handle<Image>,
+    #[asset(key = "mecha_ferritharax.left_shoulder.layout")]
+    pub mecha_ferritharax_left_shoulder_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "mecha_ferritharax.left_shoulder.image")]
+    pub mecha_ferritharax_left_shoulder_image: Handle<Image>,
+    #[asset(key = "mecha_ferritharax.right_arm.layout")]
+    pub mecha_ferritharax_right_arm_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "mecha_ferritharax.right_arm.image")]
+    pub mecha_ferritharax_right_arm_image: Handle<Image>,
+    #[asset(key = "mecha_ferritharax.left_arm.layout")]
+    pub mecha_ferritharax_left_arm_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "mecha_ferritharax.left_arm.image")]
+    pub mecha_ferritharax_left_arm_image: Handle<Image>,
+    #[asset(key = "mecha_ferritharax.right_claw.layout")]
+    pub mecha_ferritharax_right_claw_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "mecha_ferritharax.right_claw.image")]
+    pub mecha_ferritharax_right_claw_image: Handle<Image>,
+    #[asset(key = "mecha_ferritharax.left_claw.layout")]
+    pub mecha_ferritharax_left_claw_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "mecha_ferritharax.left_claw.image")]
+    pub mecha_ferritharax_left_claw_image: Handle<Image>,
+    #[asset(key = "mecha_saucetron.head.layout")]
+    pub mecha_saucetron_head_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "mecha_saucetron.head.image")]
+    pub mecha_saucetron_head_image: Handle<Image>,
+    #[asset(key = "mecha_saucetron.body.layout")]
+    pub mecha_saucetron_body_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "mecha_saucetron.body.image")]
+    pub mecha_saucetron_body_image: Handle<Image>,
+    #[asset(key = "mecha_saucetron.right_shoulder.layout")]
+    pub mecha_saucetron_right_shoulder_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "mecha_saucetron.right_shoulder.image")]
+    pub mecha_saucetron_right_shoulder_image: Handle<Image>,
+    #[asset(key = "mecha_saucetron.left_shoulder.layout")]
+    pub mecha_saucetron_left_shoulder_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "mecha_saucetron.left_shoulder.image")]
+    pub mecha_saucetron_left_shoulder_image: Handle<Image>,
+    #[asset(key = "mecha_saucetron.right_arm.layout")]
+    pub mecha_saucetron_right_arm_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "mecha_saucetron.right_arm.image")]
+    pub mecha_saucetron_right_arm_image: Handle<Image>,
+    #[asset(key = "mecha_saucetron.left_arm.layout")]
+    pub mecha_saucetron_left_arm_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "mecha_saucetron.left_arm.image")]
+    pub mecha_saucetron_left_arm_image: Handle<Image>,
+    #[asset(key = "mecha_saucetron.right_claw.layout")]
+    pub mecha_saucetron_right_claw_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "mecha_saucetron.right_claw.image")]
+    pub mecha_saucetron_right_claw_image: Handle<Image>,
+    #[asset(key = "mecha_saucetron.left_claw.layout")]
+    pub mecha_saucetron_left_claw_layout: Handle<TextureAtlasLayout>,
+    #[asset(key = "mecha_saucetron.left_claw.image")]
+    pub mecha_saucetron_left_claw_image: Handle<Image>,
 }
 
 impl MobAssets {
@@ -142,7 +206,9 @@ impl MobAssets {
                 EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => {
                     self.crustling_head_layout.clone()
                 }
-                EnemyMobType::Repeater => self.repeater_head_layout.clone(),
+                EnemyMobType::Ferritharax => self.repeater_head_layout.clone(),
+                EnemyMobType::MechaFerritharax => self.mecha_ferritharax_head_layout.clone(),
+                EnemyMobType::MechaSaucetron => self.mecha_saucetron_head_layout.clone(),
                 EnemyMobType::Shelly => self.shelly_layout.clone(),
             },
             MobType::Ally(ally_type) => match ally_type {
@@ -170,7 +236,9 @@ impl MobAssets {
                 EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => {
                     self.crustling_head_image.clone()
                 }
-                EnemyMobType::Repeater => self.repeater_head_image.clone(),
+                EnemyMobType::Ferritharax => self.repeater_head_image.clone(),
+                EnemyMobType::MechaFerritharax => self.mecha_ferritharax_head_image.clone(),
+                EnemyMobType::MechaSaucetron => self.mecha_saucetron_head_image.clone(),
                 EnemyMobType::Shelly => self.shelly_image.clone(),
             },
             MobType::Ally(ally_type) => match ally_type {
@@ -199,17 +267,59 @@ impl MobAssets {
                 EnemyMobSegmentType::CrustlingTentacle1 => self.crustling_tentacle1_layout.clone(),
                 EnemyMobSegmentType::CrustlingTentacle2 => self.crustling_tentacle2_layout.clone(),
                 EnemyMobSegmentType::CrustlingTentacle3 => self.crustling_tentacle3_layout.clone(),
-                EnemyMobSegmentType::RepeaterBody => self.repeater_body_layout.clone(),
-                EnemyMobSegmentType::RepeaterRightShoulder => {
+                EnemyMobSegmentType::FerritharaxBody => self.repeater_body_layout.clone(),
+                EnemyMobSegmentType::FerritharaxRightShoulder => {
                     self.repeater_right_shoulder_layout.clone()
                 }
-                EnemyMobSegmentType::RepeaterLeftShoulder => {
+                EnemyMobSegmentType::FerritharaxLeftShoulder => {
                     self.repeater_left_shoulder_layout.clone()
                 }
-                EnemyMobSegmentType::RepeaterRightArm => self.repeater_right_arm_layout.clone(),
-                EnemyMobSegmentType::RepeaterLeftArm => self.repeater_left_arm_layout.clone(),
-                EnemyMobSegmentType::RepeaterRightClaw => self.repeater_right_claw_layout.clone(),
-                EnemyMobSegmentType::RepeaterLeftClaw => self.repeater_left_claw_layout.clone(),
+                EnemyMobSegmentType::FerritharaxRightArm => self.repeater_right_arm_layout.clone(),
+                EnemyMobSegmentType::FerritharaxLeftArm => self.repeater_left_arm_layout.clone(),
+                EnemyMobSegmentType::FerritharaxRightClaw => {
+                    self.repeater_right_claw_layout.clone()
+                }
+                EnemyMobSegmentType::FerritharaxLeftClaw => self.repeater_left_claw_layout.clone(),
+                EnemyMobSegmentType::MechaFerritharaxBody => {
+                    self.mecha_ferritharax_body_layout.clone()
+                }
+                EnemyMobSegmentType::MechaFerritharaxRightShoulder => {
+                    self.mecha_ferritharax_right_shoulder_layout.clone()
+                }
+                EnemyMobSegmentType::MechaFerritharaxLeftShoulder => {
+                    self.mecha_ferritharax_left_shoulder_layout.clone()
+                }
+                EnemyMobSegmentType::MechaFerritharaxRightArm => {
+                    self.mecha_ferritharax_right_arm_layout.clone()
+                }
+                EnemyMobSegmentType::MechaFerritharaxLeftArm => {
+                    self.mecha_ferritharax_left_arm_layout.clone()
+                }
+                EnemyMobSegmentType::MechaFerritharaxRightClaw => {
+                    self.mecha_ferritharax_right_claw_layout.clone()
+                }
+                EnemyMobSegmentType::MechaFerritharaxLeftClaw => {
+                    self.mecha_ferritharax_left_claw_layout.clone()
+                }
+                EnemyMobSegmentType::MechaSaucetronBody => self.mecha_saucetron_body_layout.clone(),
+                EnemyMobSegmentType::MechaSaucetronRightShoulder => {
+                    self.mecha_saucetron_right_shoulder_layout.clone()
+                }
+                EnemyMobSegmentType::MechaSaucetronLeftShoulder => {
+                    self.mecha_saucetron_left_shoulder_layout.clone()
+                }
+                EnemyMobSegmentType::MechaSaucetronRightArm => {
+                    self.mecha_saucetron_right_arm_layout.clone()
+                }
+                EnemyMobSegmentType::MechaSaucetronLeftArm => {
+                    self.mecha_saucetron_left_arm_layout.clone()
+                }
+                EnemyMobSegmentType::MechaSaucetronRightClaw => {
+                    self.mecha_saucetron_right_claw_layout.clone()
+                }
+                EnemyMobSegmentType::MechaSaucetronLeftClaw => {
+                    self.mecha_saucetron_left_claw_layout.clone()
+                }
             },
         }
     }
@@ -225,17 +335,57 @@ impl MobAssets {
                 EnemyMobSegmentType::CrustlingTentacle1 => self.crustling_tentacle1_image.clone(),
                 EnemyMobSegmentType::CrustlingTentacle2 => self.crustling_tentacle2_image.clone(),
                 EnemyMobSegmentType::CrustlingTentacle3 => self.crustling_tentacle3_image.clone(),
-                EnemyMobSegmentType::RepeaterBody => self.repeater_body_image.clone(),
-                EnemyMobSegmentType::RepeaterRightShoulder => {
+                EnemyMobSegmentType::FerritharaxBody => self.repeater_body_image.clone(),
+                EnemyMobSegmentType::FerritharaxRightShoulder => {
                     self.repeater_right_shoulder_image.clone()
                 }
-                EnemyMobSegmentType::RepeaterLeftShoulder => {
+                EnemyMobSegmentType::FerritharaxLeftShoulder => {
                     self.repeater_left_shoulder_image.clone()
                 }
-                EnemyMobSegmentType::RepeaterRightArm => self.repeater_right_arm_image.clone(),
-                EnemyMobSegmentType::RepeaterLeftArm => self.repeater_left_arm_image.clone(),
-                EnemyMobSegmentType::RepeaterRightClaw => self.repeater_right_claw_image.clone(),
-                EnemyMobSegmentType::RepeaterLeftClaw => self.repeater_left_claw_image.clone(),
+                EnemyMobSegmentType::FerritharaxRightArm => self.repeater_right_arm_image.clone(),
+                EnemyMobSegmentType::FerritharaxLeftArm => self.repeater_left_arm_image.clone(),
+                EnemyMobSegmentType::FerritharaxRightClaw => self.repeater_right_claw_image.clone(),
+                EnemyMobSegmentType::FerritharaxLeftClaw => self.repeater_left_claw_image.clone(),
+                EnemyMobSegmentType::MechaFerritharaxBody => {
+                    self.mecha_ferritharax_body_image.clone()
+                }
+                EnemyMobSegmentType::MechaFerritharaxRightShoulder => {
+                    self.mecha_ferritharax_right_shoulder_image.clone()
+                }
+                EnemyMobSegmentType::MechaFerritharaxLeftShoulder => {
+                    self.mecha_ferritharax_left_shoulder_image.clone()
+                }
+                EnemyMobSegmentType::MechaFerritharaxRightArm => {
+                    self.mecha_ferritharax_right_arm_image.clone()
+                }
+                EnemyMobSegmentType::MechaFerritharaxLeftArm => {
+                    self.mecha_ferritharax_left_arm_image.clone()
+                }
+                EnemyMobSegmentType::MechaFerritharaxRightClaw => {
+                    self.mecha_ferritharax_right_claw_image.clone()
+                }
+                EnemyMobSegmentType::MechaFerritharaxLeftClaw => {
+                    self.mecha_ferritharax_left_claw_image.clone()
+                }
+                EnemyMobSegmentType::MechaSaucetronBody => self.mecha_saucetron_body_image.clone(),
+                EnemyMobSegmentType::MechaSaucetronRightShoulder => {
+                    self.mecha_saucetron_right_shoulder_image.clone()
+                }
+                EnemyMobSegmentType::MechaSaucetronLeftShoulder => {
+                    self.mecha_saucetron_left_shoulder_image.clone()
+                }
+                EnemyMobSegmentType::MechaSaucetronRightArm => {
+                    self.mecha_saucetron_right_arm_image.clone()
+                }
+                EnemyMobSegmentType::MechaSaucetronLeftArm => {
+                    self.mecha_saucetron_left_arm_image.clone()
+                }
+                EnemyMobSegmentType::MechaSaucetronRightClaw => {
+                    self.mecha_saucetron_right_claw_image.clone()
+                }
+                EnemyMobSegmentType::MechaSaucetronLeftClaw => {
+                    self.mecha_saucetron_left_claw_image.clone()
+                }
             },
         }
     }
@@ -256,7 +406,9 @@ impl MobAssets {
                 }
                 EnemyMobType::Missile => Some(self.missile_thruster_layout.clone()),
                 EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => None,
-                EnemyMobType::Repeater => None,
+                EnemyMobType::Ferritharax => None,
+                EnemyMobType::MechaFerritharax => None,
+                EnemyMobType::MechaSaucetron => None,
                 EnemyMobType::Shelly => None,
             },
             MobType::Ally(ally_type) => match ally_type {
@@ -282,7 +434,9 @@ impl MobAssets {
                 EnemyMobType::MissileLauncher => Some(self.missile_launcher_thruster_image.clone()),
                 EnemyMobType::Missile => Some(self.missile_thruster_image.clone()),
                 EnemyMobType::CrustlingRight | EnemyMobType::CrustlingLeft => None,
-                EnemyMobType::Repeater => None,
+                EnemyMobType::Ferritharax => None,
+                EnemyMobType::MechaFerritharax => None,
+                EnemyMobType::MechaSaucetron => None,
                 EnemyMobType::Shelly => None,
             },
             MobType::Ally(ally_type) => match ally_type {

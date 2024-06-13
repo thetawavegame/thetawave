@@ -9,6 +9,7 @@ use thetawave_interface::{
     spawnable::{
         EffectType, MobDestroyedEvent, MobSegmentDestroyedEvent, SpawnItemEvent, SpawnPosition,
     },
+    weapon::WeaponsComponent,
 };
 
 use crate::{
@@ -29,20 +30,21 @@ pub enum MobSegmentBehavior {
     ReceiveDamageOnImpact,
     DieAtZeroHealth,
     RandomRotation(RandomRotationData),
-    RepeaterProtectHead(RepeaterSegmentProtectHeadData), // takes in angle to protect head
-    RepeaterAttack(RepeaterSegmentAttackData),
+    FerritharaxProtectHead(FerritharaxSegmentProtectHeadData), // takes in angle to protect head
+    FerritharaxAttack(FerritharaxSegmentAttackData),
     SpawnMob(String),
+    DisableWeapons,
 }
 
 #[derive(Deserialize, Clone)]
-pub struct RepeaterSegmentProtectHeadData {
+pub struct FerritharaxSegmentProtectHeadData {
     pub angle: f32,
     pub damping: f32,
     pub stiffness: f32,
 }
 
 #[derive(Deserialize, Clone)]
-pub struct RepeaterSegmentAttackData {
+pub struct FerritharaxSegmentAttackData {
     pub angle: f32,
     pub damping: f32,
     pub stiffness: f32,
@@ -67,6 +69,7 @@ pub fn mob_segment_execute_behavior_system(
         &Transform,
         &mut ImpulseJoint,
         &HealthComponent,
+        Option<&mut WeaponsComponent>,
     )>,
     mut spawn_effect_event_writer: EventWriter<SpawnEffectEvent>,
     player_query: Query<(Entity, &PlayerIncomingDamageComponent)>,
@@ -85,8 +88,14 @@ pub fn mob_segment_execute_behavior_system(
         collision_events_vec.push(collision_event);
     }
 
-    for (entity, mut mob_segment_component, mob_segment_transform, mut joint, mob_seg_health) in
-        mob_segment_query.iter_mut()
+    for (
+        entity,
+        mut mob_segment_component,
+        mob_segment_transform,
+        mut joint,
+        mob_seg_health,
+        mut maybe_weapon,
+    ) in mob_segment_query.iter_mut()
     {
         let behaviors = mob_segment_component.behaviors.clone();
         for behavior in behaviors {
@@ -156,7 +165,7 @@ pub fn mob_segment_execute_behavior_system(
                     );
                 }
 
-                MobSegmentBehavior::RepeaterProtectHead(data) => {
+                MobSegmentBehavior::FerritharaxProtectHead(data) => {
                     joint.data.set_motor_position(
                         JointAxis::AngX,
                         data.angle,
@@ -165,7 +174,7 @@ pub fn mob_segment_execute_behavior_system(
                     );
                 }
 
-                MobSegmentBehavior::RepeaterAttack(data) => {
+                MobSegmentBehavior::FerritharaxAttack(data) => {
                     joint.data.set_motor_position(
                         JointAxis::AngX,
                         data.angle,
@@ -203,6 +212,12 @@ pub fn mob_segment_execute_behavior_system(
                                 boss: false,
                             });
                         }
+                    }
+                }
+
+                MobSegmentBehavior::DisableWeapons => {
+                    if let Some(ref mut weapon_component) = maybe_weapon {
+                        weapon_component.disable_all();
                     }
                 }
             }
