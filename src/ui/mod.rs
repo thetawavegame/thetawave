@@ -5,7 +5,6 @@ use bevy::{
     prelude::{Component, Query, Res, Time, Timer, Transform},
 };
 use thetawave_interface::game::historical_metrics::{MobsKilledByPlayerCacheT, DEFAULT_USER_ID};
-
 use thetawave_interface::states;
 
 mod button;
@@ -13,9 +12,10 @@ mod character_selection;
 mod game;
 mod game_over;
 mod main_menu;
+mod options_menu;
 mod pause_menu;
 mod victory;
-
+use self::options_menu::OptionsMenuPlugin;
 use self::{
     button::{button_action_change_state_system, ButtonActionEvent},
     character_selection::CharacterSelectionPlugin,
@@ -32,6 +32,7 @@ pub(super) struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
+        app.add_plugins(OptionsMenuPlugin);
         app.add_event::<ButtonActionEvent>();
         app.add_plugins(GameUiPlugin);
         app.add_plugins(MainMenuUIPlugin);

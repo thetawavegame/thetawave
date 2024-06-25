@@ -24,6 +24,8 @@ pub enum MenuAction {
     Reset,
     ExitPauseMenu,
     PauseGame,
+    /// When pressed, show a form for the user to edit game options.
+    OptionsMenu,
     NavigateUpKeyboard,
     NavigateDownKeyboard,
     NavigateUpGamepad,

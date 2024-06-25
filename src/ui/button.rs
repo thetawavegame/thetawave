@@ -18,7 +18,10 @@ use bevy::{
     },
     utils::default,
 };
-use thetawave_interface::{player::PlayerInput, states::AppStates};
+use thetawave_interface::{
+    player::PlayerInput,
+    states::{AppStates, OptionsMenuOverlay},
+};
 
 use crate::assets::UiAssets;
 
@@ -195,6 +198,7 @@ impl ButtonActionComponent {
 pub(super) fn button_action_change_state_system(
     mut button_event_reader: EventReader<ButtonActionEvent>,
     mut next_app_state: ResMut<NextState<AppStates>>,
+    mut next_options_menu_overlay_state: ResMut<NextState<OptionsMenuOverlay>>,
     mut exit: EventWriter<AppExit>,
 ) {
     for event in button_event_reader.read() {
@@ -202,7 +206,9 @@ pub(super) fn button_action_change_state_system(
             ButtonActionComponent::EnterCharacterSelection => {
                 next_app_state.set(AppStates::CharacterSelection);
             }
-            ButtonActionComponent::EnterOptions => info!("Enter options menu."),
+            ButtonActionComponent::EnterOptions => {
+                next_options_menu_overlay_state.set(OptionsMenuOverlay::Enabled)
+            }
             ButtonActionComponent::EnterCompendium => info!("Enter compendium."),
             ButtonActionComponent::QuitGame => {
                 exit.send(AppExit);

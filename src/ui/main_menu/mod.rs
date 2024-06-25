@@ -7,6 +7,7 @@ use crate::{
 use bevy::{
     ecs::{
         event::EventWriter,
+        schedule::Condition,
         system::{Commands, Res},
     },
     hierarchy::BuildChildren,
@@ -20,8 +21,11 @@ use bevy::{
     utils::default,
 };
 use std::time::Duration;
-use thetawave_interface::audio::{BGMusicType, ChangeBackgroundMusicEvent};
 use thetawave_interface::states::{AppStates, MainMenuCleanup};
+use thetawave_interface::{
+    audio::{BGMusicType, ChangeBackgroundMusicEvent},
+    states::OptionsMenuOverlay,
+};
 mod button;
 use self::button::main_menu_button_selection_and_click_system;
 use self::button::UiChildBuilderExt;
@@ -35,8 +39,9 @@ impl Plugin for MainMenuUIPlugin {
         app.add_systems(OnEnter(AppStates::MainMenu), setup_main_menu_system)
             .add_systems(
                 Update,
-                (main_menu_button_selection_and_click_system,)
-                    .run_if(in_state(AppStates::MainMenu)),
+                (main_menu_button_selection_and_click_system,).run_if(
+                    in_state(AppStates::MainMenu).and_then(in_state(OptionsMenuOverlay::Disabled)),
+                ),
             );
     }
 }

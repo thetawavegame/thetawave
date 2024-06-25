@@ -6,6 +6,7 @@
         (Reset, KeyR),
         (ExitPauseMenu, Escape),
         (PauseGame, Escape),
+        (OptionsMenu, KeyO),
         (NavigateUpKeyboard, KeyW),
         (NavigateDownKeyboard, KeyS),
         (NavigateLeftKeyboard, KeyA),
@@ -27,6 +28,7 @@
         (Reset, East),
         (ExitPauseMenu, Start),
         (PauseGame, Start),
+        (OptionsMenu, Select),
         (PlayerReadyGamepad, South),
     ],
     player_keyboard: [
