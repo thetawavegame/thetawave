@@ -2,10 +2,12 @@ use bevy::{
     app::{App, Plugin, Startup, Update},
     ecs::{
         event::EventReader,
-        schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter, OnExit},
+        schedule::IntoSystemConfigs,
         system::{Res, ResMut, Resource},
     },
     log::{error, info},
+    state::condition::in_state,
+    state::state::{OnEnter, OnExit},
 };
 use bevy_serialport::{
     DataBits, FlowControl, Parity, SerialPortPlugin, SerialPortRuntime, SerialPortSetting,

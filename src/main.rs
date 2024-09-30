@@ -225,6 +225,7 @@ mod test {
     use bevy::asset::AssetPlugin;
     use bevy::input::InputPlugin;
     use bevy::prelude::{ImagePlugin, NextState, State};
+    use bevy::state::app::StatesPlugin;
     use bevy::MinimalPlugins;
     use bevy_kira_audio::AudioPlugin;
     use thetawave_interface::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent};
@@ -265,7 +266,8 @@ mod test {
             .build()
             .add(AssetPlugin::default())
             .add(ImagePlugin::default())
-            .add(InputPlugin::default());
+            .add(InputPlugin::default())
+            .add(StatesPlugin);
         // These features are basically untestable.
         let game_plugins = ThetawaveGamePlugins
             .build()

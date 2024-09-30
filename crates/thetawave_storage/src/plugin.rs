@@ -114,7 +114,7 @@ mod test {
     use crate::user_stats::{get_mob_killed_counts_for_user, get_user_stats};
     use bevy::log::{Level, LogPlugin};
     use bevy::prelude::{default, App, NextState, OnEnter, ResMut};
-    use bevy::state::app::AppExtStates;
+    use bevy::state::app::{AppExtStates, StatesPlugin};
     use bevy::MinimalPlugins;
     use std::ffi::{OsStr, OsString};
     use tempdir;
@@ -212,7 +212,7 @@ mod test {
     }
     fn _minimal_app_for_db_plugin_tests() -> App {
         let mut app = App::new();
-        app.add_plugins(DBPlugin)
+        app.add_plugins((DBPlugin, StatesPlugin))
             .init_state::<AppStates>()
             .add_plugins(MinimalPlugins)
             .add_plugins(LogPlugin {

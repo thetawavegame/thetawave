@@ -194,7 +194,7 @@ mod test {
     use bevy::input::InputPlugin;
     use bevy::math::Vec2;
     use bevy::prelude::{App, Component, Events};
-    use bevy::state::app::AppExtStates;
+    use bevy::state::app::{AppExtStates, StatesPlugin};
     use bevy::MinimalPlugins;
     use thetawave_interface::audio::SoundEffectType;
     use thetawave_interface::character::{Character, CharacterType};
@@ -210,18 +210,20 @@ mod test {
 
     fn base_app_required_for_counting_metrics() -> App {
         let mut app = App::new();
+        app.add_plugins((
+            StatesPlugin,
+            InputPlugin,
+            PlayerPlugin,
+            CountingMetricsPlugin,
+            MinimalPlugins,
+        ));
         app.init_state::<AppStates>()
             .init_state::<GameStates>()
             .add_event::<SortedCollisionEvent>()
             .add_event::<MobDestroyedEvent>()
             .add_event::<FireWeaponEvent>()
-            .insert_resource(UserStatsByPlayerForCurrentGameCache::default())
-            .add_plugins((
-                InputPlugin,
-                PlayerPlugin,
-                CountingMetricsPlugin,
-                MinimalPlugins,
-            ));
+            .insert_resource(UserStatsByPlayerForCurrentGameCache::default());
+
         app
     }
     #[derive(Component, Default, Copy, Clone)]

@@ -352,7 +352,7 @@ mod test {
     use bevy::app::App;
     use bevy::log::{Level, LogPlugin};
     use bevy::prelude::{default, NextState, State};
-    use bevy::state::app::AppExtStates;
+    use bevy::state::app::{AppExtStates, StatesPlugin};
     use bevy::MinimalPlugins;
     use rstest::rstest;
     use thetawave_interface::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent};
@@ -366,11 +366,14 @@ mod test {
     fn _minimal_app_for_run_progression_defend_gate_objective() -> App {
         let mut app = App::new();
         app.add_plugins(MinimalPlugins)
-            .add_plugins(LogPlugin {
-                filter: "".to_string(),
-                level: Level::TRACE,
-                ..default()
-            })
+            .add_plugins((
+                LogPlugin {
+                    filter: "".to_string(),
+                    level: Level::TRACE,
+                    ..default()
+                },
+                StatesPlugin,
+            ))
             .init_state::<AppStates>()
             .init_state::<GameStates>()
             .add_event::<MobReachedBottomGateEvent>()
