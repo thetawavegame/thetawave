@@ -2,7 +2,11 @@
 //! and dying.
 use bevy::{
     app::{App, Plugin, Update},
-    ecs::schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter, OnExit},
+    ecs::schedule::IntoSystemConfigs,
+    state::{
+        condition::in_state,
+        state::{OnEnter, OnExit},
+    },
 };
 use leafwing_input_manager::prelude::InputManagerPlugin;
 use ron::de::from_bytes;

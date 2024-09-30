@@ -1,10 +1,12 @@
 use bevy::{
+    color::Srgba,
     math::{EulerRot, Mat2},
     prelude::{
         Commands, Component, Entity, Event, EventReader, EventWriter, Name, Quat, Res, Resource,
-        Sprite, SpriteSheetBundle, Timer, TimerMode, Transform, Vec2, Vec3Swizzles,
+        Sprite, Timer, TimerMode, Transform, Vec2, Vec3Swizzles,
     },
-    render::color::Color,
+    sprite::{SpriteBundle, TextureAtlas},
+    utils::default,
 };
 use bevy_rapier2d::prelude::{
     ActiveEvents, Collider, CollisionGroups, Group, LockedAxes, RigidBody, Sensor, Velocity,
@@ -78,15 +80,15 @@ pub struct ProjectileData {
     /// If it has a contact collider
     pub is_solid: bool,
     /// Color for bloom effect
-    pub bloom_color: Color,
+    pub bloom_color: Srgba,
 }
 
 impl ProjectileData {
-    pub fn affine_bloom_transformation(&self, bloom_intensity: f32) -> Color {
-        Color::rgb(
-            1.0 + self.bloom_color.r() * bloom_intensity,
-            1.0 + self.bloom_color.g() * bloom_intensity,
-            1.0 + self.bloom_color.b() * bloom_intensity,
+    pub fn affine_bloom_transformation(&self, bloom_intensity: f32) -> Srgba {
+        Srgba::rgb(
+            1.0 + self.bloom_color.red * bloom_intensity,
+            1.0 + self.bloom_color.green * bloom_intensity,
+            1.0 + self.bloom_color.blue * bloom_intensity,
         )
     }
 }
@@ -204,17 +206,20 @@ pub fn spawn_projectile_from_weapon(
 
         projectile
             .insert(LockedAxes::ROTATION_LOCKED)
-            .insert(SpriteSheetBundle {
-                atlas: projectile_assets
-                    .get_texture_atlas_layout(&weapon_projectile_data.ammunition)
-                    .into(),
+            .insert(SpriteBundle {
                 texture: projectile_assets.get_image(&weapon_projectile_data.ammunition),
                 sprite: Sprite {
-                    color: projectile_data
-                        .affine_bloom_transformation(game_options.bloom_intensity),
-                    ..Default::default()
+                    color: bevy::prelude::Color::Srgba(
+                        projectile_data.affine_bloom_transformation(game_options.bloom_intensity),
+                    ),
+                    ..default()
                 },
-                ..Default::default()
+                ..default()
+            })
+            .insert(TextureAtlas {
+                layout: projectile_assets
+                    .get_texture_atlas_layout(&weapon_projectile_data.ammunition),
+                ..default()
             })
             .insert(AnimationComponent {
                 timer: Timer::from_seconds(

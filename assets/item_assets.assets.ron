@@ -1,7 +1,7 @@
 ({
     "item_placeholder.layout": TextureAtlasLayout (
-        tile_size_x: 15.,
-        tile_size_y: 15.,
+        tile_size_x: 15,
+        tile_size_y: 15,
         columns: 1,
         rows: 1,
     ),

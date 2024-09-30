@@ -1,5 +1,6 @@
 use crate::ui::BouncingPromptComponent;
 use crate::{assets::UiAssets, options::PlayingOnArcadeResource};
+use bevy::color::{Alpha, Color};
 use bevy::{
     asset::AssetServer,
     ecs::{
@@ -8,7 +9,6 @@ use bevy::{
         system::{Commands, Res},
     },
     hierarchy::BuildChildren,
-    render::color::Color,
     text::{JustifyText, Text, TextStyle},
     time::{Timer, TimerMode},
     ui::{
@@ -62,7 +62,7 @@ pub fn setup_victory_system(
                 height: Val::Percent(100.0),
                 ..Default::default()
             },
-            background_color: Color::rgba(0.0, 0.0, 0.0, 0.0).into(),
+            background_color: Color::srgba(0.0, 0.0, 0.0, 0.0).into(),
             ..Default::default()
         })
         .insert(VictoryCleanup)
@@ -78,7 +78,7 @@ pub fn setup_victory_system(
                         justify_content: JustifyContent::FlexEnd,
                         ..Default::default()
                     },
-                    background_color: Color::rgba(1.0, 1.0, 1.0, 1.0).into(),
+                    background_color: Color::srgba(1.0, 1.0, 1.0, 1.0).into(),
                     ..default()
                 })
                 .with_children(|parent| {
@@ -100,7 +100,7 @@ pub fn setup_victory_system(
                                 justify_content: JustifyContent::Center,
                                 ..Default::default()
                             },
-                            background_color: BackgroundColor::from(Color::BLACK.with_a(0.9)),
+                            background_color: BackgroundColor::from(Color::BLACK.with_alpha(0.9)),
                             ..default()
                         })
                         .with_children(|parent| {

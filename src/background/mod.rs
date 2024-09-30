@@ -3,13 +3,14 @@
 use bevy::{
     app::{App, Plugin, Update},
     asset::{AssetServer, Assets, Handle},
+    color::{Alpha, Color},
     core::Name,
     ecs::{
         component::Component,
         event::EventReader,
         query::With,
         reflect::ReflectComponent,
-        schedule::{common_conditions::in_state, Condition, IntoSystemConfigs, OnEnter},
+        schedule::{Condition, IntoSystemConfigs},
         system::{Commands, Query, Res, ResMut, Resource},
     },
     hierarchy::BuildChildren,
@@ -18,14 +19,15 @@ use bevy::{
         primitives::{Rectangle, Sphere},
         Quat, Vec3,
     },
-    pbr::{AlphaMode, PbrBundle, PointLight, PointLightBundle, StandardMaterial},
+    pbr::{PbrBundle, PointLight, PointLightBundle, StandardMaterial},
     reflect::Reflect,
     render::{
-        color::Color,
+        alpha::AlphaMode,
         mesh::{Mesh, Meshable},
         view::{InheritedVisibility, Visibility},
     },
     scene::{Scene, SceneBundle},
+    state::{condition::in_state, state::OnEnter},
     time::Time,
     transform::components::Transform,
     utils::default,
@@ -295,7 +297,7 @@ fn create_background_system(
                     let material_handle = materials.add(StandardMaterial {
                         base_color_texture: Some(background_texture_handle),
                         alpha_mode: AlphaMode::Blend,
-                        base_color: Color::default().with_a(backgrounds_res.background_alpha),
+                        base_color: Color::default().with_alpha(backgrounds_res.background_alpha),
                         unlit: true,
                         ..default()
                     });
@@ -327,13 +329,17 @@ fn create_background_system(
         );
 
     // Spawn a star with a random color
-    let star_color = Color::WHITE
-        + (Color::rgb(
-            rng.gen_range(backgrounds_res.star_color_range.clone()),
-            rng.gen_range(backgrounds_res.star_color_range.clone()),
-            rng.gen_range(backgrounds_res.star_color_range.clone()),
-        ) * backgrounds_res.star_bloom_brightness
-            * game_options.bloom_intensity);
+    let star_color = Color::srgb(
+        1.0 + rng.gen_range(backgrounds_res.star_color_range.clone())
+            * backgrounds_res.star_bloom_brightness
+            * game_options.bloom_intensity,
+        1.0 + rng.gen_range(backgrounds_res.star_color_range.clone())
+            * backgrounds_res.star_bloom_brightness
+            * game_options.bloom_intensity,
+        1.0 + rng.gen_range(backgrounds_res.star_color_range.clone())
+            * backgrounds_res.star_bloom_brightness
+            * game_options.bloom_intensity,
+    );
 
     // Emissive colored star material for bloom
     let star_material = materials.add(StandardMaterial {

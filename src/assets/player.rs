@@ -1,4 +1,4 @@
-use bevy::prelude::{Handle, Image, Resource};
+use bevy::prelude::{Handle, Image, Res, Resource};
 use bevy_asset_loader::prelude::AssetCollection;
 use thetawave_interface::character::CharacterType;
 

@@ -9,27 +9,30 @@ use crate::{
     player::CharactersResource,
 };
 
-use super::button::{ButtonActionComponent, ButtonActionEvent, UiButtonChildBuilderExt};
+use super::button::{
+    ButtonActionComponent, ButtonActionEvent, ButtonActionType, UiButtonChildBuilderExt,
+};
 use bevy::{
     app::{App, Plugin, Update},
     asset::{AssetServer, Handle},
+    color::{palettes::css::GOLD, Alpha, Color, Srgba},
     ecs::{
         component::Component,
         entity::Entity,
         event::{EventReader, EventWriter},
         query::{With, Without},
-        schedule::{common_conditions::in_state, IntoSystemConfigs, NextState, OnEnter},
+        schedule::IntoSystemConfigs,
         system::{Commands, Local, Query, Res, ResMut},
     },
     hierarchy::{BuildChildren, ChildBuilder, Children, DespawnRecursiveExt},
     input::gamepad::{Gamepad, GamepadButtonChangedEvent},
-    render::color::Color,
+    prelude::{in_state, NextState, OnEnter},
     text::{Font, Text, TextStyle},
     ui::{
         node_bundles::{ImageBundle, NodeBundle, TextBundle},
         widget::Button,
-        AlignContent, AlignItems, AlignSelf, BackgroundColor, FlexDirection, Interaction,
-        JustifyContent, Style, UiImage, UiRect, Val,
+        AlignContent, AlignItems, AlignSelf, FlexDirection, Interaction, JustifyContent, Style,
+        UiImage, UiRect, Val,
     },
     utils::default,
 };
@@ -305,7 +308,7 @@ impl UiPlayerJoinChildBuilderExt for ChildBuilder<'_> {
                                 align_self: AlignSelf::Center,
                                 ..default()
                             },
-                            background_color: Color::WHITE.into(),
+                            background_color: Srgba::WHITE.into(),
                             ..default()
                         });
                     });
@@ -471,7 +474,7 @@ impl UiPlayerJoinChildBuilderExt for ChildBuilder<'_> {
                             },
                             ..Default::default()
                         },
-                        background_color: Color::BLACK.with_a(0.6).into(),
+                        background_color: Color::BLACK.with_alpha(0.6).into(),
                         ..Default::default()
                     })
                     .with_children(|parent| {
@@ -523,7 +526,9 @@ impl UiPlayerJoinChildBuilderExt for ChildBuilder<'_> {
                                             parent.spawn_button(
                                                 ui_assets,
                                                 font.clone(),
-                                                ButtonActionComponent::CharacterSelectJoin,
+                                                ButtonActionComponent::from(
+                                                    ButtonActionType::CharacterSelectJoin,
+                                                ),
                                                 None,
                                             );
                                         }
@@ -638,7 +643,7 @@ fn player_join_system(
 ) {
     // Check if the join button was pressed
     if let Some(button) = button_mouse_movements.iter().find(|(button_action, _, _)| {
-        matches!(button_action, ButtonActionComponent::CharacterSelectJoin)
+        matches!(button_action.action, ButtonActionType::CharacterSelectJoin)
     }) {
         // Get the list of currently used inputs
         let used_inputs = players_resource.get_used_inputs();
@@ -672,7 +677,9 @@ fn player_join_system(
                 }));
 
                 // Send player join event and button action event
-                button_event_writer.send(ButtonActionEvent::CharacterSelectJoin);
+                button_event_writer.send(ButtonActionEvent::from(
+                    ButtonActionType::CharacterSelectJoin,
+                ));
                 player_join_event.send(PlayerJoinEvent {
                     player_idx: players_resource.player_data.len() as u8 - 1,
                     input: player_input,
@@ -709,7 +716,9 @@ fn player_join_system(
                 }));
 
                 // Send player join event and button action event
-                button_event_writer.send(ButtonActionEvent::CharacterSelectJoin);
+                button_event_writer.send(ButtonActionEvent::from(
+                    ButtonActionType::CharacterSelectJoin,
+                ));
                 player_join_event.send(PlayerJoinEvent {
                     player_idx: players_resource.player_data.len() as u8 - 1,
                     input: player_input,
@@ -739,7 +748,9 @@ fn player_join_system(
                 }));
 
                 // Send player join event and button action event
-                button_event_writer.send(ButtonActionEvent::CharacterSelectJoin);
+                button_event_writer.send(ButtonActionEvent::from(
+                    ButtonActionType::CharacterSelectJoin,
+                ));
                 player_join_event.send(PlayerJoinEvent {
                     player_idx: players_resource.player_data.len() as u8 - 1,
                     input: player_input,
@@ -776,7 +787,7 @@ fn update_ui_system(
     for PlayerJoinEvent { player_idx, input } in player_join_event.read() {
         if let Some((_, button_entity)) = buttons
             .iter()
-            .find(|(action, _)| matches!(action, ButtonActionComponent::CharacterSelectJoin))
+            .find(|(action, _)| matches!(action.action, ButtonActionType::CharacterSelectJoin))
         {
             // Get center UI for the current player slot and the next player slot
             let prev_character_selection_ui = character_selection_center
@@ -829,7 +840,7 @@ fn update_ui_system(
                                         TextStyle {
                                             font: font.clone(),
                                             font_size: 20.0,
-                                            color: Color::GOLD,
+                                            color: Color::Srgba(GOLD),
                                         },
                                     ),
                                     style: Style {
@@ -909,7 +920,9 @@ fn update_ui_system(
                     parent.spawn_button(
                         &ui_assets,
                         font.clone(),
-                        ButtonActionComponent::CharacterSelectRight(*player_idx),
+                        ButtonActionComponent::from(ButtonActionType::CharacterSelectRight(
+                            *player_idx,
+                        )),
                         None,
                     )
                 });
@@ -920,7 +933,9 @@ fn update_ui_system(
                     parent.spawn_button(
                         &ui_assets,
                         font.clone(),
-                        ButtonActionComponent::CharacterSelectLeft(*player_idx),
+                        ButtonActionComponent::from(ButtonActionType::CharacterSelectLeft(
+                            *player_idx,
+                        )),
                         None,
                     )
                 });
@@ -931,7 +946,9 @@ fn update_ui_system(
                     parent.spawn_button(
                         &ui_assets,
                         font.clone(),
-                        ButtonActionComponent::CharacterSelectReady(*player_idx),
+                        ButtonActionComponent::from(ButtonActionType::CharacterSelectReady(
+                            *player_idx,
+                        )),
                         Some(input),
                     );
                 });
@@ -985,23 +1002,23 @@ fn mouse_click_input_system(
         for (button_action, mouse_interaction) in
             button_mouse_movements.iter().filter(|(button_action, _)| {
                 matches!(
-                    button_action,
-                    ButtonActionComponent::CharacterSelectLeft(i) |
-                    ButtonActionComponent::CharacterSelectRight(i) |
-                    ButtonActionComponent::CharacterSelectReady(i) if *i == keyboard_idx
+                    button_action.action,
+                    ButtonActionType::CharacterSelectLeft(i) |
+                    ButtonActionType::CharacterSelectRight(i) |
+                    ButtonActionType::CharacterSelectReady(i) if i == keyboard_idx
                 )
             })
         {
             // Determine the appropriate stored interaction based on the button action
-            let stored_interaction = match button_action {
-                ButtonActionComponent::CharacterSelectReady(i) => {
-                    &mut stored_player_ready_interaction[*i as usize]
+            let stored_interaction = match button_action.action {
+                ButtonActionType::CharacterSelectReady(i) => {
+                    &mut stored_player_ready_interaction[i as usize]
                 }
-                ButtonActionComponent::CharacterSelectRight(i) => {
-                    &mut stored_right_mouse_interaction[*i as usize]
+                ButtonActionType::CharacterSelectRight(i) => {
+                    &mut stored_right_mouse_interaction[i as usize]
                 }
-                ButtonActionComponent::CharacterSelectLeft(i) => {
-                    &mut stored_left_mouse_interaction[*i as usize]
+                ButtonActionType::CharacterSelectLeft(i) => {
+                    &mut stored_left_mouse_interaction[i as usize]
                 }
                 _ => continue,
             };
@@ -1017,7 +1034,7 @@ fn mouse_click_input_system(
 
             // Send event if the button was released
             if button_released {
-                button_event_writer.send(*button_action);
+                button_event_writer.send(ButtonActionEvent::from(button_action.action));
             }
         }
     }
@@ -1055,16 +1072,19 @@ fn keyboard_and_gamepad_input_system(
                 // Match and send the appropriate event for gamepad actions
                 match action {
                     MenuAction::PlayerReadyGamepad => {
-                        button_event_writer
-                            .send(ButtonActionEvent::CharacterSelectReady(*player_idx));
+                        button_event_writer.send(ButtonActionEvent::from(
+                            ButtonActionType::CharacterSelectReady(*player_idx),
+                        ));
                     }
                     MenuAction::NavigateLeftGamepad => {
-                        button_event_writer
-                            .send(ButtonActionEvent::CharacterSelectLeft(*player_idx));
+                        button_event_writer.send(ButtonActionEvent::from(
+                            ButtonActionType::CharacterSelectLeft(*player_idx),
+                        ));
                     }
                     MenuAction::NavigateRightGamepad => {
-                        button_event_writer
-                            .send(ButtonActionEvent::CharacterSelectRight(*player_idx));
+                        button_event_writer.send(ButtonActionEvent::from(
+                            ButtonActionType::CharacterSelectRight(*player_idx),
+                        ));
                     }
                     _ => {}
                 }
@@ -1072,16 +1092,19 @@ fn keyboard_and_gamepad_input_system(
                 // Match and send the appropriate event for keyboard actions
                 match action {
                     MenuAction::PlayerReadyKeyboard => {
-                        button_event_writer
-                            .send(ButtonActionEvent::CharacterSelectReady(*player_idx));
+                        button_event_writer.send(ButtonActionEvent::from(
+                            ButtonActionType::CharacterSelectReady(*player_idx),
+                        ));
                     }
                     MenuAction::NavigateLeftKeyboard => {
-                        button_event_writer
-                            .send(ButtonActionEvent::CharacterSelectLeft(*player_idx));
+                        button_event_writer.send(ButtonActionEvent::from(
+                            ButtonActionType::CharacterSelectLeft(*player_idx),
+                        ));
                     }
                     MenuAction::NavigateRightKeyboard => {
-                        button_event_writer
-                            .send(ButtonActionEvent::CharacterSelectRight(*player_idx));
+                        button_event_writer.send(ButtonActionEvent::from(
+                            ButtonActionType::CharacterSelectRight(*player_idx),
+                        ));
                     }
                     _ => {}
                 }
@@ -1121,8 +1144,8 @@ fn init_carousel_ui_system(
             commands.entity(carousel_entity).with_children(|parent| {
                 parent
                     .spawn(ImageBundle {
-                        image: player_assets.get_asset(&visible_characters[0]).into(),
-                        background_color: Color::rgba(0.60, 0.60, 0.60, 0.60).into(),
+                        image: UiImage::new(player_assets.get_asset(&visible_characters[0]))
+                            .with_color(Color::srgba(0.60, 0.60, 0.60, 0.60)),
                         style: Style {
                             height: Val::Percent(80.0),
                             margin: UiRect {
@@ -1154,8 +1177,8 @@ fn init_carousel_ui_system(
 
                 parent
                     .spawn(ImageBundle {
-                        image: player_assets.get_asset(&visible_characters[2]).into(),
-                        background_color: Color::rgba(0.60, 0.60, 0.60, 0.60).into(),
+                        image: UiImage::new(player_assets.get_asset(&visible_characters[2]))
+                            .with_color(Color::srgba(0.60, 0.60, 0.60, 0.60)),
                         style: Style {
                             height: Val::Percent(80.0),
                             margin: UiRect {
@@ -1275,29 +1298,34 @@ fn carousel_ui_system(
 
         if player_ready_node.is_some_and(|node| !node.is_ready) {
             // Filter relevant button events for the current carousel
-            for button in button_events.iter().filter(|action| match action {
-                ButtonActionEvent::CharacterSelectLeft(i) => *i == carousel_player_idx,
-                ButtonActionEvent::CharacterSelectRight(i) => *i == carousel_player_idx,
+            for button in button_events.iter().filter(|action| match action.action {
+                ButtonActionType::CharacterSelectLeft(i) => i == carousel_player_idx,
+                ButtonActionType::CharacterSelectRight(i) => i == carousel_player_idx,
                 _ => false,
             }) {
                 // Rotate the carousel based on the button action and get the new visible characters
-                let new_characters = if let ButtonActionEvent::CharacterSelectRight(_) = button {
-                    carousel.rotate_right();
-                    carousel.get_visible_characters()
-                } else if let ButtonActionEvent::CharacterSelectLeft(_) = button {
-                    carousel.rotate_left();
-                    carousel.get_visible_characters()
-                } else {
-                    None
-                };
+                let new_characters =
+                    if let ButtonActionType::CharacterSelectRight(_) = button.action {
+                        carousel.rotate_right();
+                        carousel.get_visible_characters()
+                    } else if let ButtonActionType::CharacterSelectLeft(_) = button.action {
+                        carousel.rotate_left();
+                        carousel.get_visible_characters()
+                    } else {
+                        None
+                    };
 
                 // Set the correct image of each of the visible characters in the carousel
                 if let Some(visible_characters) = new_characters {
-                    for carousel_child in carousel_children.iter() {
+                    for (idx, carousel_child) in carousel_children.iter().enumerate() {
                         if let Ok((mut ui_image, slot)) = carousel_slots.get_mut(*carousel_child) {
                             *ui_image = player_assets
                                 .get_asset(&visible_characters[slot.0 as usize])
                                 .into();
+
+                            if idx != 1 {
+                                ui_image.color = Color::srgba(0.60, 0.60, 0.60, 0.60);
+                            }
                         }
                     }
 
@@ -1388,14 +1416,14 @@ fn player_ready_system(
     mut button_reader: EventReader<ButtonActionEvent>,
     mut player_ready: Query<(&mut PlayerReadyNode, &Children)>,
     ready_button_parents: Query<&Children>,
-    mut ready_button_backgrounds: Query<&mut BackgroundColor>,
+    mut ready_button_images: Query<&mut UiImage>,
 ) {
     // Iterate over each button action event
     for event in button_reader.read() {
-        if let ButtonActionEvent::CharacterSelectReady(player_idx) = event {
+        if let ButtonActionType::CharacterSelectReady(player_idx) = event.action {
             // Iterate over player ready nodes
             for (mut player_ready_node, ready_node_children) in player_ready.iter_mut() {
-                if *player_idx == player_ready_node.player_idx {
+                if player_idx == player_ready_node.player_idx {
                     // If the player is not ready, update the state to ready and change button color
                     if !player_ready_node.is_ready {
                         player_ready_node.is_ready = true;
@@ -1411,10 +1439,10 @@ fn player_ready_system(
                                     ready_button_parent_children.first()
                                 {
                                     // Update the background color of the ready button
-                                    if let Ok(mut background_color) =
-                                        ready_button_backgrounds.get_mut(*ready_button_entity)
+                                    if let Ok(mut ui_image) =
+                                        ready_button_images.get_mut(*ready_button_entity)
                                     {
-                                        *background_color = Color::rgba(0.2, 1.0, 0.4, 1.0).into();
+                                        ui_image.color = Color::srgba(0.2, 1.0, 0.4, 1.0);
                                     }
                                 }
                             }

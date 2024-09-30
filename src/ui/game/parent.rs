@@ -1,8 +1,9 @@
 use bevy::{
     asset::Handle,
+    color::{Color, Srgba},
     ecs::system::{Commands, Res},
     hierarchy::BuildChildren,
-    render::{color::Color, texture::Image},
+    render::texture::Image,
     text::Font,
     ui::{
         node_bundles::NodeBundle, AlignItems, BackgroundColor, FlexDirection, JustifyContent,
@@ -27,7 +28,8 @@ const TOP_CENTER_WIDTH: Val = Val::Percent(80.0);
 const BOTTOM_ROW_HEIGHT: Val = Val::Percent(13.0);
 const BOTTOM_CORNER_WIDTH: Val = Val::Percent(10.0);
 const BOTTOM_CENTER_WIDTH: Val = Val::Percent(80.0);
-const OUTSIDE_BORDER_BG_COLOR: BackgroundColor = BackgroundColor(Color::rgba(0.0, 0.0, 0.0, 0.0));
+const OUTSIDE_BORDER_BG_COLOR: BackgroundColor =
+    BackgroundColor(Color::Srgba(Srgba::new(0.0, 0.0, 0.0, 0.0)));
 const MIDDLE_ROW_HEIGHT: Val = Val::Percent(74.0);
 const MIDDLE_SIDE_WIDTH: Val = Val::Percent(10.0);
 const MIDDLE_CENTER_WIDTH: Val = Val::Percent(80.0);

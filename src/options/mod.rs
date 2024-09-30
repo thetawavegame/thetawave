@@ -4,12 +4,13 @@ use bevy::{
     core_pipeline::{core_2d::Camera2d, core_3d::Camera3d, tonemapping::Tonemapping},
     ecs::{
         query::{With, Without},
-        schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter},
+        schedule::IntoSystemConfigs,
         system::{Query, ResMut, Resource},
     },
     log::error,
     prelude::Deref,
     render::camera::Camera,
+    state::{condition::in_state, state::OnEnter},
 };
 use leafwing_input_manager::prelude::InputManagerPlugin;
 use thetawave_interface::{

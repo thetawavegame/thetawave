@@ -1,8 +1,7 @@
 //! Exposes a plugin that handles layout, rendering, and styling for each of the major game states.
 use bevy::{
     app::{App, Plugin, Update},
-    ecs::schedule::OnEnter,
-    prelude::{Component, Query, Res, Time, Timer, Transform},
+    prelude::{Component, OnEnter, Query, Res, Time, Timer, Transform},
 };
 use thetawave_interface::game::historical_metrics::{MobsKilledByPlayerCacheT, DEFAULT_USER_ID};
 

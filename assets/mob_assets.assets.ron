@@ -1,7 +1,7 @@
 ({
     "crustling.head.layout": TextureAtlasLayout (
-        tile_size_x: 38.,
-        tile_size_y: 29.,
+        tile_size_x: 38,
+        tile_size_y: 29,
         columns: 3,
         rows: 1,
     ),
@@ -9,8 +9,8 @@
         path: "texture/crustling_spritesheet.png"
     ),
     "crustling.tentacle1.layout": TextureAtlasLayout (
-        tile_size_x: 10.,
-        tile_size_y: 30.,
+        tile_size_x: 10,
+        tile_size_y: 30,
         columns: 1,
         rows: 1,
     ),
@@ -18,8 +18,8 @@
         path: "texture/crustling_tentacle_1.png"
     ),
     "crustling.tentacle2.layout": TextureAtlasLayout (
-        tile_size_x: 10.,
-        tile_size_y: 30.,
+        tile_size_x: 10,
+        tile_size_y: 30,
         columns: 1,
         rows: 1,
     ),
@@ -27,8 +27,8 @@
         path: "texture/crustling_tentacle_2.png"
     ),
     "crustling.tentacle3.layout": TextureAtlasLayout (
-        tile_size_x: 10.,
-        tile_size_y: 30.,
+        tile_size_x: 10,
+        tile_size_y: 30,
         columns: 1,
         rows: 1,
     ),
@@ -36,8 +36,8 @@
         path: "texture/crustling_tentacle_3.png"
     ),
     "tutorial_drone.layout": TextureAtlasLayout (
-        tile_size_x: 20.,
-        tile_size_y: 21.,
+        tile_size_x: 20,
+        tile_size_y: 21,
         columns: 3,
         rows: 1,
     ),
@@ -45,8 +45,8 @@
         path: "texture/tutorial_drone_spritesheet.png"
     ),
     "drone.layout": TextureAtlasLayout (
-        tile_size_x: 20.,
-        tile_size_y: 20.,
+        tile_size_x: 20,
+        tile_size_y: 20,
         columns: 3,
         rows: 1,
     ),
@@ -54,8 +54,8 @@
         path: "texture/drone_spritesheet.png"
     ),
     "drone.thruster.layout": TextureAtlasLayout (
-        tile_size_x: 14.,
-        tile_size_y: 10.,
+        tile_size_x: 14,
+        tile_size_y: 10,
         columns: 3,
         rows: 1,
     ),
@@ -63,8 +63,8 @@
         path: "texture/drone_thrusters_spritesheet.png"
     ),
     "pawn.layout": TextureAtlasLayout (
-        tile_size_x: 20.,
-        tile_size_y: 20.,
+        tile_size_x: 20,
+        tile_size_y: 20,
         columns: 3,
         rows: 1,
     ),
@@ -72,8 +72,8 @@
         path: "texture/pawn_spritesheet.png"
     ),
     "pawn.thruster.layout": TextureAtlasLayout (
-        tile_size_x: 14.,
-        tile_size_y: 10.,
+        tile_size_x: 14,
+        tile_size_y: 10,
         columns: 3,
         rows: 1,
     ),
@@ -81,8 +81,8 @@
         path: "texture/pawn_thrusters_spritesheet.png"
     ),
     "shelly.layout": TextureAtlasLayout (
-        tile_size_x: 24.,
-        tile_size_y: 25.,
+        tile_size_x: 24,
+        tile_size_y: 25,
         columns: 3,
         rows: 1,
     ),
@@ -90,8 +90,8 @@
         path: "texture/shelly_spritesheet.png"
     ),
     "hauler.front.layout": TextureAtlasLayout (
-        tile_size_x: 18.,
-        tile_size_y: 15.,
+        tile_size_x: 18,
+        tile_size_y: 15,
         columns: 1,
         rows: 1,
     ),
@@ -99,8 +99,8 @@
         path: "texture/hauler_front.png"
     ),
     "hauler.back.layout": TextureAtlasLayout (
-        tile_size_x: 18.,
-        tile_size_y: 24.,
+        tile_size_x: 18,
+        tile_size_y: 24,
         columns: 1,
         rows: 1,
     ),
@@ -108,8 +108,8 @@
         path: "texture/hauler_back.png"
     ),
     "hauler.middle.layout": TextureAtlasLayout (
-        tile_size_x: 18.,
-        tile_size_y: 26.,
+        tile_size_x: 18,
+        tile_size_y: 26,
         columns: 1,
         rows: 1,
     ),
@@ -117,8 +117,8 @@
         path: "texture/hauler_middle.png"
     ),
     "hauler.thruster.layout": TextureAtlasLayout (
-        tile_size_x: 20.,
-        tile_size_y: 9.,
+        tile_size_x: 20,
+        tile_size_y: 9,
         columns: 3,
         rows: 1,
     ),
@@ -126,8 +126,8 @@
         path: "texture/hauler_thrusters_spritesheet.png"
     ),
     "missile_launcher.layout": TextureAtlasLayout (
-        tile_size_x: 23.,
-        tile_size_y: 28.,
+        tile_size_x: 23,
+        tile_size_y: 28,
         columns: 3,
         rows: 1,
     ),
@@ -135,8 +135,8 @@
         path: "texture/missile_launcher_spritesheet.png"
     ),
     "missile_launcher.thruster.layout": TextureAtlasLayout (
-        tile_size_x: 17.,
-        tile_size_y: 7.,
+        tile_size_x: 17,
+        tile_size_y: 7,
         columns: 3,
         rows: 1,
     ),
@@ -144,8 +144,8 @@
         path: "texture/missile_launcher_thrusters_spritesheet.png"
     ),
     "missile.layout": TextureAtlasLayout (
-        tile_size_x: 11.,
-        tile_size_y: 20.,
+        tile_size_x: 11,
+        tile_size_y: 20,
         columns: 4,
         rows: 1,
     ),
@@ -153,8 +153,8 @@
         path: "texture/missile_spritesheet.png"
     ),
     "missile.thruster.layout": TextureAtlasLayout (
-        tile_size_x: 7.,
-        tile_size_y: 7.,
+        tile_size_x: 7,
+        tile_size_y: 7,
         columns: 4,
         rows: 1,
     ),
@@ -162,8 +162,8 @@
         path: "texture/missile_thrusters_spritesheet.png"
     ),
     "strafer.layout": TextureAtlasLayout (
-        tile_size_x: 26.,
-        tile_size_y: 14.,
+        tile_size_x: 26,
+        tile_size_y: 14,
         columns: 3,
         rows: 1,
     ),
@@ -171,8 +171,8 @@
         path: "texture/strafer_spritesheet.png"
     ),
     "strafer.thruster.layout": TextureAtlasLayout (
-        tile_size_x: 24.,
-        tile_size_y: 11.,
+        tile_size_x: 24,
+        tile_size_y: 11,
         columns: 3,
         rows: 1,
     ),
@@ -180,8 +180,8 @@
         path: "texture/strafer_thrusters_spritesheet.png"
     ),
     "money_asteroid.layout": TextureAtlasLayout (
-        tile_size_x: 21.,
-        tile_size_y: 21.,
+        tile_size_x: 21,
+        tile_size_y: 21,
         columns: 1,
         rows: 1,
     ),
@@ -189,8 +189,8 @@
         path: "texture/money_asteroid_spritesheet.png"
     ),
     "repeater.head.layout": TextureAtlasLayout (
-        tile_size_x: 68.,
-        tile_size_y: 49.,
+        tile_size_x: 68,
+        tile_size_y: 49,
         columns: 3,
         rows: 1,
     ),
@@ -198,8 +198,8 @@
         path: "texture/repeater_head_spritesheet.png"
     ),
     "repeater.body.layout": TextureAtlasLayout (
-        tile_size_x: 70.,
-        tile_size_y: 43.,
+        tile_size_x: 70,
+        tile_size_y: 43,
         columns: 3,
         rows: 1,
     ),
@@ -207,8 +207,8 @@
         path: "texture/repeater_body_spritesheet.png"
     ),
     "repeater.right_shoulder.layout": TextureAtlasLayout (
-        tile_size_x: 58.,
-        tile_size_y: 64.,
+        tile_size_x: 58,
+        tile_size_y: 64,
         columns: 3,
         rows: 1,
     ),
@@ -216,8 +216,8 @@
         path: "texture/repeater_right_shoulder_spritesheet.png"
     ),
     "repeater.left_shoulder.layout": TextureAtlasLayout (
-        tile_size_x: 58.,
-        tile_size_y: 64.,
+        tile_size_x: 58,
+        tile_size_y: 64,
         columns: 3,
         rows: 1,
     ),
@@ -225,8 +225,8 @@
         path: "texture/repeater_left_shoulder_spritesheet.png"
     ),
     "repeater.right_arm.layout": TextureAtlasLayout (
-        tile_size_x: 41.,
-        tile_size_y: 62.,
+        tile_size_x: 41,
+        tile_size_y: 62,
         columns: 3,
         rows: 1,
     ),
@@ -234,8 +234,8 @@
         path: "texture/repeater_right_arm_spritesheet.png"
     ),
     "repeater.left_arm.layout": TextureAtlasLayout (
-        tile_size_x: 41.,
-        tile_size_y: 62.,
+        tile_size_x: 41,
+        tile_size_y: 62,
         columns: 3,
         rows: 1,
     ),
@@ -243,8 +243,8 @@
         path: "texture/repeater_left_arm_spritesheet.png"
     ),
     "repeater.right_claw.layout": TextureAtlasLayout (
-        tile_size_x: 36.,
-        tile_size_y: 35.,
+        tile_size_x: 36,
+        tile_size_y: 35,
         columns: 3,
         rows: 1,
     ),
@@ -252,8 +252,8 @@
         path: "texture/repeater_right_claw_spritesheet.png"
     ),
     "repeater.left_claw.layout": TextureAtlasLayout (
-        tile_size_x: 36.,
-        tile_size_y: 35.,
+        tile_size_x: 36,
+        tile_size_y: 35,
         columns: 3,
         rows: 1,
     ),
@@ -261,8 +261,8 @@
         path: "texture/repeater_left_claw_spritesheet.png"
     ),
     "mecha_ferritharax.head.layout": TextureAtlasLayout (
-        tile_size_x: 42.,
-        tile_size_y: 48.,
+        tile_size_x: 42,
+        tile_size_y: 48,
         columns: 3,
         rows: 1,
     ),
@@ -270,8 +270,8 @@
         path: "texture/mecha_ferritharax_head.png"
     ),
     "mecha_ferritharax.body.layout": TextureAtlasLayout (
-        tile_size_x: 80.,
-        tile_size_y: 43.,
+        tile_size_x: 80,
+        tile_size_y: 43,
         columns: 3,
         rows: 1,
     ),
@@ -279,8 +279,8 @@
         path: "texture/mecha_ferritharax_body.png"
     ),
     "mecha_ferritharax.right_shoulder.layout": TextureAtlasLayout (
-        tile_size_x: 62.,
-        tile_size_y: 66.,
+        tile_size_x: 62,
+        tile_size_y: 66,
         columns: 3,
         rows: 1,
     ),
@@ -288,8 +288,8 @@
         path: "texture/mecha_ferritharax_right_shoulder.png"
     ),
     "mecha_ferritharax.left_shoulder.layout": TextureAtlasLayout (
-        tile_size_x: 62.,
-        tile_size_y: 66.,
+        tile_size_x: 62,
+        tile_size_y: 66,
         columns: 3,
         rows: 1,
     ),
@@ -297,8 +297,8 @@
         path: "texture/mecha_ferritharax_left_shoulder.png"
     ),
     "mecha_ferritharax.right_arm.layout": TextureAtlasLayout (
-        tile_size_x: 40.,
-        tile_size_y: 57.,
+        tile_size_x: 40,
+        tile_size_y: 57,
         columns: 3,
         rows: 1,
     ),
@@ -306,8 +306,8 @@
         path: "texture/mecha_ferritharax_right_arm.png"
     ),
     "mecha_ferritharax.left_arm.layout": TextureAtlasLayout (
-        tile_size_x: 40.,
-        tile_size_y: 57.,
+        tile_size_x: 40,
+        tile_size_y: 57,
         columns: 3,
         rows: 1,
     ),
@@ -315,8 +315,8 @@
         path: "texture/mecha_ferritharax_left_arm.png"
     ),
     "mecha_ferritharax.right_claw.layout": TextureAtlasLayout (
-        tile_size_x: 44.,
-        tile_size_y: 39.,
+        tile_size_x: 44,
+        tile_size_y: 39,
         columns: 3,
         rows: 1,
     ),
@@ -324,8 +324,8 @@
         path: "texture/mecha_ferritharax_right_claw.png"
     ),
     "mecha_ferritharax.left_claw.layout": TextureAtlasLayout (
-        tile_size_x: 44.,
-        tile_size_y: 39.,
+        tile_size_x: 44,
+        tile_size_y: 39,
         columns: 3,
         rows: 1,
     ),
@@ -333,17 +333,17 @@
         path: "texture/mecha_ferritharax_left_claw.png"
     ),
     "mecha_saucetron.head.layout": TextureAtlasLayout (
-    tile_size_x: 46.,
-    tile_size_y: 50.,
-    columns: 3,
-    rows: 1,
+        tile_size_x: 46,
+        tile_size_y: 50,
+        columns: 3,
+        rows: 1,
     ),
     "mecha_saucetron.head.image": File (
         path: "texture/mecha_saucetron_head.png"
     ),
     "mecha_saucetron.body.layout": TextureAtlasLayout (
-        tile_size_x: 80.,
-        tile_size_y: 43.,
+        tile_size_x: 80,
+        tile_size_y: 43,
         columns: 3,
         rows: 1,
     ),
@@ -351,8 +351,8 @@
         path: "texture/mecha_saucetron_body.png"
     ),
     "mecha_saucetron.right_shoulder.layout": TextureAtlasLayout (
-        tile_size_x: 62.,
-        tile_size_y: 66.,
+        tile_size_x: 62,
+        tile_size_y: 66,
         columns: 3,
         rows: 1,
     ),
@@ -360,8 +360,8 @@
         path: "texture/mecha_saucetron_right_shoulder.png"
     ),
     "mecha_saucetron.left_shoulder.layout": TextureAtlasLayout (
-        tile_size_x: 62.,
-        tile_size_y: 66.,
+        tile_size_x: 62,
+        tile_size_y: 66,
         columns: 3,
         rows: 1,
     ),
@@ -369,8 +369,8 @@
         path: "texture/mecha_saucetron_left_shoulder.png"
     ),
     "mecha_saucetron.right_arm.layout": TextureAtlasLayout (
-        tile_size_x: 40.,
-        tile_size_y: 57.,
+        tile_size_x: 40,
+        tile_size_y: 57,
         columns: 3,
         rows: 1,
     ),
@@ -378,8 +378,8 @@
         path: "texture/mecha_saucetron_right_arm.png"
     ),
     "mecha_saucetron.left_arm.layout": TextureAtlasLayout (
-        tile_size_x: 40.,
-        tile_size_y: 57.,
+        tile_size_x: 40,
+        tile_size_y: 57,
         columns: 3,
         rows: 1,
     ),
@@ -387,8 +387,8 @@
         path: "texture/mecha_saucetron_left_arm.png"
     ),
     "mecha_saucetron.right_claw.layout": TextureAtlasLayout (
-        tile_size_x: 44.,
-        tile_size_y: 39.,
+        tile_size_x: 44,
+        tile_size_y: 39,
         columns: 3,
         rows: 1,
     ),
@@ -396,8 +396,8 @@
         path: "texture/mecha_saucetron_right_claw.png"
     ),
     "mecha_saucetron.left_claw.layout": TextureAtlasLayout (
-        tile_size_x: 44.,
-        tile_size_y: 39.,
+        tile_size_x: 44,
+        tile_size_y: 39,
         columns: 3,
         rows: 1,
     ),

@@ -1,7 +1,7 @@
 {
     DamageDealt: (
         text: "",
-        text_color: Rgba(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0),
+        text_color: Srgba(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0),
         font_size: 60.0,
         translation_x: (
             start: -45.0,
@@ -15,7 +15,7 @@
     ),
     ConsumableCollected(Money1): (
         text: "Cooldowns -",
-        text_color: Rgba(red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0),
+        text_color: Srgba(red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0),
         font_size: 60.0,
         translation_x: (
             start: -45.0,
@@ -29,7 +29,7 @@
     ),
     ConsumableCollected(Money3): (
         text: "Cooldowns ---",
-        text_color: Rgba(red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0),
+        text_color: Srgba(red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0),
         font_size: 60.0,
         translation_x: (
             start: -45.0,
@@ -43,7 +43,7 @@
     ),
     ConsumableCollected(HealthWrench): (
         text: "Health +",
-        text_color: Rgba(red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0),
+        text_color: Srgba(red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0),
         font_size: 60.0,
         translation_x: (
             start: -45.0,
@@ -57,7 +57,7 @@
     ),
     ConsumableCollected(Armor): (
         text: "Armor +",
-        text_color: Rgba(red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0),
+        text_color: Srgba(red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0),
         font_size: 60.0,
         translation_x: (
             start: -45.0,
@@ -71,7 +71,7 @@
     ),
     ConsumableCollected(GainProjectiles): (
         text: "Projectiles +",
-        text_color: Rgba(red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0),
+        text_color: Srgba(red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0),
         font_size: 60.0,
         translation_x: (
             start: -45.0,

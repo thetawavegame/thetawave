@@ -143,10 +143,7 @@ pub fn spawn_mob_segment(
 
     mob_segment
         .insert(ImpulseJoint::new(joint_parent_entity, *joint))
-        .insert(SpriteSheetBundle {
-            atlas: mob_assets
-                .get_mob_segment_texture_atlas_layout(mob_segment_type)
-                .into(),
+        .insert(SpriteBundle {
             texture: mob_assets.get_mob_segment_image(mob_segment_type),
             transform: Transform {
                 translation: new_position.extend(mob_segment_data.z_level),
@@ -155,9 +152,15 @@ pub fn spawn_mob_segment(
                     game_parameters.sprite_scale,
                     1.0,
                 ),
-                ..Default::default()
+                ..default()
             },
-            ..Default::default()
+            ..default()
+        })
+        .insert(TextureAtlas {
+            layout: mob_assets
+                .get_mob_segment_texture_atlas_layout(mob_segment_type)
+                .into(),
+            ..default()
         })
         .insert(AnimationComponent {
             timer: Timer::from_seconds(

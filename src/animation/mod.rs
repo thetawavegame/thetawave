@@ -7,10 +7,11 @@ use bevy::{
         component::Component,
         entity::Entity,
         event::EventWriter,
-        schedule::{common_conditions::in_state, IntoSystemConfigs},
+        schedule::IntoSystemConfigs,
         system::{Query, Res},
     },
     sprite::{TextureAtlas, TextureAtlasLayout},
+    state::condition::in_state,
     time::{Time, Timer},
 };
 use serde::Deserialize;

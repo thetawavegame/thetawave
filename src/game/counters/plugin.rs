@@ -194,13 +194,14 @@ mod test {
     use bevy::input::InputPlugin;
     use bevy::math::Vec2;
     use bevy::prelude::{App, Component, Events};
+    use bevy::state::app::AppExtStates;
     use bevy::MinimalPlugins;
     use thetawave_interface::audio::SoundEffectType;
     use thetawave_interface::character::{Character, CharacterType};
     use thetawave_interface::game::historical_metrics::{
         MobKillsByPlayerForCurrentGame, UserStatsByPlayerForCurrentGameCache, DEFAULT_USER_ID,
     };
-    use thetawave_interface::player::{PlayerBundle, PlayerComponent};
+    use thetawave_interface::player::PlayerBundle;
     use thetawave_interface::spawnable::{
         EnemyMobType, Faction, MobDestroyedEvent, MobType, ProjectileType, SpawnPosition,
     };
@@ -232,8 +233,8 @@ mod test {
         app.add_event::<MobDestroyedEvent>();
         // app.add_systems(Update, send_mob_drone_destroyed_by_dummy_entity_event);
 
-        let entity = app.world.spawn(NullComponent::default()).id();
-        let mut events = app.world.resource_mut::<Events<MobDestroyedEvent>>();
+        let entity = app.world_mut().spawn(NullComponent::default()).id();
+        let mut events = app.world_mut().resource_mut::<Events<MobDestroyedEvent>>();
         events.send(MobDestroyedEvent {
             mob_type: MobType::Enemy(EnemyMobType::Drone),
             entity,
@@ -241,7 +242,7 @@ mod test {
         });
         app.update();
         let got_mob_kills = app
-            .world
+            .world()
             .get_resource::<MobKillsByPlayerForCurrentGame>()
             .unwrap()
             .get(&DEFAULT_USER_ID)
@@ -253,7 +254,7 @@ mod test {
         let mut app = base_app_required_for_counting_metrics();
 
         let player_1_character: Character = app
-            .world
+            .world()
             .get_resource::<CharactersResource>()
             .unwrap()
             .characters
@@ -262,7 +263,7 @@ mod test {
             .unwrap();
         let player_1: PlayerBundle = PlayerBundle::from(&player_1_character);
 
-        let player_1_entity = app.world.spawn(player_1);
+        let player_1_entity = app.world_mut().spawn(player_1);
         let player_1_projectile_event = FireWeaponEvent {
             weapon_projectile_data: WeaponProjectileData {
                 ammunition: ProjectileType::Bullet(Faction::Ally),
@@ -284,10 +285,11 @@ mod test {
             source_entity: player_1_entity.id(),
             initial_motion: Default::default(),
         };
-        app.world.send_event(player_1_projectile_event.clone());
+        app.world_mut()
+            .send_event(player_1_projectile_event.clone());
         app.update();
         let n_p1_shots_fired = app
-            .world
+            .world()
             .get_resource::<UserStatsByPlayerForCurrentGameCache>()
             .unwrap()
             .0
@@ -295,11 +297,12 @@ mod test {
             .unwrap()
             .total_shots_fired;
         assert_eq!(n_p1_shots_fired, 1);
-        app.world.send_event(player_1_projectile_event.clone());
+        app.world_mut()
+            .send_event(player_1_projectile_event.clone());
         app.update();
         // apply_state_transition(&mut app.world);
         let n_p1_shots_fired_2 = app
-            .world
+            .world()
             .get_resource::<UserStatsByPlayerForCurrentGameCache>()
             .unwrap()
             .0

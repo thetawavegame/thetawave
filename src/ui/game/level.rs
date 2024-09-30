@@ -4,6 +4,7 @@
 use crate::run::CurrentRunProgressResource;
 use bevy::{
     asset::Handle,
+    color::{Alpha, Color, Srgba},
     ecs::{
         component::Component,
         entity::Entity,
@@ -11,7 +12,6 @@ use bevy::{
         system::{Commands, Query, Res},
     },
     hierarchy::{BuildChildren, ChildBuilder, DespawnRecursiveExt},
-    render::color::Color,
     text::{Font, Text, TextStyle},
     ui::{
         node_bundles::{NodeBundle, TextBundle},
@@ -23,11 +23,11 @@ use bevy::{
 use super::parent::LevelUiChildBuilderExt;
 
 const NODE_WIDTH: Val = Val::Percent(50.0);
-const TEXT_COLOR: Color = Color::WHITE;
+const TEXT_COLOR: Srgba = Srgba::WHITE;
 const FONT_SIZE: f32 = 48.0;
 const LEVEL_DATA_PADDING: UiRect =
     UiRect::new(Val::Vw(1.0), Val::Vw(1.0), Val::Vh(2.0), Val::Vh(2.0));
-const DEFENSE_COLOR: Color = Color::BLUE;
+const DEFENSE_COLOR: Srgba = Srgba::BLUE;
 const DEFENSE_COLOR_EMPTY_ALPHA: f32 = 0.05;
 const DEFENSE_COLOR_FILLED_ALPHA: f32 = 0.75;
 const DEFENSE_WIDTH: Val = Val::Percent(80.0);
@@ -61,7 +61,7 @@ impl LevelUiChildBuilderExt for ChildBuilder<'_> {
                     TextStyle {
                         font: font.clone(),
                         font_size: FONT_SIZE,
-                        color: TEXT_COLOR,
+                        color: Color::Srgba(TEXT_COLOR),
                     },
                 ),
                 ..default()
@@ -123,7 +123,7 @@ pub(super) fn update_level_ui_system(
                                         ..default()
                                     },
                                     background_color: DEFENSE_COLOR
-                                        .with_a(DEFENSE_COLOR_EMPTY_ALPHA)
+                                        .with_alpha(DEFENSE_COLOR_EMPTY_ALPHA)
                                         .into(),
                                     ..default()
                                 })
@@ -137,7 +137,7 @@ pub(super) fn update_level_ui_system(
                                             ..default()
                                         },
                                         background_color: DEFENSE_COLOR
-                                            .with_a(DEFENSE_COLOR_FILLED_ALPHA)
+                                            .with_alpha(DEFENSE_COLOR_FILLED_ALPHA)
                                             .into(),
                                         ..default()
                                     });

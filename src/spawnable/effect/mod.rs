@@ -5,8 +5,8 @@ use crate::spawnable::effect::behavior::EffectBehaviorPlugin;
 use crate::spawnable::effect::spawn::EffectSpawnPlugin;
 use bevy::{
     app::{App, Plugin},
+    color::{Color, Srgba},
     ecs::{component::Component, event::Event, system::Resource},
-    render::color::Color,
     transform::components::Transform,
 };
 use ron::de::from_bytes;
@@ -64,7 +64,7 @@ pub struct EffectData {
     /// Z level of transform
     pub z_level: f32,
     /// Color for bloom effect
-    pub bloom_color: Color,
+    pub bloom_color: Srgba,
 }
 
 impl From<&EffectData> for EffectComponent {
@@ -82,10 +82,10 @@ impl From<&EffectData> for EffectComponent {
 
 impl EffectData {
     pub fn affine_bloom_transformation(&self, bloom_intensity: f32) -> Color {
-        Color::rgb(
-            1.0 + self.bloom_color.r() * bloom_intensity,
-            1.0 + self.bloom_color.g() * bloom_intensity,
-            1.0 + self.bloom_color.b() * bloom_intensity,
+        Color::srgb(
+            1.0 + self.bloom_color.red * bloom_intensity,
+            1.0 + self.bloom_color.green * bloom_intensity,
+            1.0 + self.bloom_color.blue * bloom_intensity,
         )
     }
 }
@@ -95,7 +95,7 @@ pub struct TextEffectData {
     /// Text of the effect
     pub text: String,
     /// Color of the text
-    pub text_color: Color,
+    pub text_color: Srgba,
     /// Font size pf the text
     pub font_size: f32,
     /// X position range (randomly chosen)

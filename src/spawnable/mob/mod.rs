@@ -289,16 +289,16 @@ pub struct ThrusterData {
     /// Texture
     pub animation: AnimationData,
     /// Color for bloom effect
-    pub bloom_color: Color,
+    pub bloom_color: Srgba,
 }
 
 impl ThrusterData {
     /// Color for bloom effect, multiplied by the bloom intensity value
     pub fn affine_bloom_transformation(&self, bloom_intensity: f32) -> Color {
-        Color::rgb(
-            1.0 + self.bloom_color.r() * bloom_intensity,
-            1.0 + self.bloom_color.g() * bloom_intensity,
-            1.0 + self.bloom_color.b() * bloom_intensity,
+        Color::srgb(
+            1.0 + self.bloom_color.red * bloom_intensity,
+            1.0 + self.bloom_color.green * bloom_intensity,
+            1.0 + self.bloom_color.blue * bloom_intensity,
         )
     }
 }
@@ -329,8 +329,11 @@ pub fn spawn_mob(
     // create mob entity
     let mut mob = commands.spawn_empty();
 
-    mob.insert(SpriteSheetBundle {
-        atlas: mob_assets.get_mob_texture_atlas_layout(mob_type).into(),
+    mob.insert(TextureAtlas {
+        layout: mob_assets.get_mob_texture_atlas_layout(mob_type).into(),
+        ..default()
+    })
+    .insert(SpriteBundle {
         texture: mob_assets.get_mob_image(mob_type),
         transform: Transform {
             translation: position.extend(mob_data.z_level),
@@ -341,7 +344,7 @@ pub fn spawn_mob(
             ),
             rotation,
         },
-        ..Default::default()
+        ..default()
     })
     .insert(AnimationComponent {
         timer: Timer::from_seconds(mob_data.animation.frame_duration, TimerMode::Repeating),
@@ -389,18 +392,21 @@ pub fn spawn_mob(
     if let Some(thruster) = &mob_data.thruster {
         mob.with_children(|parent| {
             parent
-                .spawn(SpriteSheetBundle {
-                    atlas: mob_assets
-                        .get_thruster_texture_atlas_layout(mob_type)
-                        .unwrap()
-                        .into(),
+                .spawn(SpriteBundle {
                     texture: mob_assets.get_thruster_image(mob_type).unwrap().into(),
                     transform: Transform::from_xyz(0.0, thruster.y_offset, -1.0),
                     sprite: Sprite {
                         color: thruster.affine_bloom_transformation(game_options.bloom_intensity),
-                        ..Default::default()
+                        ..default()
                     },
-                    ..Default::default()
+                    ..default()
+                })
+                .insert(TextureAtlas {
+                    layout: mob_assets
+                        .get_thruster_texture_atlas_layout(mob_type)
+                        .unwrap()
+                        .into(),
+                    ..default()
                 })
                 .insert(AnimationComponent {
                     timer: Timer::from_seconds(

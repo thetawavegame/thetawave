@@ -1,5 +1,8 @@
+use bevy::app::{App, Plugin};
+use bevy::log::{error, info, warn};
+use bevy::prelude::{Res, ResMut};
+use bevy::state::state::{OnEnter, OnExit};
 /// Exposes a single Plugin that links the game and our persistence layer.
-use bevy::prelude::*;
 use thetawave_interface::game::options::{GameOptions, DEFAULT_OPTIONS_PROFILE_ID};
 
 use crate::options::get_game_options;
@@ -111,6 +114,7 @@ mod test {
     use crate::user_stats::{get_mob_killed_counts_for_user, get_user_stats};
     use bevy::log::{Level, LogPlugin};
     use bevy::prelude::{default, App, NextState, OnEnter, ResMut};
+    use bevy::state::app::AppExtStates;
     use bevy::MinimalPlugins;
     use std::ffi::{OsStr, OsString};
     use tempdir;
@@ -269,7 +273,7 @@ mod test {
         );
         assert_eq!(
             &get_mob_killed_counts_for_user(DEFAULT_USER_ID),
-            app.world
+            app.world()
                 .get_resource::<MobKillsByPlayerForCompletedGames>()
                 .unwrap()
                 .get(&DEFAULT_USER_ID)

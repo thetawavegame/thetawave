@@ -801,7 +801,7 @@
 				direction: PingPong(Forward),
 				frame_duration: 0.15,
 			),
-			bloom_color: Rgba (
+			bloom_color: Srgba (
 				red: 2.8,
 				green: 1.2,
 				blue: 0.0,
@@ -842,7 +842,7 @@
 				direction: PingPong(Forward),
 				frame_duration: 0.15,
 			),
-			bloom_color: Rgba (
+			bloom_color: Srgba (
 				red: 2.8,
 				green: 1.2,
 				blue: 0.0,
@@ -1156,7 +1156,7 @@
 				direction: PingPong(Forward),
 				frame_duration: 0.15,
 			),
-			bloom_color: Rgba (
+			bloom_color: Srgba (
 				red: 2.8,
 				green: 1.2,
 				blue: 0.0,
@@ -1201,7 +1201,7 @@
 				direction: PingPong(Forward),
 				frame_duration: 0.15,
 			),
-			bloom_color: Rgba (
+			bloom_color: Srgba (
 				red: 2.8,
 				green: 1.2,
 				blue: 0.0,
@@ -1246,7 +1246,7 @@
 				direction: PingPong(Forward),
 				frame_duration: 0.15,
 			),
-			bloom_color: Rgba (
+			bloom_color: Srgba (
 				red: 2.8,
 				green: 1.2,
 				blue: 0.0,
@@ -1288,7 +1288,7 @@
 				direction: PingPong(Forward),
 				frame_duration: 0.15,
 			),
-			bloom_color: Rgba (
+			bloom_color: Srgba (
 				red: 2.8,
 				green: 1.2,
 				blue: 0.0,
@@ -1335,7 +1335,7 @@
 				direction: Forward,
 				frame_duration: 0.15,
 			),
-			bloom_color: Rgba (
+			bloom_color: Srgba (
 				red: 2.8,
 				green: 1.2,
 				blue: 0.0,
@@ -1376,7 +1376,7 @@
 				direction: PingPong(Forward),
 				frame_duration: 0.15,
 			),
-			bloom_color: Rgba (
+			bloom_color: Srgba (
 				red: 2.8,
 				green: 1.2,
 				blue: 0.0,
@@ -1439,7 +1439,7 @@
 				direction: PingPong(Forward),
 				frame_duration: 0.15,
 			),
-			bloom_color: Rgba (
+			bloom_color: Srgba (
 				red: 2.8,
 				green: 1.2,
 				blue: 0.0,

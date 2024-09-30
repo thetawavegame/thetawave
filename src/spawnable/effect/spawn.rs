@@ -2,10 +2,13 @@ use crate::animation::AnimationComponent;
 use crate::assets::{EffectAssets, UiAssets};
 use crate::spawnable::effect::{EffectComponent, TextEffectData, TextEffectsResource};
 use crate::spawnable::{EffectsResource, InitialMotion, SpawnEffectEvent, SpawnableComponent};
+use bevy::color::Color;
 use bevy::prelude::{
-    in_state, App, Commands, EventReader, IntoSystemConfigs, Name, Plugin, Res, Sprite,
-    SpriteSheetBundle, Text, Text2dBundle, TextStyle, Timer, TimerMode, Transform, Update, Vec3,
+    in_state, App, Commands, EventReader, IntoSystemConfigs, Name, Plugin, Res, Sprite, Text,
+    Text2dBundle, TextStyle, Timer, TimerMode, Transform, Update, Vec3,
 };
+use bevy::sprite::{SpriteBundle, TextureAtlas};
+use bevy::utils::default;
 use bevy_rapier2d::prelude::{LockedAxes, RigidBody, Velocity};
 use rand::Rng;
 use thetawave_interface::game::options::GameOptions;
@@ -109,7 +112,7 @@ fn spawn_text_effect(
         TextStyle {
             font: ui_assets.lunchds_font.clone(),
             font_size: text_effect_data.font_size,
-            color: text_effect_data.text_color,
+            color: Color::Srgba(text_effect_data.text_color),
         },
     );
 
@@ -166,17 +169,20 @@ fn spawn_effect(
     effect_transform.translation.z = effect_data.z_level;
 
     effect
-        .insert(SpriteSheetBundle {
-            atlas: effect_assets
-                .get_texture_atlas_layout(effect_type)
-                .unwrap_or_default()
-                .into(),
+        .insert(SpriteBundle {
             texture: effect_assets.get_image(effect_type).unwrap_or_default(),
             sprite: Sprite {
                 color: effect_data.affine_bloom_transformation(game_options.bloom_intensity),
                 ..Default::default()
             },
-            ..Default::default()
+            ..default()
+        })
+        .insert(TextureAtlas {
+            layout: effect_assets
+                .get_texture_atlas_layout(effect_type)
+                .unwrap_or_default()
+                .into(),
+            ..default()
         })
         .insert(AnimationComponent {
             timer: Timer::from_seconds(effect_data.animation.frame_duration, TimerMode::Repeating),

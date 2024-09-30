@@ -1,7 +1,7 @@
 ({
     "ally_blast.layout": TextureAtlasLayout (
-        tile_size_x: 4.,
-        tile_size_y: 4.,
+        tile_size_x: 4,
+        tile_size_y: 4,
         columns: 1,
         rows: 1,
     ),
@@ -9,8 +9,8 @@
         path: "texture/ally_blast.png"
     ),
     "enemy_blast.layout": TextureAtlasLayout (
-        tile_size_x: 4.,
-        tile_size_y: 4.,
+        tile_size_x: 4,
+        tile_size_y: 4,
         columns: 1,
         rows: 1,
     ),
@@ -18,8 +18,8 @@
         path: "texture/enemy_blast.png"
     ),
     "neutral_blast.layout": TextureAtlasLayout (
-        tile_size_x: 4.,
-        tile_size_y: 4.,
+        tile_size_x: 4,
+        tile_size_y: 4,
         columns: 1,
         rows: 1,
     ),
@@ -27,8 +27,8 @@
         path: "texture/neutral_blast.png"
     ),
     "ally_bullet.layout": TextureAtlasLayout (
-        tile_size_x: 5.,
-        tile_size_y: 5.,
+        tile_size_x: 5,
+        tile_size_y: 5,
         columns: 1,
         rows: 1,
     ),
@@ -36,8 +36,8 @@
         path: "texture/ally_bullet.png"
     ),
     "enemy_bullet.layout": TextureAtlasLayout (
-        tile_size_x: 5.,
-        tile_size_y: 5.,
+        tile_size_x: 5,
+        tile_size_y: 5,
         columns: 1,
         rows: 1,
     ),

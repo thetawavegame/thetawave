@@ -1,5 +1,9 @@
 use bevy::{
     asset::Handle,
+    color::{
+        palettes::css::{AQUA, CRIMSON, GOLD},
+        Alpha, Srgba,
+    },
     ecs::{
         component::Component,
         entity::Entity,
@@ -7,7 +11,7 @@ use bevy::{
         system::{Commands, Query},
     },
     hierarchy::{BuildChildren, ChildBuilder, Children, DespawnRecursiveExt},
-    render::{color::Color, texture::Image},
+    render::texture::Image,
     ui::{
         node_bundles::{ImageBundle, NodeBundle},
         FlexDirection, Style, UiRect, Val,
@@ -30,11 +34,11 @@ const INNER_WIDTH: Val = Val::Percent(35.0);
 const OUTER_PADDING: UiRect = UiRect::all(Val::Percent(5.0));
 const OUTER_WIDTH: Val = Val::Percent(65.0);
 const HEALTH_HEIGHT: Val = Val::Percent(55.0);
-const HEALTH_COLOR: Color = Color::CRIMSON;
+const HEALTH_COLOR: Srgba = CRIMSON;
 const HEALTH_EMPTY_ALPHA: f32 = 0.05;
 const HEALTH_FILLED_ALPHA: f32 = 0.75;
 const SHIELDS_HEIGHT: Val = Val::Percent(25.0);
-const SHIELDS_COLOR: Color = Color::CYAN;
+const SHIELDS_COLOR: Srgba = AQUA;
 const SHIELDS_EMPTY_ALPHA: f32 = 0.05;
 const SHIELDS_FILLED_ALPHA: f32 = 0.75;
 const ARMOR_HEIGHT: Val = Val::Percent(20.0);
@@ -47,9 +51,9 @@ const ARMOR_PADDING: UiRect = UiRect {
 const ARMOR_COUNTER_ASPECT_RATIO: Option<f32> = Some(10.0);
 const ARMOR_COUNTER_MARGIN: UiRect =
     UiRect::new(Val::Px(0.0), Val::Px(0.0), Val::Vh(0.1), Val::Vh(0.1));
-const ARMOR_COUNTER_COLOR: Color = Color::GOLD;
+const ARMOR_COUNTER_COLOR: Srgba = GOLD;
 const ARMOR_COUNTER_ALPHA: f32 = 0.75;
-const ABILITY_VALUE_COLOR: Color = Color::rgba(0.0, 0.0, 0.0, 0.85);
+const ABILITY_VALUE_COLOR: Srgba = Srgba::new(0.0, 0.0, 0.0, 0.85);
 
 // Player data Uis
 #[derive(Component)]
@@ -162,7 +166,7 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
                         flex_direction: FlexDirection::ColumnReverse,
                         ..default()
                     },
-                    background_color: HEALTH_COLOR.with_a(HEALTH_EMPTY_ALPHA).into(),
+                    background_color: HEALTH_COLOR.with_alpha(HEALTH_EMPTY_ALPHA).into(),
                     ..default()
                 })
                 .insert(HealthUi)
@@ -174,7 +178,7 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
                                 height: Val::Percent(100.0),
                                 ..default()
                             },
-                            background_color: HEALTH_COLOR.with_a(HEALTH_FILLED_ALPHA).into(),
+                            background_color: HEALTH_COLOR.with_alpha(HEALTH_FILLED_ALPHA).into(),
                             ..default()
                         })
                         .insert(HealthValueUi)
@@ -189,7 +193,7 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
                         flex_direction: FlexDirection::ColumnReverse,
                         ..default()
                     },
-                    background_color: SHIELDS_COLOR.with_a(SHIELDS_EMPTY_ALPHA).into(),
+                    background_color: SHIELDS_COLOR.with_alpha(SHIELDS_EMPTY_ALPHA).into(),
                     ..default()
                 })
                 .insert(ShieldsUi)
@@ -201,7 +205,7 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
                                 height: Val::Percent(100.0),
                                 ..default()
                             },
-                            background_color: SHIELDS_COLOR.with_a(SHIELDS_FILLED_ALPHA).into(),
+                            background_color: SHIELDS_COLOR.with_alpha(SHIELDS_FILLED_ALPHA).into(),
                             ..default()
                         })
                         .insert(ShieldsValueUi)
@@ -350,7 +354,7 @@ impl PlayerUiChildBuilderExt for ChildBuilder<'_> {
                 margin: ARMOR_COUNTER_MARGIN,
                 ..default()
             },
-            background_color: ARMOR_COUNTER_COLOR.with_a(ARMOR_COUNTER_ALPHA).into(),
+            background_color: ARMOR_COUNTER_COLOR.with_alpha(ARMOR_COUNTER_ALPHA).into(),
             ..default()
         })
         .insert(ArmorCounterUi);

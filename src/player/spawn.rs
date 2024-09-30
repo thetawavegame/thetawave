@@ -1,9 +1,9 @@
+use bevy::color::Color;
 use bevy::core::Name;
 use bevy::ecs::system::{Commands, Res};
 use bevy::hierarchy::{BuildChildren, ChildBuilder};
 use bevy::input::gamepad::Gamepad;
 use bevy::math::Vec3;
-use bevy::render::color::Color;
 use bevy::sprite::{Sprite, SpriteBundle};
 use bevy::transform::components::Transform;
 use bevy_rapier2d::dynamics::{ExternalImpulse, LockedAxes, RigidBody, Velocity};
@@ -147,7 +147,7 @@ pub(super) fn spawn_players_system(
                             .player_gamepad
                             .clone()
                             .set_gamepad(Gamepad { id })
-                            .build(),
+                            .to_owned(),
                     },
                 })
                 .insert(Collider::cuboid(collider_size_hx, collider_size_hy))
@@ -173,9 +173,9 @@ pub(super) fn spawn_players_system(
                             texture: player_assets.get_outline_asset(&character.character_type),
                             sprite: Sprite {
                                 color: if matches!(player_id, PlayerIDComponent::One) {
-                                    Color::rgb(0.7, 0.0, 0.0)
+                                    Color::srgb(0.7, 0.0, 0.0)
                                 } else {
-                                    Color::rgb(0.0, 0.0, 1.0)
+                                    Color::srgb(0.0, 0.0, 1.0)
                                 },
                                 ..Default::default()
                             },

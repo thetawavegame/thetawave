@@ -1,6 +1,7 @@
 use std::{f32::consts::PI, time::Duration};
 
 use bevy::{
+    color::Color,
     ecs::{
         component::Component,
         event::{Event, EventReader, EventWriter},
@@ -8,11 +9,10 @@ use bevy::{
     },
     hierarchy::BuildChildren,
     math::f32,
-    render::color::Color,
     time::{Time, Timer, TimerMode},
     ui::{
         node_bundles::{ImageBundle, NodeBundle},
-        BackgroundColor, FlexDirection, Style, Val,
+        FlexDirection, Style, UiImage, Val,
     },
     utils::default,
 };
@@ -63,12 +63,11 @@ impl BorderGradientCommandsExt for Commands<'_, '_> {
                         height: HEIGHT,
                         ..default()
                     },
-                    image: match bg_type {
+                    image: UiImage::new(match bg_type {
                         BorderGradientType::Warning => ui_assets.warning_gradient.clone(),
                         BorderGradientType::Defense => ui_assets.defense_gradient.clone(),
-                    }
-                    .into(),
-                    background_color: Color::WHITE.with_a(0.0).into(),
+                    })
+                    .with_color(Color::srgba(1.0, 1.0, 1.0, 0.0)),
                     ..default()
                 })
                 .insert(BorderGradientComponent {
@@ -100,14 +99,17 @@ pub(super) fn border_gradient_start_system(
 /// Sets the alpha of a border gradient's background color based on the time reamining
 /// in the border gradient component's timer
 pub(super) fn border_gradient_update_system(
-    mut bg_query: Query<(&mut BorderGradientComponent, &mut BackgroundColor)>,
+    mut bg_query: Query<(&mut BorderGradientComponent, &mut UiImage)>,
     time: Res<Time>,
 ) {
-    for (mut bg_component, mut background_color) in bg_query.iter_mut() {
+    for (mut bg_component, mut ui_image) in bg_query.iter_mut() {
         bg_component.timer.tick(time.delta());
-        background_color
-            .0
-            .set_a(MAX_ALPHA * f32::sin(PI * bg_component.timer.fraction()));
+        ui_image.color = Color::srgba(
+            1.0,
+            1.0,
+            1.0,
+            MAX_ALPHA * f32::sin(PI * bg_component.timer.fraction()),
+        );
     }
 }
 
