@@ -64,6 +64,20 @@ fn play_sound_effect_system(
     }
 }
 
+/// System to handle background music changes based on events.
+///
+/// This system listens for `ChangeBackgroundMusicEvent` events and updates
+/// the background music accordingly. It can stop the current music, start new
+/// music, handle looping, and apply fade-in and fade-out effects if specified in the event.
+///
+/// - If an event specifies a fade-out duration, the current track will fade out before stopping.
+/// - If a new background music type is provided, it will play the corresponding track from the `GameAudioAssets`.
+/// - The system supports looping the new track from a specified point and applying a fade-in effect if specified.
+///
+/// Parameters:
+/// - `EventReader<ChangeBackgroundMusicEvent>`: Reads events that dictate when and how to change background music.
+/// - `AudioChannel<BackgroundMusicAudioChannel>`: Controls the background music audio channel, allowing for stop, play, and fade effects.
+/// - `GameAudioAssets`: A resource that holds all available audio assets.
 fn change_bg_music_system(
     mut change_bg_music_event_reader: EventReader<ChangeBackgroundMusicEvent>,
     audio_channel: Res<AudioChannel<BackgroundMusicAudioChannel>>,
