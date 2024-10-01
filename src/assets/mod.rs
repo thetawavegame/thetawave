@@ -10,5 +10,6 @@ mod projectile;
 mod ui;
 
 pub use self::{
-    audio::*, consumable::*, effect::*, item::*, mob::*, player::*, projectile::*, ui::*,
+    audio::GameAudioAssets, consumable::ConsumableAssets, effect::EffectAssets, item::ItemAssets,
+    mob::MobAssets, player::PlayerAssets, projectile::ProjectileAssets, ui::UiAssets,
 };

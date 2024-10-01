@@ -1,5 +1,8 @@
-use bevy::prelude::*;
-use bevy_asset_loader::prelude::*;
+use bevy::{
+    asset::Handle,
+    prelude::{Res, Resource},
+};
+use bevy_asset_loader::asset_collection::AssetCollection;
 use bevy_kira_audio::AudioSource;
 use rand::Rng;
 use thetawave_interface::audio::{BGMusicType, CollisionSoundType, SoundEffectType};
