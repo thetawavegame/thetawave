@@ -10,6 +10,7 @@ use bevy::{
         schedule::IntoSystemConfigs,
         system::{Query, Res},
     },
+    prelude::error,
     sprite::{TextureAtlas, TextureAtlasLayout},
     state::condition::in_state,
     time::{Time, Timer},
@@ -84,43 +85,48 @@ fn animate_sprite_system(
         // check if frame has completed
         if animation.timer.finished() {
             // get the texture atlas
-            let texture_atlas_layout = texture_atlas_layouts
-                .get(texture_atlas.layout.id())
-                .unwrap();
-
-            // update animation based on the animation direction
-            match &animation.direction {
-                AnimationDirection::None => {}
-                AnimationDirection::Forward => {
-                    let new_idx = (texture_atlas.index + 1) % texture_atlas_layout.textures.len();
-                    if new_idx == 0 {
-                        animation_complete_event_writer.send(AnimationCompletedEvent(entity));
+            if let Some(texture_atlas_layout) = texture_atlas_layouts.get(texture_atlas.layout.id())
+            {
+                // update animation based on the animation direction
+                match &animation.direction {
+                    AnimationDirection::None => {}
+                    AnimationDirection::Forward => {
+                        let new_idx =
+                            (texture_atlas.index + 1) % texture_atlas_layout.textures.len();
+                        if new_idx == 0 {
+                            animation_complete_event_writer.send(AnimationCompletedEvent(entity));
+                        }
+                        texture_atlas.index = new_idx;
                     }
-                    texture_atlas.index = new_idx;
-                }
-                AnimationDirection::PingPong(direction) => match direction {
-                    PingPongDirection::Forward => {
-                        if texture_atlas.index < (texture_atlas_layout.textures.len() - 1) {
-                            texture_atlas.index += 1;
-                        }
+                    AnimationDirection::PingPong(direction) => match direction {
+                        PingPongDirection::Forward => {
+                            if texture_atlas.index < (texture_atlas_layout.textures.len() - 1) {
+                                texture_atlas.index += 1;
+                            }
 
-                        if texture_atlas.index == (texture_atlas_layout.textures.len() - 1) {
-                            animation.direction =
-                                AnimationDirection::PingPong(PingPongDirection::Backward)
+                            if texture_atlas.index == (texture_atlas_layout.textures.len() - 1) {
+                                animation.direction =
+                                    AnimationDirection::PingPong(PingPongDirection::Backward)
+                            }
                         }
-                    }
-                    PingPongDirection::Backward => {
-                        if texture_atlas.index > 0 {
-                            texture_atlas.index -= 1;
-                        }
+                        PingPongDirection::Backward => {
+                            if texture_atlas.index > 0 {
+                                texture_atlas.index -= 1;
+                            }
 
-                        if texture_atlas.index == 0 {
-                            animation.direction =
-                                AnimationDirection::PingPong(PingPongDirection::Forward)
+                            if texture_atlas.index == 0 {
+                                animation.direction =
+                                    AnimationDirection::PingPong(PingPongDirection::Forward)
+                            }
                         }
-                    }
-                },
-            };
+                    },
+                };
+            } else {
+                error!(
+                    "Could not get texture atlas layout for id: {}.",
+                    texture_atlas.layout.id()
+                );
+            }
         }
     }
 }
