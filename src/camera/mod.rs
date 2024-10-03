@@ -39,6 +39,8 @@ impl Plugin for CameraPlugin {
     }
 }
 
+/// Setup 2D camera for sprites used in gameplay
+/// Setup 3D camera for rendering 3D backgrounds
 fn setup_cameras_system(
     mut commands: Commands,
     game_parameters: Res<game::GameParametersResource>,

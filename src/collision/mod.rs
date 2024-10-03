@@ -1,13 +1,16 @@
 use crate::GameUpdateSet;
-use bevy::prelude::*;
+use bevy::{
+    app::{App, Plugin, Update},
+    prelude::{in_state, Entity, Event, IntoSystemConfigs},
+};
 use bevy_rapier2d::geometry::Group;
+use contact::contact_collision_system;
+use intersection::intersection_collision_system;
 use thetawave_interface::spawnable::Faction;
 use thetawave_interface::states;
 
 mod contact;
 mod intersection;
-
-pub use self::{contact::*, intersection::*};
 
 // Collider groups used for rapier physics
 pub const SPAWNABLE_COLLIDER_GROUP: Group = Group::GROUP_1;

@@ -11,7 +11,7 @@ use thetawave_interface::{
 use super::{CollidingEntityPair, SortedCollisionEvent};
 
 /// Creates events from intersection (sensor) collisions
-pub fn intersection_collision_system(
+pub(super) fn intersection_collision_system(
     mut collision_event_writer: EventWriter<SortedCollisionEvent>,
     mut collision_events: EventReader<CollisionEvent>,
     player_query: Query<Entity, With<PlayerComponent>>,

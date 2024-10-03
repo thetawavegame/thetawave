@@ -2,8 +2,9 @@ use crate::{
     arena::ArenaBarrierComponent,
     spawnable::{MobComponent, MobSegmentComponent, ProjectileComponent},
 };
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+
+use bevy::prelude::{Entity, EventReader, EventWriter, Query, With};
+use bevy_rapier2d::prelude::CollisionEvent;
 use thetawave_interface::{
     audio::{CollisionSoundType, PlaySoundEffectEvent, SoundEffectType},
     player::PlayerOutgoingDamageComponent,
@@ -14,7 +15,7 @@ use super::{CollidingEntityPair, SortedCollisionEvent};
 
 /// Creates events from contact collisions
 #[allow(clippy::too_many_arguments)]
-pub fn contact_collision_system(
+pub(super) fn contact_collision_system(
     mut collision_event_writer: EventWriter<SortedCollisionEvent>,
     mut collision_events: EventReader<CollisionEvent>,
     player_query: Query<(Entity, &PlayerOutgoingDamageComponent)>,
