@@ -1,6 +1,7 @@
 use bevy::{
     app::{Plugin, Update},
-    ecs::schedule::{common_conditions::in_state, IntoSystemConfigs, OnEnter},
+    ecs::schedule::IntoSystemConfigs,
+    prelude::{in_state, OnEnter},
 };
 use thetawave_interface::states;
 

@@ -5,18 +5,16 @@ use crate::{
     assets::UiAssets,
 };
 use bevy::{
+    color::Srgba,
     ecs::{
         event::EventWriter,
         system::{Commands, Res},
     },
     hierarchy::BuildChildren,
-    prelude::{in_state, App, IntoSystemConfigs, OnEnter, Plugin, Update},
-    render::color::Color,
+    prelude::{in_state, App, ImageBundle, IntoSystemConfigs, OnEnter, Plugin, Update},
+    sprite::TextureAtlas,
     time::{Timer, TimerMode},
-    ui::{
-        node_bundles::{AtlasImageBundle, NodeBundle},
-        AlignItems, FlexDirection, JustifyContent, Style, Val,
-    },
+    ui::{node_bundles::NodeBundle, AlignItems, FlexDirection, JustifyContent, Style, Val},
     utils::default,
 };
 use std::time::Duration;
@@ -65,7 +63,7 @@ fn setup_main_menu_system(
                 height: Val::Percent(100.0),
                 ..Default::default()
             },
-            background_color: Color::rgba(0.0, 0.0, 0.0, 0.0).into(),
+            background_color: Srgba::new(0.0, 0.0, 0.0, 0.0).into(),
             ..Default::default()
         })
         .insert(MainMenuCleanup)
@@ -96,20 +94,25 @@ fn setup_main_menu_system(
                         })
                         .with_children(|parent| {
                             parent
-                                .spawn(AtlasImageBundle {
-                                    style: Style {
-                                        max_width: Val::Px(900.0),
-                                        width: Val::Percent(70.0),
-                                        min_width: Val::Px(300.0),
-                                        aspect_ratio: Some(1920.0 / 1080.0),
-                                        justify_content: JustifyContent::Center,
-                                        align_items: AlignItems::Center,
+                                .spawn((
+                                    ImageBundle {
+                                        image: ui_assets.thetawave_logo_image.clone().into(),
+                                        style: Style {
+                                            max_width: Val::Px(900.0),
+                                            width: Val::Percent(70.0),
+                                            min_width: Val::Px(300.0),
+                                            aspect_ratio: Some(1920.0 / 1080.0),
+                                            justify_content: JustifyContent::Center,
+                                            align_items: AlignItems::Center,
+                                            ..default()
+                                        },
                                         ..default()
                                     },
-                                    image: ui_assets.thetawave_logo_image.clone().into(),
-                                    texture_atlas: ui_assets.thetawave_logo_layout.clone().into(),
-                                    ..default()
-                                })
+                                    TextureAtlas {
+                                        layout: ui_assets.thetawave_logo_layout.clone(),
+                                        ..default()
+                                    },
+                                ))
                                 .insert(AnimationComponent {
                                     timer: Timer::from_seconds(0.1, TimerMode::Repeating),
                                     direction: AnimationDirection::Forward,

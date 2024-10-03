@@ -4,7 +4,9 @@
 //! `thetawave_interface::states::AppStates::CharacterSelection`
 use crate::{
     assets::UiAssets,
-    ui::button::{ButtonActionComponent, ButtonActionEvent, UiButtonChildBuilderExt},
+    ui::button::{
+        ButtonActionComponent, ButtonActionEvent, ButtonActionType, UiButtonChildBuilderExt,
+    },
 };
 use bevy::{
     asset::Handle,
@@ -31,11 +33,11 @@ const BUTTON_TEXTURE_PADDING_HOVERED: UiRect =
     UiRect::new(Val::ZERO, Val::ZERO, Val::Percent(8.5), Val::ZERO);
 
 /// This is the order (vertical, going down) of the buttons shown on the main menu UI.
-const MAIN_MENU_BUTTON_ORDER: [ButtonActionComponent; 4] = [
-    ButtonActionComponent::EnterCharacterSelection,
-    ButtonActionComponent::EnterOptions,
-    ButtonActionComponent::EnterCompendium,
-    ButtonActionComponent::QuitGame,
+const MAIN_MENU_BUTTON_ORDER: [ButtonActionType; 4] = [
+    ButtonActionType::EnterCharacterSelection,
+    ButtonActionType::EnterOptions,
+    ButtonActionType::EnterCompendium,
+    ButtonActionType::QuitGame,
 ];
 
 /// Extension trait for spawning customized UI elements for Thetawave
@@ -47,7 +49,12 @@ pub(super) trait UiChildBuilderExt {
 impl UiChildBuilderExt for ChildBuilder<'_> {
     fn spawn_main_menu_buttons(&mut self, ui_assets: &UiAssets, font: Handle<Font>) -> &mut Self {
         for action in MAIN_MENU_BUTTON_ORDER.iter() {
-            self.spawn_button(ui_assets, font.clone(), action.clone(), None);
+            self.spawn_button(
+                ui_assets,
+                font.clone(),
+                ButtonActionComponent::from(*action),
+                None,
+            );
         }
 
         self
@@ -102,13 +109,12 @@ pub(super) fn main_menu_button_selection_and_click_system(
     // 3. Send out any events for "button clicked" actions
     // 4. Set the styling so that only that one button looks "pressed" while all other are inactive
     // 5. Update the `ui_state` for the next frame.
-    let currently_hovered_on_button: Option<&ButtonActionComponent> =
-        main_menu_button_mouse_movements
-            .iter()
-            .find_map(|(action, x)| match x {
-                Interaction::Hovered => Some(action),
-                _ => None,
-            });
+    let currently_hovered_on_button: Option<&ButtonActionType> = main_menu_button_mouse_movements
+        .iter()
+        .find_map(|(action, x)| match x {
+            Interaction::Hovered => Some(&action.action),
+            _ => None,
+        });
     // Apply d-pad/arrow keys. true = up, false = down
     let contribution_from_arrow_inputs: Option<bool> = match menu_explorer_query.get_single() {
         Err(_) => None,
@@ -121,7 +127,7 @@ pub(super) fn main_menu_button_selection_and_click_system(
                 _ => None,
             }),
     };
-    let player_confirmed_button_selection: Option<ButtonActionComponent> = menu_explorer_query
+    let player_confirmed_button_selection: Option<ButtonActionType> = menu_explorer_query
         .get_single()
         .ok()
         .map(|x| match &ui_state.current_selected_button_and_cause {
@@ -135,12 +141,12 @@ pub(super) fn main_menu_button_selection_and_click_system(
     // Note that this uses the Changed<_> query filter, which allows us to detect when the mouse
     // was clicked THEN RELEASED. Using the `main_menu_button_mouse_movements` query would make
     // this Some whenever the mouse is just pressed down on a button.
-    let first_button_mouse_clicked: Option<ButtonActionComponent> =
+    let first_button_mouse_clicked: Option<ButtonActionType> =
         main_menu_button_mouse_changed_movements
             .iter()
             .find_map(|(res, interaction)| {
                 if *interaction == Interaction::Pressed {
-                    Some(res.clone())
+                    Some(res.action)
                 } else {
                     None
                 }
@@ -187,7 +193,7 @@ pub(super) fn main_menu_button_selection_and_click_system(
         },
     };
 
-    let next_frame_button_state: Option<ButtonActionComponent> = next_frame_ui_state
+    let next_frame_button_state: Option<ButtonActionType> = next_frame_ui_state
         .current_selected_button_and_cause
         .map(|(idx, _)| {
             MAIN_MENU_BUTTON_ORDER
@@ -217,7 +223,7 @@ pub(super) fn main_menu_button_selection_and_click_system(
         _ => {}
     };
     if let Some(action) = first_button_mouse_clicked.or(player_confirmed_button_selection) {
-        button_event_writer.send(action.clone());
+        button_event_writer.send(ButtonActionEvent::from(action));
         sound_effect.send(PlaySoundEffectEvent {
             sound_effect_type: SoundEffectType::ButtonConfirm,
         });
@@ -238,7 +244,7 @@ pub(super) fn main_menu_button_selection_and_click_system(
             if let Ok((mut texture_atlas, mut style)) =
                 button_texture_query.get_mut(*button_child_entity)
             {
-                if next_frame_button_state == Some(*action) {
+                if next_frame_button_state == Some(action.action) {
                     texture_atlas.index = 1;
                     style.padding = BUTTON_TEXTURE_PADDING_HOVERED;
                 } else {

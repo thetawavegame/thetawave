@@ -352,6 +352,7 @@ mod test {
     use bevy::app::App;
     use bevy::log::{Level, LogPlugin};
     use bevy::prelude::{default, NextState, State};
+    use bevy::state::app::{AppExtStates, StatesPlugin};
     use bevy::MinimalPlugins;
     use rstest::rstest;
     use thetawave_interface::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent};
@@ -365,11 +366,14 @@ mod test {
     fn _minimal_app_for_run_progression_defend_gate_objective() -> App {
         let mut app = App::new();
         app.add_plugins(MinimalPlugins)
-            .add_plugins(LogPlugin {
-                filter: "".to_string(),
-                level: Level::TRACE,
-                ..default()
-            })
+            .add_plugins((
+                LogPlugin {
+                    filter: "".to_string(),
+                    level: Level::TRACE,
+                    ..default()
+                },
+                StatesPlugin,
+            ))
             .init_state::<AppStates>()
             .init_state::<GameStates>()
             .add_event::<MobReachedBottomGateEvent>()
@@ -398,11 +402,11 @@ mod test {
         // Defense starts with 100 HP
         let mut app = _minimal_app_for_run_progression_defend_gate_objective();
         // triggers => AppStates::Game and starts listening to events
-        app.world
+        app.world_mut()
             .get_resource_mut::<NextState<AppStates>>()
             .unwrap()
             .set(AppStates::InitializeRun);
-        app.world
+        app.world_mut()
             .get_resource_mut::<NextState<GameStates>>()
             .unwrap()
             .set(GameStates::Playing);
@@ -411,10 +415,13 @@ mod test {
         // A system in this plugin _should_ kick off the game/run
         assert_eq!(
             &AppStates::Game,
-            app.world.get_resource::<State<AppStates>>().unwrap().get()
+            app.world()
+                .get_resource::<State<AppStates>>()
+                .unwrap()
+                .get()
         );
         // This is the main part of the test
-        app.world.send_event(MobReachedBottomGateEvent {
+        app.world_mut().send_event(MobReachedBottomGateEvent {
             defense_interaction: DefenseInteraction::Damage(damage_amount),
             mob_type: None,
             mob_segment_type: None,
@@ -424,7 +431,10 @@ mod test {
         app.update();
         assert_eq!(
             &want_end_state,
-            app.world.get_resource::<State<AppStates>>().unwrap().get()
+            app.world()
+                .get_resource::<State<AppStates>>()
+                .unwrap()
+                .get()
         );
     }
 }

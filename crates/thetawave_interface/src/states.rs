@@ -1,4 +1,5 @@
-use bevy_ecs_macros::{Component, States};
+use bevy_ecs_macros::Component;
+use bevy_state::state::States;
 
 // states of the game
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default, States)]

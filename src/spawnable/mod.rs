@@ -2,7 +2,12 @@
 //! players, etc.) behave.
 use crate::spawnable::effect::EffectPlugin;
 use crate::GameUpdateSet;
-use bevy::prelude::*;
+use bevy::app::{App, Plugin, Update};
+use bevy::hierarchy::DespawnRecursiveExt;
+use bevy::math::Vec2;
+use bevy::prelude::{Commands, Component, Entity, IntoSystemConfigs, Query, Res};
+use bevy::state::condition::in_state;
+use bevy::time::{Time, Timer};
 use bevy_rapier2d::prelude::Velocity;
 use rand::{thread_rng, Rng};
 use ron::de::from_bytes;

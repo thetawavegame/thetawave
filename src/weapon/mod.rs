@@ -4,10 +4,11 @@ use bevy::{
     ecs::{
         entity::Entity,
         event::EventWriter,
-        schedule::{common_conditions::in_state, IntoSystemConfigs},
+        schedule::IntoSystemConfigs,
         system::{Query, Res},
     },
     math::Vec2,
+    prelude::in_state,
     time::Time,
     transform::components::Transform,
 };

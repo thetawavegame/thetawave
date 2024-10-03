@@ -2,13 +2,14 @@ use crate::animation::AnimationComponent;
 use crate::GameUpdateSet;
 use bevy::app::{App, Plugin, Update};
 use bevy::asset::{Assets, Handle};
+use bevy::color::Alpha;
 use bevy::ecs::entity::Entity;
 use bevy::ecs::event::EventReader;
-use bevy::ecs::schedule::common_conditions::in_state;
 use bevy::ecs::schedule::IntoSystemConfigs;
 use bevy::ecs::system::{Commands, Query, Res};
 use bevy::hierarchy::DespawnRecursiveExt;
 use bevy::sprite::{Sprite, TextureAtlas, TextureAtlasLayout};
+use bevy::state::condition::in_state;
 use bevy::text::Text;
 use bevy::time::{Stopwatch, Time, Timer, TimerMode};
 use serde::Deserialize;
@@ -140,7 +141,7 @@ fn fade_out_text_effect_behavior_system(
                     .iter_mut()
                     .map(|section| &mut section.style.color)
                 {
-                    color.set_a(timer.fraction_remaining());
+                    color.set_alpha(timer.fraction_remaining());
                 }
             }
         }
@@ -169,7 +170,7 @@ fn fade_out_sprite_effect_behavior_system(
             if timer.just_finished() {
                 commands.entity(entity).despawn_recursive();
             } else {
-                sprite.color.set_a(timer.fraction_remaining());
+                sprite.color.set_alpha(timer.fraction_remaining());
             }
         }
     }
@@ -224,7 +225,7 @@ fn fade_out_despawn_after_animation_effect_behavior_system(
                     .max(0.0)
                     .min(1.0);
 
-                sprite.color.set_a(alpha);
+                sprite.color.set_alpha(alpha);
             }
         }
     }

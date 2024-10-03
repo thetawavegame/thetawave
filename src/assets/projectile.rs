@@ -1,5 +1,5 @@
 use bevy::{
-    prelude::{Handle, Resource, TextureAtlasLayout},
+    prelude::{Handle, Res, Resource, TextureAtlasLayout},
     render::texture::Image,
 };
 use bevy_asset_loader::prelude::AssetCollection;

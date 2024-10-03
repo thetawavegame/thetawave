@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::{ImpulseJoint, JointAxis};
+use bevy_rapier2d::prelude::{ImpulseJoint, TypedJoint};
 use rand::{thread_rng, Rng};
 use serde::Deserialize;
 use thetawave_interface::{
@@ -157,30 +157,21 @@ pub fn mob_segment_execute_behavior_system(
                 MobSegmentBehavior::RandomRotation(data) => {
                     let rand_ang = thread_rng().gen_range(data.low_angle..=data.high_angle);
 
-                    joint.data.set_motor_position(
-                        JointAxis::AngX,
-                        rand_ang,
-                        data.stiffness,
-                        data.damping,
-                    );
+                    if let TypedJoint::RevoluteJoint(joint) = &mut joint.data {
+                        joint.set_motor_position(rand_ang, data.stiffness, data.damping);
+                    }
                 }
 
                 MobSegmentBehavior::FerritharaxProtectHead(data) => {
-                    joint.data.set_motor_position(
-                        JointAxis::AngX,
-                        data.angle,
-                        data.stiffness,
-                        data.damping,
-                    );
+                    if let TypedJoint::RevoluteJoint(mut joint) = &mut joint.data {
+                        joint.set_motor_position(data.angle, data.stiffness, data.damping);
+                    }
                 }
 
                 MobSegmentBehavior::FerritharaxAttack(data) => {
-                    joint.data.set_motor_position(
-                        JointAxis::AngX,
-                        data.angle,
-                        data.stiffness,
-                        data.damping,
-                    );
+                    if let TypedJoint::RevoluteJoint(mut joint) = &mut joint.data {
+                        joint.set_motor_position(data.angle, data.stiffness, data.damping);
+                    }
                 }
 
                 MobSegmentBehavior::SpawnMob(mob_spawner_key) => {

@@ -1,8 +1,10 @@
 //! Systems to configure minor display settings.
 use crate::game::GameParametersResource;
 use bevy::{
-    prelude::*,
-    window::{PrimaryWindow, WindowMode},
+    input::ButtonInput,
+    prelude::{Camera2d, Entity, KeyCode, NonSend, Query, Res, With},
+    render::camera::OrthographicProjection,
+    window::{PrimaryWindow, Window, WindowMode},
     winit::WinitWindows,
 };
 use serde::Deserialize;

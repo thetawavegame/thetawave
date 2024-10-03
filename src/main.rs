@@ -1,7 +1,7 @@
 #![doc = include_str!("../README.md")]
 use bevy::app::PluginGroupBuilder;
 use bevy::prelude::{
-    AmbientLight, App, AssetPlugin, ClearColor, Color, DefaultPlugins, ImagePlugin,
+    AmbientLight, App, AppExtStates, AssetPlugin, ClearColor, Color, DefaultPlugins, ImagePlugin,
     IntoSystemConfigs, OnEnter, PluginGroup, ResMut, SystemSet, Vec2, Window, WindowPlugin,
 };
 use bevy_kira_audio::prelude::AudioPlugin;
@@ -144,9 +144,9 @@ fn main() {
 fn build_app<P1: PluginGroup, P2: PluginGroup>(base_plugins: P1, game_plugins: P2) -> App {
     // Should everything besides adding the plugins be moved into a plugin?
     let mut app = App::new();
+    app.add_plugins(base_plugins);
     app.init_state::<AppStates>() // start game in the main menu state
         .init_state::<GameStates>(); // start the game in playing state
-    app.add_plugins(base_plugins);
     app.add_plugins(game_plugins);
     app.insert_resource(ClearColor(Color::BLACK))
         .insert_resource(AmbientLight::default());
@@ -225,6 +225,7 @@ mod test {
     use bevy::asset::AssetPlugin;
     use bevy::input::InputPlugin;
     use bevy::prelude::{ImagePlugin, NextState, State};
+    use bevy::state::app::StatesPlugin;
     use bevy::MinimalPlugins;
     use bevy_kira_audio::AudioPlugin;
     use thetawave_interface::audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent};
@@ -237,7 +238,7 @@ mod test {
         // inserted, that many assets can be loaded, and that the game can kinda start.
         let mut app = minimal_headless_audioless_app_with_as_many_game_features_as_possible();
         app.update();
-        app.world
+        app.world_mut()
             .get_resource_mut::<NextState<AppStates>>()
             .unwrap()
             .set(AppStates::LoadingAssets);
@@ -245,14 +246,17 @@ mod test {
             // just update a few times. Not so important how many.
             app.update();
         }
-        app.world
+        app.world_mut()
             .get_resource_mut::<NextState<AppStates>>()
             .unwrap()
             .set(AppStates::MainMenu);
         app.update();
         app.update();
         assert_eq!(
-            app.world.get_resource::<State<AppStates>>().unwrap().get(),
+            app.world()
+                .get_resource::<State<AppStates>>()
+                .unwrap()
+                .get(),
             &AppStates::MainMenu
         );
     }
@@ -262,7 +266,8 @@ mod test {
             .build()
             .add(AssetPlugin::default())
             .add(ImagePlugin::default())
-            .add(InputPlugin::default());
+            .add(InputPlugin::default())
+            .add(StatesPlugin);
         // These features are basically untestable.
         let game_plugins = ThetawaveGamePlugins
             .build()

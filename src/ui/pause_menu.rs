@@ -1,11 +1,11 @@
 use bevy::{
     asset::AssetServer,
+    color::Color,
     ecs::{
         component::Component,
         system::{Commands, Res},
     },
     hierarchy::BuildChildren,
-    render::color::Color,
     time::{Timer, TimerMode},
     ui::{
         node_bundles::{ImageBundle, NodeBundle},
@@ -32,7 +32,7 @@ pub fn setup_pause_system(
                 position_type: PositionType::Absolute,
                 ..Default::default()
             },
-            background_color: Color::rgba(0.5, 0.5, 0.5, 0.1).into(),
+            background_color: Color::srgba(0.5, 0.5, 0.5, 0.1).into(),
             ..Default::default()
         })
         .insert(PauseCleanup)

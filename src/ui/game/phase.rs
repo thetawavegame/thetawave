@@ -1,5 +1,6 @@
 use bevy::{
     asset::Handle,
+    color::{Alpha, Color, Srgba},
     ecs::{
         component::Component,
         entity::Entity,
@@ -7,7 +8,6 @@ use bevy::{
         system::{Commands, Query, Res},
     },
     hierarchy::{BuildChildren, ChildBuilder, DespawnRecursiveExt},
-    render::color::Color,
     text::{Font, JustifyText, Text, TextStyle},
     ui::{
         node_bundles::{NodeBundle, TextBundle},
@@ -24,15 +24,15 @@ use crate::{run::CurrentRunProgressResource, spawnable::BossComponent};
 use super::parent::PhaseUiChildBuilderExt;
 
 const NODE_WIDTH: Val = Val::Percent(50.0);
-const NORMAL_TEXT_COLOR: Color = Color::WHITE;
-const TUTORIAL_COMPLETED_TEXT_COLOR: Color = Color::GREEN;
+const NORMAL_TEXT_COLOR: Srgba = Srgba::WHITE;
+const TUTORIAL_COMPLETED_TEXT_COLOR: Srgba = Srgba::GREEN;
 const TUTORIAL_FONT_SIZE: f32 = 24.0;
 const FONT_SIZE: f32 = 48.0;
 const PHASE_DATA_PADDING: UiRect =
     UiRect::new(Val::Vw(1.0), Val::Vw(1.0), Val::Vh(2.0), Val::Vh(2.0));
 const BOSS_HEALTH_WIDTH: Val = Val::Percent(80.0);
 const BOSS_HEALTH_HEIGHT: Val = Val::Percent(60.0);
-const BOSS_HEALTH_COLOR: Color = Color::RED;
+const BOSS_HEALTH_COLOR: Srgba = Srgba::RED;
 const BOSS_HEALTH_EMPTY_ALPHA: f32 = 0.05;
 const BOSS_HEALTH_FILLED_ALPHA: f32 = 0.75;
 const TUTORIAL_TEXT_SECTION_HEIGHT: Val = Val::Px(30.0);
@@ -66,7 +66,7 @@ impl PhaseUiChildBuilderExt for ChildBuilder<'_> {
                     TextStyle {
                         font,
                         font_size: FONT_SIZE,
-                        color: NORMAL_TEXT_COLOR,
+                        color: Color::Srgba(NORMAL_TEXT_COLOR),
                     },
                 ),
                 ..default()
@@ -130,7 +130,7 @@ pub(super) fn update_phase_ui_system(
                                     TextStyle {
                                         font,
                                         font_size: FONT_SIZE,
-                                        color: NORMAL_TEXT_COLOR,
+                                        color: Color::Srgba(NORMAL_TEXT_COLOR),
                                     },
                                 ),
                                 ..default()
@@ -148,7 +148,7 @@ pub(super) fn update_phase_ui_system(
                                     TextStyle {
                                         font,
                                         font_size: FONT_SIZE,
-                                        color: NORMAL_TEXT_COLOR,
+                                        color: Color::Srgba(NORMAL_TEXT_COLOR),
                                     },
                                 ),
                                 ..default()
@@ -167,7 +167,7 @@ pub(super) fn update_phase_ui_system(
                                             ..default()
                                         },
                                         background_color: BOSS_HEALTH_COLOR
-                                            .with_a(BOSS_HEALTH_EMPTY_ALPHA)
+                                            .with_alpha(BOSS_HEALTH_EMPTY_ALPHA)
                                             .into(),
                                         ..default()
                                     })
@@ -181,7 +181,7 @@ pub(super) fn update_phase_ui_system(
                                                 ..default()
                                             },
                                             background_color: BOSS_HEALTH_COLOR
-                                                .with_a(BOSS_HEALTH_FILLED_ALPHA)
+                                                .with_alpha(BOSS_HEALTH_FILLED_ALPHA)
                                                 .into(),
                                             ..default()
                                         });
@@ -222,9 +222,11 @@ pub(super) fn update_phase_ui_system(
                                                         font: font.clone(),
                                                         font_size: TUTORIAL_FONT_SIZE,
                                                         color: if *completed {
-                                                            TUTORIAL_COMPLETED_TEXT_COLOR
+                                                            Color::Srgba(
+                                                                TUTORIAL_COMPLETED_TEXT_COLOR,
+                                                            )
                                                         } else {
-                                                            NORMAL_TEXT_COLOR
+                                                            Color::Srgba(NORMAL_TEXT_COLOR)
                                                         },
                                                     },
                                                 )
@@ -248,9 +250,11 @@ pub(super) fn update_phase_ui_system(
                                                         font: font.clone(),
                                                         font_size: TUTORIAL_FONT_SIZE,
                                                         color: if *completed {
-                                                            TUTORIAL_COMPLETED_TEXT_COLOR
+                                                            Color::Srgba(
+                                                                TUTORIAL_COMPLETED_TEXT_COLOR,
+                                                            )
                                                         } else {
-                                                            NORMAL_TEXT_COLOR
+                                                            Color::Srgba(NORMAL_TEXT_COLOR)
                                                         },
                                                     },
                                                 )
@@ -274,9 +278,11 @@ pub(super) fn update_phase_ui_system(
                                                         font: font.clone(),
                                                         font_size: TUTORIAL_FONT_SIZE,
                                                         color: if *completed {
-                                                            TUTORIAL_COMPLETED_TEXT_COLOR
+                                                            Color::Srgba(
+                                                                TUTORIAL_COMPLETED_TEXT_COLOR,
+                                                            )
                                                         } else {
-                                                            NORMAL_TEXT_COLOR
+                                                            Color::Srgba(NORMAL_TEXT_COLOR)
                                                         },
                                                     },
                                                 )
