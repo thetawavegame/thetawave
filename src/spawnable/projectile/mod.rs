@@ -37,7 +37,7 @@ mod behavior;
 
 pub use self::behavior::{projectile_execute_behavior_system, ProjectileBehavior};
 
-use super::{ColliderData, InitialMotion};
+use super::{mob::ColliderData, InitialMotion};
 
 #[derive(Event, Clone)]
 pub struct FireWeaponEvent {

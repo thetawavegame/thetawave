@@ -30,7 +30,7 @@ use crate::{
 
 mod behavior;
 mod mob_segment;
-pub(crate) use self::{behavior::*, mob_segment::*};
+pub use self::{behavior::*, mob_segment::*};
 
 use super::{behavior_sequence::MobBehaviorSequenceType, InitialMotion};
 use crate::collision::{

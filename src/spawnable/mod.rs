@@ -9,6 +9,11 @@ use bevy::prelude::{Commands, Component, Entity, IntoSystemConfigs, Query, Res};
 use bevy::state::condition::in_state;
 use bevy::time::{Time, Timer};
 use bevy_rapier2d::prelude::Velocity;
+use mob::{
+    check_boss_mobs_system, mob_execute_behavior_system,
+    mob_segment_apply_disconnected_behaviors_system, mob_segment_execute_behavior_system,
+    spawn_mob_system, MobData, MobSegmentsResource, MobsResource,
+};
 use rand::{thread_rng, Rng};
 use ron::de::from_bytes;
 use serde::Deserialize;
@@ -26,17 +31,7 @@ mod item;
 mod mob;
 mod projectile;
 use self::behavior::attract_to_player_system;
-pub use self::behavior::SpawnableBehavior;
-pub use self::behavior_sequence::{BehaviorSequenceResource, MobBehaviorUpdateEvent};
-pub use self::consumable::{
-    ConsumableComponent, ConsumableData, ConsumableResource, SpawnConsumableEvent,
-};
-pub use self::effect::{EffectsResource, SpawnEffectEvent};
 use self::item::ItemPlugin;
-pub use self::mob::*;
-pub use self::projectile::{
-    FireWeaponEvent, ProjectileComponent, ProjectileData, ProjectileResource,
-};
 use self::{
     behavior::{spawnable_execute_behavior_system, spawnable_set_target_behavior_system},
     behavior_sequence::{
@@ -44,6 +39,18 @@ use self::{
     },
     consumable::{consumable_execute_behavior_system, spawn_consumable_system},
     projectile::{projectile_execute_behavior_system, spawn_projectile_system},
+};
+
+// TODO: move to interface, or change to use events for sending information between modules
+pub use self::behavior::SpawnableBehavior;
+pub use self::behavior_sequence::{BehaviorSequenceResource, MobBehaviorUpdateEvent};
+pub use self::consumable::{
+    ConsumableComponent, ConsumableData, ConsumableResource, SpawnConsumableEvent,
+};
+pub use self::effect::{EffectsResource, SpawnEffectEvent};
+pub use self::mob::{BossComponent, BossesDestroyedEvent, MobComponent, MobSegmentComponent};
+pub use self::projectile::{
+    FireWeaponEvent, ProjectileComponent, ProjectileData, ProjectileResource,
 };
 
 /// (de)spawns items, mobs, the player, etc. Also executes many of their behaviors. Without this
