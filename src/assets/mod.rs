@@ -9,7 +9,7 @@ mod player;
 mod projectile;
 mod ui;
 
-pub use self::{
+pub(crate) use self::{
     audio::GameAudioAssets, consumable::ConsumableAssets, effect::EffectAssets, item::ItemAssets,
     mob::MobAssets, player::PlayerAssets, projectile::ProjectileAssets, ui::UiAssets,
 };

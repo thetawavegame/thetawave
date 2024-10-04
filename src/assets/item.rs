@@ -6,8 +6,9 @@ use bevy_asset_loader::prelude::AssetCollection;
 
 use thetawave_interface::spawnable::ItemType;
 
+/// Collection of texture atlases and images for item sprites
 #[derive(AssetCollection, Resource)]
-pub struct ItemAssets {
+pub(crate) struct ItemAssets {
     #[asset(key = "item_placeholder.layout")]
     pub item_placeholder_layout: Handle<TextureAtlasLayout>,
     #[asset(key = "item_placeholder.image")]
@@ -15,7 +16,11 @@ pub struct ItemAssets {
 }
 
 impl ItemAssets {
-    pub fn get_texture_atlas_layout(&self, item_type: &ItemType) -> Handle<TextureAtlasLayout> {
+    /// Use a ItemType enum to access a texture atlas layout
+    pub(crate) fn get_texture_atlas_layout(
+        &self,
+        item_type: &ItemType,
+    ) -> Handle<TextureAtlasLayout> {
         match item_type {
             ItemType::EnhancedPlating => self.item_placeholder_layout.clone(),
             /*
@@ -37,7 +42,8 @@ impl ItemAssets {
         }
     }
 
-    pub fn get_image(&self, item_type: &ItemType) -> Handle<Image> {
+    /// Use a ItemType enum to access an item image handle
+    pub(crate) fn get_image(&self, item_type: &ItemType) -> Handle<Image> {
         match item_type {
             ItemType::EnhancedPlating => self.item_placeholder_image.clone(),
         }

@@ -9,8 +9,9 @@ use thetawave_interface::{
     character::CharacterStatType,
 };
 
+/// Collection of texture atlases and images for ui
 #[derive(AssetCollection, Resource)]
-pub struct UiAssets {
+pub(crate) struct UiAssets {
     #[asset(key = "font.lunchds")]
     pub lunchds_font: Handle<Font>,
     #[asset(key = "thetawave_logo.layout")]
@@ -72,6 +73,8 @@ pub struct UiAssets {
 }
 
 impl UiAssets {
+    /// Use a SlotOneAbilityType enum to access an image handle
+    /// Used in the game to indicate the available slot one ability to the player
     pub fn get_slot_1_ability_image(&self, ability_type: &SlotOneAbilityType) -> Handle<Image> {
         match ability_type {
             SlotOneAbilityType::StandardBlast => self.standard_blast_ability.clone(),
@@ -79,6 +82,8 @@ impl UiAssets {
         }
     }
 
+    /// Use a SlotTwoAbilityType enum to access an image handle
+    /// Used in the game to indicate the available slot two ability to the player
     pub fn get_slot_2_ability_image(&self, ability_type: &SlotTwoAbilityType) -> Handle<Image> {
         match ability_type {
             SlotTwoAbilityType::MegaBlast => self.mega_blast_ability.clone(),
@@ -86,6 +91,8 @@ impl UiAssets {
         }
     }
 
+    /// Takes in a boolean to indicate if a slot image should be flipped, then returns the correct image handle
+    /// Ability slots on opposite sides of the window are mirrored
     pub fn get_ability_slot_image(&self, is_flipped: bool) -> Handle<Image> {
         if is_flipped {
             self.right_ability_slot.clone()
@@ -94,6 +101,8 @@ impl UiAssets {
         }
     }
 
+    /// Use a CharacterStatType enum to access an image handle
+    /// Character stat images are used on the character selection screen to symbolize relative attributes of characters
     pub fn get_stat_icon(&self, stat: &CharacterStatType) -> Handle<Image> {
         match stat {
             CharacterStatType::Damage => self.damage_icon.clone(),
