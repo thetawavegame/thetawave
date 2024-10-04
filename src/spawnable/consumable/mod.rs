@@ -167,9 +167,7 @@ pub fn spawn_consumable(
             ..default()
         })
         .insert(TextureAtlas {
-            layout: consumable_assets
-                .get_texture_atlas_layout(consumable_type)
-                .into(),
+            layout: consumable_assets.get_texture_atlas_layout(consumable_type),
             ..default()
         })
         .insert(AnimationComponent {

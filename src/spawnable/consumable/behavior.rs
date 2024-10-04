@@ -1,7 +1,13 @@
 use crate::{
     collision::SortedCollisionEvent, game::GameParametersResource, spawnable::SpawnEffectEvent,
 };
-use bevy::prelude::*;
+use bevy::{
+    math::Vec3,
+    prelude::{
+        default, Commands, DespawnRecursiveExt, Entity, EventReader, EventWriter, Query, Res,
+        Transform, With,
+    },
+};
 use serde::Deserialize;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},

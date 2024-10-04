@@ -86,7 +86,7 @@ pub fn spawn_item(
         ..default()
     })
     .insert(TextureAtlas {
-        layout: item_assets.get_texture_atlas_layout(item_type).into(),
+        layout: item_assets.get_texture_atlas_layout(item_type),
         ..default()
     })
     .insert(AnimationComponent {

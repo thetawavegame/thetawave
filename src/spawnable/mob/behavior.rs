@@ -1,4 +1,11 @@
-use bevy::prelude::*;
+use bevy::{
+    math::{Vec3, Vec3Swizzles},
+    prelude::{
+        default, Commands, DespawnRecursiveExt, Entity, EventReader, EventWriter, Query, Res,
+        Transform,
+    },
+    time::Time,
+};
 use serde::Deserialize;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},

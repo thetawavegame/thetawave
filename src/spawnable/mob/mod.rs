@@ -1,4 +1,15 @@
-use bevy::prelude::*;
+use bevy::{
+    color::{Color, Srgba},
+    core::Name,
+    log::info,
+    math::{Quat, Vec2, Vec3},
+    prelude::{
+        default, BuildChildren, Commands, Component, Event, EventReader, EventWriter, Query, Res,
+        Resource, Transform,
+    },
+    sprite::{Sprite, SpriteBundle, TextureAtlas},
+    time::{Timer, TimerMode},
+};
 use bevy_rapier2d::{
     geometry::ColliderMassProperties,
     prelude::{
@@ -89,7 +100,7 @@ impl From<&MobData> for MobComponent {
             behavior_sequence_tracker: None,
             mob_spawners,
             collision_damage: mob_data.collision_damage,
-            collision_sound: mob_data.collision_sound.clone(),
+            collision_sound: mob_data.collision_sound,
             defense_interaction: mob_data.defense_interaction.clone(),
             loot_drops: mob_data.consumable_drops.clone(),
         }
@@ -330,7 +341,7 @@ pub fn spawn_mob(
     let mut mob = commands.spawn_empty();
 
     mob.insert(TextureAtlas {
-        layout: mob_assets.get_mob_texture_atlas_layout(mob_type).into(),
+        layout: mob_assets.get_mob_texture_atlas_layout(mob_type),
         ..default()
     })
     .insert(SpriteBundle {
@@ -393,7 +404,7 @@ pub fn spawn_mob(
         mob.with_children(|parent| {
             parent
                 .spawn(SpriteBundle {
-                    texture: mob_assets.get_thruster_image(mob_type).unwrap().into(),
+                    texture: mob_assets.get_thruster_image(mob_type).unwrap(),
                     transform: Transform::from_xyz(0.0, thruster.y_offset, -1.0),
                     sprite: Sprite {
                         color: thruster.affine_bloom_transformation(game_options.bloom_intensity),
@@ -404,8 +415,7 @@ pub fn spawn_mob(
                 .insert(TextureAtlas {
                     layout: mob_assets
                         .get_thruster_texture_atlas_layout(mob_type)
-                        .unwrap()
-                        .into(),
+                        .unwrap(),
                     ..default()
                 })
                 .insert(AnimationComponent {

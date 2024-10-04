@@ -2,7 +2,13 @@ use crate::{
     collision::SortedCollisionEvent,
     spawnable::{MobComponent, MobSegmentComponent, SpawnEffectEvent},
 };
-use bevy::prelude::*;
+use bevy::{
+    prelude::{
+        default, Commands, DespawnRecursiveExt, Entity, EventReader, EventWriter, Query, Res,
+        Transform,
+    },
+    time::Time,
+};
 use serde::Deserialize;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
@@ -43,7 +49,7 @@ pub fn projectile_execute_behavior_system(
     for (projectile_entity, projectile_transform, mut projectile_component) in
         projectile_query.iter_mut()
     {
-        let projectile_type = projectile_component.projectile_type.clone();
+        let projectile_type = projectile_component.projectile_type;
         for behavior in projectile_component.behaviors.clone() {
             match behavior {
                 ProjectileBehavior::ExplodeOnIntersection => explode_on_intersection(
@@ -164,10 +170,7 @@ fn deal_damage_on_contact(
                 projectile_damage,
             } => {
                 if projectile == *projectile_entity
-                    && matches!(
-                        projectile_faction.clone(),
-                        Faction::Neutral | Faction::Enemy
-                    )
+                    && matches!(*projectile_faction, Faction::Neutral | Faction::Enemy)
                 {
                     // deal damage to player
                     sound_effect_event_writer.send(PlaySoundEffectEvent {
@@ -258,10 +261,7 @@ fn deal_damage_on_intersection(
                 projectile_damage,
             } => {
                 if projectile == *projectile_entity
-                    && matches!(
-                        projectile_faction.clone(),
-                        Faction::Neutral | Faction::Enemy
-                    )
+                    && matches!(*projectile_faction, Faction::Neutral | Faction::Enemy)
                     && player_query.contains(*player_entity)
                     && *projectile_damage > 0
                 {
@@ -338,10 +338,7 @@ fn explode_on_intersection(
                 projectile_damage: _,
             } => {
                 if projectile == *projectile_entity
-                    && matches!(
-                        projectile_faction.clone(),
-                        Faction::Neutral | Faction::Enemy
-                    )
+                    && matches!(*projectile_faction, Faction::Neutral | Faction::Enemy)
                 {
                     // spawn explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {
@@ -481,10 +478,7 @@ fn explode_on_contact(
                 projectile_damage: _,
             } => {
                 if projectile == *projectile_entity
-                    && matches!(
-                        projectile_faction.clone(),
-                        Faction::Neutral | Faction::Enemy
-                    )
+                    && matches!(*projectile_faction, Faction::Neutral | Faction::Enemy)
                 {
                     // spawn explosion
                     spawn_effect_event_writer.send(SpawnEffectEvent {

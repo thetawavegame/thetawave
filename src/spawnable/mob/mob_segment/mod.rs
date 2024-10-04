@@ -1,5 +1,14 @@
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use bevy::{
+    core::Name,
+    math::{Vec2, Vec3},
+    prelude::{default, Commands, Component, Entity, Resource, Transform},
+    sprite::{SpriteBundle, TextureAtlas},
+    time::{Timer, TimerMode},
+};
+use bevy_rapier2d::prelude::{
+    ActiveEvents, CoefficientCombineRule, Collider, ColliderMassProperties, CollisionGroups,
+    Friction, Group, ImpulseJoint, Restitution, RevoluteJointBuilder, RigidBody, Velocity,
+};
 use serde::Deserialize;
 use std::collections::{hash_map::Entry, HashMap};
 use thetawave_interface::{
@@ -157,9 +166,7 @@ pub fn spawn_mob_segment(
             ..default()
         })
         .insert(TextureAtlas {
-            layout: mob_assets
-                .get_mob_segment_texture_atlas_layout(mob_segment_type)
-                .into(),
+            layout: mob_assets.get_mob_segment_texture_atlas_layout(mob_segment_type),
             ..default()
         })
         .insert(AnimationComponent {

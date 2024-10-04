@@ -236,14 +236,14 @@ pub fn spawn_projectile_from_weapon(
                 projectile_data.collider.dimensions.y,
             ))
             .insert(ProjectileComponent {
-                projectile_type: projectile_data.projectile_type.clone(),
+                projectile_type: projectile_data.projectile_type,
                 behaviors: projectile_behaviors.clone(),
                 damage: weapon_projectile_data.damage,
                 time_alive: 0.0,
                 source: source_entity,
             })
             .insert(SpawnableComponent {
-                spawnable_type: SpawnableType::Projectile(projectile_data.projectile_type.clone()),
+                spawnable_type: SpawnableType::Projectile(projectile_data.projectile_type),
                 acceleration: Vec2::ZERO,
                 deceleration: Vec2::ZERO,
                 speed: [game_parameters.max_speed, game_parameters.max_speed].into(), // highest possible speed
