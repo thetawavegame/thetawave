@@ -1,6 +1,16 @@
 use crate::spawnable::{MobComponent, MobSegmentComponent, SpawnableComponent};
-use bevy::prelude::*;
-use bevy_rapier2d::{prelude::*, rapier::prelude::CollisionEventFlags};
+use bevy::{
+    core::Name,
+    math::Vec2,
+    prelude::{
+        Commands, Component, DespawnRecursiveExt, Entity, EventReader, EventWriter, Query,
+        Transform, TransformBundle, With,
+    },
+};
+use bevy_rapier2d::{
+    prelude::{Collider, CollisionEvent, Sensor},
+    rapier::prelude::CollisionEventFlags,
+};
 use thetawave_interface::{objective::MobReachedBottomGateEvent, states::GameCleanup};
 
 /// Tag for the gate that triggers mobs to respawn (and cause something bad to happen to the
