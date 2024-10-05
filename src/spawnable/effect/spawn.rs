@@ -180,8 +180,7 @@ fn spawn_effect(
         .insert(TextureAtlas {
             layout: effect_assets
                 .get_texture_atlas_layout(effect_type)
-                .unwrap_or_default()
-                .into(),
+                .unwrap_or_default(),
             ..default()
         })
         .insert(AnimationComponent {

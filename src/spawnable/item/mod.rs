@@ -1,7 +1,11 @@
 //! Items are like consumables but have a permanent effect. These will also be purchasable.
 use std::collections::HashMap;
 
-use bevy::prelude::*;
+use bevy::{
+    app::{App, Plugin},
+    math::Vec2,
+    prelude::Resource,
+};
 use ron::de::from_bytes;
 use serde::Deserialize;
 use thetawave_interface::spawnable::{ItemComponent, ItemType, SpawnItemEvent, SpawnableType};

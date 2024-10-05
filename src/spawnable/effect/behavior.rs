@@ -221,9 +221,7 @@ fn fade_out_despawn_after_animation_effect_behavior_system(
                 // Get an alpha value along an exponential decay curve
                 let elapsed_time = stopwatch.elapsed().as_secs_f32();
                 let decay_constant = -(total_animation_time.recip()) * 0.001_f32.ln();
-                let alpha = (1.0_f32 * (-decay_constant * elapsed_time).exp())
-                    .max(0.0)
-                    .min(1.0);
+                let alpha = (1.0_f32 * (-decay_constant * elapsed_time).exp()).clamp(0.0, 1.0);
 
                 sprite.color.set_alpha(alpha);
             }

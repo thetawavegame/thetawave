@@ -25,7 +25,7 @@ use crate::{
 
 mod behavior;
 
-pub use self::behavior::{consumable_execute_behavior_system, ConsumableBehavior};
+pub(crate) use self::behavior::{consumable_execute_behavior_system, ConsumableBehavior};
 
 use thetawave_interface::spawnable::AttractToClosestPlayerComponent;
 
@@ -167,9 +167,7 @@ pub fn spawn_consumable(
             ..default()
         })
         .insert(TextureAtlas {
-            layout: consumable_assets
-                .get_texture_atlas_layout(consumable_type)
-                .into(),
+            layout: consumable_assets.get_texture_atlas_layout(consumable_type),
             ..default()
         })
         .insert(AnimationComponent {

@@ -31,7 +31,8 @@ pub(super) struct ScreenShakeComponent {
     pub shake_intensity: Vec3,
 }
 
-pub(super) fn add_trauma(
+/// System for reading screen shake events and adding trauma from the events to the screen shake component
+pub(super) fn add_trauma_system(
     mut screen_shake_event_reader: EventReader<ScreenShakeEvent>,
     mut camera_2d_query: Query<
         (&mut ScreenShakeComponent, &mut Transform),
@@ -45,7 +46,8 @@ pub(super) fn add_trauma(
     }
 }
 
-pub(super) fn shake_screen(
+/// Shake camera to based on the trauma value in the ScreenShakeComponent
+pub(super) fn screen_shake_system(
     time: Res<Time>,
     mut camera_2d_query: Query<
         (&mut ScreenShakeComponent, &mut Transform),
@@ -83,7 +85,7 @@ fn get_random_shake(screen_shake: &ScreenShakeComponent) -> f32 {
 }
 
 /// Trigger a screen shake whenevr the player receives nonzero damage.
-pub(super) fn shake_screen_on_player_damage(
+pub(super) fn screen_shake_on_player_damage_system(
     mut damage_dealt_events: EventReader<DamageDealtEvent>,
     player_query: Query<Entity, With<PlayerComponent>>,
     mut screen_shake_event_writer: EventWriter<ScreenShakeEvent>,

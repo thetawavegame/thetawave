@@ -1,5 +1,5 @@
 //! `thetawave` game module
-use bevy::prelude::*;
+use bevy::app::{App, Plugin};
 use ron::de::from_bytes;
 pub mod counters;
 mod resources;

@@ -1,11 +1,15 @@
-use bevy::prelude::*;
-use bevy_asset_loader::prelude::*;
+use bevy::{
+    asset::Handle,
+    prelude::{Res, Resource},
+};
+use bevy_asset_loader::asset_collection::AssetCollection;
 use bevy_kira_audio::AudioSource;
 use rand::Rng;
 use thetawave_interface::audio::{BGMusicType, CollisionSoundType, SoundEffectType};
 
+/// Collection of all audio assets in the game including sound effects and background music
 #[derive(AssetCollection, Resource)]
-pub struct GameAudioAssets {
+pub(crate) struct GameAudioAssets {
     #[asset(key = "sounds.main_music")]
     pub main_music: Handle<AudioSource>,
     #[asset(key = "sounds.game_music")]
@@ -69,7 +73,8 @@ pub struct GameAudioAssets {
 }
 
 impl GameAudioAssets {
-    pub fn get_bg_music_asset(&self, bg_music_type: &BGMusicType) -> Handle<AudioSource> {
+    /// Use a BGMusicType enum to access a handle for a track of music
+    pub(crate) fn get_bg_music_asset(&self, bg_music_type: &BGMusicType) -> Handle<AudioSource> {
         match bg_music_type {
             BGMusicType::Game => self.game_music.clone(),
             BGMusicType::Boss => self.boss_music.clone(),
@@ -78,7 +83,9 @@ impl GameAudioAssets {
         }
     }
 
-    pub fn get_sound_effect(&self, sound_type: &SoundEffectType) -> Handle<AudioSource> {
+    /// Use a SoundEffectType enum to access a handle for a sound effect
+    /// Sound effects that produced a randomized sound will we return a random effect from a subset
+    pub(crate) fn get_sound_effect(&self, sound_type: &SoundEffectType) -> Handle<AudioSource> {
         match sound_type {
             SoundEffectType::Collision(collsion_type) => match collsion_type {
                 CollisionSoundType::Squishy => self.squishy_collision.clone(),

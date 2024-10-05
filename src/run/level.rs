@@ -2,7 +2,12 @@
 //! between levels.
 use crate::run::level_phase::LevelPhaseType;
 use crate::run::tutorial::modify_player_spawn_params_for_lesson_phase;
-use bevy::{prelude::*, time::Stopwatch};
+use bevy::{
+    log::info,
+    math::Quat,
+    prelude::{EventReader, EventWriter, Query, ResMut, Resource, With},
+    time::{Stopwatch, Time, Timer},
+};
 use leafwing_input_manager::prelude::ActionState;
 use serde::Deserialize;
 use std::{

@@ -1,4 +1,11 @@
-use bevy::prelude::*;
+use bevy::{
+    math::{Vec3, Vec3Swizzles},
+    prelude::{
+        default, Commands, DespawnRecursiveExt, Entity, EventReader, EventWriter, Query, Res,
+        Transform,
+    },
+    time::Time,
+};
 use bevy_rapier2d::prelude::{ImpulseJoint, TypedJoint};
 use rand::{thread_rng, Rng};
 use serde::Deserialize;
@@ -59,7 +66,6 @@ pub struct RandomRotationData {
 }
 
 /// Executes the behaviors of mob segments
-#[allow(clippy::too_many_arguments)]
 pub fn mob_segment_execute_behavior_system(
     mut commands: Commands,
     mut collision_events: EventReader<SortedCollisionEvent>,

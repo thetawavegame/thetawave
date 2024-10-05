@@ -12,7 +12,9 @@ use bevy::render::camera::{Camera, ClearColorConfig, PerspectiveProjection, Proj
 use bevy::transform::components::Transform;
 use bevy::utils::default;
 
-use self::screen_shake::{add_trauma, shake_screen, shake_screen_on_player_damage};
+use self::screen_shake::{
+    add_trauma_system, screen_shake_on_player_damage_system, screen_shake_system,
+};
 use thetawave_interface::camera::ScreenShakeEvent;
 
 mod screen_shake;
@@ -28,11 +30,17 @@ impl Plugin for CameraPlugin {
         app.add_systems(Startup, setup_cameras_system);
         app.add_systems(
             Update,
-            (shake_screen, add_trauma, shake_screen_on_player_damage),
+            (
+                screen_shake_system,
+                add_trauma_system,
+                screen_shake_on_player_damage_system,
+            ),
         );
     }
 }
 
+/// Setup 2D camera for sprites used in gameplay
+/// Setup 3D camera for rendering 3D backgrounds
 fn setup_cameras_system(
     mut commands: Commands,
     game_parameters: Res<game::GameParametersResource>,

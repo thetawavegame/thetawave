@@ -3,7 +3,9 @@ use crate::{game::GameParametersResource, spawnable::SpawnEffectEvent};
 use bevy::prelude::{
     Commands, Component, EventWriter, Name, Quat, Res, Transform, TransformBundle, Vec2, Vec3,
 };
-use bevy_rapier2d::prelude::*;
+use bevy_rapier2d::prelude::{
+    ActiveEvents, Collider, CollisionGroups, Friction, Group, Restitution, RigidBody,
+};
 use std::f32::consts::FRAC_PI_2;
 use thetawave_interface::{spawnable::EffectType, states::GameCleanup};
 

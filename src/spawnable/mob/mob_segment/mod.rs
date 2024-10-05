@@ -1,5 +1,14 @@
-use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
+use bevy::{
+    core::Name,
+    math::{Vec2, Vec3},
+    prelude::{default, Commands, Component, Entity, Resource, Transform},
+    sprite::{SpriteBundle, TextureAtlas},
+    time::{Timer, TimerMode},
+};
+use bevy_rapier2d::prelude::{
+    ActiveEvents, CoefficientCombineRule, Collider, ColliderMassProperties, CollisionGroups,
+    Friction, Group, ImpulseJoint, Restitution, RevoluteJointBuilder, RigidBody, Velocity,
+};
 use serde::Deserialize;
 use std::collections::{hash_map::Entry, HashMap};
 use thetawave_interface::{
@@ -23,11 +32,13 @@ use crate::{
 };
 
 mod behavior;
-pub use self::behavior::*;
-
 use super::{
     ColliderData, CompoundColliderData, JointType, MobSegmentAnchorPointData, MobSpawner,
     MobSpawnerData,
+};
+pub(in crate::spawnable) use behavior::{
+    mob_segment_apply_disconnected_behaviors_system, mob_segment_execute_behavior_system,
+    MobSegmentBehavior,
 };
 
 #[derive(Resource, Deserialize)]
@@ -70,7 +81,7 @@ impl From<&MobSegmentData> for MobSegmentComponent {
         MobSegmentComponent {
             mob_segment_type: mob_segment_data.mob_segment_type.clone(),
             collision_damage: mob_segment_data.collision_damage,
-            collision_sound: mob_segment_data.collision_sound.clone(),
+            collision_sound: mob_segment_data.collision_sound,
             defense_interaction: mob_segment_data.defense_interaction.clone(),
             consumable_drops: mob_segment_data.consumable_drops.clone(),
             behaviors: mob_segment_data.behaviors.clone(),
@@ -157,9 +168,7 @@ pub fn spawn_mob_segment(
             ..default()
         })
         .insert(TextureAtlas {
-            layout: mob_assets
-                .get_mob_segment_texture_atlas_layout(mob_segment_type)
-                .into(),
+            layout: mob_assets.get_mob_segment_texture_atlas_layout(mob_segment_type),
             ..default()
         })
         .insert(AnimationComponent {

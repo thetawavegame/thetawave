@@ -8,8 +8,9 @@ use thetawave_interface::spawnable::{
     NeutralMobType,
 };
 
+/// Collection of texture atlases and images for mob and mob segment sprites
 #[derive(AssetCollection, Resource)]
-pub struct MobAssets {
+pub(crate) struct MobAssets {
     #[asset(key = "tutorial_drone.layout")]
     pub tutorial_drone_layout: Handle<TextureAtlasLayout>,
     #[asset(key = "tutorial_drone.image")]
@@ -193,7 +194,11 @@ pub struct MobAssets {
 }
 
 impl MobAssets {
-    pub fn get_mob_texture_atlas_layout(&self, mob_type: &MobType) -> Handle<TextureAtlasLayout> {
+    /// Use a MobType enum to access a texture atlas layout
+    pub(crate) fn get_mob_texture_atlas_layout(
+        &self,
+        mob_type: &MobType,
+    ) -> Handle<TextureAtlasLayout> {
         match mob_type {
             MobType::Enemy(enemy_type) => match enemy_type {
                 EnemyMobType::Pawn => self.pawn_layout.clone(),
@@ -223,7 +228,8 @@ impl MobAssets {
         }
     }
 
-    pub fn get_mob_image(&self, mob_type: &MobType) -> Handle<Image> {
+    /// Use a MobType enum to access an image handle
+    pub(crate) fn get_mob_image(&self, mob_type: &MobType) -> Handle<Image> {
         match mob_type {
             MobType::Enemy(enemy_type) => match enemy_type {
                 EnemyMobType::Pawn => self.pawn_image.clone(),
@@ -253,7 +259,8 @@ impl MobAssets {
         }
     }
 
-    pub fn get_mob_segment_texture_atlas_layout(
+    /// Use a MobSegmentType enum to access a texture atlas layout
+    pub(crate) fn get_mob_segment_texture_atlas_layout(
         &self,
         mob_segment_type: &MobSegmentType,
     ) -> Handle<TextureAtlasLayout> {
@@ -324,7 +331,8 @@ impl MobAssets {
         }
     }
 
-    pub fn get_mob_segment_image(&self, mob_segment_type: &MobSegmentType) -> Handle<Image> {
+    /// Use a MobSegmentType enum to access an image handle
+    pub(crate) fn get_mob_segment_image(&self, mob_segment_type: &MobSegmentType) -> Handle<Image> {
         match mob_segment_type {
             MobSegmentType::Neutral(neutral_type) => match neutral_type {
                 NeutralMobSegmentType::HaulerBack => self.hauler_back_image.clone(),
@@ -390,7 +398,9 @@ impl MobAssets {
         }
     }
 
-    pub fn get_thruster_texture_atlas_layout(
+    /// Use a MobType enum to access its associated thruster's texture atlas layout
+    /// Returns an option due to some mobs not having an thruster
+    pub(crate) fn get_thruster_texture_atlas_layout(
         &self,
         mob_type: &MobType,
     ) -> Option<Handle<TextureAtlasLayout>> {
@@ -423,7 +433,9 @@ impl MobAssets {
         }
     }
 
-    pub fn get_thruster_image(&self, mob_type: &MobType) -> Option<Handle<Image>> {
+    /// Use a MobType enum to access its associated thruster's image
+    /// Returns an option due to some mobs not having an thruster
+    pub(crate) fn get_thruster_image(&self, mob_type: &MobType) -> Option<Handle<Image>> {
         match mob_type {
             MobType::Enemy(enemy_type) => match enemy_type {
                 EnemyMobType::Pawn => Some(self.pawn_thruster_image.clone()),

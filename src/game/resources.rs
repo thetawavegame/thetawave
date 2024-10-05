@@ -1,6 +1,6 @@
 //! Resources for managing the game
 
-use bevy::prelude::*;
+use bevy::prelude::Resource;
 use serde::Deserialize;
 
 /// Values used globally throughout the game

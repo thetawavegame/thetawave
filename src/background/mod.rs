@@ -7,8 +7,6 @@ use bevy::{
     core::Name,
     ecs::{
         component::Component,
-        event::EventReader,
-        query::With,
         reflect::ReflectComponent,
         schedule::{Condition, IntoSystemConfigs},
         system::{Commands, Query, Res, ResMut, Resource},
@@ -39,7 +37,6 @@ use std::fs;
 use std::ops::Range;
 use thetawave_interface::{
     game::options::GameOptions,
-    run::{RunDefeatType, RunEndEvent, RunOutcomeType},
     states::{self, CharacterSelectionCleanup, GameCleanup},
 };
 use thiserror::Error;
@@ -52,7 +49,6 @@ pub(super) struct BackgroundPlugin;
 
 impl Plugin for BackgroundPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(StarExplodeResource::default());
         app.insert_resource(
             from_bytes::<BackgroundsResource>(include_bytes!("../../assets/data/backgrounds.ron"))
                 .unwrap(),
@@ -78,7 +74,7 @@ impl Plugin for BackgroundPlugin {
 
         app.add_systems(
             Update,
-            (rotate_planet_system, on_defeat_star_explode_system)
+            (rotate_planet_system)
                 .run_if(in_state(states::AppStates::Game))
                 .run_if(in_state(states::GameStates::Playing)),
         );
@@ -88,8 +84,6 @@ impl Plugin for BackgroundPlugin {
 /// Parameters for procedurally generated 3D level backgrounds
 #[derive(Resource, Deserialize)]
 struct BackgroundsResource {
-    /// Intensity increase rate for star explosion effect
-    pub star_explode_intensity: f32,
     /// Position of the quad with the background image
     pub background_transation: Vec3,
     /// Range of x coordinates of star position
@@ -122,12 +116,6 @@ struct BackgroundsResource {
     pub star_bloom_brightness: f32,
 }
 
-/// Resource to track if star explosion is happening
-#[derive(Resource, Default)]
-struct StarExplodeResource {
-    pub started: bool,
-}
-
 /// Component to manage movement of planets
 #[derive(Reflect, Default, Component)]
 #[reflect(Component)]
@@ -144,29 +132,6 @@ struct StarLightComponent;
 fn rotate_planet_system(mut query: Query<(&mut Transform, &PlanetComponent)>, time: Res<Time>) {
     for (mut transform, planet) in query.iter_mut() {
         transform.rotation *= Quat::from_rotation_y(planet.rotation_speed * time.delta_seconds());
-    }
-}
-
-/// Execute the exploding star effect if the game is lost through defense being destroyed
-fn on_defeat_star_explode_system(
-    mut run_end_event_reader: EventReader<RunEndEvent>,
-    mut point_light_query: Query<&mut PointLight, With<StarLightComponent>>,
-    mut star_explode_res: ResMut<StarExplodeResource>,
-    time: Res<Time>,
-    backgrounds_res: Res<BackgroundsResource>,
-) {
-    // Check for loss condition from defense objective
-    for event in run_end_event_reader.read() {
-        if let RunOutcomeType::Defeat(RunDefeatType::DefenseDestroyed) = event.outcome {
-            star_explode_res.started = true;
-        }
-    }
-
-    // Update star point light intensity if star explosion active
-    if star_explode_res.started {
-        for mut point_light in point_light_query.iter_mut() {
-            point_light.intensity *= backgrounds_res.star_explode_intensity * time.delta_seconds();
-        }
     }
 }
 
@@ -204,13 +169,9 @@ fn create_background_system(
     asset_server: Res<AssetServer>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
-    mut star_explode_res: ResMut<StarExplodeResource>,
     backgrounds_res: Res<BackgroundsResource>,
     game_options: Res<GameOptions>,
 ) {
-    // reset the star explode reource
-    *star_explode_res = StarExplodeResource::default();
-
     let mut rng = rand::thread_rng();
 
     // Choose random positions for the bodies

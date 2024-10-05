@@ -1,4 +1,8 @@
-use bevy::prelude::*;
+use bevy::{
+    log::error,
+    math::{Quat, Vec2},
+    prelude::{Event, EventReader, EventWriter, Resource},
+};
 use serde::Deserialize;
 use std::collections::HashMap;
 use thetawave_interface::spawnable::{SpawnMobEvent, SpawnableType};
