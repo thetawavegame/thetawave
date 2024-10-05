@@ -42,14 +42,16 @@ use self::{
 };
 
 // TODO: move to interface, or change to use events for sending information between modules
-pub use self::behavior::SpawnableBehavior;
-pub use self::behavior_sequence::{BehaviorSequenceResource, MobBehaviorUpdateEvent};
-pub use self::consumable::{
+pub(crate) use self::behavior::SpawnableBehavior;
+pub(crate) use self::behavior_sequence::{BehaviorSequenceResource, MobBehaviorUpdateEvent};
+pub(crate) use self::consumable::{
     ConsumableComponent, ConsumableData, ConsumableResource, SpawnConsumableEvent,
 };
-pub use self::effect::{EffectsResource, SpawnEffectEvent};
-pub use self::mob::{BossComponent, BossesDestroyedEvent, MobComponent, MobSegmentComponent};
-pub use self::projectile::{
+pub(crate) use self::effect::{EffectsResource, SpawnEffectEvent};
+pub(crate) use self::mob::{
+    BossComponent, BossesDestroyedEvent, MobComponent, MobSegmentComponent,
+};
+pub(crate) use self::projectile::{
     FireWeaponEvent, ProjectileComponent, ProjectileData, ProjectileResource,
 };
 

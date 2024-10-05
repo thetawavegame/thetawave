@@ -1,6 +1,9 @@
 use super::{
-    mob::BehaviorSequenceTracker, mob::MobBehavior, mob::MobComponent, mob::MobSegmentComponent,
-    mob::MobSegmentControlBehavior, SpawnableBehavior, SpawnableComponent,
+    mob::{
+        BehaviorSequenceTracker, MobBehavior, MobComponent, MobSegmentComponent,
+        MobSegmentControlBehavior,
+    },
+    SpawnableBehavior, SpawnableComponent,
 };
 use bevy::{
     prelude::{Entity, Event, EventReader, EventWriter, Query, Res, Resource},

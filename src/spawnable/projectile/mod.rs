@@ -35,7 +35,9 @@ use crate::{
 
 mod behavior;
 
-pub use self::behavior::{projectile_execute_behavior_system, ProjectileBehavior};
+pub(in crate::spawnable) use self::behavior::{
+    projectile_execute_behavior_system, ProjectileBehavior,
+};
 
 use super::{mob::ColliderData, InitialMotion};
 

@@ -17,6 +17,7 @@ use bevy_rapier2d::{
         LockedAxes, Restitution, RevoluteJointBuilder, RigidBody, Velocity,
     },
 };
+use mob_segment::{spawn_mob_segment, MobSegmentBehavior};
 use serde::Deserialize;
 use std::collections::{hash_map::Entry, HashMap};
 
@@ -30,7 +31,14 @@ use crate::{
 
 mod behavior;
 mod mob_segment;
-pub use self::{behavior::*, mob_segment::*};
+pub(crate) use self::mob_segment::MobSegmentComponent;
+pub(in crate::spawnable) use self::{
+    behavior::{mob_execute_behavior_system, MobBehavior, MobSegmentControlBehavior},
+    mob_segment::{
+        mob_segment_apply_disconnected_behaviors_system, mob_segment_execute_behavior_system,
+        MobSegmentsResource,
+    },
+};
 
 use super::{behavior_sequence::MobBehaviorSequenceType, InitialMotion};
 use crate::collision::{

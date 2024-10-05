@@ -25,7 +25,7 @@ use crate::{
 
 mod behavior;
 
-pub use self::behavior::{consumable_execute_behavior_system, ConsumableBehavior};
+pub(crate) use self::behavior::{consumable_execute_behavior_system, ConsumableBehavior};
 
 use thetawave_interface::spawnable::AttractToClosestPlayerComponent;
 

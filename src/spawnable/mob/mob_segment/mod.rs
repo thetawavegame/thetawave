@@ -32,11 +32,13 @@ use crate::{
 };
 
 mod behavior;
-pub use self::behavior::*;
-
 use super::{
     ColliderData, CompoundColliderData, JointType, MobSegmentAnchorPointData, MobSpawner,
     MobSpawnerData,
+};
+pub(in crate::spawnable) use behavior::{
+    mob_segment_apply_disconnected_behaviors_system, mob_segment_execute_behavior_system,
+    MobSegmentBehavior,
 };
 
 #[derive(Resource, Deserialize)]
@@ -79,7 +81,7 @@ impl From<&MobSegmentData> for MobSegmentComponent {
         MobSegmentComponent {
             mob_segment_type: mob_segment_data.mob_segment_type.clone(),
             collision_damage: mob_segment_data.collision_damage,
-            collision_sound: mob_segment_data.collision_sound.clone(),
+            collision_sound: mob_segment_data.collision_sound,
             defense_interaction: mob_segment_data.defense_interaction.clone(),
             consumable_drops: mob_segment_data.consumable_drops.clone(),
             behaviors: mob_segment_data.behaviors.clone(),
