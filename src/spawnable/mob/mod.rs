@@ -1,3 +1,9 @@
+use crate::{
+    animation::{AnimationComponent, AnimationData},
+    game::GameParametersResource,
+    loot::DropListType,
+    spawnable::{SpawnableBehavior, SpawnableComponent},
+};
 use bevy::{
     color::{Color, Srgba},
     core::Name,
@@ -20,14 +26,7 @@ use bevy_rapier2d::{
 use mob_segment::{spawn_mob_segment, MobSegmentBehavior};
 use serde::Deserialize;
 use std::collections::{hash_map::Entry, HashMap};
-
-use crate::{
-    animation::{AnimationComponent, AnimationData},
-    assets::MobAssets,
-    game::GameParametersResource,
-    loot::DropListType,
-    spawnable::{SpawnableBehavior, SpawnableComponent},
-};
+use thetawave_assets::MobAssets;
 
 mod behavior;
 mod mob_segment;

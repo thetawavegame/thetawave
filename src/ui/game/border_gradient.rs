@@ -1,5 +1,6 @@
 use std::{f32::consts::PI, time::Duration};
 
+use super::parent::BorderGradientCommandsExt;
 use bevy::{
     color::Color,
     ecs::{
@@ -16,14 +17,11 @@ use bevy::{
     },
     utils::default,
 };
+use thetawave_assets::UiAssets;
 use thetawave_interface::{
     objective::{DefenseInteraction, MobReachedBottomGateEvent},
     states::GameCleanup,
 };
-
-use crate::assets::UiAssets;
-
-use super::parent::BorderGradientCommandsExt;
 
 const DURATION: f32 = 0.4;
 const MAX_ALPHA: f32 = 0.5;

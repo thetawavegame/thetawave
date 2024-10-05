@@ -1,14 +1,14 @@
 use bevy::{
-    prelude::{Handle, Res, Resource, TextureAtlasLayout},
-    render::texture::Image,
+    asset::Handle,
+    prelude::{Image, Res, Resource},
+    sprite::TextureAtlasLayout,
 };
-use bevy_asset_loader::prelude::AssetCollection;
-
+use bevy_asset_loader::asset_collection::AssetCollection;
 use thetawave_interface::spawnable::ConsumableType;
 
 /// Collection of texture atlases and images for consumable sprites
 #[derive(AssetCollection, Resource)]
-pub(crate) struct ConsumableAssets {
+pub struct ConsumableAssets {
     #[asset(key = "health_wrench.layout")]
     pub health_wrench_layout: Handle<TextureAtlasLayout>,
     #[asset(key = "health_wrench.image")]
@@ -33,7 +33,7 @@ pub(crate) struct ConsumableAssets {
 
 impl ConsumableAssets {
     /// Use a ConsumableType enum to access a texture atlas layout
-    pub(crate) fn get_texture_atlas_layout(
+    pub fn get_texture_atlas_layout(
         &self,
         consumable_type: &ConsumableType,
     ) -> Handle<TextureAtlasLayout> {
@@ -47,7 +47,7 @@ impl ConsumableAssets {
     }
 
     /// Use a ConsumableType enum to access an image handle
-    pub(crate) fn get_image(&self, consumable_type: &ConsumableType) -> Handle<Image> {
+    pub fn get_image(&self, consumable_type: &ConsumableType) -> Handle<Image> {
         match consumable_type {
             ConsumableType::Money1 => self.money1_image.clone(),
             ConsumableType::Money3 => self.money3_image.clone(),

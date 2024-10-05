@@ -1,10 +1,13 @@
-use bevy::prelude::{Handle, Image, Res, Resource};
-use bevy_asset_loader::prelude::AssetCollection;
+use bevy::{
+    asset::Handle,
+    prelude::{Image, Res, Resource},
+};
+use bevy_asset_loader::asset_collection::AssetCollection;
 use thetawave_interface::character::CharacterType;
 
 /// Collection of images for player characters
 #[derive(AssetCollection, Resource)]
-pub(crate) struct PlayerAssets {
+pub struct PlayerAssets {
     #[asset(key = "captain")]
     pub captain: Handle<Image>,
     #[asset(key = "juggernaut")]
@@ -17,7 +20,7 @@ pub(crate) struct PlayerAssets {
 
 impl PlayerAssets {
     /// Use a CharacterType enum to access an image handle
-    pub(crate) fn get_asset(&self, character_type: &CharacterType) -> Handle<Image> {
+    pub fn get_asset(&self, character_type: &CharacterType) -> Handle<Image> {
         match character_type {
             CharacterType::Captain => self.captain.clone(),
             CharacterType::Juggernaut => self.juggernaut.clone(),
@@ -25,7 +28,7 @@ impl PlayerAssets {
     }
 
     /// Use a CharacterType enum to access a character's associated outline image handle
-    pub(crate) fn get_outline_asset(&self, character_type: &CharacterType) -> Handle<Image> {
+    pub fn get_outline_asset(&self, character_type: &CharacterType) -> Handle<Image> {
         match character_type {
             CharacterType::Captain => self.captain_outline.clone(),
             CharacterType::Juggernaut => self.juggernaut_outline.clone(),

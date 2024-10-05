@@ -1,9 +1,6 @@
 //! Exposes a plugin to handle the layout and behavior of a button-based main menu that mainly
 //! guides the user into the `thetawave_interface::states::AppStates::CharacterSelection` state.
-use crate::{
-    animation::{AnimationComponent, AnimationDirection},
-    assets::UiAssets,
-};
+use crate::animation::{AnimationComponent, AnimationDirection};
 use bevy::{
     color::Srgba,
     ecs::{
@@ -23,6 +20,7 @@ use thetawave_interface::states::{AppStates, MainMenuCleanup};
 mod button;
 use self::button::main_menu_button_selection_and_click_system;
 use self::button::UiChildBuilderExt;
+use thetawave_assets::UiAssets;
 
 /// Renders a button-based UI to transition the app from `AppStates::MainMenu` to
 /// `AppStates::CharacterSelection`, possibly with some digressions. Without this plugin, the game will

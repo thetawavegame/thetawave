@@ -21,16 +21,12 @@ use thetawave_interface::states::{AppStates, GameStates};
 
 mod pause_menu;
 
-use crate::assets::ConsumableAssets;
-use crate::assets::EffectAssets;
-use crate::assets::GameAudioAssets;
-use crate::assets::ItemAssets;
-use crate::assets::MobAssets;
-use crate::assets::PlayerAssets;
-use crate::assets::ProjectileAssets;
-use crate::assets::UiAssets;
 use crate::GameEnterSet;
 use crate::GameUpdateSet;
+use thetawave_assets::{
+    ConsumableAssets, EffectAssets, GameAudioAssets, ItemAssets, MobAssets, PlayerAssets,
+    ProjectileAssets, UiAssets,
+};
 
 use self::pause_menu::{close_pause_menu_system, open_pause_menu_system};
 /// Includes systems that handle state transitions for `AppStates` and `GameStates`. Also includes

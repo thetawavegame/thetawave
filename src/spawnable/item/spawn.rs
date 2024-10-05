@@ -1,3 +1,7 @@
+use crate::spawnable::SpawnableBehavior;
+use crate::{
+    animation::AnimationComponent, game::GameParametersResource, spawnable::SpawnableComponent,
+};
 use bevy::prelude::{
     in_state, App, Commands, EventReader, IntoSystemConfigs, Name, Plugin, Res, Timer, TimerMode,
     Transform, Update, Vec2, Vec3,
@@ -5,18 +9,13 @@ use bevy::prelude::{
 use bevy::sprite::{SpriteBundle, TextureAtlas};
 use bevy::utils::default;
 use bevy_rapier2d::prelude::{ActiveEvents, Collider, LockedAxes, RigidBody, Sensor, Velocity};
+use thetawave_assets::ItemAssets;
+use thetawave_interface::spawnable::AttractToClosestPlayerComponent;
 use thetawave_interface::spawnable::{ItemComponent, SpawnItemEvent};
 use thetawave_interface::{
     spawnable::ItemType,
     states::{self, GameCleanup},
 };
-
-use crate::spawnable::SpawnableBehavior;
-use crate::{
-    animation::AnimationComponent, assets::ItemAssets, game::GameParametersResource,
-    spawnable::SpawnableComponent,
-};
-use thetawave_interface::spawnable::AttractToClosestPlayerComponent;
 
 use super::{
     behavior::{ItemBehavior, OnCollectFullHeal, OnCollectIncreaseMaxHealth},

@@ -18,6 +18,7 @@ use bevy::{
     },
     utils::default,
 };
+use thetawave_assets::UiAssets;
 use thetawave_interface::{
     abilities::{AbilityCooldownComponent, AbilitySlotIDComponent},
     character::Character,
@@ -25,7 +26,7 @@ use thetawave_interface::{
     player::{PlayerComponent, PlayerIDComponent, PlayersResource},
 };
 
-use crate::{assets::UiAssets, player::CharactersResource};
+use crate::player::CharactersResource;
 
 use super::parent::PlayerUiChildBuilderExt;
 

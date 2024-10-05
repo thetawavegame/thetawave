@@ -8,6 +8,7 @@ members = [
     "crates/thetawave_interface",
     "crates/thetawave_storage",
     "crates/thetawave_arcade",
+    "crates/thetawave_assets",
 ]
 
 [workspace.dependencies]
@@ -18,9 +19,13 @@ thiserror = "1.0"
 derive_more = "0.99.17"
 bevy_ecs_macros = "0.14.2"
 bevy_ecs = "0.14.2"
+bevy_asset = "0.14.2"
 bevy_reflect = "0.14.2"
 bevy_input = "0.14.2"
 bevy_state = "0.14.2"
+bevy_sprite = "0.14.2"
+bevy_text = "0.14.2"
+bevy_render = "0.14.2"
 bevy_kira_audio = { version = "0.20.0", features = ["mp3", "wav"] }
 leafwing-input-manager = { git = "https://github.com/Leafwing-Studios/leafwing-input-manager.git", rev = "d32883661c72b4ff01be71ce65d9e9f2375d5f69" }
 ron = "0.8.0"
@@ -31,6 +36,13 @@ bevy_math = "0.14.2"
 argh = "0.1.12"
 rand = "0.8.5"
 console_error_panic_hook = "0.1.7"
+# check if necessary for multiple crates
+bevy_asset_loader = { version = "0.21.0", features = [
+    "2d",
+    "3d",
+    "standard_dynamic_assets",
+] }
+thetawave_interface = { path = "crates/thetawave_interface" }
 
 [workspace.dependencies.bevy]
 version = "0.14.2"
@@ -73,11 +85,7 @@ bevy_rapier2d = { version = "0.27.0", features = [
     "simd-stable",
     "debug-render-2d",
 ] }
-bevy_asset_loader = { version = "0.21.0", features = [
-    "2d",
-    "3d",
-    "standard_dynamic_assets",
-] }
+bevy_asset_loader = { workspace = true }
 serde = { workspace = true }
 strum = { workspace = true }
 strum_macros = { workspace = true }
@@ -88,7 +96,8 @@ winit = "0.30.3"
 image = "0.24.6"
 thiserror = { workspace = true }
 leafwing-input-manager = { workspace = true }
-thetawave_interface = { path = "crates/thetawave_interface" }
+thetawave_interface = { workspace = true }
+thetawave_assets = { path = "crates/thetawave_assets" }
 
 
 # Serial ports do not work in in the browser.

@@ -1,11 +1,14 @@
-use bevy::prelude::{Handle, Image, Res, Resource, TextureAtlasLayout};
-use bevy_asset_loader::prelude::AssetCollection;
-
+use bevy::{
+    asset::Handle,
+    prelude::{Image, Res, Resource},
+    sprite::TextureAtlasLayout,
+};
+use bevy_asset_loader::asset_collection::AssetCollection;
 use thetawave_interface::spawnable::EffectType;
 
 /// Collection of texture atlases and images for effect sprites
 #[derive(AssetCollection, Resource)]
-pub(crate) struct EffectAssets {
+pub struct EffectAssets {
     #[asset(key = "ally_blast_explosion.layout")]
     pub ally_blast_explosion_layout: Handle<TextureAtlasLayout>,
     #[asset(key = "ally_blast_explosion.image")]
@@ -55,7 +58,7 @@ pub(crate) struct EffectAssets {
 impl EffectAssets {
     /// Use a EffectType enum to access a texture atlas layout
     /// Option because a Text effect doesn't have a texture atlas
-    pub(crate) fn get_texture_atlas_layout(
+    pub fn get_texture_atlas_layout(
         &self,
         effect_type: &EffectType,
     ) -> Option<Handle<TextureAtlasLayout>> {
@@ -77,7 +80,7 @@ impl EffectAssets {
 
     /// Use a EffectType enum to access an image handle
     /// Option because a Text effect doesn't have an image
-    pub(crate) fn get_image(&self, effect_type: &EffectType) -> Option<Handle<Image>> {
+    pub fn get_image(&self, effect_type: &EffectType) -> Option<Handle<Image>> {
         match effect_type {
             EffectType::AllyBlastExplosion => Some(self.ally_blast_explosion_image.clone()),
             EffectType::AllyBlastDespawn => Some(self.ally_blast_despawn_image.clone()),

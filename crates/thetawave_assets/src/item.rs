@@ -1,14 +1,14 @@
 use bevy::{
-    prelude::{Handle, Res, Resource, TextureAtlasLayout},
-    render::texture::Image,
+    asset::Handle,
+    prelude::{Image, Res, Resource},
+    sprite::TextureAtlasLayout,
 };
-use bevy_asset_loader::prelude::AssetCollection;
-
+use bevy_asset_loader::asset_collection::AssetCollection;
 use thetawave_interface::spawnable::ItemType;
 
 /// Collection of texture atlases and images for item sprites
 #[derive(AssetCollection, Resource)]
-pub(crate) struct ItemAssets {
+pub struct ItemAssets {
     #[asset(key = "item_placeholder.layout")]
     pub item_placeholder_layout: Handle<TextureAtlasLayout>,
     #[asset(key = "item_placeholder.image")]
@@ -17,10 +17,7 @@ pub(crate) struct ItemAssets {
 
 impl ItemAssets {
     /// Use a ItemType enum to access a texture atlas layout
-    pub(crate) fn get_texture_atlas_layout(
-        &self,
-        item_type: &ItemType,
-    ) -> Handle<TextureAtlasLayout> {
+    pub fn get_texture_atlas_layout(&self, item_type: &ItemType) -> Handle<TextureAtlasLayout> {
         match item_type {
             ItemType::EnhancedPlating => self.item_placeholder_layout.clone(),
             /*
@@ -43,7 +40,7 @@ impl ItemAssets {
     }
 
     /// Use a ItemType enum to access an item image handle
-    pub(crate) fn get_image(&self, item_type: &ItemType) -> Handle<Image> {
+    pub fn get_image(&self, item_type: &ItemType) -> Handle<Image> {
         match item_type {
             ItemType::EnhancedPlating => self.item_placeholder_image.clone(),
         }

@@ -1,3 +1,6 @@
+use crate::run::level_phase::LevelPhaseType;
+use crate::run::tutorial::TutorialLesson;
+use crate::{run::CurrentRunProgressResource, spawnable::BossComponent};
 use bevy::{
     asset::Handle,
     color::{Alpha, Color, Srgba},
@@ -15,11 +18,8 @@ use bevy::{
     },
     utils::default,
 };
+use thetawave_assets::UiAssets;
 use thetawave_interface::health::HealthComponent;
-
-use crate::run::tutorial::TutorialLesson;
-use crate::{assets::UiAssets, run::level_phase::LevelPhaseType};
-use crate::{run::CurrentRunProgressResource, spawnable::BossComponent};
 
 use super::parent::PhaseUiChildBuilderExt;
 

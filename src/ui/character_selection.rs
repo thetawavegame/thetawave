@@ -1,17 +1,10 @@
 //! Systems to spawn and style the character selection screen, where each player picks a character
 //! //! from one of a few options, and possibly enables/diables the tutorial.
 
-use std::collections::VecDeque;
-
-use crate::{
-    assets::{PlayerAssets, UiAssets},
-    game::GameParametersResource,
-    player::CharactersResource,
-};
-
 use super::button::{
     ButtonActionComponent, ButtonActionEvent, ButtonActionType, UiButtonChildBuilderExt,
 };
+use crate::{game::GameParametersResource, player::CharactersResource};
 use bevy::{
     app::{App, Plugin, Update},
     asset::{AssetServer, Handle},
@@ -37,7 +30,9 @@ use bevy::{
     utils::default,
 };
 use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
+use std::collections::VecDeque;
 use strum::IntoEnumIterator;
+use thetawave_assets::{PlayerAssets, UiAssets};
 use thetawave_interface::{
     abilities::AbilityDescriptionsResource,
     character::{Character, CharacterStatType},

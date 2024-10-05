@@ -19,9 +19,8 @@ use bevy::{
     },
     utils::default,
 };
+use thetawave_assets::UiAssets;
 use thetawave_interface::{player::PlayerInput, states::AppStates};
-
-use crate::assets::UiAssets;
 
 /// Event and Component for giving and sending menu buttons actions to move the user from
 /// `AppStates::MainMenu` to `AppStates::CharacterSelection`, plus possibly a few digressions and

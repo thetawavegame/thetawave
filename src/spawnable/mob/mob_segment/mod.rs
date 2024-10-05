@@ -1,3 +1,12 @@
+use crate::collision::{
+    HORIZONTAL_BARRIER_COLLIDER_GROUP, MOB_COLLIDER_GROUP, SPAWNABLE_COLLIDER_GROUP,
+};
+use crate::{
+    animation::{AnimationComponent, AnimationData},
+    game::GameParametersResource,
+    loot::DropListType,
+    spawnable::SpawnableComponent,
+};
 use bevy::{
     core::Name,
     math::{Vec2, Vec3},
@@ -11,6 +20,7 @@ use bevy_rapier2d::prelude::{
 };
 use serde::Deserialize;
 use std::collections::{hash_map::Entry, HashMap};
+use thetawave_assets::MobAssets;
 use thetawave_interface::{
     audio::CollisionSoundType,
     health::HealthComponent,
@@ -18,17 +28,6 @@ use thetawave_interface::{
     spawnable::{MobSegmentType, SpawnableType},
     states::GameCleanup,
     weapon::{WeaponData, WeaponsComponent},
-};
-
-use crate::collision::{
-    HORIZONTAL_BARRIER_COLLIDER_GROUP, MOB_COLLIDER_GROUP, SPAWNABLE_COLLIDER_GROUP,
-};
-use crate::{
-    animation::{AnimationComponent, AnimationData},
-    assets::MobAssets,
-    game::GameParametersResource,
-    loot::DropListType,
-    spawnable::SpawnableComponent,
 };
 
 mod behavior;
