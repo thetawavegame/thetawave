@@ -19,13 +19,9 @@ thiserror = "1.0"
 derive_more = "0.99.17"
 bevy_ecs_macros = "0.14.2"
 bevy_ecs = "0.14.2"
-bevy_asset = "0.14.2"
 bevy_reflect = "0.14.2"
 bevy_input = "0.14.2"
 bevy_state = "0.14.2"
-bevy_sprite = "0.14.2"
-bevy_text = "0.14.2"
-bevy_render = "0.14.2"
 bevy_kira_audio = { version = "0.20.0", features = ["mp3", "wav"] }
 leafwing-input-manager = { git = "https://github.com/Leafwing-Studios/leafwing-input-manager.git", rev = "d32883661c72b4ff01be71ce65d9e9f2375d5f69" }
 ron = "0.8.0"
@@ -36,7 +32,6 @@ bevy_math = "0.14.2"
 argh = "0.1.12"
 rand = "0.8.5"
 console_error_panic_hook = "0.1.7"
-# check if necessary for multiple crates
 bevy_asset_loader = { version = "0.21.0", features = [
     "2d",
     "3d",

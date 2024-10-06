@@ -36,8 +36,8 @@
         path: "texture/crustling_tentacle_3.png"
     ),
     "tutorial_drone.layout": TextureAtlasLayout (
-        tile_size_x: 20,
-        tile_size_y: 21,
+        tile_size_x: 22,
+        tile_size_y: 23,
         columns: 3,
         rows: 1,
     ),
