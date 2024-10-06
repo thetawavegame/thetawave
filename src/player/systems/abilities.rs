@@ -191,6 +191,8 @@ pub(in crate::player) fn start_charge_ability_system(
                             player_ext_impulse.impulse = Vec2::new(0.0, charge_ability.impulse);
                         }
 
+                        println!("Start charge ability");
+
                         // disable movement and apply damage reduction
                         player_movement.movement_enabled = false;
                         player_incoming_damage.multiplier -=
@@ -227,6 +229,7 @@ pub(in crate::player) fn update_charge_ability_system(
                 // when the action timer is completed reverse the damage reduction, enable movement
                 // set the velocity of the player to 0
                 if charge_ability.action_timer.just_finished() {
+                    println!("End charge ability");
                     player_velocity.linvel = Vec2::splat(0.0);
                     player_movement.movement_enabled = true;
                     player_incoming_damage.multiplier += charge_ability.incoming_damage_multiplier;
