@@ -1,5 +1,5 @@
+use crate::options::PlayingOnArcadeResource;
 use crate::ui::BouncingPromptComponent;
-use crate::{assets::UiAssets, options::PlayingOnArcadeResource};
 use bevy::color::{Alpha, Color};
 use bevy::{
     asset::AssetServer,
@@ -18,6 +18,7 @@ use bevy::{
     utils::default,
 };
 use std::time::Duration;
+use thetawave_assets::UiAssets;
 use thetawave_interface::{
     audio::ChangeBackgroundMusicEvent,
     game::historical_metrics::{

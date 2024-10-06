@@ -1,5 +1,4 @@
 use crate::animation::AnimationComponent;
-use crate::assets::{EffectAssets, UiAssets};
 use crate::spawnable::effect::{EffectComponent, TextEffectData, TextEffectsResource};
 use crate::spawnable::{EffectsResource, InitialMotion, SpawnEffectEvent, SpawnableComponent};
 use bevy::color::Color;
@@ -11,6 +10,7 @@ use bevy::sprite::{SpriteBundle, TextureAtlas};
 use bevy::utils::default;
 use bevy_rapier2d::prelude::{LockedAxes, RigidBody, Velocity};
 use rand::Rng;
+use thetawave_assets::{EffectAssets, UiAssets};
 use thetawave_interface::game::options::GameOptions;
 use thetawave_interface::spawnable::{EffectType, SpawnableType, TextEffectType};
 use thetawave_interface::states;

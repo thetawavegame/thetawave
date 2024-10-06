@@ -1,9 +1,10 @@
 use bevy::{
-    prelude::{Handle, Res, Resource, TextureAtlasLayout},
-    render::texture::Image,
+    asset::Handle,
+    prelude::{Image, Res, Resource},
+    sprite::TextureAtlasLayout,
     text::Font,
 };
-use bevy_asset_loader::prelude::AssetCollection;
+use bevy_asset_loader::asset_collection::AssetCollection;
 use thetawave_interface::{
     abilities::{SlotOneAbilityType, SlotTwoAbilityType},
     character::CharacterStatType,
@@ -11,7 +12,7 @@ use thetawave_interface::{
 
 /// Collection of texture atlases and images for ui
 #[derive(AssetCollection, Resource)]
-pub(crate) struct UiAssets {
+pub struct UiAssets {
     #[asset(key = "font.lunchds")]
     pub lunchds_font: Handle<Font>,
     #[asset(key = "thetawave_logo.layout")]

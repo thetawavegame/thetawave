@@ -3,12 +3,11 @@ use bevy::prelude::{
     in_state, not, App, EventReader, IntoSystemConfigs, Plugin, Res, Resource, Startup, Update,
 };
 use bevy_kira_audio::prelude::{AudioApp, AudioChannel, AudioControl, AudioEasing, AudioTween};
+use thetawave_assets::GameAudioAssets;
 use thetawave_interface::{
     audio::{ChangeBackgroundMusicEvent, PlaySoundEffectEvent},
     states::AppStates,
 };
-
-use crate::assets::GameAudioAssets;
 
 /// Starts, stops, and modulates in-game audio when we receive a
 /// `thetawave_interface::audio::PlaySoundEffectEvent` or

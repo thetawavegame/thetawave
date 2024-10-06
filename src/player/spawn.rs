@@ -1,3 +1,7 @@
+use crate::{
+    game::GameParametersResource,
+    player::{CharactersResource, PlayersResource},
+};
 use bevy::color::Color;
 use bevy::core::Name;
 use bevy::ecs::system::{Commands, Res};
@@ -9,6 +13,7 @@ use bevy::transform::components::Transform;
 use bevy_rapier2d::dynamics::{ExternalImpulse, LockedAxes, RigidBody, Velocity};
 use bevy_rapier2d::geometry::{ActiveEvents, Collider, ColliderMassProperties, Restitution};
 use leafwing_input_manager::{prelude::ActionState, InputManagerBundle};
+use thetawave_assets::PlayerAssets;
 use thetawave_interface::abilities::{
     AbilitiesResource, ChargeAbilityBundle, SlotOneAbilityType, SlotTwoAbilityType,
     StandardWeaponAbilityBundle,
@@ -16,12 +21,6 @@ use thetawave_interface::abilities::{
 use thetawave_interface::input::{InputsResource, PlayerAction};
 use thetawave_interface::player::{PlayerBundle, PlayerIDComponent};
 use thetawave_interface::{health::HealthComponent, player::PlayerInput, states::GameCleanup};
-
-use crate::{
-    assets,
-    game::GameParametersResource,
-    player::{CharactersResource, PlayersResource},
-};
 
 trait PlayerAbilityChildBuilderExt {
     fn spawn_slot_1_ability(
@@ -78,7 +77,7 @@ pub(super) fn spawn_players_system(
     mut commands: Commands,
     characters: Res<CharactersResource>,
     game_parameters: Res<GameParametersResource>,
-    player_assets: Res<assets::PlayerAssets>,
+    player_assets: Res<PlayerAssets>,
     players_resource: Res<PlayersResource>,
     inputs_res: Res<InputsResource>,
     abilities_res: Res<AbilitiesResource>,

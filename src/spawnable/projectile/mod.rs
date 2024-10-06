@@ -13,6 +13,7 @@ use bevy_rapier2d::prelude::{
 };
 use serde::Deserialize;
 use std::collections::HashMap;
+use thetawave_assets::ProjectileAssets;
 use thetawave_interface::{
     audio::PlaySoundEffectEvent,
     game::options::GameOptions,
@@ -27,7 +28,6 @@ use crate::collision::{
 };
 use crate::{
     animation::{AnimationComponent, AnimationData},
-    assets::ProjectileAssets,
     game::GameParametersResource,
     spawnable::{SpawnableBehavior, SpawnableComponent},
     weapon::WeaponProjectileInitialVelocitiesExt,

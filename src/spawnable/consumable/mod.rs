@@ -1,3 +1,8 @@
+use crate::{
+    animation::{AnimationComponent, AnimationData},
+    game::GameParametersResource,
+    spawnable::{SpawnableBehavior, SpawnableComponent},
+};
 use bevy::{
     color::{Color, Srgba},
     prelude::{
@@ -10,17 +15,11 @@ use bevy::{
 use bevy_rapier2d::prelude::{ActiveEvents, Collider, LockedAxes, RigidBody, Sensor, Velocity};
 use serde::Deserialize;
 use std::collections::HashMap;
+use thetawave_assets::ConsumableAssets;
 use thetawave_interface::{
     game::options::GameOptions,
     spawnable::{ConsumableType, SpawnableType},
     states::GameCleanup,
-};
-
-use crate::{
-    animation::{AnimationComponent, AnimationData},
-    assets::ConsumableAssets,
-    game::GameParametersResource,
-    spawnable::{SpawnableBehavior, SpawnableComponent},
 };
 
 mod behavior;

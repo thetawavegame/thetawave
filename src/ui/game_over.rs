@@ -1,4 +1,5 @@
 //! System to draw the game over screen.
+use crate::{options::PlayingOnArcadeResource, ui::BouncingPromptComponent};
 use bevy::{
     asset::AssetServer,
     color::{Alpha, Color},
@@ -16,6 +17,7 @@ use bevy::{
     utils::default,
 };
 use std::time::Duration;
+use thetawave_assets::UiAssets;
 use thetawave_interface::{
     audio::ChangeBackgroundMusicEvent,
     game::historical_metrics::{
@@ -23,8 +25,6 @@ use thetawave_interface::{
     },
     states::GameOverCleanup,
 };
-
-use crate::{assets::UiAssets, options::PlayingOnArcadeResource, ui::BouncingPromptComponent};
 
 /// Spawn the styled UI elements for the game over screen. It should tell the player how they did.
 pub(super) fn setup_game_over_system(

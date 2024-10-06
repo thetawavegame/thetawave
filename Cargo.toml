@@ -8,6 +8,7 @@ members = [
     "crates/thetawave_interface",
     "crates/thetawave_storage",
     "crates/thetawave_arcade",
+    "crates/thetawave_assets",
 ]
 
 [workspace.dependencies]
@@ -31,6 +32,12 @@ bevy_math = "0.14.2"
 argh = "0.1.12"
 rand = "0.8.5"
 console_error_panic_hook = "0.1.7"
+bevy_asset_loader = { version = "0.21.0", features = [
+    "2d",
+    "3d",
+    "standard_dynamic_assets",
+] }
+thetawave_interface = { path = "crates/thetawave_interface" }
 
 [workspace.dependencies.bevy]
 version = "0.14.2"
@@ -73,11 +80,7 @@ bevy_rapier2d = { version = "0.27.0", features = [
     "simd-stable",
     "debug-render-2d",
 ] }
-bevy_asset_loader = { version = "0.21.0", features = [
-    "2d",
-    "3d",
-    "standard_dynamic_assets",
-] }
+bevy_asset_loader = { workspace = true }
 serde = { workspace = true }
 strum = { workspace = true }
 strum_macros = { workspace = true }
@@ -88,7 +91,8 @@ winit = "0.30.3"
 image = "0.24.6"
 thiserror = { workspace = true }
 leafwing-input-manager = { workspace = true }
-thetawave_interface = { path = "crates/thetawave_interface" }
+thetawave_interface = { workspace = true }
+thetawave_assets = { path = "crates/thetawave_assets" }
 
 
 # Serial ports do not work in in the browser.

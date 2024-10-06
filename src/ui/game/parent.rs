@@ -11,6 +11,7 @@ use bevy::{
     },
     utils::default,
 };
+use thetawave_assets::UiAssets;
 use thetawave_interface::{
     abilities::AbilitySlotIDComponent,
     character::Character,
@@ -18,7 +19,7 @@ use thetawave_interface::{
     states::GameCleanup,
 };
 
-use crate::{assets::UiAssets, player::CharactersResource};
+use crate::player::CharactersResource;
 
 use super::border_gradient::BorderGradientType;
 

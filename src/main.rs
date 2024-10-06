@@ -18,7 +18,6 @@ const PHYSICS_PIXELS_PER_METER: f32 = 10.0;
 
 mod animation;
 mod arena;
-mod assets;
 mod audio;
 mod background;
 mod camera;

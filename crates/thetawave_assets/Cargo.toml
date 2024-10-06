@@ -1,0 +1,14 @@
+[package]
+name = "thetawave_assets"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rand = { workspace = true }
+bevy_kira_audio = { workspace = true }
+bevy_asset_loader = { workspace = true }
+thetawave_interface = { workspace = true }
+# required due to bevy_asset_loader expecting bevy to be imported
+bevy = { workspace = true }

@@ -2,11 +2,8 @@
 //! vertically layed out on the main menu, and change the state from
 //! `thetawave_interface::states::AppStates::MainMenu` to
 //! `thetawave_interface::states::AppStates::CharacterSelection`
-use crate::{
-    assets::UiAssets,
-    ui::button::{
-        ButtonActionComponent, ButtonActionEvent, ButtonActionType, UiButtonChildBuilderExt,
-    },
+use crate::ui::button::{
+    ButtonActionComponent, ButtonActionEvent, ButtonActionType, UiButtonChildBuilderExt,
 };
 use bevy::{
     asset::Handle,
@@ -22,6 +19,7 @@ use bevy::{
     ui::{widget::Button, Interaction, Style, UiRect, Val},
 };
 use leafwing_input_manager::prelude::ActionState;
+use thetawave_assets::UiAssets;
 use thetawave_interface::{
     audio::{PlaySoundEffectEvent, SoundEffectType},
     input::{MainMenuExplorer, MenuAction},

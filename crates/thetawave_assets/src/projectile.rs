@@ -1,13 +1,14 @@
 use bevy::{
-    prelude::{Handle, Res, Resource, TextureAtlasLayout},
-    render::texture::Image,
+    asset::Handle,
+    prelude::{Image, Res, Resource},
+    sprite::TextureAtlasLayout,
 };
-use bevy_asset_loader::prelude::AssetCollection;
+use bevy_asset_loader::asset_collection::AssetCollection;
 use thetawave_interface::spawnable::{Faction, ProjectileType};
 
 /// Collection of texture atlases and images for projectile sprites
 #[derive(AssetCollection, Resource)]
-pub(crate) struct ProjectileAssets {
+pub struct ProjectileAssets {
     #[asset(key = "ally_blast.layout")]
     pub ally_blast_layout: Handle<TextureAtlasLayout>,
     #[asset(key = "ally_blast.image")]
@@ -32,7 +33,7 @@ pub(crate) struct ProjectileAssets {
 
 impl ProjectileAssets {
     /// Use a ProjectileType enum to access a texture atlas layout
-    pub(crate) fn get_texture_atlas_layout(
+    pub fn get_texture_atlas_layout(
         &self,
         projectile_type: &ProjectileType,
     ) -> Handle<TextureAtlasLayout> {
@@ -51,7 +52,7 @@ impl ProjectileAssets {
     }
 
     /// Use a ProjectileType enum to access an image handle
-    pub(crate) fn get_image(&self, projectile_type: &ProjectileType) -> Handle<Image> {
+    pub fn get_image(&self, projectile_type: &ProjectileType) -> Handle<Image> {
         match projectile_type {
             ProjectileType::Blast(faction) => match faction {
                 Faction::Ally => self.ally_blast_image.clone(),
